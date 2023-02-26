@@ -1,3 +1,4 @@
+import * as dat from 'dat.gui';
 /**
  * 控件模块
  * @param {*} viewer

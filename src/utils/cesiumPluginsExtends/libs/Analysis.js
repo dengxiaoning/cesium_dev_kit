@@ -1,3 +1,4 @@
+import echarts from 'echarts'
 /**
  * @description D3Kit 拓展包
  *
@@ -227,4 +228,642 @@ Analysis.prototype = {
       })
     }
   }
+}
+
+/**
+ * 通视分析
+ * @param {*} params 
+ */
+function VisibilityAnalysis(params) {
+
+  if (params && params.positions) {
+    var positions = params.positions,
+      that = params.that,
+      points = [],
+      lines = [],
+      pickedObjs = [],
+      position1 = that.transformWGS84ToCartesian(positions[0]),
+      position2 = that.transformWGS84ToCartesian(positions[1]);
+    points = that.createPointsGraphics({
+      point: true,
+      positions: [position1, position2]
+    })
+
+    var results = that.getIntersectObj(position1, position2, points, true); //碰撞检测
+
+    if (results.length === 0) {
+
+      alert("没有取到相交点 , 请检查是否开启深度检测。")
+      return false
+    }
+    //显示相交对象 高亮
+    function showIntersections() {
+      for (let i = 0; i < results.length; ++i) {
+        var object = results[i].object;
+        if (object) {
+          if (object instanceof Cesium.Cesium3DTileFeature) {
+
+            pickedObjs.push(object);
+            object.oldColor = object.color.clone();
+            object.color = Cesium.Color.fromAlpha(Cesium.Color.YELLOW, object.color.alpha);
+          } else if (object.id instanceof Cesium.Entity) {
+            var entity = object.id;
+            pickedObjs.push(entity);
+            var color = entity.polygon.material.color.getValue();
+            entity.polygon.oldColor = color.clone();
+            entity.polygon.material = Cesium.Color.fromAlpha(Cesium.Color.YELLOW, color.alpha);
+          }
+        }
+        //相交点
+        points.push(that._analysisLayer.entities.add({
+          position: results[i].position,
+          ellipsoid: {
+            radii: new Cesium.Cartesian3(0.8, 0.8, 0.8),
+            material: Cesium.Color.RED
+          }
+        }));
+      }
+    }
+    // 计算分析结果
+    function computesResult() {
+
+      //分析一下是否都有position
+      for (let index = results.length - 1; index >= 0; index--) {
+        const element = results[index];
+        if (!Cesium.defined(element.position)) {
+          results.splice(index, 1);
+        }
+      }
+      if (!Cesium.defined(results[0].position)) {
+        throw new Cesium.DeveloperError("position is undefined");
+      }
+      var pickPos1 = results[0].position;
+      var dis = Cesium.Cartesian3.distance(pickPos1, position2);
+      var bVisibility = dis < 5 ? true : false; //
+      var arrowPositions = [position1, results[0].position];
+      //通视线
+      var greenLine = that._analysisLayer.entities.add({
+        polyline: {
+          positions: arrowPositions,
+          width: 10,
+          arcType: Cesium.ArcType.NONE,
+          material: new Cesium.PolylineArrowMaterialProperty(Cesium.Color.GREEN)
+        }
+      });
+      lines.push(greenLine);
+      //不通视
+      if (!bVisibility) {
+        var unArrowPositions = [results[0].position, position2];
+        var redLine = that._analysisLayer.entities.add({
+          polyline: {
+            positions: unArrowPositions,
+            width: 10,
+            arcType: Cesium.ArcType.NONE,
+            material: new Cesium.PolylineArrowMaterialProperty(Cesium.Color.RED)
+          }
+        });
+
+        lines.push(redLine);
+      }
+      showIntersections()
+      var rad1 = Cesium.Cartographic.fromCartesian(position1);
+      var rad2 = Cesium.Cartographic.fromCartesian(position2);
+      var degree1 = {
+        longitude: rad1.longitude / Math.PI * 180,
+        latitude: rad1.latitude / Math.PI * 180,
+        height: rad1.height
+      };
+      var degree2 = {
+        longitude: rad2.longitude / Math.PI * 180,
+        latitude: rad2.latitude / Math.PI * 180,
+        height: rad2.height
+      };
+
+      var length_ping = Math.sqrt(Math.pow(position1.x - position2.x, 2) + Math.pow(position1.y - position2.y, 2) + Math.pow(position1.z - position2.z, 2));
+      var length_h = Math.abs(degree2.height - degree1.height);
+      var length = Math.sqrt(Math.pow(length_ping, 2) + Math.pow(length_h, 2));
+
+      var visTxt = bVisibility ? '是' : '否';
+      var text =
+        '起点坐标: ' + ('   (' + degree1.longitude.toFixed(6)) + '\u00B0' + ',' + (degree1.latitude.toFixed(6)) + '\u00B0' + ',' + degree1.height.toFixed(2) + ')' +
+        '\n终点坐标: ' + ('   (' + degree2.longitude.toFixed(6)) + '\u00B0' + ',' + (degree2.latitude.toFixed(6)) + '\u00B0' + ',' + degree2.height.toFixed(2) + ')' +
+        '\n垂直距离: ' + '   ' + length_h.toFixed(2) + 'm' +
+        '\n水平距离: ' + '   ' + length_ping.toFixed(2) + 'm' +
+        '\n空间距离: ' + '   ' + length.toFixed(2) + 'm' +
+        '\n是否可视: ' + '   ' + visTxt;
+
+      if (points && points[0]) {
+        points[0].label = {
+          text: text,
+          showBackground: true,
+          font: '14px monospace',
+          fillColor: Cesium.Color.YELLOW,
+          pixelOffset: {
+            x: 0,
+            y: -20
+          },
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          horizontalOrigin: Cesium.HorizontalOrigin.LEFT
+        }
+      }
+    }
+
+    computesResult() // 计算相交结果
+  }
+
+  VisibilityAnalysis.prototype.remove = function () {}
+}
+
+/**
+ * 环视分析
+ * @param {*} params 
+ */
+function LookAroundAnalysis(params) {
+  if (!params && !params.center && !params.radius && params.that) {
+
+    alert('没有获取到分析参数')
+    return false;
+  }
+
+  var that = params.that,
+    $this = this;
+  if (!that._viewer.scene.globe.depthTestAgainstTerrain) {
+
+    alert('请开启深度检测')
+    return false;
+  }
+
+  var viewHeight = params.viewHeight || 10
+  var cartographicCenter = Cesium.Cartographic.fromCartesian(params.center);
+  // 分析
+  try {
+    var ab = params.radius;
+    var eopt = {};
+    eopt.semiMinorAxis = ab;
+    eopt.semiMajorAxis = ab;
+    eopt.rotation = 0;
+    eopt.center = params.center;
+    eopt.granularity = Math.PI / 45.0; //间隔
+    let ellipse = that.computeEllipseEdgePositions(eopt); //范围当前椭圆位置的数组
+    for (let i = 0; i < ellipse.outerPositions.length; i += 3) {
+      //逐条计算可视域
+      let cartesian = new Cesium.Cartesian3(ellipse.outerPositions[i], ellipse.outerPositions[i + 1], ellipse.outerPositions[i + 2]);
+      let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+      let deltaRadian = 0.00005 * Math.PI / 180.0; //Cesium.Math.RADIANS_PER_DEGREE
+      let cartographicArr = that.computeInterpolateLineCartographic(cartographicCenter, cartographic, deltaRadian);
+      that.computeCartographicPointsTerrainData(cartographicArr,
+        function (terrainData) {
+          if (terrainData.length > 0) {
+            let preVisible = true;
+            let cartesiansLine = [];
+            let colors = [];
+            for (let j = 1; j < terrainData.length; j++) {
+              //逐点计算可见性
+              let visible = true; //该点可见性
+              if (j > 1) {
+                let cartographicCenterHV = new Cesium.Cartographic(terrainData[0].longitude, terrainData[0].latitude, terrainData[0].height + viewHeight);
+                if (preVisible) {
+                  //   
+                  let curPoint = that.computeInterpolateIndexLineHeightCartographic(cartographicCenterHV, terrainData[j], j, j - 1);
+                  if (curPoint.height >= terrainData[j - 1].height) {
+                    preVisible = true;
+                    visible = true;
+                  } else {
+                    preVisible = false;
+                    visible = false;
+                  }
+                } else {
+                  //插值到当前
+                  let curPointArr = that.computeInterpolateIndexLineHeightCartographic(cartographicCenterHV, terrainData[j], j, j - 1);
+                  for (let k = 0; k < curPointArr.length; k++) {
+                    if (curPointArr[k].height >= terrainData[k].height) {
+                      preVisible = true;
+                      visible = true;
+                    } else {
+                      preVisible = false;
+                      visible = false;
+                      break;
+                    }
+                  }
+                }
+              }
+              let cartesianTemp = Cesium.Cartesian3.fromRadians(terrainData[j].longitude, terrainData[j].latitude, terrainData[j].height + 1);
+              cartesiansLine.push(cartesianTemp);
+              //绘制点
+              if (visible) {
+                colors.push(0);
+                colors.push(0);
+                colors.push(1);
+                colors.push(1);
+              } else {
+                colors.push(1);
+                colors.push(0);
+                colors.push(0);
+                colors.push(1);
+              }
+            }
+            //绘制结果
+            $this._pointsKSYResult = new Cesium.PointsPrimitive({
+              'viewer': that._viewer,
+              'Cartesians': cartesiansLine,
+              'Colors': colors
+            });
+          } else {
+            alert("高程异常！");
+          }
+        });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  LookAroundAnalysis.prototype.remove = function () {}
+}
+
+/**
+ * 坡度分析
+ * @param {*} params 
+ */
+function SlopeAnalysis(params) {
+
+  if (params && params.positions) {
+
+    var positions = params.positions,
+      that = params.that,
+      points = [],
+      position1 = that.transformWGS84ToCartesian(positions[0]),
+      position2 = that.transformWGS84ToCartesian(positions[1]);
+    points = that.createPointsGraphics({
+      point: true,
+      positions: [position1, position2]
+    })
+    //显示结果
+    function showResult(startPoint, endPoint) {
+      //起止点相关信息
+      var scartographic = Cesium.Cartographic.fromCartesian(startPoint);
+      var samplePoint = [scartographic];
+      var pointSum = 10; //取样点个数
+      var tempCartesians = new Cesium.Cartesian3();
+      var slopePercent = [0];
+      var disL = [0];
+      var angle = 0;
+      for (var i = 1; i <= pointSum; i++) {
+        Cesium.Cartesian3.lerp(startPoint, endPoint, i / pointSum, tempCartesians);
+        var tempCartographic = Cesium.Cartographic.fromCartesian(tempCartesians);
+        var surfaceHeight = $this._viewer.scene.globe.getHeight(tempCartographic);
+        tempCartographic.height = surfaceHeight;
+        samplePoint.push(tempCartographic);
+        var lastCarto = samplePoint[i - 1];
+        var dis = Cesium.Cartesian3.distance(Cesium.Cartographic.toCartesian(lastCarto), Cesium.Cartographic.toCartesian(tempCartographic));
+        disL.push(disL[i - 1] + dis);
+        angle = Math.asin((tempCartographic.height - lastCarto.height) / dis);
+        slopePercent.push(Math.tan(angle) * 100);
+      }
+
+      var echartContainer = document.createElement('div');
+      echartContainer.className = 'echart-viewer';
+      $this._viewer.container.appendChild(echartContainer, 'dark', {
+        renderer: 'canvas',
+        width: 640,
+        height: 480
+      });
+      echartContainer.style.position = "absolute";
+      echartContainer.style.right = '140px';
+      echartContainer.style.top = '100px';
+      echartContainer.style.height = '300px';
+      echartContainer.style.width = '640px';
+      echartContainer.style.overflow = "hidden";
+      echartContainer.style.zIndex = "9999";
+      echartContainer.style.opacity = 0.9;
+      var myChart = echarts.init(echartContainer);
+      var option = {
+        title: {
+          text: '剖面示意图',
+          left: 'center',
+          subtext: '',
+          textStyle: {
+            color: 'white',
+            fontSize: 15
+          }
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        legend: {
+          data: ['']
+        },
+        //右上角工具条
+        toolbox: {
+          show: false,
+          feature: {
+            mark: {
+              show: true
+            },
+            dataView: {
+              show: true,
+              readOnly: false
+            },
+            magicType: {
+              show: true,
+              type: ['line', 'bar']
+            },
+            restore: {
+              show: true
+            },
+            saveAsImage: {
+              show: true
+            }
+          }
+        },
+        calculable: true,
+        xAxis: [{
+          type: 'category',
+          name: "长度(米)",
+          boundaryGap: false,
+          data: disL,
+          axisLabel: {
+            textStyle: {
+              color: 'white'
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: "white"
+            }
+          }
+        }],
+        yAxis: [{
+          type: 'value',
+          name: "坡度（%）",
+          axisLabel: {
+            formatter: function (data) {
+              return data.toFixed(2) + "%";
+            },
+            // formatter: '{value} 米',
+            textStyle: {
+              color: 'white'
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: "white"
+            }
+          }
+        }],
+        series: [{
+          name: '坡度',
+          type: 'line',
+          areaStyle: {},
+          smooth: true,
+          data: slopePercent,
+          markPoint: {
+            data: [{
+                type: 'max',
+                name: '最大值'
+              },
+              {
+                type: 'min',
+                name: '最小值'
+              }
+            ]
+          },
+          markLine: {
+            data: [{
+              type: 'average',
+              name: '平均值'
+            }]
+          }
+        }]
+      };
+
+      // 为echarts对象加载数据
+      myChart.setOption(option);
+      return myChart;
+    }
+  }
+
+  showResult(points[0], points[1])
+}
+
+/**
+ * 方量分析
+ * @param {*} params 
+ */
+function CutVolumeAnalysis(params) {
+
+  if (params && params.positions && params.that) {
+
+    var that = params.that,
+      positions = params.positions,
+      _debugShowSubTriangles = true,
+      $this = this;
+
+
+    computeCutVolume()
+  }
+  /**
+   * 计算多边形的重心点
+   * @param {*} positions 
+   */
+  function computeCentroidOfPolygon(positions) {
+    var x = [];
+    var y = [];
+
+    for (var i = 0; i < positions.length; i++) {
+      var cartographic = Cesium.Cartographic.fromCartesian(positions[i]);
+
+      x.push(cartographic.longitude);
+      y.push(cartographic.latitude);
+    }
+
+    var x0 = 0.0,
+      y0 = 0.0,
+      x1 = 0.0,
+      y1 = 0.0;
+    var signedArea = 0.0;
+    var a = 0.0;
+    var centroidx = 0.0,
+      centroidy = 0.0;
+
+    for (i = 0; i < positions.length; i++) {
+      x0 = x[i];
+      y0 = y[i];
+
+      if (i == positions.length - 1) {
+        x1 = x[0];
+        y1 = y[0];
+      } else {
+        x1 = x[i + 1];
+        y1 = y[i + 1];
+      }
+
+      a = x0 * y1 - x1 * y0;
+      signedArea += a;
+      centroidx += (x0 + x1) * a;
+      centroidy += (y0 + y1) * a;
+    }
+
+    signedArea *= 0.5;
+    centroidx /= (6.0 * signedArea);
+    centroidy /= (6.0 * signedArea);
+
+    return new Cesium.Cartographic(centroidx, centroidy);
+  }
+
+  /**
+   * 计算三角形的面积
+   * @param {*} pos1 
+   * @param {*} pos2 
+   * @param {*} pos3 
+   */
+  function computeAreaOfTriangle(pos1, pos2, pos3) {
+    var a = Cesium.Cartesian3.distance(pos1, pos2);
+    var b = Cesium.Cartesian3.distance(pos2, pos3);
+    var c = Cesium.Cartesian3.distance(pos3, pos1);
+
+    var S = (a + b + c) / 2;
+
+    return Math.sqrt(S * (S - a) * (S - b) * (S - c));
+  }
+  /**
+   * 计算方量
+   */
+  function computeCutVolume() {
+
+    var tileAvailability = that._viewer.terrainProvider.availability;
+    if (!tileAvailability) {
+      alert("未获取到地形")
+      return false;
+    }
+    var maxLevel = 0;
+    var minHeight = 15000;
+    // 计算差值点
+    for (var i = 0; i < positions.length; i++) {
+      var cartographic = Cesium.Cartographic.fromCartesian(positions[i]);
+      var height = that._viewer.scene.globe.getHeight(cartographic);
+
+      if (minHeight > height)
+        minHeight = height;
+
+      var level = tileAvailability.computeMaximumLevelAtPosition(cartographic);
+
+      if (maxLevel < level)
+        maxLevel = level;
+    }
+
+    var granularity = Math.PI / Math.pow(2, 11);
+    granularity = granularity / (64);
+    var polygonGeometry = new Cesium.PolygonGeometry.fromPositions({
+      positions: positions,
+      vertexFormat: Cesium.PerInstanceColorAppearance.FLAT_VERTEX_FORMAT,
+      granularity: granularity
+    });
+
+    //polygon subdivision
+
+    var geom = new Cesium.PolygonGeometry.createGeometry(polygonGeometry);
+
+    var totalCutVolume = 0;
+    var maxHeight = 0;
+
+    var i0, i1, i2;
+    var height1, height2, height3;
+    var p1, p2, p3;
+    var bottomP1, bottomP2, bottomP3;
+    var scratchCartesian = new Cesium.Cartesian3();
+    var cartographic;
+    var bottomArea;
+    var subTrianglePositions;
+
+
+    for (i = 0; i < geom.indices.length; i += 3) {
+      i0 = geom.indices[i];
+      i1 = geom.indices[i + 1];
+      i2 = geom.indices[i + 2];
+
+      subTrianglePositions = geom.attributes.position.values;
+
+      scratchCartesian.x = subTrianglePositions[i0 * 3];
+      scratchCartesian.y = subTrianglePositions[i0 * 3 + 1];
+      scratchCartesian.z = subTrianglePositions[i0 * 3 + 2];
+
+      cartographic = Cesium.Cartographic.fromCartesian(scratchCartesian);
+
+      height1 = that._viewer.scene.globe.getHeight(cartographic);
+
+      p1 = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, height1);
+      bottomP1 = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0);
+
+      if (maxHeight < height1)
+        maxHeight = height1;
+
+      scratchCartesian.x = subTrianglePositions[i1 * 3];
+      scratchCartesian.y = subTrianglePositions[i1 * 3 + 1];
+      scratchCartesian.z = subTrianglePositions[i1 * 3 + 2];
+
+      cartographic = Cesium.Cartographic.fromCartesian(scratchCartesian);
+
+      height2 = that._viewer.scene.globe.getHeight(cartographic);
+
+      p2 = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, height2);
+      bottomP2 = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0);
+
+      if (maxHeight < height2)
+        maxHeight = height2;
+
+      scratchCartesian.x = subTrianglePositions[i2 * 3];
+      scratchCartesian.y = subTrianglePositions[i2 * 3 + 1];
+      scratchCartesian.z = subTrianglePositions[i2 * 3 + 2];
+
+      cartographic = Cesium.Cartographic.fromCartesian(scratchCartesian);
+
+      height3 = that._viewer.scene.globe.getHeight(cartographic);
+
+      p3 = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, height3);
+      bottomP3 = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0);
+
+      if (maxHeight < height3)
+        maxHeight = height3;
+
+      bottomArea = computeAreaOfTriangle(bottomP1, bottomP2, bottomP3);
+
+      totalCutVolume = totalCutVolume + bottomArea * (height1 - minHeight + height2 - minHeight + height3 - minHeight) / 3;
+
+      if (_debugShowSubTriangles) {
+        var positionsarr = [];
+
+        positionsarr.push(p1);
+        positionsarr.push(p2);
+        positionsarr.push(p3);
+
+        var drawingPolygon = {
+          polygon: {
+            hierarchy: {
+              positions: positionsarr
+            },
+            extrudedHeight: 0,
+            perPositionHeight: true,
+            material: Cesium.Color.fromRandom().withAlpha(0.5),
+            outline: true,
+            closeTop: true,
+            closeBottom: true,
+            outlineColor: Cesium.Color.WHITE,
+            outlineWidth: 2
+          }
+        };
+
+        that._analysisLayer.entities.add(drawingPolygon);
+      }
+
+    }
+    var centroid = computeCentroidOfPolygon(positions);
+    $this._volumeLabel = that._analysisLayer.entities.add({
+      position: Cesium.Cartesian3.fromRadians(centroid.longitude, centroid.latitude, maxHeight + 1000),
+      label: {
+        text: 'Cut Volume ' + totalCutVolume.toString() + 'm3'
+      }
+    });
+
+    return maxHeight;
+  };
 }
