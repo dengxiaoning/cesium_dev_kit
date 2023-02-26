@@ -111,6 +111,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "graphicsNine",
+      "path": "graphicsNine",
+      "component": "example/graphics/graphicsNine",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "广告牌",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {
@@ -132,6 +144,44 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "淡入淡出探照灯",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "polylineCityLink",
+      "path": "polylineCityLink",
+      "component": "example/material/polylineCityLink",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "城市光效线",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "primitive",
+    "path": "/primitive",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "图元案例",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [{
+      "name": "lightCentrum",
+      "path": "lightCentrum",
+      "component": "example/primitive/lightCentrum",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "光锥图元",
         "icon": "icon-park-outline:log",
         "isAffix": false,
         "isHide": false,

@@ -16,6 +16,9 @@ import {
 import {
   Math3d
 } from './libs/Math3d';
+import {
+  Primitive
+} from './libs/Primitive'
 
 let Cesium = null;
 
@@ -61,10 +64,12 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
   const _material = protoExtends([Base, Shaders], Material);
   const _graphics = protoExtends(Base, Graphics);
   const _math3d = protoExtends(Base, Math3d);
+  const _primitive = protoExtends(Base, Primitive);
   return {
     viewer: _viewer,
     material: _material,
     graphics: _graphics,
-    math3d: _math3d
+    math3d: _math3d,
+    primitive: _primitive
   }
 }

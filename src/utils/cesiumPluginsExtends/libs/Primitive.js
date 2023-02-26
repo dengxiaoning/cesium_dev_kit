@@ -1,9 +1,12 @@
+let Cesium = null;
 /**
  * 图元拓展模块
  * @param {*} viewer
  */
-function Primitive(viewer) {
+function Primitive(viewer, cesiumGlobal) {
   if (viewer) {
+    this._viewer = viewer;
+    Cesium = cesiumGlobal;
     this._installPrimitives()
   }
 }
@@ -90,7 +93,7 @@ Primitive.prototype = {
         this._color = defaultValue(options.color, new Color(1.0, 1.0, 0.0, 0.8))
         this._scale = defaultValue(options.scale, new Cartesian3(10, 10, 15))
         this._texture = undefined
-        this._imageUrl = buildModuleUrl('ThirdParty/fence.png')
+        this._imageUrl = buildModuleUrl('/static/data/images/Textures/fence.png')
         this._modelMatrix = computeModelMatrix(this)
         this._height = computeHeight(this)
         createTexture(this)
@@ -323,7 +326,7 @@ Primitive.prototype = {
           `
                     varying vec3 v_positionEC;
                     varying vec3 v_normalEC;
-                    varying vec2 v_st;f
+                    varying vec2 v_st;
                     uniform vec4 color;
                     varying vec4 v_pickColor;
                     uniform sampler2D myImage;
@@ -742,7 +745,7 @@ Primitive.prototype = {
         geometry.attributes.position.values[i + 2] += scratchOffset.z
       }
     }
-    Cesium.ArrowPolylinePrimitive = ArrowPolylinePrimitive
+    Cesium.Scene.ArrowPolylinePrimitive = ArrowPolylinePrimitive
   },
   /**
    * 阴影图元
@@ -1476,7 +1479,7 @@ Primitive.prototype = {
                 '
     }
 
-    _.prototype.updateDegreesPosition = function (_degreesArrayHeights, _extrudedHeight) {
+    Primitive.prototype.updateDegreesPosition = function (_degreesArrayHeights, _extrudedHeight) {
 
       if (this.primitive != null) {
         this._viewer.scene.primitives.remove(this.primitive)
@@ -1771,4 +1774,7 @@ Primitive.prototype = {
     Cesium.Scene.ProbingPrimitive = ProbingPrimitive
   }
 
+}
+export {
+  Primitive
 }
