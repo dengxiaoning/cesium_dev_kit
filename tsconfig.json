@@ -1,0 +1,55 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    // "noImplicitAny": false, /* 不允许隐式的any类型 */
+    "esModuleInterop": true, /* 通过为所有导入创建命名空间对象，实现CommonJS和ES模块之间的互操作性 */
+    "skipLibCheck": true /* 跳过声明文件的类型检查. */,
+    "forceConsistentCasingInFileNames": true, /* 不允许对同一文件的大小写不一致的引用 */
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "types": [
+      "vite/client"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "comps/*": [
+        "src/components/*"
+      ],
+      "api/*": [
+        "src/api/*"
+      ],
+      "views/*": [
+        "src/views/*"
+      ],
+      "store/*": [
+        "src/store/*"
+      ],
+      "hooks/*": [
+        "src/hooks/*"
+      ],
+    },
+  },
+  "typeRoots": ["./node_modules/@types/", "./types"],// 声明文件目录，默认时node_modules/@types
+  //指定一个匹配列表（属于自动指定该路径下的所有ts相关文件）
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue", 
+    "mock/**/*.ts",
+    "types/**/*.d.ts",
+    "types/**/*.ts", 
+    "src/permission.ts", 
+   ]
+}

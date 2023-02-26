@@ -1,0 +1,247 @@
+[
+  {
+    "name": "graphics",
+    "path": "/graphics",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "图形案例",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "graphicsOne",
+      "path": "graphicsOne",
+      "component": "example/graphics/graphicsOne",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "旋转漂浮圆浮动锥体",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "name": "graphicsTwo",
+      "path": "graphicsTwo",
+      "component": "example/graphics/graphicsTwo",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "闪烁的圆",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "name": "graphicsThree",
+      "path": "graphicsThree",
+      "component": "example/graphics/graphicsThree",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "旋转的圆盘",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "name": "graphicsFour",
+      "path": "graphicsFour",
+      "component": "example/graphics/graphicsFour",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "旋转的平面",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "graphicsFive",
+      "path": "graphicsFive",
+      "component": "example/graphics/graphicsFive",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "动态渐变墙",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "graphicsSix",
+      "path": "graphicsSix",
+      "component": "example/graphics/graphicsSix",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "视频投放",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "graphicsSeven",
+      "path": "graphicsSeven",
+      "component": "example/graphics/graphicsSeven",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "gif图片投影",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "graphicsEight",
+      "path": "graphicsEight",
+      "component": "example/graphics/graphicsEight",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "旋转锥体",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "material",
+    "path": "/material",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "材质案例",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [{
+      "name": "material_cylinder",
+      "path": "material_cylinder",
+      "component": "example/material/material_cylinder",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "淡入淡出探照灯",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "dynForm",
+    "path": "/dynForm",
+    "component": "dynForm/index",
+    "append":"root",
+    "?append":"注意添加append：root 的菜单不能有子菜单，否则右边出现重复菜单列表",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "动态创建form案例",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    }
+  },
+  {
+    "name": "dragDialog",
+    "path": "/dragDialog",
+    "component": "dragDialog/index",
+    "append":"root",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "拖拽dialog",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    }
+  },
+  {
+    "name": "procTemplate",
+    "path": "/procTemplate",
+    "component": "process/index",
+    "append":"root",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "动态流程模板",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    }
+  },
+  {
+    "name": "sysManage",
+    "path": "/sysManage",
+    "component": "Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "系统管理",
+      "icon": "whh:managedhosting",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [{
+      "name": "sysLog",
+      "path": "sysLog",
+      "component": "sysManage/log/index",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "操作日志",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "sysConfig",
+      "path": "sysConfig",
+      "component": "sysManage/config/index",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "系统配置",
+        "icon": "grommet-icons:configure",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "sysAuth",
+      "path": "sysAuth",
+      "component": "sysManage/auth/index",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "权限配置",
+        "icon": "eos-icons:role-binding-outlined",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "sysCodeReg",
+      "path": "sysCodeReg",
+      "component": "sysManage/codeReg/index",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "编码规则",
+        "icon": "bi:journal-code",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  }
+]
