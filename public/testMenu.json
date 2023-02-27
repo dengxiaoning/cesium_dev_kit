@@ -190,6 +190,33 @@
     }]
   },
   {
+    "name": "scene",
+    "path": "/scene",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "场景控制",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "groundSkyBox",
+      "path": "groundSkyBox",
+      "component": "example/scene/groundSkyBox",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "天空盒子",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
     "name": "dynForm",
     "path": "/dynForm",
     "component": "dynForm/index",
