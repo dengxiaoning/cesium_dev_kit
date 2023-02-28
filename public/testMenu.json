@@ -19,7 +19,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "旋转漂浮圆浮动锥体",
-        "icon": "icon-park-outline:log",
+        "icon": "bi:journal-code",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -58,7 +58,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "旋转的平面",
-        "icon": "icon-park-outline:log",
+        "icon": "eos-icons:role-binding-outlined",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -157,6 +157,30 @@
         "auth": ["admin", "test"],
         "title": "城市光效线",
         "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "linkPoint",
+      "path": "linkPoint",
+      "component": "example/material/linkPoint",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "运动的发光点",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "areaPolylineCityLink",
+      "path": "areaPolylineCityLink",
+      "component": "example/material/areaPolylineCityLink",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "行政区发光道路线",
+        "icon": "carbon:rule-test",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
