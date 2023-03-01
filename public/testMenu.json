@@ -185,6 +185,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "linkPointFlow",
+      "path": "linkPointFlow",
+      "component": "example/material/linkPointFlow",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "掉落的发光点",
+        "icon": "carbon:rule-test",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {
