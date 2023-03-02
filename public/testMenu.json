@@ -210,6 +210,18 @@
         "isKeepAlive": true
       }
     },{
+      "name": "polygonMaterial",
+      "path": "polygonMaterial",
+      "component": "example/material/polygonMaterial",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "多边形面材质",
+        "icon": "carbon:rule-test",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
       "name": "sphereMaterial",
       "path": "sphereMaterial",
       "component": "example/material/sphereMaterial",
