@@ -197,6 +197,30 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "dynamicWall",
+      "path": "dynamicWall",
+      "component": "example/material/dynamicWall",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "动态墙材质",
+        "icon": "carbon:rule-test",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "sphereMaterial",
+      "path": "sphereMaterial",
+      "component": "example/material/sphereMaterial",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "球体材质",
+        "icon": "carbon:rule-test",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {
