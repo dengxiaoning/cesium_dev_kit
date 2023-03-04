@@ -301,6 +301,20 @@
     }]
   },
   {
+    "name": "measure",
+    "path": "/measure",
+    "component": "example/measure/index",
+    "append":"root",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "测量",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    }
+  },
+  {
     "name": "dynForm",
     "path": "/dynForm",
     "component": "dynForm/index",

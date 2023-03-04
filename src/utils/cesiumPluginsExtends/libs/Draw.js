@@ -1,11 +1,13 @@
+let Cesium = null;
+
 /**
  * 画笔模块
  * @param {*} viewer
  */
-function Draw(viewer) {
+function Draw(viewer, cesiumGlobal) {
 
   if (viewer) {
-
+    Cesium = cesiumGlobal;
     this._drawLayer = new Cesium.CustomDataSource('drawLayer')
 
     viewer && viewer.dataSources.add(this._drawLayer)
@@ -141,7 +143,7 @@ Draw.prototype = {
 
       //添加坐标点
       const _addInfoPoint = function (position) {
-        _labelEntity = new Cesium.Entity()
+        var _labelEntity = new Cesium.Entity()
         _labelEntity.position = position
         _labelEntity.point = {
           pixelSize: 10,
@@ -767,4 +769,7 @@ Draw.prototype = {
       })
     }
   }
+}
+export {
+  Draw
 }
