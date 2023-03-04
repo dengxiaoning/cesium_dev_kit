@@ -233,6 +233,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "haloWall",
+      "path": "haloWall",
+      "component": "example/material/haloWall",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "光晕墙",
+        "icon": "carbon:rule-test",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {
