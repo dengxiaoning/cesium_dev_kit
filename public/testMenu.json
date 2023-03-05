@@ -315,6 +315,20 @@
     }
   },
   {
+    "name": "draw",
+    "path": "/draw",
+    "component": "example/draw/plot",
+    "append":"root",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "绘制",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    }
+  },
+  {
     "name": "dynForm",
     "path": "/dynForm",
     "component": "dynForm/index",

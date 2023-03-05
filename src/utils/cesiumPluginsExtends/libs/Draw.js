@@ -356,8 +356,8 @@ Draw.prototype = {
       var _center = undefined,
         _circleEntity = new Cesium.Entity(),
         $this = this,
-        circleObj, _radius = 1
-      _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
+        circleObj, _radius = 1,
+        _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
 
       // 计算半径
       const computeRadius = function (src, dest) {
