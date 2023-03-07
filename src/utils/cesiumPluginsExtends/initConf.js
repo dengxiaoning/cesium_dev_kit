@@ -48,7 +48,7 @@ class Controller {
       baseLayerPicker: false,
       shouldAnimate: true,
       navigation: false,
-      showRenderLoopErrors: false,
+      showRenderLoopErrors: true, // 是否显示render异常信息
 
     }
     vConfig = Object.assign(vConfig, BaseMapConfig) // 后台接口配置 融合替换 默认配置

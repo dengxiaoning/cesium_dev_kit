@@ -22,6 +22,9 @@ import {
 import {
   Draw
 } from './libs/Draw'
+import {
+  Math2d
+} from './libs/Math2d'
 let Cesium = null;
 
 const prototypeExtends = function (viewer, cesiumGlobal) {
@@ -67,7 +70,7 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
   const _graphics = protoExtends(Base, Graphics);
   const _math3d = protoExtends(Base, Math3d);
   const _primitive = protoExtends(Base, Primitive);
-  const _draw = protoExtends([Base, Math3d], Draw);
+  const _draw = protoExtends([Base, Math3d, Math2d], Draw);
   return {
     viewer: _viewer,
     material: _material,

@@ -1,9 +1,15 @@
+let Cesium = {};
 /**
  * 平面数学工具
  * 二维模块
  * @param {*} viewer
  */
-function Math2d(viewer) {}
+function Math2d(viewer, cesiumGlobal) {
+  if (viewer) {
+    this._viewer = viewer;
+    Cesium = cesiumGlobal;
+  }
+}
 
 Math2d.prototype = {
   /**
@@ -556,4 +562,7 @@ Math2d.prototype = {
     return res
   }
 
+}
+export {
+  Math2d
 }
