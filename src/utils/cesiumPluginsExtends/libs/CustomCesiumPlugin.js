@@ -1,9 +1,16 @@
+import {
+  CesiumPlugin
+} from './cesium-plugin'
+let Cesium = null;
 /**
  * 自定义插件
  * @param {*} viewer
  */
-function CustomCesiumPlugin(viewer) {
+function CustomCesiumPlugin(viewer, cesiumGlobal) {
   if (viewer) {
+    this._viewer = viewer;
+    Cesium = cesiumGlobal;
+    // new CesiumPlugin(Window, Cesium);
     this._customPluginLayer = new Cesium.CustomDataSource('_customPluginLayer')
 
     viewer && viewer.dataSources.add(this._customPluginLayer)
@@ -85,4 +92,8 @@ CustomCesiumPlugin.prototype = {
       })
     }
   }
+}
+
+export {
+  CustomCesiumPlugin
 }

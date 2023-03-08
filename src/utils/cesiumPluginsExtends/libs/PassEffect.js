@@ -1,8 +1,14 @@
+let Cesium = null;
 /**
  * 后期效果模块
  * @param {*} viewer
  */
-function PassEffect() {}
+function PassEffect(viewer, cesiumGlobal) {
+  if (viewer) {
+    this._viewer = viewer;
+    Cesium = cesiumGlobal;
+  }
+}
 
 PassEffect.prototype = {
   // 圆形扩散效果 自定义
@@ -246,4 +252,7 @@ PassEffect.prototype = {
     }
   }
 
+}
+export {
+  PassEffect
 }

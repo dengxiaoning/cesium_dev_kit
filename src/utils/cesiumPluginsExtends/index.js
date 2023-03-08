@@ -25,6 +25,13 @@ import {
 import {
   Math2d
 } from './libs/Math2d'
+import {
+  PassEffect
+} from './libs/PassEffect'
+import {
+  CustomCesiumPlugin
+} from './libs/CustomCesiumPlugin'
+
 let Cesium = null;
 
 const prototypeExtends = function (viewer, cesiumGlobal) {
@@ -71,12 +78,16 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
   const _math3d = protoExtends(Base, Math3d);
   const _primitive = protoExtends(Base, Primitive);
   const _draw = protoExtends([Base, Math3d, Math2d], Draw);
+  const _passEffect = protoExtends([Base, Shaders], PassEffect);
+  const _customCesiumPlugin = protoExtends(Base, CustomCesiumPlugin);
   return {
     viewer: _viewer,
     material: _material,
     graphics: _graphics,
     math3d: _math3d,
     primitive: _primitive,
-    draw: _draw
+    draw: _draw,
+    passEffect: _passEffect,
+    customCesiumPlugin: _customCesiumPlugin
   }
 }

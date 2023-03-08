@@ -6,7 +6,7 @@
     "meta": {
       "auth": ["admin", "test"],
       "title": "图形案例",
-      "icon": "carbon:rule-test",
+      "icon": "icon-park-twotone:graphic-design-two",
       "isAffix": false,
       "isHide": false,
       "isKeepAlive": true
@@ -19,7 +19,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "旋转漂浮圆浮动锥体",
-        "icon": "bi:journal-code",
+        "icon": "game-icons:floating-tentacles",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -32,7 +32,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "闪烁的圆",
-        "icon": "icon-park-outline:log",
+        "icon": "game-icons:circle-sparks",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -45,7 +45,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "旋转的圆盘",
-        "icon": "icon-park-outline:log",
+        "icon": "mdi:rotate-3d-variant",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -58,7 +58,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "旋转的平面",
-        "icon": "eos-icons:role-binding-outlined",
+        "icon": "ic:outline-rotate-90-degrees-cw",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -82,7 +82,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "视频投放",
-        "icon": "icon-park-outline:log",
+        "icon": "material-symbols:video-camera-back-outline",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -132,7 +132,7 @@
     "meta": {
       "auth": ["admin", "test"],
       "title": "材质案例",
-      "icon": "carbon:rule-test",
+      "icon": "game-icons:materials-science",
       "isAffix": false,
       "isHide": false,
       "isKeepAlive": true
@@ -156,7 +156,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "城市光效线",
-        "icon": "icon-park-outline:log",
+        "icon": "fluent:text-align-right-rotate-90-16-filled",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -192,7 +192,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "掉落的发光点",
-        "icon": "carbon:rule-test",
+        "icon": "carbon:flow-modeler",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -254,7 +254,7 @@
     "meta": {
       "auth": ["admin", "test"],
       "title": "图元案例",
-      "icon": "carbon:rule-test",
+      "icon": "game-icons:primitive-torch",
       "isAffix": false,
       "isHide": false,
       "isKeepAlive": true
@@ -280,7 +280,7 @@
     "meta": {
       "auth": ["admin", "test"],
       "title": "场景控制",
-      "icon": "carbon:rule-test",
+      "icon": "carbon:point-of-presence",
       "isAffix": false,
       "isHide": false,
       "isKeepAlive": true
@@ -308,7 +308,7 @@
     "meta": {
       "auth": ["admin", "test"],
       "title": "测量",
-      "icon": "carbon:rule-test",
+      "icon": "gis:measure",
       "isAffix": false,
       "isHide": false,
       "isKeepAlive": true
@@ -322,11 +322,49 @@
     "meta": {
       "auth": ["admin", "test"],
       "title": "绘制",
-      "icon": "carbon:rule-test",
+      "icon": "fluent:hand-draw-16-regular",
       "isAffix": false,
       "isHide": false,
       "isKeepAlive": true
     }
+  },
+  {
+    "name": "radar",
+    "path": "/radar",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "雷达案例",
+      "icon": "mingcute:radar-line",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [{
+      "name": "radarScan",
+      "path": "radarScan",
+      "component": "example/radar/radarScan",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "雷达扫描",
+        "icon": "fluent:radar-20-regular",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "circleScan",
+      "path": "circleScan",
+      "component": "example/radar/circleScan",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "圆形扫描",
+        "icon": "ion:scan-circle-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
   },
   {
     "name": "dynForm",
