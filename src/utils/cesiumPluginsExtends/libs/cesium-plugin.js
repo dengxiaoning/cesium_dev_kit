@@ -264,12 +264,12 @@ const CesiumPlugin = function (Window, Cesium) {
       }
       return _0x5547b4;
     }
-    Object[installPlugin('0x1d')](Cesium, installPlugin('0x1e'), {
+    Object[installPlugin('0x1d')](Cesium['Scene'], installPlugin('0x1e'), {
       'value': !0x0
     });
     var _0x33bf7d = new Cesium[(installPlugin('0x9'))](),
       _0x5af96f = (new Cesium[(installPlugin('0x18'))](), new Cesium[(installPlugin('0x1b'))]());
-    Cesium[installPlugin('0x1f')] = _0x4560e4, Cesium[installPlugin('0x20')] = _0x5547b4;
+    Cesium['Scene'][installPlugin('0x1f')] = _0x4560e4, Cesium['Scene'][installPlugin('0x20')] = _0x5547b4;
   }
 
   function _0x4113f8() {
@@ -329,7 +329,7 @@ const CesiumPlugin = function (Window, Cesium) {
       ]);
       return _0x3233e9;
     }
-    Cesium[installPlugin('0x3c')] = _0x1f62a6;
+    Cesium['Scene'][installPlugin('0x3c')] = _0x1f62a6;
   }
 
   function _0x586f1b() {
@@ -340,9 +340,9 @@ const CesiumPlugin = function (Window, Cesium) {
           installPlugin('0x47')], this[installPlugin('0x48')] = _0x59e968[installPlugin('0x49')] ? _0x59e968[installPlugin(
           '0x49')] : 0x8;
     }
-    Object[installPlugin('0x1d')](Cesium, installPlugin('0x1e'), {
+    Object[installPlugin('0x1d')](Cesium['Scene'], installPlugin('0x1e'), {
       'value': !0x0
-    }), Cesium[installPlugin('0x4a')] = void 0x0;
+    }), Cesium['Scene'][installPlugin('0x4a')] = void 0x0;
     var _0x55b706 = new Cesium[(installPlugin('0x9'))](),
       _0x5c3c63 = new Cesium[(installPlugin('0x18'))]();
     _0x4d16a8[installPlugin('0x4b')] = function (_0x5a3db4) {
@@ -579,7 +579,7 @@ const CesiumPlugin = function (Window, Cesium) {
         _0x11951f[installPlugin('0x40')] = _0x10f0ee * Math[installPlugin('0x5f')](_0x12c802), _0x11951f[
           installPlugin('0x3e')] = _0x10f0ee * Math[installPlugin('0x5f')](_0x132d31)), new _0x4d16a8(
         _0x11951f);
-    }, Cesium[installPlugin('0x4a')] = _0x4d16a8;
+    }, Cesium['Scene'][installPlugin('0x4a')] = _0x4d16a8;
   }
 
   function _0x4e6cd9() {
@@ -590,9 +590,9 @@ const CesiumPlugin = function (Window, Cesium) {
           installPlugin('0x49')] ? _0x445e93[installPlugin('0x49')] : 0x40, this[installPlugin('0x47')] = _0x445e93[
           installPlugin('0x47')];
       }
-      Object[installPlugin('0x1d')](Cesium, installPlugin('0x1e'), {
+      Object[installPlugin('0x1d')](Cesium['Scene'], installPlugin('0x1e'), {
         'value': !0x0
-      }), Cesium[installPlugin('0x60')] = void 0x0;
+      }), Cesium['Scene'][installPlugin('0x60')] = void 0x0;
       var _0x45b339 = new Cesium[(installPlugin('0x63'))](),
         _0x1379ef = new Cesium[(installPlugin('0x9'))](),
         _0x1b34f9 = new Cesium[(installPlugin('0x18'))]();
@@ -807,7 +807,7 @@ const CesiumPlugin = function (Window, Cesium) {
           'length': _0x892ecb,
           'zReverse': _0x286d3c
         });
-      }, Cesium[installPlugin('0x60')] = _0x15d161;
+      }, Cesium['Scene'][installPlugin('0x60')] = _0x15d161;
     }
   }
 
@@ -1450,7 +1450,7 @@ const CesiumPlugin = function (Window, Cesium) {
         this[installPlugin('0x7d')] = Cesium[installPlugin('0x79')](_0xaac5ea[installPlugin('0x7e')], !0x1);
         this[installPlugin('0x9f')](this[installPlugin('0x7d')]);
       }
-      Cesium[installPlugin('0x112')] = void 0x0;
+      Cesium['Scene'][installPlugin('0x112')] = void 0x0;
       var _0x1fc899;
       Object[installPlugin('0xa3')](_0x57bcdb[installPlugin('0xa4')], {
         'trackedEntity': {
@@ -1900,7 +1900,7 @@ const CesiumPlugin = function (Window, Cesium) {
               '0xaf')][installPlugin('0xb0')]();
           }), this[installPlugin('0x94')] = []);
       };
-      Cesium[installPlugin('0x112')] = _0x57bcdb;
+      Cesium['Scene'][installPlugin('0x112')] = _0x57bcdb;
     }
   }
 
@@ -3262,13 +3262,13 @@ const CesiumPlugin = function (Window, Cesium) {
           var _0x4e18ed = _0x149567(0x2);
           var _0x323948 = _0x149567(0x3);
           var _0x5ea0cd = _0x149567(0xc);
-          Cesium[installPlugin('0x12b')] = _0x3458eb[installPlugin('0x12b')];
-          Cesium[installPlugin('0x1de')] = _0x492bce[installPlugin('0x1de')];
-          Cesium[installPlugin('0x1df')] = _0x1fa231[installPlugin('0x1df')];
-          Cesium[installPlugin('0x1b1')] = _0x55c37a[installPlugin('0x1b1')];
-          Cesium[installPlugin('0x1b7')] = _0x4e18ed[installPlugin('0x1b7')];
-          Cesium[installPlugin('0x1dc')] = _0x323948[installPlugin('0x1dc')];
-          Cesium[installPlugin('0x1e0')] = _0x5ea0cd[installPlugin('0x1e0')];
+          Cesium['Scene'][installPlugin('0x12b')] = _0x3458eb[installPlugin('0x12b')];
+          Cesium['Scene'][installPlugin('0x1de')] = _0x492bce[installPlugin('0x1de')];
+          Cesium['Scene'][installPlugin('0x1df')] = _0x1fa231[installPlugin('0x1df')];
+          Cesium['Scene'][installPlugin('0x1b1')] = _0x55c37a[installPlugin('0x1b1')];
+          Cesium['Scene'][installPlugin('0x1b7')] = _0x4e18ed[installPlugin('0x1b7')];
+          Cesium['Scene'][installPlugin('0x1dc')] = _0x323948[installPlugin('0x1dc')];
+          Cesium['Scene'][installPlugin('0x1e0')] = _0x5ea0cd[installPlugin('0x1e0')];
           var _0x3ee5df = Cesium[installPlugin('0x1e1')];
           var _0x14bd7c = _0x3ee5df[installPlugin('0x1e2')];
           _0x3ee5df[installPlugin('0x1e2')] = function (_0x56b99a, _0x10d9e8, _0x465219) {
@@ -4384,7 +4384,7 @@ const CesiumPlugin = function (Window, Cesium) {
         }
       }
     });
-    Cesium[installPlugin('0x255')] = _0x179d4a;
+    Cesium['Scene'][installPlugin('0x255')] = _0x179d4a;
   };
   _0x11eecd();
   _0x4113f8();

@@ -364,6 +364,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "phaseControl",
+      "path": "phaseControl",
+      "component": "example/radar/phaseControl",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "相控雷达",
+        "icon": "ion:scan-circle-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {

@@ -10,7 +10,7 @@ function CustomCesiumPlugin(viewer, cesiumGlobal) {
   if (viewer) {
     this._viewer = viewer;
     Cesium = cesiumGlobal;
-    // new CesiumPlugin(Window, Cesium);
+    new CesiumPlugin(Window, Cesium);
     this._customPluginLayer = new Cesium.CustomDataSource('_customPluginLayer')
 
     viewer && viewer.dataSources.add(this._customPluginLayer)
@@ -28,7 +28,7 @@ CustomCesiumPlugin.prototype = {
       return this._customPluginLayer.entities.add({
         position: l,
         orientation: Cesium.Transforms.headingPitchRollQuaternion(l, r),
-        rectangularSensor: new Cesium.RectangularSensorGraphics({
+        rectangularSensor: new Cesium.Scene.RectangularSensorGraphics({
           radius: options.radius || 100000,
           xHalfAngle: Cesium.Math.toRadians(options.xHalfAngle || 45),
           yHalfAngle: Cesium.Math.toRadians(options.yHalfAngle || 45),
