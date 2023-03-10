@@ -1,5 +1,5 @@
 <template>
-  <div class="h100" style="padding-top: 90px;">
+  <div class="h100" style="padding-top: 90px">
     <router-view v-slot="{ Component }">
       <transition :name="setTransitionName" mode="out-in">
         <keep-alive :include="keepAliveNameList">

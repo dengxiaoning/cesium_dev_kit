@@ -46,7 +46,7 @@ CustomCesiumPlugin.prototype = {
   createSatelliteCoverageSimulationGraphics: function (options) {
 
     if (options) {
-      return new Cesium.SatelliteCoverageSimulation(this._viewer, {
+      return new Cesium.Scene.SatelliteCoverageSimulation(this._viewer, {
         position: options.position,
         angle1: options.angle1 || 30,
         angle2: options.angle2 || 45,

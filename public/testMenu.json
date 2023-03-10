@@ -371,11 +371,36 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "相控雷达",
-        "icon": "ion:scan-circle-outline",
+        "icon": "arcticons:moon-phase",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "phaseControlMaterial",
+      "path": "phaseControlMaterial",
+      "component": "example/radar/phaseControlMaterial",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "相控材质雷达",
+        "icon": "game-icons:explosive-materials",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "satelliteCoverage",
+      "path": "satelliteCoverage",
+      "component": "example/radar/satelliteCoverage",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "椎体跟随",
+        "icon": "carbon:tropical-storm-model-tracks",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+      
     }]
   },
   {

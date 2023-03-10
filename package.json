@@ -13,7 +13,8 @@
     "cesium": "1.84.0",
     "cesium-navigation-es6": "^3.0.8",
     "dat.gui": "^0.7.9",
-    "element-plus": "^1.0.2-beta.41",
+    "echarts": "4.2.1",
+    "element-plus": "^1.0.1-alpha.1",
     "elui-china-area-dht": "^1.0.4",
     "flatted": "^3.2.2",
     "js-cookie": "2.2.0",
@@ -25,27 +26,26 @@
     "path-browserify": "^1.0.1",
     "vue": "^3.0.5",
     "vue-router": "^4.0.6",
-    "vuex": "^4.0.0",
-    "echarts": "4.2.1"
+    "vuex": "^4.0.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.14.5",
-    "@vitejs/plugin-vue": "^1.9.3",
-    "@vitejs/plugin-vue-jsx": "^1.2.0",
     "@iconify/vue": "^3.0.0",
     "@types/node": "^15.0.2",
+    "@vitejs/plugin-vue": "^1.9.3",
+    "@vitejs/plugin-vue-jsx": "^1.2.0",
     "@vue/compiler-sfc": "^3.0.5",
     "mitt": "^2.1.0",
     "prettier": "^2.2.1",
     "sass": "^1.32.12",
     "typescript": "^4.1.3",
     "vite": "^2.6.10",
+    "vite-plugin-cesium": "^1.2.9",
     "vite-plugin-compression": "^0.2.5",
     "vite-plugin-html": "^2.0.7",
     "vite-plugin-mock": "^2.5.0",
     "vite-plugin-style-import": "^0.10.0",
     "vite-plugin-svg-icons": "^1.0.4",
-    "vue-tsc": "^0.0.24",
-    "vite-plugin-cesium": "^1.2.9"
+    "vue-tsc": "^0.0.24"
   }
 }

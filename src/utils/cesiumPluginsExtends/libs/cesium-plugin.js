@@ -196,6 +196,7 @@ var transRealProperty = function (_0x51b6cd, _0x4df377) {
   } else {
     _0x2ee874 = _0x3cfc0a;
   }
+
   return _0x2ee874;
 };
 
@@ -418,7 +419,7 @@ const CesiumPlugin = function (Window, Cesium) {
           var _0xbb4d8d = _0x28853b * _0x5cd611 / _0x154b02,
             _0x3ca4da = _0xe59211 * _0x1407e8 / _0x1eb23f;
           _0x5bfd70['x'] = _0x3ca4da, _0x5bfd70['y'] = _0xbb4d8d, _0x5bfd70['z'] = _0x5b8548;
-          var _0x261968 = (0x0, Cesium[transRealProperty('0x20')])(_0x5bfd70, _0x4d85f8, _0x5c3c63);
+          var _0x261968 = (0x0, Cesium['Scene'][transRealProperty('0x20')])(_0x5bfd70, _0x4d85f8, _0x5c3c63);
           _0x261968 ? (_0x4ba495[transRealProperty('0x4c')](_0x3ca4da, _0xbb4d8d, _0x5b8548), _0x4a0fe2[transRealProperty(
             '0x4c')](0x1, 0x1), _0x45bbc9[transRealProperty('0x4c')](_0x15c8c7), _0x15c8c7++) : (
             _0x45bbc9[transRealProperty('0x4c')](-0x1), _0x261968 = _0x55b706);
@@ -459,7 +460,7 @@ const CesiumPlugin = function (Window, Cesium) {
           'primitiveType': Cesium[transRealProperty('0x51')][transRealProperty('0x52')],
           'boundingSphere': _0x25b366
         });
-      return (0x0, Cesium[transRealProperty('0x1f')])(_0x5001e4), _0x4ba495 = [], _0x587548 = [], _0x5001e4;
+      return (0x0, Cesium['Scene'][transRealProperty('0x1f')])(_0x5001e4), _0x4ba495 = [], _0x587548 = [], _0x5001e4;
     }, _0x4d16a8[transRealProperty('0x58')] = function (_0xcb88be) {
       for (var _0x53efa9 = _0xcb88be[transRealProperty('0x3d')], _0x5013f0 = _0xcb88be[transRealProperty('0x3f')], _0x4d16a8 =
           _0xcb88be[transRealProperty('0x41')], _0x397613 = _0xcb88be[transRealProperty('0x43')], _0x566685 = _0xcb88be[
@@ -811,7 +812,7 @@ const CesiumPlugin = function (Window, Cesium) {
     }
   }
 
-  function _0x1f7e01() {
+  function _initSatelliteCoverageSimulation() {
     if (typeof turf !== transRealProperty('0x68') && !Cesium[transRealProperty('0x69')]) {
       function _0x348f5e(_0x36f71b, _0x153fd4) {
         _0x153fd4 = _0x153fd4 || {}, _0x45870f = _0x36f71b[transRealProperty('0x6a')][transRealProperty('0x39')][transRealProperty(
@@ -883,7 +884,7 @@ const CesiumPlugin = function (Window, Cesium) {
         }
         return _0x5406f8;
       }
-      Cesium[transRealProperty('0x69')] = void 0x0;
+      Cesium['Scene'][transRealProperty('0x69')] = void 0x0;
       var _0x45870f, _0x1557a3 = new Cesium[(transRealProperty('0x11'))](),
         _0x581ac1 = new Cesium[(transRealProperty('0x9'))](),
         _0x596e95 = new Cesium[(transRealProperty('0x9'))](),
@@ -892,7 +893,9 @@ const CesiumPlugin = function (Window, Cesium) {
       _0x348f5e[transRealProperty('0x6e')] = {
         'Cone': 0x1,
         'FourPrism': 0x2
-      }, Object[transRealProperty('0xa3')](_0x348f5e[transRealProperty('0xa4')], {
+      };
+
+      Object[transRealProperty('0xa3')](_0x348f5e[transRealProperty('0xa4')], {
         'color': {
           'get': function () {
             return this[transRealProperty('0x81')];
@@ -1236,10 +1239,11 @@ const CesiumPlugin = function (Window, Cesium) {
             this[transRealProperty('0x70')], this[transRealProperty('0x45')], !0x0), this[transRealProperty('0x90')]), this[
             transRealProperty('0xd3')] = Cesium[transRealProperty('0xd7')][transRealProperty('0x58')](Cesium[transRealProperty(
             '0xd7')][transRealProperty('0x67')](this[transRealProperty('0x70')], this[transRealProperty('0x45')], !0x0))) : (
-          this[transRealProperty('0x6b')] = Cesium[transRealProperty('0x4a')][transRealProperty('0x55')](Cesium[transRealProperty(
+          this[transRealProperty('0x6b')] = Cesium['Scene'][transRealProperty('0x4a')][transRealProperty('0x55')](Cesium['Scene'][transRealProperty(
             '0x4a')][transRealProperty('0x5c')](this[transRealProperty('0x70')], this[transRealProperty('0x72')], this[
-            transRealProperty('0x45')], !0x0), this[transRealProperty('0x90')]), this[transRealProperty('0xd3')] = Cesium[
-            transRealProperty('0x4a')][transRealProperty('0x58')](Cesium[transRealProperty('0x4a')][transRealProperty('0x5c')](this[
+            transRealProperty('0x45')], !0x0), this[transRealProperty('0x90')]), this[transRealProperty('0xd3')] = Cesium['Scene'][
+            transRealProperty('0x4a')
+          ][transRealProperty('0x58')](Cesium['Scene'][transRealProperty('0x4a')][transRealProperty('0x5c')](this[
             transRealProperty('0x70')], this[transRealProperty('0x72')], this[transRealProperty('0x45')], !0x0))), this[
           transRealProperty('0xc9')] = new Float32Array(this[transRealProperty('0x6b')][transRealProperty('0x1')][transRealProperty(
           '0x3')][transRealProperty('0x4')][transRealProperty('0x2')]);
@@ -1283,7 +1287,7 @@ const CesiumPlugin = function (Window, Cesium) {
             'primitiveType': Cesium[transRealProperty('0x51')][transRealProperty('0x59')],
             'boundingSphere': _0x42961b
           });
-        (0x0, Cesium[transRealProperty('0x1f')])(_0x3f04b0), this[transRealProperty('0xd9')] = _0x3f04b0, this[transRealProperty(
+        (0x0, Cesium['Scene'][transRealProperty('0x1f')])(_0x3f04b0), this[transRealProperty('0xd9')] = _0x3f04b0, this[transRealProperty(
           '0xda')] = _0x211dd1;
       }, _0x348f5e[transRealProperty('0xa4')][transRealProperty('0xdb')] = function (_0x562206) {
         if (this[transRealProperty('0x78')] && (this[transRealProperty('0xbd')](_0x562206[transRealProperty('0xdc')]), this[transRealProperty(
@@ -1404,8 +1408,8 @@ const CesiumPlugin = function (Window, Cesium) {
             return 0.25;
           }, _0x58ece7;
       };
-      Cesium[transRealProperty('0x111')] = _0x58ece7;
-      Cesium[transRealProperty('0x69')] = _0x348f5e;
+      Cesium['Scene'][transRealProperty('0x111')] = _0x58ece7;
+      Cesium['Scene'][transRealProperty('0x69')] = _0x348f5e;
     }
   };
 
@@ -4391,7 +4395,7 @@ const CesiumPlugin = function (Window, Cesium) {
   _0x213333();
   _0x586f1b();
   _0x4e6cd9();
-  _0x1f7e01();
+  _initSatelliteCoverageSimulation();
   _0x1a9aec();
   _0x3ac6c7();
   _0x456486();
