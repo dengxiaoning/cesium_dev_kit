@@ -68,7 +68,7 @@ CustomCesiumPlugin.prototype = {
   createRadarPrimitive: function (options) {
 
     if (options) {
-      return new Cesium.RadarPrimitive(this._viewer, {
+      return new Cesium.Scene.RadarPrimitive(this._viewer, {
         position: options.position,
         angle: options.angle || 90 - 10,
         radius: options.radius || 700000,

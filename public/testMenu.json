@@ -401,6 +401,19 @@
         "isKeepAlive": true
       }
       
+    },{
+      "name": "coneControl",
+      "path": "coneControl",
+      "component": "example/radar/coneControl",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "椎体图形控制",
+        "icon": "game-icons:ice-cream-cone",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+      
     }]
   },
   {
