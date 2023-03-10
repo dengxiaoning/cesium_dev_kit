@@ -413,7 +413,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
-      
+    },{
+      "name": "matrixControl",
+      "path": "matrixControl",
+      "component": "example/radar/matrixControl",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "矩阵平移旋转",
+        "icon": "game-icons:ice-cream-cone",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {
