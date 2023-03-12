@@ -2,35 +2,18 @@ import {
   Controller
 } from './initConf';
 import {
-  Graphics
-} from './libs/Graphics';
-import {
-  Material
-} from './libs/Material';
-import {
-  Shaders
-} from './libs/Shaders';
-import {
-  Base
-} from './libs/Base';
-import {
-  Math3d
-} from './libs/Math3d';
-import {
-  Primitive
-} from './libs/Primitive'
-import {
-  Draw
-} from './libs/Draw'
-import {
-  Math2d
-} from './libs/Math2d'
-import {
-  PassEffect
-} from './libs/PassEffect'
-import {
-  CustomCesiumPlugin
-} from './libs/CustomCesiumPlugin'
+  Base,
+  Material,
+  Shaders,
+  Graphics,
+  Draw,
+  Primitive,
+  CustomCesiumPlugin,
+  PassEffect,
+  Math2d,
+  Math3d,
+  Control
+} from './libs'
 
 let Cesium = null;
 
@@ -80,6 +63,7 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
   const _draw = protoExtends([Base, Math3d, Math2d], Draw);
   const _passEffect = protoExtends([Base, Shaders], PassEffect);
   const _customCesiumPlugin = protoExtends(Base, CustomCesiumPlugin);
+  const _control = protoExtends(Base, Control);
   return {
     viewer: _viewer,
     material: _material,
@@ -88,6 +72,7 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
     primitive: _primitive,
     draw: _draw,
     passEffect: _passEffect,
-    customCesiumPlugin: _customCesiumPlugin
+    customCesiumPlugin: _customCesiumPlugin,
+    control: _control
   }
 }

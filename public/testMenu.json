@@ -298,6 +298,81 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "rain",
+      "path": "rain",
+      "component": "example/scene/rain",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "雨天",
+        "icon": "bi:cloud-rain-heavy",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "sceneParam",
+      "path": "sceneParam",
+      "component": "example/scene/sceneParam",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "场景光效控制",
+        "icon": "game-icons:crime-scene-tape",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "postProcessStages",
+      "path": "postProcessStages",
+      "component": "example/scene/postProcessStages",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "后置场景控制",
+        "icon": "uil:processor",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "snow",
+      "path": "snow",
+      "component": "example/scene/snow",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "雪天",
+        "icon": "ion:snow-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "czm",
+    "path": "/czm",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "czm数据加载",
+      "icon": "ic:baseline-data-object",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "rockets",
+      "path": "rockets",
+      "component": "example/czm/rockets",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "czm",
+        "icon": "material-symbols:rocket-launch-outline-rounded",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {

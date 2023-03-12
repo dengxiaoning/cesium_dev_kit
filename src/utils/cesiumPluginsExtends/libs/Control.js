@@ -1,10 +1,13 @@
 import * as dat from 'dat.gui';
+let Cesium = null;
 /**
  * 控件模块
  * @param {*} viewer
  */
-function Control(viewer) {
+function Control(viewer, cesiumGlobal) {
   if (viewer) {
+    this._viewer = viewer;
+    Cesium = cesiumGlobal;
     this._installFileDragDropHandler()
   }
 }
@@ -211,8 +214,18 @@ Control.prototype = {
       this.nightVisionShow = false
       this.silhouette = false
     }
+    let gui = null;
     let option = new Options()
-    let gui = new dat.GUI()
+    // 修改gui原本的位置，如果提供绑定的父元素id<elementId>就将gui domEmelemt append到对应的dom
+    if (param && param.elementId) {
+      gui = new dat.GUI({
+        autoPlace: false
+      });
+      var customContainer = document.getElementById(param.elementId);
+      customContainer.appendChild(gui.domElement);
+    } else {
+      gui = new dat.GUI()
+    }
     let viewer = this._viewer
     let stages = viewer.scene.postProcessStages
     let silhouette = stages.add(Cesium.PostProcessStageLibrary.createSilhouetteStage())
@@ -249,6 +262,9 @@ Control.prototype = {
   /**
    * 环境控制
    * @param {*}
+   * {
+   *  elementId:绑定的父元素id
+   * }
    */
   showSceneBloomPanel(param) {
     let Options = function () {
@@ -263,8 +279,18 @@ Control.prototype = {
       this.sigma = 1.0
       this.stepSize = 5.0
     }
+    let gui = null;
     let option = new Options()
-    let gui = new dat.GUI()
+    // 修改gui原本的位置，如果提供绑定的父元素id<elementId>就将gui domEmelemt append到对应的dom
+    if (param && param.elementId) {
+      gui = new dat.GUI({
+        autoPlace: false
+      });
+      var customContainer = document.getElementById(param.elementId);
+      customContainer.appendChild(gui.domElement);
+    } else {
+      gui = new dat.GUI()
+    }
     let viewer = this._viewer
     gui.__closeButton.innerHTML = '收缩面板'
 
@@ -738,4 +764,8 @@ Control.prototype = {
       Orientation.open()
     }
   }
+}
+
+export {
+  Control
 }
