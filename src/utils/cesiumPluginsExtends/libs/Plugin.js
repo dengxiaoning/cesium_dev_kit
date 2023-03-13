@@ -1,11 +1,13 @@
+let Cesium = null;
 /**
  * 外部插件模块
  * @param {*} viewer
  */
-function Plugin(viewer) {
+function Plugin(viewer, cesiumGlobal) {
 
   if (viewer) {
-
+    this._viewer = viewer;
+    Cesium = cesiumGlobal;
     this._pluginLayer = new Cesium.CustomDataSource('pluginLayer')
 
     viewer && viewer.dataSources.add(this._pluginLayer)
@@ -265,7 +267,7 @@ Plugin.prototype = {
       this.wellData.bottom_pos = i, this._createWell(this.wellData), this.viewer.scene.primitives.add(this.bottomSurface), this.viewer.scene.primitives.add(this.wellWall)
     }
 
-    Cesium.TerrainClipPlan = TerrainClipPlan
+    Cesium.Scene.TerrainClipPlan = TerrainClipPlan
   },
   // 灯光扫描插件
   buildLightScanGraphics: function (data) {
@@ -462,14 +464,14 @@ Plugin.prototype = {
      * @constructor
      */
     if (this._viewer) {
-      var viewer = this._viewer
+      var viewer = this._viewer;
 
-      const Css3Renderer = function (elements, isBackHide) {
+      function Css3Renderer(elements, isBackHide) {
 
         this._scratch = new Cesium.Cartesian2()
         this._viewer = viewer
-        this._scene = viewer.scene
-        this._camera = viewer.camera
+        this._scene = viewer.scene,
+          this._camera = viewer.camera
 
         this._container = null
         this._elements = elements
@@ -477,16 +479,16 @@ Plugin.prototype = {
 
         this.init()
       }
-
       Css3Renderer.prototype.init = function () {
 
         var container = document.createElement('div')
         container.className = `ys-css3-container`
-        document.getElementById('wrapper').appendChild(container)
+        // document.body.appendChild(container)
+        document.getElementById('info-warp').appendChild(container)
         this._container = container
 
         this._elements.forEach(function (e) {
-          container.insertAdjacentHTML('beforeend', e.element)
+          container.insertAdjacentHTML('beforeend', e.element);
         })
         var $this = this
         this._scene.preRender.addEventListener(function () {
@@ -499,14 +501,8 @@ Plugin.prototype = {
               container.children[i].style.top = parseFloat(canvasPosition.y) + parseFloat($this._elements[i].offset[1]) + 'px'
               if ($this._isBackHide) {
                 var j = $this._camera.position,
-                  n = $this._scene.globe.ellipsoid.cartesianToCartographic(j).height
+                  n = $this._scene.globe.ellipsoid.cartesianToCartographic(j).height;
                 if (!(n += 1 * $this._scene.globe.ellipsoid.maximumRadius, Cesium.Cartesian3.distance(j, p) > n)) {
-                  container.children[i].style.display = 'block'
-                } else {
-                  container.children[i].style.display = 'none'
-                }
-                var height = ($this._camera.positionCartographic.height / 1000).toFixed(2)
-                if (0.2 < height && height < 0.8) {
                   container.children[i].style.display = 'block'
                 } else {
                   container.children[i].style.display = 'none'
@@ -529,15 +525,13 @@ Plugin.prototype = {
       }
 
       Css3Renderer.prototype.removeEntityLayer = function (id) {
-        this._viewer.entities.removeById(id + '_1')
-        this._viewer.entities.removeById(id + '_2')
-        this._viewer.entities.removeById(id + '_3')
+        this._viewer.entities.removeById(id + "_1")
+        this._viewer.entities.removeById(id + "_2")
+        this._viewer.entities.removeById(id + "_3")
         this.remove(id)
       }
 
       Css3Renderer.prototype.addEntityLayer = function (object) {
-        console.log('this._scene.preRender:', this._scene.preRender)
-
         var lon = object.position[0],
           lat = object.position[1],
           sStartFlog = false,
@@ -547,24 +541,23 @@ Plugin.prototype = {
           s3 = s1,
           s4 = s1
         setTimeout(function (sStartFlog) {
-          // eslint-disable-next-line no-unused-vars
           sStartFlog = true
         }, 300)
-        var rotation = Cesium.Math.toRadians(30)
-        var rotation2 = Cesium.Math.toRadians(30)
+        var rotation = Cesium.Math.toRadians(30);
+        var rotation2 = Cesium.Math.toRadians(30);
 
         //构建entity
         var height = object.boxHeight || 300,
           heightMax = object.boxHeightMax || 400,
-          heightDif = object.boxHeightDif || 10
+          heightDif = object.boxHeightDif || 10;
         var goflog = true
         //添加正方体
         if (object.boxShow) {
           this._viewer.entities.add({
-            id: object.id + '_1',
-            name: '立方体盒子',
+            id: object.id + "_1",
+            name: "立方体盒子",
             position: new Cesium.CallbackProperty(function () {
-              height = height + heightDif
+              height = height + heightDif;
               if (height >= heightMax) {
                 height = heightMax
               }
@@ -584,7 +577,7 @@ Plugin.prototype = {
               }, false),
               material: object.boxMaterial || Cesium.Color.DEEPSKYBLUE.withAlpha(0.5)
             }
-          })
+          });
         } else {
           // 只要弹出框
           setTimeout(function () {
@@ -595,67 +588,67 @@ Plugin.prototype = {
           object.circleSize = object.circleSize || 120
           //添加底座 一 外环
           this._viewer.entities.add({
-            id: object.id + '_2',
-            name: '椭圆',
+            id: object.id + "_2",
+            name: "椭圆",
             position: Cesium.Cartesian3.fromDegrees(lon, lat),
             ellipse: {
               // semiMinorAxis : object.circleSize, //直接这个大小 会有一个闪白的材质 因为cesium材质默认是白色 所以我们先将大小设置为0
               // semiMajorAxis : object.circleSize,
               semiMinorAxis: new Cesium.CallbackProperty(function () {
                 if (sStartFlog) {
-                  s1 = s1 + object.circleSize / 20
+                  s1 = s1 + object.circleSize / 20;
                   if (s1 >= object.circleSize) {
-                    s1 = object.circleSize
+                    s1 = object.circleSize;
                   }
                 }
-                return s1
+                return s1;
               }, false),
               semiMajorAxis: new Cesium.CallbackProperty(function () {
                 if (sStartFlog) {
-                  s2 = s2 + object.circleSize / 20
+                  s2 = s2 + object.circleSize / 20;
                   if (s2 >= object.circleSize) {
                     s2 = object.circleSize
                   }
                 }
-                return s2
+                return s2;
               }, false),
-              material: '/static/data/images/Textures/circle2.png',
+              material: "/static/data/images/Textures/circle2.png",
               rotation: new Cesium.CallbackProperty(function () {
-                rotation += 0.05
-                return rotation
+                rotation += 0.05;
+                return rotation;
               }, false),
               stRotation: new Cesium.CallbackProperty(function () {
-                rotation += 0.05
-                return rotation
+                rotation += 0.05;
+                return rotation;
               }, false),
               zIndex: 2,
             }
-          })
+          });
           //添加底座二 内环
           this._viewer.entities.add({
-            id: object.id + '_3',
-            name: '椭圆',
+            id: object.id + "_3",
+            name: "椭圆",
             position: Cesium.Cartesian3.fromDegrees(lon, lat),
             ellipse: {
               semiMinorAxis: new Cesium.CallbackProperty(function () {
                 if (sStartFlog) {
-                  s3 = s3 + object.circleSize / 20
+                  s3 = s3 + object.circleSize / 20;
                   if (s3 >= object.circleSize / 2) {
-                    s3 = object.circleSize / 2
+                    s3 = object.circleSize / 2;
                   }
                 }
-                return s3
+                return s3;
               }, false),
               semiMajorAxis: new Cesium.CallbackProperty(function () {
                 if (sStartFlog) {
-                  s4 = s4 + object.circleSize / 20
+                  s4 = s4 + object.circleSize / 20;
                   if (s4 >= object.circleSize / 2) {
-                    s4 = object.circleSize / 2
+                    s4 = object.circleSize / 2;
                   }
                 }
-                return s4
+                return s4;
               }, false),
-              material: '/static/data/images/Textures/circle1.png',
+              material: "/static/data/images/Textures/circle1.png",
               rotation: new Cesium.CallbackProperty(function () {
                 rotation2 -= 0.03
                 return rotation2
@@ -866,4 +859,8 @@ Plugin.prototype = {
 
     Cesium.Scene.GroundSkyBox = SkyBoxOnGround
   }
+}
+
+export {
+  Plugin
 }

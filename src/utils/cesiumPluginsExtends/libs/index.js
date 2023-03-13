@@ -31,7 +31,9 @@ import {
 import {
   Control
 } from './Control'
-
+import {
+  Plugin
+} from './Plugin'
 
 export {
   Base,
@@ -44,5 +46,6 @@ export {
   PassEffect,
   Math2d,
   Math3d,
-  Control
+  Control,
+  Plugin
 }

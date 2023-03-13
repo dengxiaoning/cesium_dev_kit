@@ -376,6 +376,57 @@
     }]
   },
   {
+    "name": "infoBox",
+    "path": "/infoBox",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "信息框",
+      "icon": "fluent-mdl2:information-barriers",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "entityLayerBox",
+      "path": "entityLayerBox",
+      "component": "example/infoBox/entityLayerBox",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "实体layer信息框",
+        "icon": "mdi:message-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "constructBox",
+      "path": "constructBox",
+      "component": "example/infoBox/constructBox",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "构造信息框",
+        "icon": "lucide:construction",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "createCustomDefBillboard",
+      "path": "createCustomDefBillboard",
+      "component": "example/infoBox/createCustomDefBillboard",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "自定义广告牌",
+        "icon": "mdi:billboard",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
     "name": "measure",
     "path": "/measure",
     "component": "example/measure/index",

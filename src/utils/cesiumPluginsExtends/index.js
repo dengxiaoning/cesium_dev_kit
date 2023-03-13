@@ -12,7 +12,8 @@ import {
   PassEffect,
   Math2d,
   Math3d,
-  Control
+  Control,
+  Plugin
 } from './libs'
 
 let Cesium = null;
@@ -64,6 +65,7 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
   const _passEffect = protoExtends([Base, Shaders], PassEffect);
   const _customCesiumPlugin = protoExtends(Base, CustomCesiumPlugin);
   const _control = protoExtends(Base, Control);
+  const _plugin = protoExtends(Base, Plugin);
   return {
     viewer: _viewer,
     material: _material,
@@ -73,6 +75,7 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
     draw: _draw,
     passEffect: _passEffect,
     customCesiumPlugin: _customCesiumPlugin,
-    control: _control
+    control: _control,
+    plugin: _plugin
   }
 }
