@@ -346,6 +346,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "param",
+      "path": "param",
+      "component": "example/scene/param",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "参数面板控制场景",
+        "icon": "ion:snow-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {
@@ -369,6 +381,69 @@
         "auth": ["admin", "test"],
         "title": "czm",
         "icon": "material-symbols:rocket-launch-outline-rounded",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "layer",
+    "path": "/layer",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "图层叠加",
+      "icon": "bx:layer",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "baidu",
+      "path": "baidu",
+      "component": "example/layer/baidu",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "百度地图",
+        "icon": "ri:baidu-fill",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "arcgis",
+      "path": "arcgis",
+      "component": "example/layer/arcgis",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "arcgis地图",
+        "icon": "arcticons:aegis",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "tencent",
+      "path": "tencent",
+      "component": "example/layer/tencent",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "腾讯地图",
+        "icon": "bi:tencent-qq",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "tianditu",
+      "path": "tianditu",
+      "component": "example/layer/tianditu",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "天地图",
+        "icon": "material-symbols:map-outline-sharp",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -427,32 +502,84 @@
     }]
   },
   {
-    "name": "measure",
-    "path": "/measure",
-    "component": "example/measure/index",
-    "append":"root",
+    "name": "camera",
+    "path": "/camera",
+    "component":"Layout",
     "meta": {
       "auth": ["admin", "test"],
-      "title": "测量",
-      "icon": "gis:measure",
+      "title": "相机控制",
+      "icon": "material-symbols:flip-camera-ios-outline",
       "isAffix": false,
       "isHide": false,
       "isKeepAlive": true
-    }
+    },
+    "children": [
+      {
+      "name": "pointRotate",
+      "path": "pointRotate",
+      "component": "example/camera/pointRotate",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "绕点旋转",
+        "icon": "uil:rotate-360",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "cameraPosition",
+      "path": "cameraPosition",
+      "component": "example/camera/cameraPosition",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "相机位置",
+        "icon": "iconoir:position-align",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
   },
   {
-    "name": "draw",
-    "path": "/draw",
-    "component": "example/draw/plot",
-    "append":"root",
+    "name": "tools",
+    "path": "/tools",
+    "component":"Layout",
     "meta": {
       "auth": ["admin", "test"],
-      "title": "绘制",
+      "title": "工具",
       "icon": "fluent:hand-draw-16-regular",
       "isAffix": false,
       "isHide": false,
       "isKeepAlive": true
-    }
+    },
+    "children":[
+      {
+        "name": "draw",
+        "path": "draw",
+        "component": "example/tools/draw/plot",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "绘制",
+          "icon": "fluent:hand-draw-16-regular",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
+      },
+      {
+        "name": "measure",
+        "path": "measure",
+        "component": "example/tools/measure/index",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "测量",
+          "icon": "gis:measure",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
+      }
+    ]
   },
   {
     "name": "radar",

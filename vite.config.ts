@@ -8,7 +8,7 @@ import { configMockPlugin } from './src/plugins/configMockPlugin'
 import { configStyleImportPlugin } from './src/plugins/configStyleImportPlugin'
 import { configHtmlPlugin } from './src/plugins/configHtmlPlugin'
 import { configCompressPlugin } from './src/plugins/configCompressPlugin'
-import cesium from 'vite-plugin-cesium';
+import cesium from 'vite-plugin-cesium'
 
 import { wrapperEnv } from './src/utils/env'
 const resolve = (dir: string) => path.join(__dirname, dir)
@@ -24,7 +24,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 
   // The boolean type read by loadEnv is a string. This function can be converted to boolean type
   const viteEnv = wrapperEnv(env)
-  
+
   const {
     VITE_PORT,
     VITE_USE_MOCK,
@@ -57,11 +57,11 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
         store: resolve('src/store'),
         router: resolve('src/router'),
         styles: resolve('src/styles'),
-        hooks: resolve('src/hooks'),
+        hooks: resolve('src/hooks')
       }
     },
     optimizeDeps: {
-      include: ["element-plus/lib/locale/lang/zh-cn"]
+      include: ['element-plus/lib/locale/lang/zh-cn']
     },
     server: {
       //服务器主机名
@@ -71,7 +71,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       //设为 true 时若端口已被占用则会直接退出，而不是尝试下一个可用端口
       strictPort: false,
       //服务器启动时自动在浏览器中打开应用程序,当此值为字符串时，会被用作 URL 的路径名
-      open: false,
+      open: false
       //自定义代理规则
       // proxy: {
       //   // 选项写法
@@ -83,7 +83,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       // }
     },
     build: {
-      outDir:'csdata'
+      outDir: 'cesiumDevKit'
     }
   })
 }

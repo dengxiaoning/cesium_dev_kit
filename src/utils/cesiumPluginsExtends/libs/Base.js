@@ -710,11 +710,9 @@ Base.prototype = {
    * 天地图
    */
   _installTdtImageryProvider: function () {
-    const MAP_URL =
-      'http://t{s}.tianditu.gov.cn/{layer}_c/wmts?service=WMTS&version=1.0.0&request=GetTile&tilematrix={TileMatrix}&layer={layer}&style={style}&tilerow={TileRow}&tilecol={TileCol}&tilematrixset={TileMatrixSet}&format=tiles&tk={key}'
+    const MAP_URL ='http://t{s}.tianditu.gov.cn/{layer}_c/wmts?service=WMTS&version=1.0.0&request=GetTile&tilematrix={TileMatrix}&layer={layer}&style={style}&tilerow={TileRow}&tilecol={TileCol}&tilematrixset={TileMatrixSet}&format=tiles&tk={key}';
 
     function TdtImageryProvider(options) {
-
       return new Cesium.UrlTemplateImageryProvider({
         url: MAP_URL.replace(/\{layer\}/g, options.style || 'vec').replace(
           /\{key\}/g,
@@ -723,6 +721,9 @@ Base.prototype = {
         style: 'default',
         format: 'tiles',
         tileMatrixSetID: 'c',
+        matrixSet: 'c',
+        wrapX: true,
+        crossOrigin: 'anonymous', // 跨域
         subdomains: [...Array(6).keys()].map(item => (item + 1).toString()),
         tileMatrixLabels: [...Array(18).keys()].map(item =>
           (item + 1).toString()
@@ -738,14 +739,29 @@ Base.prototype = {
    * 腾讯
    */
   _installTencentImageryProvider: function () {
-    const ELEC_URL =
-      'https://rt{s}.map.gtimg.com/tile?z={z}&x={x}&y={reverseY}&styleid=1000&scene=0&version=347'
+    const IMG_URL =
+      'https://p2.map.gtimg.com/sateTiles/{z}/{sx}/{sy}/{x}_{reverseY}.jpg?version=229'
+      const ELEC_URL =
+      'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
 
     function TencentImageryProvider(options) {
-      options['url'] = ELEC_URL
-      if (!options.subdomains) {
-        options['subdomains'] = ['0', '1', '2']
+      if(options.layer='img'){
+        options['url'] = IMG_URL;
+        if (!options.subdomains) {
+          options['subdomains'] = ['0', '1', '2']
+        }
+        options['customTags']= {
+            sx: function(imageryProvider, x, y, level) {
+                return x >> 4;
+            },
+            sy: function(imageryProvider, x, y, level) {
+                return ((1 << level) - y) >> 4
+            }
+        }
+      }else{
+        options['url'] = ELEC_URL;
       }
+
       return new Cesium.UrlTemplateImageryProvider(options)
     }
 

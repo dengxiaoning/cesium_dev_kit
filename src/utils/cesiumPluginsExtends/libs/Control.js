@@ -538,9 +538,22 @@ Control.prototype = {
    * 图层参数调整
    * @param {*} options
    */
-  showLayerParamPanel: function (layer) {
+  showLayerParamPanel: function (layer,param) {
     if (layer) {
-      var gui = new dat.GUI()
+
+      let gui = null;
+      // 修改gui原本的位置，如果提供绑定的父元素id<elementId>就将gui domEmelemt append到对应的dom
+      if (param && param.elementId) {
+        gui = new dat.GUI({
+          autoPlace: false
+        });
+        var customContainer = document.getElementById(param.elementId);
+        customContainer.appendChild(gui.domElement);
+      } else {
+        gui = new dat.GUI()
+      }
+
+
       var layerObj = new function () {
         this.alpha = layer.alpha
         this.brightness = layer.brightness
@@ -584,32 +597,59 @@ Control.prototype = {
    * 图层切换
    * @param {*} options
    */
-  showLayerSwitchPanel: function (layers) {
+  showLayerSwitchPanel: function (layers,param) {
     if (layers && layers.length) {
-      var gui = new dat.GUI()
-
-      var layerObj = new function () {
-        for (let i in layers) {
-          this[layers[i].id] = layers[i].show
-        }
+      let gui = null;
+      // 修改gui原本的位置，如果提供绑定的父元素id<elementId>就将gui domEmelemt append到对应的dom
+      if (param && param.elementId) {
+        gui = new dat.GUI({
+          autoPlace: false
+        });
+        var customContainer = document.getElementById(param.elementId);
+        customContainer.appendChild(gui.domElement);
+      } else {
+        gui = new dat.GUI()
       }
-      var layerSwitch = gui.addFolder('图层切换')
-      for (let i in layers) {
-        layerSwitch.add(layerObj, layers[i].id).name(layers[i].name).onChange(function (value) {
-          layers[i].show = value
+      // 注意使用for in 会读取到原型上所有可枚举属性，容易引起异常
+      var layerObj = new function () {
+        // for (let i in layers) {
+        //   this[layers[i].id] = layers[i].show
+        // }
+        layers.forEach((item)=>{
+          this[item.id] =  item.show;
         })
       }
+      var layerSwitch = gui.addFolder('图层切换');
+      layers.forEach((item)=>{
+        layerSwitch.add(layerObj, item.id).name(item.name).onChange(function (value) {
+          item.show = value;
+        })
+      })
+      // for (let i in layers) {
+      //   layerSwitch.add(layerObj, layers[i].id).name(layers[i].name).onChange(function (value) {
+      //     layers[i].show = value
+      //   })
+      // }
       var layerAlphaObj = new function () {
-        for (let i in layers) {
-          this[layers[i].id] = layers[i].alpha
-        }
+        // for (let i in layers) {
+        //   this[layers[i].id] = layers[i].alpha
+        // }
+        layers.forEach((item)=>{
+          this[item.id] =  item.alpha;
+        })
       }
       var layerAlpha = gui.addFolder('透明度')
-      for (let i in layers) {
-        layerAlpha.add(layerAlphaObj, layers[i].id, 0, 1, 0.05).name(layers[i].name).onChange(function (value) {
-          layers[i].alpha = value
+      // for (let i in layers) {
+      //   layerAlpha.add(layerAlphaObj, layers[i].id, 0, 1, 0.05).name(layers[i].name).onChange(function (value) {
+      //     layers[i].alpha = value
+      //   })
+      // }
+
+      layers.forEach((item)=>{
+        layerAlpha.add(layerAlphaObj, item.id, 0, 1, 0.05).name(item.name).onChange(function (value) {
+          item.alpha = value;
         })
-      }
+      })
       layerSwitch.open()
       layerAlpha.open()
     }
