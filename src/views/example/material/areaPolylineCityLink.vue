@@ -76,7 +76,7 @@ export default {
           width: 10,
           material: new Cesium.Scene.PolylineCityLinkMaterialProperty({
             color: new Cesium.Color(5.0, 5.0, 10.0),
-            duration: 300
+            duration: 2000
           }),
         }
       });
@@ -86,7 +86,7 @@ export default {
           width: 10,
           material: new Cesium.Scene.PolylineCityLinkMaterialProperty({
             color: new Cesium.Color(5.0, 5.0, 10.0),
-            duration: 300
+            duration: 2000,
           }),
         }
       });
@@ -96,7 +96,7 @@ export default {
           width: 10,
           material: new Cesium.Scene.PolylineCityLinkMaterialProperty({
             color: new Cesium.Color(5.0, 5.0, 10.0),
-            duration: 300
+            duration: 2000
           }),
         }
       });
@@ -105,8 +105,8 @@ export default {
           positions: this.material.transformWGS84ArrayToCartesianArray(raod4),
           width: 10,
           material: new Cesium.Scene.PolylineCityLinkMaterialProperty({
-            color: new Cesium.Color(5.0, 5.0, 10.0),
-            duration: 300
+            color: Cesium.Color.fromBytes(255, 165, 0, 1.0),
+            duration: 2000
           }),
         }
       });
@@ -115,8 +115,8 @@ export default {
           positions: this.material.transformWGS84ArrayToCartesianArray(raod5),
           width: 10,
           material: new Cesium.Scene.PolylineCityLinkMaterialProperty({
-            color: new Cesium.Color(5.0, 5.0, 10.0),
-            duration: 300
+            color: Cesium.Color.fromBytes(220, 20, 60, 1.0),
+            duration: 2000
           }),
         }
       });
@@ -125,18 +125,21 @@ export default {
           positions: this.material.transformWGS84ArrayToCartesianArray(raod6),
           width: 10,
           material: new Cesium.Scene.PolylineCityLinkMaterialProperty({
-            color: new Cesium.Color(5.0, 5.0, 10.0),
-            duration: 300
+            color: new Cesium.Color(5.0, 5.0, 8.0),
+            duration: 2000,
+
           }),
         }
       });
+
       viewer.entities.add({
         polyline: {
           positions: this.material.transformWGS84ArrayToCartesianArray(raod7),
-          width: 10,
+          width: 4,
           material: new Cesium.Scene.PolylineCityLinkMaterialProperty({
-            color: new Cesium.Color(5.0, 5.0, 8.0),
-            duration: 300
+            color: Cesium.Color.fromBytes(255, 140, 0, 1),
+            duration: 2000,
+            imgUrl: '/static/data/images/Textures/colors1.png'
           }),
         }
       });

@@ -559,7 +559,7 @@
         "component": "example/tools/draw/plot",
         "meta": {
           "auth": ["admin", "test"],
-          "title": "绘制",
+          "title": "三维标绘",
           "icon": "fluent:hand-draw-16-regular",
           "isAffix": false,
           "isHide": false,
@@ -574,6 +574,19 @@
           "auth": ["admin", "test"],
           "title": "测量",
           "icon": "gis:measure",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
+      },
+      {
+        "name": "pickPos",
+        "path": "pickPos",
+        "component": "example/tools/event/pickPos",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "位置拾取",
+          "icon": "game-icons:card-pickup",
           "isAffix": false,
           "isHide": false,
           "isKeepAlive": true

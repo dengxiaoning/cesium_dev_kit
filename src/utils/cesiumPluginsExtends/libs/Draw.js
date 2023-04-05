@@ -1,5 +1,5 @@
 let Cesium = null;
-
+import{Graphics} from './Graphics'
 /**
  * 画笔模块
  * @param {*} viewer
@@ -9,7 +9,7 @@ function Draw(viewer, cesiumGlobal) {
   if (viewer) {
     Cesium = cesiumGlobal;
     this._drawLayer = new Cesium.CustomDataSource('drawLayer')
-
+      this.$graphics = new Graphics(viewer,cesiumGlobal)
     viewer && viewer.dataSources.add(this._drawLayer)
   }
 }
@@ -646,7 +646,7 @@ Draw.prototype = {
         callback: function (result, obj) {
 
           var entity = $this.createGraphics()
-          entity.ellipsoid = $this.getEllipsoidGraphics({
+          entity.ellipsoid = $this.$graphics.getEllipsoidGraphics({
             radii: result.radius
           })
           entity.position = result.center
@@ -713,7 +713,6 @@ Draw.prototype = {
       var $this = this
       $this.drawLineGraphics({
         callback: function (line, lineObj) {
-
           var entity = $this.createGraphics()
           entity.corridor = {
             positions: $this.transformWGS84ArrayToCartesianArray(line),
@@ -738,24 +737,39 @@ Draw.prototype = {
       })
     }
   },
+
   /**
    * 绘制管道
    * @param {*} options
+   * {
+   * color:颜色，
+   * style：样式，
+   * circleRadius：圆形管道半径
+   * arms：五角管道指数
+   * rOuter：五角管道外圆半径
+   * rInner：五角管道内圆半径
+   * }
    */
   drawPolylineVolumeGraphics: function (options) {
-    options = options || {}
-    options.style = options.style || {}
+    options = options || {};
+    options.style = options.style || {};
+    const circleRadius = options.circleRadius || 20,
+      arms = options.arms || 7,
+      rOuter = options.rOuter || 150,
+      rInner = options.rInner || 75;
     if (this._viewer && options) {
       var $this = this
       $this.drawLineGraphics({
         callback: function (line, lineObj) {
-
-          var entity = $this.createGraphics()
+          var entity = $this.createGraphics();
+          let shapeVal = options.shape === 'fivePoint' ?
+            $this.computeStar2d(arms, rOuter, rInner) :
+            $this.computeCircleShap(circleRadius);
           entity.polylineVolume = {
             positions: $this.transformWGS84ArrayToCartesianArray(line),
-            shape: $this.computeStar2d(7, 1500, 3000),
+            shape: shapeVal,
             cornerType: Cesium.CornerType.MITERED,
-            material: Cesium.Color.BLUE,
+            material: options.color||Cesium.Color.RED,
           }
           $this._drawLayer.entities.remove(lineObj)
 

@@ -603,6 +603,9 @@ Base.prototype = {
           pitch: pitch,
           roll: roll,
           position: this._viewer.camera.position,
+          cameraHeading: this._viewer.camera.heading,
+          cameraPitch: this._viewer.camera.pitch,
+          cameraRoll: this._viewer.camera.roll,
           center: {
             x: centerx,
             y: cnetery
@@ -1119,6 +1122,11 @@ Base.prototype = {
     }
 
     Cesium.Scene.GroundSkyBox = SkyBoxOnGround
+  },
+  removeHandler() {
+    this._viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    this._viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    this._viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.RIGHT_CLICK);
   }
 }
 

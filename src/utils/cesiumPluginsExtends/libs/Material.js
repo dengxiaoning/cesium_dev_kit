@@ -452,6 +452,7 @@ Material.prototype = {
       this.color = options.color || Cesium.Color.BLUE
       this.duration = options.duration || 1000
       this._time = undefined
+      this._img=options.imgUrl||Material.PolylineCityLinkImage
     }
 
     defineProperties(PolylineCityLinkMaterialProperty.prototype, {
@@ -474,8 +475,9 @@ Material.prototype = {
       if (!defined(result)) {
         result = {}
       }
+ 
       result.color = Property.getValueOrClonedDefault(this._color, time, defaultColor, result.color)
-      result.image = Material.PolylineCityLinkImage
+      result.image = this._img//Material.PolylineCityLinkImage
       if (this._time === undefined) {
         this._time = time.secondsOfDay
       }

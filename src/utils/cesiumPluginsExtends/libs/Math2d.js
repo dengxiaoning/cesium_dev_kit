@@ -86,6 +86,25 @@ Math2d.prototype = {
     }
     return positions
   },
+  /*
+  * 计算圆型
+  * @param {*} arms
+  * @param {*} rOuter
+  * @param {*} rInner
+  */
+  computeCircleShap(radius) {
+    let positions = [];
+    for (let i = 0; i < 360; i++){
+      let radians = Cesium.Math.toRadians(i);
+      positions.push(
+        new Cesium.Cartesian2(
+          radius * Math.cos(radians),
+          radius * Math.sin(radians)
+        )
+      );
+    }
+    return positions;
+  },
   /**
    * 求取两个坐标的中间值
    * @param point1
