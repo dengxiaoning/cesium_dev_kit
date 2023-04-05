@@ -492,18 +492,12 @@ function LookAroundAnalysis(params) {
  * @param {*} params 
  */
 function SlopeAnalysis(params) {
-
   if (params && params.positions) {
 
     var positions = params.positions,
       that = params.that,
-      points = [],
       position1 = that.transformWGS84ToCartesian(positions[0]),
       position2 = that.transformWGS84ToCartesian(positions[1]);
-    points = that.$graphics.createPointsGraphics({
-      point: true,
-      positions: [position1, position2]
-    })
     //显示结果
     function showResult(startPoint, endPoint) {
       //起止点相关信息
@@ -517,7 +511,7 @@ function SlopeAnalysis(params) {
       for (var i = 1; i <= pointSum; i++) {
         Cesium.Cartesian3.lerp(startPoint, endPoint, i / pointSum, tempCartesians);
         var tempCartographic = Cesium.Cartographic.fromCartesian(tempCartesians);
-        var surfaceHeight = $this._viewer.scene.globe.getHeight(tempCartographic);
+        var surfaceHeight = that._viewer.scene.globe.getHeight(tempCartographic);
         tempCartographic.height = surfaceHeight;
         samplePoint.push(tempCartographic);
         var lastCarto = samplePoint[i - 1];
@@ -529,14 +523,14 @@ function SlopeAnalysis(params) {
 
       var echartContainer = document.createElement('div');
       echartContainer.className = 'echart-viewer';
-      $this._viewer.container.appendChild(echartContainer, 'dark', {
+      that._viewer.container.appendChild(echartContainer, 'dark', {
         renderer: 'canvas',
         width: 640,
         height: 480
       });
       echartContainer.style.position = "absolute";
-      echartContainer.style.right = '140px';
-      echartContainer.style.top = '100px';
+      echartContainer.style.left = '20px';
+      echartContainer.style.bottom = '20px';
       echartContainer.style.height = '300px';
       echartContainer.style.width = '640px';
       echartContainer.style.overflow = "hidden";
@@ -647,7 +641,7 @@ function SlopeAnalysis(params) {
       myChart.setOption(option);
       return myChart;
     }
-    showResult(points[0], points[1])
+    showResult(position1, position2)
   }
 
  

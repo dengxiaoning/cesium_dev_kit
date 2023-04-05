@@ -64,14 +64,14 @@ export default {
           infoBox: false,
           shouldAnimate: true,
           depthTest: true, // 深度测试
-          // imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-          //   url: "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer?f=jsapi"
-          // }),
-          // terrainProvider: new Cesium.ArcGISTiledElevationTerrainProvider({
-          //   url: 'https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer'
-          // })
+          imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+            url: "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer?f=jsapi"
+          }),
+          terrainProvider: new Cesium.ArcGISTiledElevationTerrainProvider({
+            url: 'https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer'
+          })
         },
-        tempData,
+        [],
       )
 
 
