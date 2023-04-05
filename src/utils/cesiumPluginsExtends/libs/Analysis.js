@@ -118,6 +118,7 @@ Analysis.prototype = {
         _splitNum = options.splitNum || 50,
         _wallImg = options.wallImg || '/static/data/images/file/excavate_side_min.jpg',
         _bottomImg = options.bottomImg || '/static/data/images/file/excavate_bottom_min.jpg'
+
       $this.drawPolygonGraphics({
         callback: function (polygon, polygonObj) {
 

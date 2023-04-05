@@ -65,11 +65,11 @@ Plugin.prototype = {
     TerrainClipPlan.prototype.updateData = function (e) {
       this.clear()
       var t = [],
-        i = e.length,
+        i = e.length-1,
         a = new Cesium.Cartesian3,
         n = Cesium.Cartesian3.subtract(e[0], e[1], a)
-      n = n.x > 0, this.excavateMinHeight = 9999
-      for (var r = 0; r < i; ++r) {
+        n = n.x > 0, this.excavateMinHeight = 9999;
+      for (var r = 0; r < i; r++) {
         var s = (r + 1) % i,
           l = Cesium.Cartesian3.midpoint(e[r], e[s], new Cesium.Cartesian3),
           u = Cesium.Cartographic.fromCartesian(e[r]),
@@ -83,6 +83,7 @@ Plugin.prototype = {
           m = Cesium.Plane.getPointDistance(p, l)
         t.push(new Cesium.ClippingPlane(f, m))
       }
+
       this.viewer.scene.globe.clippingPlanes = new Cesium.ClippingPlaneCollection({
         planes: t,
         edgeWidth: 1,
