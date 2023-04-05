@@ -13,7 +13,8 @@ import {
   Math2d,
   Math3d,
   Control,
-  Plugin
+  Plugin,
+  Analysis
 } from './libs'
 
 let Cesium = null;
@@ -67,6 +68,7 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
   const _control = protoExtends(Base, Control);
   const _plugin = protoExtends(Base, Plugin);
   const _base = new Base(_viewer, cesiumGlobal);
+  const _analysis = protoExtends([Base, Draw],Analysis)
   return {
     viewer: _viewer,
     material: _material,
@@ -78,6 +80,7 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
     customCesiumPlugin: _customCesiumPlugin,
     control: _control,
     plugin: _plugin,
-    base: _base
+    base: _base,
+    analysis:_analysis
   }
 }

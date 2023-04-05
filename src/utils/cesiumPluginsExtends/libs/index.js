@@ -34,6 +34,7 @@ import {
 import {
   Plugin
 } from './Plugin'
+import {Analysis} from './Analysis'
 
 export {
   Base,
@@ -47,5 +48,6 @@ export {
   Math2d,
   Math3d,
   Control,
-  Plugin
+  Plugin,
+  Analysis
 }

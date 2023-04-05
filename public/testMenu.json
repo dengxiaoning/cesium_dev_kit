@@ -591,6 +591,19 @@
           "isHide": false,
           "isKeepAlive": true
         }
+      },
+      {
+        "name": "dimensionAnalysis",
+        "path": "dimensionAnalysis",
+        "component": "example/tools/analysis/index",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "三维分析",
+          "icon": "carbon:driver-analysis",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
       }
     ]
   },

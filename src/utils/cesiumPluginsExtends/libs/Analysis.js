@@ -1,14 +1,19 @@
 import echarts from 'echarts'
+import { Math3d } from './Math3d'
+import { Graphics } from './Graphics'
+let Cesium = null;
 /**
  * @description D3Kit 拓展包
  *
  * 分析模块
  * @param {*} viewer
  */
-function Analysis(viewer) {
+function Analysis(viewer,cesiumGlobal) {
   if (viewer) {
+    Cesium = cesiumGlobal;
     this._analysisLayer = new Cesium.CustomDataSource('analysisLayer')
-
+    this.$math3d = new Math3d(viewer, cesiumGlobal);
+    this.$graphics = new Graphics(viewer, cesiumGlobal);
     viewer && viewer.dataSources.add(this._analysisLayer)
   }
 }
@@ -80,7 +85,7 @@ Analysis.prototype = {
           if (!position) return false
           if (!Cesium.defined(_shadowPrimitive)) {
             // 创建shadowPrimitve
-            _shadowPrimitive = new Cesium.ShadowPrimitive({
+            _shadowPrimitive = new Cesium.Scene.ShadowPrimitive({
 
               scene: $this._viewer.scene,
               viewerPosition: position
@@ -118,7 +123,7 @@ Analysis.prototype = {
 
           $this._drawLayer.entities.remove(polygonObj)
 
-          let terrainClipPlan = new Cesium.TerrainClipPlan($this._viewer, {
+          let terrainClipPlan = new Cesium.Scene.TerrainClipPlan($this._viewer, {
             height: _height,
             splitNum: _splitNum,
             wallImg: _wallImg,
@@ -185,6 +190,7 @@ Analysis.prototype = {
       alert('需要引入echarts库')
       return false
     }
+    var $this = this
     if (this._viewer && options) {
       $this.drawLineGraphics({
         type: 'straightLine',
@@ -244,12 +250,12 @@ function VisibilityAnalysis(params) {
       pickedObjs = [],
       position1 = that.transformWGS84ToCartesian(positions[0]),
       position2 = that.transformWGS84ToCartesian(positions[1]);
-    points = that.createPointsGraphics({
+    points = that.$graphics.createPointsGraphics({
       point: true,
       positions: [position1, position2]
     })
 
-    var results = that.getIntersectObj(position1, position2, points, true); //碰撞检测
+    var results = that.$math3d.getIntersectObj(position1, position2, points, true); //碰撞检测
 
     if (results.length === 0) {
 
@@ -267,11 +273,12 @@ function VisibilityAnalysis(params) {
             object.oldColor = object.color.clone();
             object.color = Cesium.Color.fromAlpha(Cesium.Color.YELLOW, object.color.alpha);
           } else if (object.id instanceof Cesium.Entity) {
-            var entity = object.id;
+            var entity = object.id,checkEntity = entity.polygon || entity.polyline;;
             pickedObjs.push(entity);
-            var color = entity.polygon.material.color.getValue();
-            entity.polygon.oldColor = color.clone();
-            entity.polygon.material = Cesium.Color.fromAlpha(Cesium.Color.YELLOW, color.alpha);
+            
+            var color = checkEntity.material.color.getValue();
+            checkEntity.oldColor = color.clone();
+            checkEntity.material = Cesium.Color.fromAlpha(Cesium.Color.YELLOW, color.alpha);
           }
         }
         //相交点
@@ -463,7 +470,7 @@ function LookAroundAnalysis(params) {
               }
             }
             //绘制结果
-            $this._pointsKSYResult = new Cesium.PointsPrimitive({
+            $this._pointsKSYResult = new Cesium.Scene.PointsPrimitive({
               'viewer': that._viewer,
               'Cartesians': cartesiansLine,
               'Colors': colors
@@ -493,7 +500,7 @@ function SlopeAnalysis(params) {
       points = [],
       position1 = that.transformWGS84ToCartesian(positions[0]),
       position2 = that.transformWGS84ToCartesian(positions[1]);
-    points = that.createPointsGraphics({
+    points = that.$graphics.createPointsGraphics({
       point: true,
       positions: [position1, position2]
     })
@@ -640,9 +647,10 @@ function SlopeAnalysis(params) {
       myChart.setOption(option);
       return myChart;
     }
+    showResult(points[0], points[1])
   }
 
-  showResult(points[0], points[1])
+ 
 }
 
 /**
@@ -867,3 +875,5 @@ function CutVolumeAnalysis(params) {
     return maxHeight;
   };
 }
+
+export {Analysis}
