@@ -97,7 +97,7 @@ class Map2dHelper {
     this.vecLayerObj = this.vecLayer();
     this.cvaLayerObj = this.cvaLayer();
 
-    var layerArr = [this.vecLayerObj, this.cvaLayerObj];
+    var layerArr = [this.vecLayerObj, this.cvaLayerObj, vectorLayerBase];
     return layerArr;
   }
   // 天地图矢量
@@ -105,7 +105,7 @@ class Map2dHelper {
     return new TileLayer({
       source: new WMTS({
         name: "中国矢量",
-        url: "http://t0.tianditu.com/vec_c/wmts?tk=7eb11c0c503429878691ac917238f87f",
+        url: "https://t0.tianditu.gov.cn/vec_c/wmts?tk=7eb11c0c503429878691ac917238f87f",
         layer: "vec",
         style: "default",
         matrixSet: "c",
@@ -128,7 +128,7 @@ class Map2dHelper {
     return new TileLayer({
       source: new WMTS({
         name: "中国矢量注记1-4级",
-        url: "http://t0.tianditu.com/cva_c/wmts?tk=7eb11c0c503429878691ac917238f87f",
+        url: "https://t0.tianditu.gov.cn/cva_c/wmts?tk=7eb11c0c503429878691ac917238f87f",
         layer: "cva",
         style: "default",
         matrixSet: "c",
