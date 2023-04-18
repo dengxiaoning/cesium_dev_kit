@@ -82,6 +82,11 @@ export default {
           b_height: 25,
           b_scale: 1.5,
           b_scaleByDistance: new Cesium.NearFarScalar(1.5e2, 2.0, 1.5e7, 0.5)
+        },
+        label: {
+          l_text: '中科较大',
+          l_fillColor: Cesium.Color.YELLOW,
+          l_outlineColor: Cesium.Color.KHAKI,
         }
       })
     }
