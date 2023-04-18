@@ -26,6 +26,7 @@ export default {
   data() {
     return {
       activeId: 'pos',
+      plotEntitiesId: [],
       menuData: [
         {
           label: '坐标点',
@@ -171,6 +172,7 @@ export default {
     },
     caldDistain(item) {
       this.activeId = item.value
+      this.drawAgain();
       switch (item.label) {
         case '坐标点':
           this.draw.drawPointGraphics()
@@ -189,13 +191,13 @@ export default {
           break
 
         case '多边立方体':
-          this.draw.drawPolygonGraphics({ height: 10000 })
+          this.draw.drawPolygonGraphics({ height: 200 })
           break
         case '四方体':
-          this.draw.drawRectangleGraphics({ height: 10000 })
+          this.draw.drawRectangleGraphics({ height: 200 })
           break
         case '圆柱体':
-          this.draw.drawCircleGraphics({ height: 10000 })
+          this.draw.drawCircleGraphics({ height: 200 })
           break
         case '围栏':
           this.draw.drawWallGraphics()
@@ -227,23 +229,36 @@ export default {
         case '直角箭头':
           this.AttackArrowObj.disable()
           this.PincerArrowObj.disable()
-          this.StraightArrowObj.startDraw()
+          this.StraightArrowObj.startDraw(entiteId => {
+            this.plotEntitiesId.push(entiteId)
+          })
           break
         case '攻击箭头':
           this.PincerArrowObj.disable()
           this.StraightArrowObj.disable()
-          this.AttackArrowObj.startDraw()
+          this.AttackArrowObj.startDraw(entiteId => {
+            this.plotEntitiesId.push(entiteId)
+          })
           break
         case '钳击箭头':
           this.StraightArrowObj.disable()
           this.AttackArrowObj.disable()
-          this.PincerArrowObj.startDraw()
+          this.PincerArrowObj.startDraw(entiteId => {
+            this.plotEntitiesId.push(entiteId)
+          })
           break
         case '清除':
           this.draw._drawLayer.entities.removeAll()
-          this.PincerArrowObj.clear()
+          this.plotEntitiesId.forEach(e => {
+            this.c_viewer.entities.removeById(e)
+          })
           break
       }
+    },
+    drawAgain() {
+      this.PincerArrowObj.disable()
+      this.StraightArrowObj.disable()
+      this.AttackArrowObj.disable()
     }
   },
   beforeUnmount() {

@@ -7,7 +7,6 @@ var AttackArrow = function (viewer, cesiumGlobal) {
   BasePlot.call(this, viewer, cesiumGlobal);
   Cesium = cesiumGlobal;
   this.type = "AttackArrow";
-  this.objId = Number((new Date()).getTime() + "" + Number(Math.random() * 1000).toFixed(0))
 
   this.fillMaterial = Cesium.Color.RED.withAlpha(0.5);
 }
@@ -41,7 +40,8 @@ AttackArrow.prototype = {
     }
     this.clickStep = 0;
   },
-  startDraw: function () {
+  startDraw: function (cb) {
+    this.objId = Number((new Date()).getTime() + "" + Number(Math.random() * 1000).toFixed(0))
     var $this = this;
     this.state = 1;
     if (!this.handler) {
@@ -81,6 +81,7 @@ AttackArrow.prototype = {
           $this.positions.push(cartesian);
           $this.arrowEntity = $this.showArrowOnMap($this.positions);
           $this.arrowEntity.objId = $this.objId;
+          cb && cb($this.objId);
         } else {
           $this.positions.pop();
           $this.positions.push(cartesian);
@@ -226,6 +227,7 @@ AttackArrow.prototype = {
       return new Cesium.PolygonHierarchy(returnData);
     }
     return this.viewer.entities.add({
+      id:$this.objId,
       polygon: new Cesium.PolygonGraphics({
         hierarchy: new Cesium.CallbackProperty(update, false),
         show: true,

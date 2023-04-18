@@ -7,7 +7,6 @@ var StraightArrow = function (viewer, cesiumGlobal) {
   BasePlot.call(this, viewer, cesiumGlobal);
   Cesium = cesiumGlobal;
   this.type = "StraightArrow";
-  this.objId = Number((new Date()).getTime() + "" + Number(Math.random() * 1000).toFixed(0)); //用于区分多个相同箭头时
   this.fillMaterial = Cesium.Color.fromCssColorString('#0000FF').withAlpha(0.8);
 }
 StraightArrow.prototype = {
@@ -41,7 +40,8 @@ StraightArrow.prototype = {
     this.clickStep = 0;
   },
 
-  startDraw: function () {
+  startDraw: function (cb) {
+    this.objId = Number((new Date()).getTime() + "" + Number(Math.random() * 1000).toFixed(0)); //用于区分多个相同箭头时
     var $this = this;
     this.state = 1;
     this.handler.setInputAction(function (evt) { //单机开始绘制
@@ -78,6 +78,7 @@ StraightArrow.prototype = {
         if (!Cesium.defined($this.arrowEntity)) {
           $this.positions.push(cartesian);
           $this.arrowEntity = $this.showArrowOnMap($this.positions);
+          cb && cb($this.objId);
         } else {
           $this.positions.pop();
           $this.positions.push(cartesian);
@@ -207,6 +208,7 @@ StraightArrow.prototype = {
       return new Cesium.PolygonHierarchy(arrow);
     }
     return this.viewer.entities.add({
+      id:$this.objId,
       polygon: new Cesium.PolygonGraphics({
         hierarchy: new Cesium.CallbackProperty(update, false),
         show: true,

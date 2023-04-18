@@ -7,7 +7,6 @@ var PincerArrow = function (viewer, cesiumGlobal) {
   BasePlot.call(this, viewer, cesiumGlobal);
   Cesium = cesiumGlobal;
   this.type = "PincerArrow";
-  this.objId = Number((new Date()).getTime() + "" + Number(Math.random() * 1000).toFixed(0))
 
   this.fillMaterial = Cesium.Color.YELLOW.withAlpha(0.8);
 
@@ -42,7 +41,9 @@ PincerArrow.prototype = {
     }
     this.clickStep = 0;
   },
-  startDraw: function () {
+  startDraw: function (cb) {
+    // 创建id
+    this.objId = Number((new Date()).getTime() + "" + Number(Math.random() * 1000).toFixed(0))
     var $this = this;
     this.state = 1;
 
@@ -99,6 +100,7 @@ PincerArrow.prototype = {
           $this.positions.push(cartesian);
           $this.arrowEntity = $this.showArrowOnMap($this.positions);
           $this.arrowEntity.objId = $this.objId;
+          cb && cb($this.objId);// 将实体id 返回
         } else {
           $this.positions.pop();
           $this.positions.push(cartesian);
@@ -244,6 +246,7 @@ PincerArrow.prototype = {
       return new Cesium.PolygonHierarchy(returnData);
     }
     return this.viewer.entities.add({
+      id:$this.objId,
       polygon: new Cesium.PolygonGraphics({
         hierarchy: new Cesium.CallbackProperty(update, false),
         show: true,
