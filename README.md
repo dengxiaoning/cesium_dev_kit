@@ -67,7 +67,7 @@
 - 材质
   ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/material.gif)
 - 分析
-  ![analysis](hhttps://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/analysis.gif)
+  ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/analysis.gif)
 - 标绘
   ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/plot.gif)
 - 拖拽
