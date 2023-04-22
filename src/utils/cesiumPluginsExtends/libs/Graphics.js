@@ -369,7 +369,7 @@ Graphics.prototype = {
         topRadius: options.topRadius || 500,
         bottomRadius: options.bottomRadius || 500,
         material: options.material || new Cesium.ImageMaterialProperty({
-          image: options.imge || '/static/data/images/file/cc2.png',
+          image: options.imge || 'static/data/images/file/cc2.png',
           transparent: true,
           repeat: {
             x: 1,
@@ -437,7 +437,7 @@ Graphics.prototype = {
         _scale = options.scale || null,
         _scale2 = options.scale2 || null,
         _material = options.material || new Cesium.ImageMaterialProperty({
-          image: options.imge || '/static/data/images/Textures/circle_bg.png',
+          image: options.imge || 'static/data/images/Textures/circle_bg.png',
           transparent: true
         })
 
@@ -507,7 +507,7 @@ Graphics.prototype = {
       wallEntity.wall = {
         positions: options.positions,
         material: new Cesium.ImageMaterialProperty({
-          image: '/static/data/images/Textures/fence.png',
+          image: 'static/data/images/Textures/fence.png',
           transparent: true,
           color: new Cesium.CallbackProperty(function () {
 
@@ -536,7 +536,7 @@ Graphics.prototype = {
 
       var $this = this,
         img = document.createElement('img')
-      img.src = options.img || '/static/data/images/file/div1.png'
+      img.src = options.img || 'static/data/images/file/div1.png'
 
       // 绘制canvas
       const drawCompanyTip = function (options) {

@@ -114,8 +114,8 @@ Analysis.prototype = {
       var $this = this
       var _height = options.height || 30,
         _splitNum = options.splitNum || 50,
-        _wallImg = options.wallImg || '/static/data/images/file/excavate_side_min.jpg',
-        _bottomImg = options.bottomImg || '/static/data/images/file/excavate_bottom_min.jpg'
+        _wallImg = options.wallImg || 'static/data/images/file/excavate_side_min.jpg',
+        _bottomImg = options.bottomImg || 'static/data/images/file/excavate_bottom_min.jpg'
 
       $this.drawPolygonGraphics({
         callback: function (polygon, polygonObj) {
@@ -161,7 +161,7 @@ Analysis.prototype = {
             setTimeout(() => {
 
               polygonObj.polygon.heightReference = 'CLAMP_TO_GROUND'
-              polygonObj.polygon.material = '/static/data/images/file/water.png'
+              polygonObj.polygon.material = 'static/data/images/file/water.png'
               var h = 0.0
               polygonObj.polygon.extrudedHeight = h
               var st = setInterval(function () {

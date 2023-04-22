@@ -99,7 +99,7 @@ export default {
         this.graphics.craeteRotatePlaneGraphics({
           positions: positions,
           center: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 50),
-          image: '/static/data/images/Textures/b4.png',
+          image: 'static/data/images/Textures/b4.png',
           dimensions: new Cesium.Cartesian2(200.0, 100.0),
         })
 
@@ -107,7 +107,7 @@ export default {
           this.graphics.craeteRotatePlaneGraphics({
             positions: positions,
             center: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 50),
-            image: '/static/data/images/Textures/g_1_t_0.png',
+            image: 'static/data/images/Textures/g_1_t_0.png',
             dimensions: new Cesium.Cartesian2(200.0, 100.0),
           })
 
@@ -115,7 +115,7 @@ export default {
             this.graphics.craeteRotatePlaneGraphics({
               positions: positions,
               center: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 50),
-              image: '/static/data/images/Textures/movingRiver.png',
+              image: 'static/data/images/Textures/movingRiver.png',
               dimensions: new Cesium.Cartesian2(200.0, 100.0),
             })
           }, 1000)

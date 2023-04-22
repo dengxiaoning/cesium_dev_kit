@@ -621,7 +621,7 @@ Plugin.prototype = {
                 }
                 return s2;
               }, false),
-              material: "/static/data/images/Textures/circle2.png",
+              material: "static/data/images/Textures/circle2.png",
               rotation: new Cesium.CallbackProperty(function () {
                 rotation += 0.05;
                 return rotation;
@@ -657,7 +657,7 @@ Plugin.prototype = {
                 }
                 return s4;
               }, false),
-              material: "/static/data/images/Textures/circle1.png",
+              material: "static/data/images/Textures/circle1.png",
               rotation: new Cesium.CallbackProperty(function () {
                 rotation2 -= 0.03
                 return rotation2

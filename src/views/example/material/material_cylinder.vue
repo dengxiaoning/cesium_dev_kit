@@ -36,7 +36,7 @@ export default {
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
       var tilesets = this.c_viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-        url: '/static/data/3DTiles/building/tileset.json'
+        url: 'static/data/3DTiles/building/tileset.json'
       }));
 
       tilesets.readyPromise.then(function (tileset) {

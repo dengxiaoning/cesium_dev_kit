@@ -139,7 +139,7 @@ export default {
           material: new Cesium.Scene.PolylineCityLinkMaterialProperty({
             color: Cesium.Color.fromBytes(255, 140, 0, 1),
             duration: 2000,
-            imgUrl: '/static/data/images/Textures/colors1.png'
+            imgUrl: 'static/data/images/Textures/colors1.png'
           }),
         }
       });

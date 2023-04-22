@@ -93,7 +93,7 @@ Primitive.prototype = {
         this._color = defaultValue(options.color, new Color(1.0, 1.0, 0.0, 0.8))
         this._scale = defaultValue(options.scale, new Cartesian3(10, 10, 15))
         this._texture = undefined
-        this._imageUrl = buildModuleUrl('/static/data/images/Textures/fence.png')
+        this._imageUrl = buildModuleUrl('static/data/images/Textures/fence.png')
         this._modelMatrix = computeModelMatrix(this)
         this._height = computeHeight(this)
         createTexture(this)
@@ -1396,7 +1396,7 @@ Primitive.prototype = {
     const WaterPrimitive = function (opt) {
 
       this._positions = opt.positions
-      this._url = opt.normalMapUrl || '/static/data/images/Textures/waterNormals.jpg'
+      this._url = opt.normalMapUrl || 'static/data/images/Textures/waterNormals.jpg'
       this._frequency = opt.frequency || 1000.0
       this._animationSpeed = opt.animationSpeed || 0.01
       this._amplitude = opt.amplitude || 10.0

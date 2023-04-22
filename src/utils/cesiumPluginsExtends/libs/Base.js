@@ -32,12 +32,12 @@ Base.prototype = {
   setOneSkyBox: function () {
     return new Cesium.SkyBox({
       sources: {
-        positiveX: '/static/data/images/SkyBox/00h+00.jpg',
-        negativeX: '/static/data/images/SkyBox/12h+00.jpg',
-        positiveY: '/static/data/images/SkyBox/06h+00.jpg',
-        negativeY: '/static/data/images/SkyBox/18h+00.jpg',
-        positiveZ: '/static/data/images/SkyBox/06h+90.jpg',
-        negativeZ: '/static/data/images/SkyBox/06h-90.jpg'
+        positiveX: 'static/data/images/SkyBox/00h+00.jpg',
+        negativeX: 'static/data/images/SkyBox/12h+00.jpg',
+        positiveY: 'static/data/images/SkyBox/06h+00.jpg',
+        negativeY: 'static/data/images/SkyBox/18h+00.jpg',
+        positiveZ: 'static/data/images/SkyBox/06h+90.jpg',
+        negativeZ: 'static/data/images/SkyBox/06h-90.jpg'
       }
     })
   },
@@ -45,12 +45,12 @@ Base.prototype = {
   setTwoSkyBox: function () {
     return new Cesium.SkyBox({
       sources: {
-        positiveX: '/static/data/images/SkyBox/Version2_dark_px.jpg',
-        negativeX: '/static/data/images/SkyBox/Version2_dark_mx.jpg',
-        positiveY: '/static/data/images/SkyBox/Version2_dark_py.jpg',
-        negativeY: '/static/data/images/SkyBox/Version2_dark_my.jpg',
-        positiveZ: '/static/data/images/SkyBox/Version2_dark_pz.jpg',
-        negativeZ: '/static/data/images/SkyBox/Version2_dark_mz.jpg'
+        positiveX: 'static/data/images/SkyBox/Version2_dark_px.jpg',
+        negativeX: 'static/data/images/SkyBox/Version2_dark_mx.jpg',
+        positiveY: 'static/data/images/SkyBox/Version2_dark_py.jpg',
+        negativeY: 'static/data/images/SkyBox/Version2_dark_my.jpg',
+        positiveZ: 'static/data/images/SkyBox/Version2_dark_pz.jpg',
+        negativeZ: 'static/data/images/SkyBox/Version2_dark_mz.jpg'
       }
     })
   },
@@ -58,12 +58,12 @@ Base.prototype = {
   setThreeSkyBox: function () {
     return new Cesium.SkyBox({
       sources: {
-        positiveX: '/static/data/images/SkyBox/tycho2t3_80_pxs.jpg',
-        negativeX: '/static/data/images/SkyBox/tycho2t3_80_mxs.jpg',
-        positiveY: '/static/data/images/SkyBox/tycho2t3_80_pys.jpg',
-        negativeY: '/static/data/images/SkyBox/tycho2t3_80_mys.jpg',
-        positiveZ: '/static/data/images/SkyBox/tycho2t3_80_pzs.jpg',
-        negativeZ: '/static/data/images/SkyBox/tycho2t3_80_mzs.jpg'
+        positiveX: 'static/data/images/SkyBox/tycho2t3_80_pxs.jpg',
+        negativeX: 'static/data/images/SkyBox/tycho2t3_80_mxs.jpg',
+        positiveY: 'static/data/images/SkyBox/tycho2t3_80_pys.jpg',
+        negativeY: 'static/data/images/SkyBox/tycho2t3_80_mys.jpg',
+        positiveZ: 'static/data/images/SkyBox/tycho2t3_80_pzs.jpg',
+        negativeZ: 'static/data/images/SkyBox/tycho2t3_80_mzs.jpg'
       }
     })
   },
@@ -71,12 +71,12 @@ Base.prototype = {
   setOneGroundSkyBox: function () {
     return new Cesium.Scene.GroundSkyBox({
       sources: {
-        positiveX: '/static/data/images/SkyBox/rightav9.jpg',
-        negativeX: '/static/data/images/SkyBox/leftav9.jpg',
-        positiveY: '/static/data/images/SkyBox/frontav9.jpg',
-        negativeY: '/static/data/images/SkyBox/backav9.jpg',
-        positiveZ: '/static/data/images/SkyBox/topav9.jpg',
-        negativeZ: '/static/data/images/SkyBox/bottomav9.jpg'
+        positiveX: 'static/data/images/SkyBox/rightav9.jpg',
+        negativeX: 'static/data/images/SkyBox/leftav9.jpg',
+        positiveY: 'static/data/images/SkyBox/frontav9.jpg',
+        negativeY: 'static/data/images/SkyBox/backav9.jpg',
+        positiveZ: 'static/data/images/SkyBox/topav9.jpg',
+        negativeZ: 'static/data/images/SkyBox/bottomav9.jpg'
       }
     })
   },
@@ -84,12 +84,12 @@ Base.prototype = {
   setTwoGroundSkyBox: function () {
     return new Cesium.Scene.GroundSkyBox({
       sources: {
-        positiveX: '/static/data/images/SkyBox/SunSetRight.png',
-        negativeX: '/static/data/images/SkyBox/SunSetLeft.png',
-        positiveY: '/static/data/images/SkyBox/SunSetFront.png',
-        negativeY: '/static/data/images/SkyBox/SunSetBack.png',
-        positiveZ: '/static/data/images/SkyBox/SunSetUp.png',
-        negativeZ: '/static/data/images/SkyBox/SunSetDown.png'
+        positiveX: 'static/data/images/SkyBox/SunSetRight.png',
+        negativeX: 'static/data/images/SkyBox/SunSetLeft.png',
+        positiveY: 'static/data/images/SkyBox/SunSetFront.png',
+        negativeY: 'static/data/images/SkyBox/SunSetBack.png',
+        positiveZ: 'static/data/images/SkyBox/SunSetUp.png',
+        negativeZ: 'static/data/images/SkyBox/SunSetDown.png'
       }
     })
   },
@@ -97,12 +97,12 @@ Base.prototype = {
   setThreeGroundSkyBox: function () {
     return new Cesium.Scene.GroundSkyBox({
       sources: {
-        positiveX: '/static/data/images/SkyBox/Right.jpg',
-        negativeX: '/static/data/images/SkyBox/Left.jpg',
-        positiveY: '/static/data/images/SkyBox/Front.jpg',
-        negativeY: '/static/data/images/SkyBox/Back.jpg',
-        positiveZ: '/static/data/images/SkyBox/Up.jpg',
-        negativeZ: '/static/data/images/SkyBox/Down.jpg'
+        positiveX: 'static/data/images/SkyBox/Right.jpg',
+        negativeX: 'static/data/images/SkyBox/Left.jpg',
+        positiveY: 'static/data/images/SkyBox/Front.jpg',
+        negativeY: 'static/data/images/SkyBox/Back.jpg',
+        positiveZ: 'static/data/images/SkyBox/Up.jpg',
+        negativeZ: 'static/data/images/SkyBox/Down.jpg'
       }
     })
   },

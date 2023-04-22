@@ -22,7 +22,7 @@ Draw.prototype = {
   drawPointGraphics: function (options) {
     options = options || {}
     options.style = options.style || {
-      image: '/static/data/images/file/location4.png',
+      image: 'static/data/images/file/location4.png',
       width: 35,
       height: 40,
       clampToGround: true,

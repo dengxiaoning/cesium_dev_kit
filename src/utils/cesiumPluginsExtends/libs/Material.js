@@ -492,7 +492,7 @@ Material.prototype = {
 
     Cesium.Scene.PolylineCityLinkMaterialProperty = PolylineCityLinkMaterialProperty
     Material.PolylineCityLinkType = 'PolylineCityLink'
-    Material.PolylineCityLinkImage = '/static/data/images/Textures/meteor_01.png'
+    Material.PolylineCityLinkImage = 'static/data/images/Textures/meteor_01.png'
     Material._materialCache.addMaterial(Material.PolylineCityLinkType, {
       fabric: {
         type: Material.PolylineCityLinkType,
@@ -577,7 +577,7 @@ Material.prototype = {
 
     Cesium.Scene.WarnLinkMaterialProperty = WarnLinkMaterialProperty
     Material.WarnLinkType = 'WarnWallLinkType'
-    Material.WarnLinkImage = '/static/data/images/Textures/jsx2.png'
+    Material.WarnLinkImage = 'static/data/images/Textures/jsx2.png'
     Material._materialCache.addMaterial(Material.WarnLinkType, {
       fabric: {
         type: Material.WarnLinkType,

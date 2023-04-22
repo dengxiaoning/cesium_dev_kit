@@ -1,0 +1,827 @@
+[
+  {
+    "name": "graphics",
+    "path": "/graphics",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "图形案例",
+      "icon": "icon-park-twotone:graphic-design-two",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "graphicsOne",
+      "path": "graphicsOne",
+      "component": "example/graphics/graphicsOne",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "旋转漂浮圆浮动锥体",
+        "icon": "game-icons:floating-tentacles",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "name": "graphicsTwo",
+      "path": "graphicsTwo",
+      "component": "example/graphics/graphicsTwo",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "闪烁的圆",
+        "icon": "game-icons:circle-sparks",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "name": "graphicsThree",
+      "path": "graphicsThree",
+      "component": "example/graphics/graphicsThree",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "旋转的圆盘",
+        "icon": "mdi:rotate-3d-variant",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "name": "graphicsFour",
+      "path": "graphicsFour",
+      "component": "example/graphics/graphicsFour",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "旋转的平面",
+        "icon": "ic:outline-rotate-90-degrees-cw",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "graphicsFive",
+      "path": "graphicsFive",
+      "component": "example/graphics/graphicsFive",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "动态渐变墙",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "graphicsSix",
+      "path": "graphicsSix",
+      "component": "example/graphics/graphicsSix",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "视频投放",
+        "icon": "material-symbols:video-camera-back-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "graphicsSeven",
+      "path": "graphicsSeven",
+      "component": "example/graphics/graphicsSeven",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "gif图片投影",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "graphicsEight",
+      "path": "graphicsEight",
+      "component": "example/graphics/graphicsEight",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "旋转锥体",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "graphicsNine",
+      "path": "graphicsNine",
+      "component": "example/graphics/graphicsNine",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "广告牌",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "material",
+    "path": "/material",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "材质案例",
+      "icon": "game-icons:materials-science",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [{
+      "name": "material_cylinder",
+      "path": "material_cylinder",
+      "component": "example/material/material_cylinder",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "淡入淡出探照灯",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "polylineCityLink",
+      "path": "polylineCityLink",
+      "component": "example/material/polylineCityLink",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "城市光效线",
+        "icon": "fluent:text-align-right-rotate-90-16-filled",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "linkPoint",
+      "path": "linkPoint",
+      "component": "example/material/linkPoint",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "运动的发光点",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "areaPolylineCityLink",
+      "path": "areaPolylineCityLink",
+      "component": "example/material/areaPolylineCityLink",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "行政区发光道路线",
+        "icon": "carbon:rule-test",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "linkPointFlow",
+      "path": "linkPointFlow",
+      "component": "example/material/linkPointFlow",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "掉落的发光点",
+        "icon": "carbon:flow-modeler",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "dynamicWall",
+      "path": "dynamicWall",
+      "component": "example/material/dynamicWall",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "动态墙材质",
+        "icon": "carbon:rule-test",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "polygonMaterial",
+      "path": "polygonMaterial",
+      "component": "example/material/polygonMaterial",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "多边形面材质",
+        "icon": "carbon:rule-test",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "sphereMaterial",
+      "path": "sphereMaterial",
+      "component": "example/material/sphereMaterial",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "球体材质",
+        "icon": "carbon:rule-test",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "haloWall",
+      "path": "haloWall",
+      "component": "example/material/haloWall",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "光晕墙",
+        "icon": "carbon:rule-test",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "primitive",
+    "path": "/primitive",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "图元案例",
+      "icon": "game-icons:primitive-torch",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [{
+      "name": "lightCentrum",
+      "path": "lightCentrum",
+      "component": "example/primitive/lightCentrum",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "光锥图元",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "scene",
+    "path": "/scene",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "场景控制",
+      "icon": "carbon:point-of-presence",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "groundSkyBox",
+      "path": "groundSkyBox",
+      "component": "example/scene/groundSkyBox",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "天空盒子",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "rain",
+      "path": "rain",
+      "component": "example/scene/rain",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "雨天",
+        "icon": "bi:cloud-rain-heavy",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "sceneParam",
+      "path": "sceneParam",
+      "component": "example/scene/sceneParam",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "场景光效控制",
+        "icon": "game-icons:crime-scene-tape",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "postProcessStages",
+      "path": "postProcessStages",
+      "component": "example/scene/postProcessStages",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "后置场景控制",
+        "icon": "uil:processor",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "snow",
+      "path": "snow",
+      "component": "example/scene/snow",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "雪天",
+        "icon": "ion:snow-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "param",
+      "path": "param",
+      "component": "example/scene/param",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "参数面板控制场景",
+        "icon": "ion:snow-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "czm",
+    "path": "/czm",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "czm数据加载",
+      "icon": "ic:baseline-data-object",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "rockets",
+      "path": "rockets",
+      "component": "example/czm/rockets",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "czm",
+        "icon": "material-symbols:rocket-launch-outline-rounded",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "layer",
+    "path": "/layer",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "图层叠加",
+      "icon": "bx:layer",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "baidu",
+      "path": "baidu",
+      "component": "example/layer/baidu",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "百度地图",
+        "icon": "ri:baidu-fill",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "arcgis",
+      "path": "arcgis",
+      "component": "example/layer/arcgis",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "arcgis地图",
+        "icon": "arcticons:aegis",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "tencent",
+      "path": "tencent",
+      "component": "example/layer/tencent",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "腾讯地图",
+        "icon": "bi:tencent-qq",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "tianditu",
+      "path": "tianditu",
+      "component": "example/layer/tianditu",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "天地图",
+        "icon": "material-symbols:map-outline-sharp",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "infoBox",
+    "path": "/infoBox",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "信息框",
+      "icon": "fluent-mdl2:information-barriers",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "entityLayerBox",
+      "path": "entityLayerBox",
+      "component": "example/infoBox/entityLayerBox",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "实体layer信息框",
+        "icon": "mdi:message-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "constructBox",
+      "path": "constructBox",
+      "component": "example/infoBox/constructBox",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "构造信息框",
+        "icon": "lucide:construction",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "createCustomDefBillboard",
+      "path": "createCustomDefBillboard",
+      "component": "example/infoBox/createCustomDefBillboard",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "自定义广告牌",
+        "icon": "mdi:billboard",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "camera",
+    "path": "/camera",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "相机控制",
+      "icon": "material-symbols:flip-camera-ios-outline",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+      "name": "pointRotate",
+      "path": "pointRotate",
+      "component": "example/camera/pointRotate",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "绕点旋转",
+        "icon": "uil:rotate-360",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "cameraPosition",
+      "path": "cameraPosition",
+      "component": "example/camera/cameraPosition",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "相机位置",
+        "icon": "iconoir:position-align",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "tools",
+    "path": "/tools",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "工具",
+      "icon": "fluent:hand-draw-16-regular",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children":[
+      {
+        "name": "draw",
+        "path": "draw",
+        "component": "example/tools/draw/plot",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "三维标绘",
+          "icon": "fluent:hand-draw-16-regular",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
+      },
+      {
+        "name": "measure",
+        "path": "measure",
+        "component": "example/tools/measure/index",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "测量",
+          "icon": "gis:measure",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
+      },
+      {
+        "name": "pickPos",
+        "path": "pickPos",
+        "component": "example/tools/event/pickPos",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "位置拾取",
+          "icon": "game-icons:card-pickup",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
+      },
+      {
+        "name": "dimensionAnalysis",
+        "path": "dimensionAnalysis",
+        "component": "example/tools/analysis/index",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "三维分析",
+          "icon": "carbon:driver-analysis",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
+      },
+      {
+        "name": "drag",
+        "path": "drag",
+        "component": "example/tools/drag/index",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "物体拖拽",
+          "icon": "iconoir:drag-hand-gesture",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
+      }
+    ]
+  },
+  {
+    "name": "radar",
+    "path": "/radar",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "雷达案例",
+      "icon": "mingcute:radar-line",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [{
+      "name": "radarScan",
+      "path": "radarScan",
+      "component": "example/radar/radarScan",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "雷达扫描",
+        "icon": "fluent:radar-20-regular",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "circleScan",
+      "path": "circleScan",
+      "component": "example/radar/circleScan",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "圆形扫描",
+        "icon": "ion:scan-circle-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "phaseControl",
+      "path": "phaseControl",
+      "component": "example/radar/phaseControl",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "相控雷达",
+        "icon": "arcticons:moon-phase",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "phaseControlMaterial",
+      "path": "phaseControlMaterial",
+      "component": "example/radar/phaseControlMaterial",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "相控材质雷达",
+        "icon": "game-icons:explosive-materials",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "satelliteCoverage",
+      "path": "satelliteCoverage",
+      "component": "example/radar/satelliteCoverage",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "椎体跟随",
+        "icon": "carbon:tropical-storm-model-tracks",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+      
+    },{
+      "name": "coneControl",
+      "path": "coneControl",
+      "component": "example/radar/coneControl",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "椎体图形控制",
+        "icon": "game-icons:ice-cream-cone",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "matrixControl",
+      "path": "matrixControl",
+      "component": "example/radar/matrixControl",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "矩阵平移旋转",
+        "icon": "game-icons:ice-cream-cone",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
+    "name": "dynForm",
+    "path": "/dynForm",
+    "component": "dynForm/index",
+    "append":"root",
+    "?append":"注意添加append：root 的菜单不能有子菜单，否则右边出现重复菜单列表",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "动态创建form案例",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    }
+  },
+  {
+    "name": "dragDialog",
+    "path": "/dragDialog",
+    "component": "dragDialog/index",
+    "append":"root",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "拖拽dialog",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    }
+  },
+  {
+    "name": "procTemplate",
+    "path": "/procTemplate",
+    "component": "process/index",
+    "append":"root",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "动态流程模板",
+      "icon": "carbon:rule-test",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    }
+  },
+  {
+    "name": "sysManage",
+    "path": "/sysManage",
+    "component": "Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "系统管理",
+      "icon": "whh:managedhosting",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [{
+      "name": "sysLog",
+      "path": "sysLog",
+      "component": "sysManage/log/index",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "操作日志",
+        "icon": "icon-park-outline:log",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "sysConfig",
+      "path": "sysConfig",
+      "component": "sysManage/config/index",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "系统配置",
+        "icon": "grommet-icons:configure",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "sysAuth",
+      "path": "sysAuth",
+      "component": "sysManage/auth/index",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "权限配置",
+        "icon": "eos-icons:role-binding-outlined",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "sysCodeReg",
+      "path": "sysCodeReg",
+      "component": "sysManage/codeReg/index",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "编码规则",
+        "icon": "bi:journal-code",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  }
+]

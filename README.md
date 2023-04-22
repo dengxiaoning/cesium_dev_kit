@@ -91,15 +91,12 @@ yarn dev  or  npm run dev
 
 ```
 yarn build or npm run build
-```
-
-## iconify 使用方法
-
-[官网 https://icon-sets.iconify.design](https://icon-sets.iconify.design)
 
 ```
- <CIcon icon-class="bx:time-five" icon-color="#333" />
-```
+
+## 在线预览
+
+https://www.benpaodehenji.com/cesiumDevKit
 
 ## 浏览器支持
 
@@ -107,19 +104,22 @@ yarn build or npm run build
 
 支持现代（chrome，Firefox，Microsoft edge，etc.）浏览器, 不支持 IE
 
-## 在线预览
+## CesiumGlsl 文档
 
-https://www.benpaodehenji.com/cesiumDevKit
-
-## cesium glsl 文档
-
+```
 https://cesium.com/downloads/cesiumjs/releases/b23/Documentation/index.html
 
-## 本项目不足
+```
 
-- 1、cesium 工具类未使用 typeScript
-- 2、未配备使用文档
-- 3、为发布 npm 包
+## iconify 使用方法
+
+[官网 https://icon-sets.iconify.design](https://icon-sets.iconify.design)
+
+```
+
+<CIcon icon-class="bx:time-five" icon-color="#333" />
+
+```
 
 ## 鸣谢
 
@@ -128,4 +128,10 @@ https://cesium.com/downloads/cesiumjs/releases/b23/Documentation/index.html
 [vue3-ts-cesium-map-show](https://gitee.com/hawk86104/vue3-ts-cesium-map-show)<br/>
 本项目借鉴和参考以上几个资料文件，非常感谢作者分享
 
-<small>如有感兴趣朋友可以一起讨论交流完善功能，为有需要的朋友提供帮助。也欢迎大家 fork,同时也请给个 star 以示鼓励谢谢。</small>
+## 项目不足与优化
+
+- 1、cesium 工具类未使用 typeScript
+- 2、未配备使用文档
+- 3、未发布 npm 包
+
+<small>感兴趣朋友可以一起讨论交流继续完善功能，提升自己帮助他人。欢迎进行 fork，同时也请给个 star 以示鼓励谢谢。</small>
