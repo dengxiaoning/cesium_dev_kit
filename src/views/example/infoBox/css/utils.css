@@ -16,7 +16,7 @@
     width:0;
     height:100px;
     bottom: 0;
-    background:url("/static/data/images/Textures/line.png");
+    background:url("../static/data/images/Textures/line.png");
     animation:goLine 0.5s forwards;
 }
 @keyframes goLine {
@@ -33,7 +33,7 @@
     left:50px;
     right:0;
     bottom: 100px;
-    background:url("/static/data/images/Textures/layer_border.png") no-repeat;
+    background:url("../static/data/images/Textures/layer_border.png") no-repeat;
     background-size:100% 100%;
     color:white;
     padding: 20px 5px 5px 20px;
@@ -48,7 +48,7 @@
 .ex-box {
   width: 200px;
   height: 100%;
-  background: url("/static/data/images/Textures/layer_border.png") no-repeat;
+  background: url("../static/data/images/Textures/layer_border.png") no-repeat;
   color: #fff;
   padding: 8px 20px;
 }
