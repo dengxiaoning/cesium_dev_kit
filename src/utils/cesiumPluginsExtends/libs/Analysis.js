@@ -79,31 +79,29 @@ Analysis.prototype = {
     if (this._viewer && options) {
       var $this = this,
         _shadowPrimitive = null
-      $this.bindHandelEvent(
-        function click(event, _handlers) {
-          var position = $this._viewer.scene.pickPosition(event.position)
-          if (!position) return false
-          if (!Cesium.defined(_shadowPrimitive)) {
-            // 创建shadowPrimitve
-            _shadowPrimitive = new Cesium.Scene.ShadowPrimitive({
+      $this.bindHandelEvent({ leftClick:   function click(event, _handlers) {
+        var position = $this._viewer.scene.pickPosition(event.position)
+        if (!position) return false
+        if (!Cesium.defined(_shadowPrimitive)) {
+          // 创建shadowPrimitve
+          _shadowPrimitive = new Cesium.Scene.ShadowPrimitive({
 
-              scene: $this._viewer.scene,
-              viewerPosition: position
-            })
+            scene: $this._viewer.scene,
+            viewerPosition: position
+          })
 
-            $this._analysisLayer._primitives.add(_shadowPrimitive)
-          } else {
+          $this._analysisLayer._primitives.add(_shadowPrimitive)
+        } else {
 
-            _handlers.destroy()
-            _handlers = null
-          }
-        },
-        function move(event) {
-
-          var position = $this._viewer.scene.pickPosition(event.endPosition)
-          if (!position) return false
-          if (_shadowPrimitive) _shadowPrimitive.setPoseByTargetPoint(position)
-        })
+          _handlers.destroy()
+          _handlers = null
+        }
+      }, mouseMove: function move(event) {
+        var position = $this._viewer.scene.pickPosition(event.endPosition)
+        if (!position) return false
+        if (_shadowPrimitive) _shadowPrimitive.setPoseByTargetPoint(position)
+        }
+      })
     }
   },
   /**

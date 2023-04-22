@@ -604,6 +604,19 @@
           "isHide": false,
           "isKeepAlive": true
         }
+      },
+      {
+        "name": "drag",
+        "path": "drag",
+        "component": "example/tools/drag/index",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "物体拖拽",
+          "icon": "iconoir:drag-hand-gesture",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
       }
     ]
   },

@@ -624,22 +624,42 @@ Base.prototype = {
     this._viewer.scene._screenSpaceCameraController.enableTilt = flag
     this._viewer.scene._screenSpaceCameraController.enableLook = flag
   },
-  //鼠标事件注册
-  bindHandelEvent: function (_mouseClickHandler, _mouseMoveHandler, _mouseDbClickHandler) {
+
+  /**
+   * 鼠标事件注册
+   * @param {*} param0 
+   * { leftClick,mouseMove,dubleClick,leftDown,
+   * mouseWheel,leftUp} 
+   */
+  bindHandelEvent: function ({leftClick:_mouseLeftClickHandler, mouseMove:_mouseMoveHandler,
+    doubleClick:_mouseDbClickHandler,leftDown: _mouseLeftDownHandler,mouseWheel: _mouseWheelHandler,
+  leftUp:_mouseLeftUpHandler}) {
 
     if (this._viewer) {
       var _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.canvas)
-      _handlers.setInputAction(function (movement) {
-        _mouseClickHandler && _mouseClickHandler(movement, _handlers)
+      _mouseLeftClickHandler && _handlers.setInputAction(function (movement) {
+         _mouseLeftClickHandler(movement, _handlers)
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
-      _handlers.setInputAction(function (movement) {
-        _mouseMoveHandler && _mouseMoveHandler(movement, _handlers)
+      _mouseMoveHandler && _handlers.setInputAction(function (movement) {
+         _mouseMoveHandler(movement, _handlers)
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
 
-      _handlers.setInputAction(function (movement) {
-        _mouseDbClickHandler && _mouseDbClickHandler(movement, _handlers)
+      _mouseDbClickHandler &&  _handlers.setInputAction(function (movement) {
+         _mouseDbClickHandler(movement, _handlers)
       }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK)
+
+      _mouseLeftDownHandler && _handlers.setInputAction(function (movement) {
+       _mouseLeftDownHandler(movement, _handlers)
+      }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
+
+      _mouseWheelHandler && _handlers.setInputAction(function (movement) {
+         _mouseWheelHandler(movement, _handlers)
+      }, Cesium.ScreenSpaceEventType.WHEEL)
+
+      _mouseLeftUpHandler &&  _handlers.setInputAction(function (movement) {
+        _mouseLeftUpHandler(movement, _handlers)
+     }, Cesium.ScreenSpaceEventType.LEFT_UP)
     }
   },
   //获取鼠标信息

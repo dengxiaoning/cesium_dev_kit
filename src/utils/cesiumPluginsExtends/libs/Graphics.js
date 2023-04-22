@@ -165,6 +165,22 @@ Graphics.prototype = {
       })
     }
   },
+  // box
+  getBoxGraphics: function (options) {
+
+    options = options || {show:true,outline:false,fill:true}
+    if (options) {
+      return new Cesium.BoxGraphics({
+        show: options.show,
+        fill: options.fill,
+        dimensions:options.dimensions||new Cesium.Cartesian3(0, 0, 0),
+        material: options.material,
+        outline:  options.outline,
+        outlineColor: options.outlineColor || Cesium.Color.BLACK,
+        distanceDisplayCondition:options.distanceDisplayCondition||undefined
+      })
+    }
+  },
   // 面
   getPlaneGraphics: function (options) {
     options = options || {}
@@ -233,6 +249,19 @@ Graphics.prototype = {
 
       return this._graphicsLayer.entities.add(entity)
     }
+  },
+  // 创建box
+  createBoxGraphics: function (options) {
+    options = options || {}
+    if (options) {
+      var entity = this.createGraphics()
+
+      entity.position = options.position
+      entity.name = options.name || 'box_graphic'
+      entity.box = this.getBoxGraphics(options.box)
+      return this._graphicsLayer.entities.add(entity)
+    }
+    
   },
   //创建模型
   createModelGraphics: function (options) {

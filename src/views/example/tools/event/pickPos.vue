@@ -222,9 +222,11 @@ export default {
     // 绑定事件到场景中
     bindEventToScene(callbackFn) {
       cHander && cHander.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
-      this.base.bindHandelEvent((clickEvent, hander) => {
-        cHander = hander;
-        callbackFn && callbackFn(clickEvent)
+      this.base.bindHandelEvent({
+        leftClick: (clickEvent, hander) => {
+          cHander = hander;
+          callbackFn && callbackFn(clickEvent)
+        }
       })
     },
     /**
