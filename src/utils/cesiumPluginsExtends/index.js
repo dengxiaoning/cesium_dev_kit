@@ -68,7 +68,7 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
   const _control = protoExtends(Base, Control);
   const _plugin = protoExtends(Base, Plugin);
   const _base = new Base(_viewer, cesiumGlobal);
-  const _analysis = protoExtends([Base, Draw],Analysis)
+  const _analysis = protoExtends([Base, Draw,Plugin],Analysis)
   return {
     viewer: _viewer,
     material: _material,

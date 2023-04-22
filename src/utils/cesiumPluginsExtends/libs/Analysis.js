@@ -130,7 +130,8 @@ Analysis.prototype = {
             wallImg: _wallImg,
             bottomImg: _bottomImg
           })
-          terrainClipPlan.updateData($this.transformWGS84ArrayToCartesianArray(polygon))
+          const cartesian3Coor = $this.transformWGS84ArrayToCartesianArray(polygon)
+          terrainClipPlan.updateData(cartesian3Coor)
 
           if (typeof options.callback === 'function') {
 

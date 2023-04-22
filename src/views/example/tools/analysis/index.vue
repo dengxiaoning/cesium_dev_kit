@@ -74,32 +74,19 @@ export default {
         [],
       )
 
-
       this.c_viewer = viewer;
       this.analysis = analysis;
+      this.flyTo();
+    },
+    flyTo() {
+      this.analysis.setView({
+        position: new Cesium.Cartesian3(-1337035.7496454942, 5285202.940044943, 3305373.990594733),
+        orientation: {
+          heading: 6.108097731064569,
+          pitch: -0.15254104473396812,
+          roll: 6.283157460498558
 
-      var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-        url: 'static/data/3DTiles/building/tileset.json'
-      }));
-
-      tilesets.readyPromise.then(function (tileset) {
-
-        tileset.style = new Cesium.Cesium3DTileStyle({
-          color: {
-            conditions: [
-              ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
-              ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
-              ["true", "rgb(0, 149, 251, 0.3)"]
-            ]
-          }
-        });
-
-        viewer.flyTo(tileset)
+        },
       })
     },
     VisibilityAnalysis() {

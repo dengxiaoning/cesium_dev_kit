@@ -10,19 +10,23 @@
 
 ## 简介
 
-一个封装 cesium 操作的工具包，提供简单的方法调用来实现复制的操作，减少对于 ceiusm 原文档的学习成本，降低入门难度，同时提高工作中开发效率。
+本项目是一个封装 Cesium 基本操作的工具包，提供简单的方法调用来实现复杂的 API 操作；节省阅读 Cesium 原文档时间，从而降低入门难度增加学习信心，同时也希望能提高工作效率。
 
 ## 目录结构
 
 ```md
 ├── public # 静态资源
-│ ├── config.js # 配置文件
+│ ├── static # 模型文件
+│ │ ├── data # 3dtiles 及 model
 | └── favicon.ico # favicon 图标
 ├── src # 源代码
 | ├── api # api 请求
 | ├── assets # 主题 变量等资源
 | | ├── scss # scss 变量
 | | └──theme # elemet 主题
+| ├── libs
+| | ├── directive # 全局指令
+| | └──element.ts # elemet 全局样式重写
 | ├──components # 全局公共组件
 | ├──hooks # 全局 hooks
 | ├── config # 全局公共配置
@@ -32,7 +36,9 @@
 | ├── router # 全局路由
 | ├── store # 全局 vuex
 | ├── utils # 全局公用方法
+| | └──cesiumPluginsExtends # cesium 扩展工具包
 | ├── views # 所有页面
+| | └──example # cesium 扩展工具包案例
 | ├── App.tsx # 入口页面
 | ├── main.ts # 入口文件
 | ├── permission.ts #权限认证
@@ -58,14 +64,16 @@
 
 ## 项目演示
 
-- 登录
-  ![loginpage](https://github.com/dengxiaoning/vue3-vite-elementPlus-ts/blob/master/src/assets/image/example/loginpagenew.png)
-- 首页
-  ![mainpage](https://github.com/dengxiaoning/vue3-vite-elementPlus-ts/blob/master/src/assets/image/example/firstPage.gif)
-- 二维
-  ![twodimensional](https://github.com/dengxiaoning/vue3-vite-elementPlus-ts/blob/master/src/assets/image/example/twoDimensional.gif)
-- 三维
-  ![threedimensional](https://github.com/dengxiaoning/vue3-vite-elementPlus-ts/blob/master/src/assets/image/example/threeDimensional.gif)
+- 材质
+  ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/material.gif)
+- 分析
+  ![analysis](hhttps://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/analysis.gif)
+- 标绘
+  ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/plot.gif)
+- 拖拽
+  ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/drag.gif)
+- 雷达扫描
+  ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/radar.gif)
 
 ## 项目设置
 
@@ -101,8 +109,23 @@ yarn build or npm run build
 
 ## 在线预览
 
-https://www.benpaodehenji.com/csdata
+https://www.benpaodehenji.com/cesiumDevKit
 
 ## cesium glsl 文档
 
 https://cesium.com/downloads/cesiumjs/releases/b23/Documentation/index.html
+
+## 本项目不足
+
+- 1、cesium 工具类未使用 typeScript
+- 2、未配备使用文档
+- 3、为发布 npm 包
+
+## 鸣谢
+
+[cesium-d3kit](https://github.com/zhangti0708/cesium-d3kit)<br/>
+[drawarrowforcesium](https://gitcode.net/mirrors/gitgitczl/drawarrowforcesium)<br/>
+[vue3-ts-cesium-map-show](https://gitee.com/hawk86104/vue3-ts-cesium-map-show)<br/>
+本项目借鉴和参考以上几个资料文件，非常感谢作者分享
+
+<small>如有感兴趣朋友可以一起讨论交流完善功能，为有需要的朋友提供帮助。也欢迎大家 fork,同时也请给个 star 以示鼓励谢谢。</small>

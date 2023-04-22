@@ -11,7 +11,7 @@ function Plugin(viewer, cesiumGlobal) {
     this._pluginLayer = new Cesium.CustomDataSource('pluginLayer')
 
     viewer && viewer.dataSources.add(this._pluginLayer)
-
+    
     this._installPlugin()
   }
 
@@ -63,7 +63,7 @@ Plugin.prototype = {
       }
     })
     TerrainClipPlan.prototype.updateData = function (e) {
-      this.clear()
+      // this.clear()
       var t = [],
         i = e.length-1,
         a = new Cesium.Cartesian3,
@@ -94,7 +94,15 @@ Plugin.prototype = {
 
     TerrainClipPlan.prototype.clear = function () {
 
-      this.viewer.scene.globe.clippingPlanes && (this.viewer.scene.globe.clippingPlanes.enabled = !1, this.viewer.scene.globe.clippingPlanes.removeAll(), this.viewer.scene.globe.clippingPlanes.isDestroyed() || this.viewer.scene.globe.clippingPlanes.destroy()), this.viewer.scene.globe.clippingPlanes = void 0, this.bottomSurface && this.viewer.scene.primitives.remove(this.bottomSurface), this.wellWall && this.viewer.scene.primitives.remove(this.wellWall), delete this.bottomSurface, delete this.wellWall, this.viewer.scene.render()
+      this.viewer.scene.globe.clippingPlanes && (
+        this.viewer.scene.globe.clippingPlanes.enabled = !1,
+        this.viewer.scene.globe.clippingPlanes.removeAll(),
+        this.viewer.scene.globe.clippingPlanes.isDestroyed() ||
+        this.viewer.scene.globe.clippingPlanes.destroy()),
+        this.viewer.scene.globe.clippingPlanes = void 0,
+        this.bottomSurface && this.viewer.scene.primitives.remove(this.bottomSurface),
+        this.wellWall && this.viewer.scene.primitives.remove(this.wellWall),
+        delete this.bottomSurface, delete this.wellWall, this.viewer.scene.render()
     }
 
     TerrainClipPlan.prototype._prepareWell = function (e) {
