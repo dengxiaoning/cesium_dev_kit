@@ -334,22 +334,24 @@ Control.prototype = {
    * 矩阵调整面板
    * @param {*} primitives
    */
-  showPrimitiveMatrixPanel(primitives) {
-    let primitive = primitives._delegate || primitives,
+  showPrimitiveMatrixPanel(param) {
+    
+    let primitive = param.primitives._delegate || param.primitives,
+       primitives = param.primitives,
       // 全局定义
       viewer = this._viewer
 
     // eslint-disable-next-line no-unused-vars
-    const update3dtilesMaxtrix = function (params) {
+    const update3dtilesMaxtrix = function (currParam) {
       //旋转
-      let mx = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(params.rx))
-      let my = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(params.ry))
-      let mz = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(params.rz))
+      let mx = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(currParam.rx))
+      let my = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(currParam.ry))
+      let mz = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(currParam.rz))
       let rotationX = Cesium.Matrix4.fromRotationTranslation(mx)
       let rotationY = Cesium.Matrix4.fromRotationTranslation(my)
       let rotationZ = Cesium.Matrix4.fromRotationTranslation(mz)
       //平移
-      let position = Cesium.Cartesian3.fromDegrees(params.tx, params.ty, params.tz)
+      let position = Cesium.Cartesian3.fromDegrees(currParam.tx, currParam.ty, currParam.tz)
       let m = Cesium.Transforms.eastNorthUpToFixedFrame(position)
 
       let scale = Cesium.Matrix4.fromUniformScale(0.85)
@@ -363,8 +365,24 @@ Control.prototype = {
       return m
     }
 
-    let gui = new dat.GUI()
-
+    let gui = null;
+    if (param && param.elementId) {
+      gui = new dat.GUI({
+        autoPlace: false
+      });
+      var customContainer = document.getElementById(param.elementId);
+      customContainer.appendChild(gui.domElement);
+    } else {
+      gui = new dat.GUI()
+    }
+    /* Here is the update */ 
+    var resetSliders = function(name,val){ 
+      for(var i = 0; i<gui.__controllers.length;i++){ 
+        if (!gui.__controllers.property == name) {
+            gui.__controllers[i].setValue(val); 
+        }
+      } 
+    }; 
     //高度
     let heightMatrix = {
       height: 100
@@ -401,6 +419,7 @@ Control.prototype = {
     scale.add(scaleParam, 'm+Scale')
     scale.add(scaleParam, 'm-Scale')
     scale.open()
+
     let translationMatrix = {
       x: 0,
       y: 0,
@@ -749,9 +768,20 @@ Control.prototype = {
    * 位置姿态编辑面板啊
    * @param {*} Entity
    */
-  showEntityOrientationEditPanel: function (Entity) {
-    if (Entity) {
+  showEntityOrientationEditPanel: function (param={}) {
+    if (param.entity) {
+      let  Entity = param.entity;
       var gui = new dat.GUI()
+    // 修改gui原本的位置，如果提供绑定的父元素id<elementId>就将gui domEmelemt append到对应的dom
+    if (param && param.elementId) {
+      gui = new dat.GUI({
+        autoPlace: false
+      });
+      var customContainer = document.getElementById(param.elementId);
+      customContainer.appendChild(gui.domElement);
+    } else {
+      gui = new dat.GUI()
+    }
 
       var OrientationObj = new function () {
 
@@ -766,7 +796,7 @@ Control.prototype = {
       Orientation.add(OrientationObj, 'heading', 0, 360, 1).name('角度').onChange(function (value) {
 
         OrientationObj.heading = value
-        Entity.orientation =
+        let changeOrientation =
           Cesium.Transforms.headingPitchRollQuaternion(
             Entity.position.getValue($this._viewer.clock.currentTime),
             new Cesium.HeadingPitchRoll(
@@ -774,12 +804,14 @@ Control.prototype = {
               Cesium.Math.toRadians(OrientationObj.pitch),
               Cesium.Math.toRadians(OrientationObj.roll)
             ))
+        Entity.orientation = changeOrientation;
+        param.cb && param.cb({orientation: changeOrientation })
       })
 
       Orientation.add(OrientationObj, 'pitch', 0, 360, 1).name('航向').onChange(function (value) {
 
         OrientationObj.pitch = value
-        Entity.orientation =
+        let changeOrientation =
           Cesium.Transforms.headingPitchRollQuaternion(
             Entity.position.getValue($this._viewer.clock.currentTime),
             new Cesium.HeadingPitchRoll(
@@ -787,12 +819,14 @@ Control.prototype = {
               Cesium.Math.toRadians(OrientationObj.pitch),
               Cesium.Math.toRadians(OrientationObj.roll)
             ))
+            Entity.orientation = changeOrientation;
+            param.cb && param.cb({orientation: changeOrientation })
       })
 
       Orientation.add(OrientationObj, 'roll', 0, 360, 1).name('翻转').onChange(function (value) {
 
         OrientationObj.roll = value
-        Entity.orientation =
+       let changeOrientation =
           Cesium.Transforms.headingPitchRollQuaternion(
             Entity.position.getValue($this._viewer.clock.currentTime),
             new Cesium.HeadingPitchRoll(
@@ -800,6 +834,8 @@ Control.prototype = {
               Cesium.Math.toRadians(OrientationObj.pitch),
               Cesium.Math.toRadians(OrientationObj.roll)
             ))
+            Entity.orientation = changeOrientation;
+            param.cb && param.cb({orientation: changeOrientation })
       })
       Orientation.open()
     }

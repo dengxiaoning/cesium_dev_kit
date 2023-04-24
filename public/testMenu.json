@@ -617,6 +617,32 @@
           "isHide": false,
           "isKeepAlive": true
         }
+      },
+      {
+        "name": "adjustEntityPos",
+        "path": "adjustEntityPos",
+        "component": "example/tools/adjustPosition/adjustEntityPos",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "实体位置调整",
+          "icon": "icon-park-outline:direction-adjustment-two",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
+      },
+      {
+        "name": "adjustPimitivePos",
+        "path": "adjustPimitivePos",
+        "component": "example/tools/adjustPosition/adjustPrimitivePos",
+        "meta": {
+          "auth": ["admin", "test"],
+          "title": "3dTiles位置调整",
+          "icon": "icon-park-outline:direction-adjustment-three",
+          "isAffix": false,
+          "isHide": false,
+          "isKeepAlive": true
+        }
       }
     ]
   },
