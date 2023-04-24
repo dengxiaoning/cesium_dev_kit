@@ -14,10 +14,12 @@ import {
   Math3d,
   Control,
   Plugin,
-  Analysis
+  Analysis,
+  AttackArrow,
+  StraightArrow,
+  PincerArrow
 } from './libs'
-
-let Cesium = null;
+import * as alternateCesium from 'cesium'
 
 const prototypeExtends = function (viewer, cesiumGlobal) {
   function _inner(parents, children) {
@@ -49,11 +51,46 @@ const prototypeExtends = function (viewer, cesiumGlobal) {
   return _inner;
 }
 
-
-export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryList = []) {
-  Cesium = cesiumGlobal;
+  /**
+   * 初始化入口函数
+   * @param {*} param0 
+   * {
+   *   cesiumGlobal：{Object} ceiusm全局对象
+   *   containerId:{String} 容器id
+   *   viewerConfig:{Object} viewer基础配置
+   *      【参数格式】：{与官网一致}
+   *   extreaConfig：{Object }
+   *     【参数格式】：
+   *       {
+   *        initNavigate：true，指南针,
+   *        logo：true，// 是否显示logo
+   *        depthTest：true， //开启深度检测 
+   *      }
+   *   MapImageryList:{Array} 配置底图，每一个元素格式为
+   *    【参数格式】 ：
+   *      [{
+   *        id: 3,
+            name: '',
+            type: '',//ImageryProvider类型
+            classConfig: {
+              url:  链接地址
+            },
+            interfaceConfig: {},
+            offset: '0,0',
+            invertswitch: 0,
+            filterRGB: '#ffffff',
+            showswitch: 1,
+            weight: 13,
+            createtime: 创建时间
+            updatetime: 更新时间,
+        }]
+   *   
+   * }
+   * @returns 
+   */
+export function initCesium({cesiumGlobal=alternateCesium, containerId,viewerConfig={}, extreaConfig={}, MapImageryList = [] }) {
   const initCom = new Controller(cesiumGlobal);
-  const _viewer = initCom.init(containerId, BaseMapConfig, MapImageryList);
+  const _viewer = initCom.init({containerId, viewerConfig, extreaConfig, MapImageryList});
 
   // 合并对象，实现继承
   const protoExtends = prototypeExtends(_viewer, cesiumGlobal);
@@ -68,7 +105,11 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
   const _control = protoExtends(Base, Control);
   const _plugin = protoExtends(Base, Plugin);
   const _base = new Base(_viewer, cesiumGlobal);
-  const _analysis = protoExtends([Base, Draw,Plugin],Analysis)
+  const _analysis = protoExtends([Base, Draw, Plugin], Analysis);
+  const _attackArrowObj = new AttackArrow(_viewer, cesiumGlobal);
+  const _straightArrowObj = new StraightArrow(_viewer, cesiumGlobal);
+  const _pincerArrowObj = new PincerArrow(_viewer, cesiumGlobal);
+
   return {
     viewer: _viewer,
     material: _material,
@@ -81,6 +122,9 @@ export function initCesium(cesiumGlobal, containerId, BaseMapConfig, MapImageryL
     control: _control,
     plugin: _plugin,
     base: _base,
-    analysis:_analysis
+    analysis: _analysis,
+    attackArrowObj: _attackArrowObj,
+    straightArrowObj: _straightArrowObj,
+    pincerArrowObj:_pincerArrowObj
   }
 }

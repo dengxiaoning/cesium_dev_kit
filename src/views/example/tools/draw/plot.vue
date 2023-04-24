@@ -21,7 +21,7 @@
 <script>
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-import { initPlot } from '@/utils/cesiumPluginsExtends/libs/plot/index'
+
 export default {
   data() {
     return {
@@ -112,21 +112,21 @@ export default {
   },
   methods: {
     initMap() {
-      const { viewer, material, graphics, draw } = new initCesium(
-        Cesium,
-        'cesiumContainer',
-        {
-          infoBox: false,
-          shouldAnimate: true
-        },
-        []
-      )
-      // 初始化plot
-      const {
-        AttackArrowObj,
-        StraightArrowObj,
-        PincerArrowObj
-      } = new initPlot(viewer, Cesium)
+      const { viewer, material, graphics, draw,
+        attackArrowObj,
+        straightArrowObj,
+        pincerArrowObj } = new initCesium(
+          {
+            cesiumGlobal: Cesium,
+            containerId: 'cesiumContainer',
+            viewerConfig: {
+              infoBox: false,
+              shouldAnimate: true,
+            },
+            extraConfig: {},
+            MapImageryList: []
+          })
+
 
       this.c_viewer = viewer
       this.material = material
@@ -136,9 +136,9 @@ export default {
       this.material.setBloomLightScene()
       this.load3dTiles(viewer)
 
-      this.StraightArrowObj = StraightArrowObj
-      this.AttackArrowObj = AttackArrowObj
-      this.PincerArrowObj = PincerArrowObj
+      this.StraightArrowObj = straightArrowObj
+      this.AttackArrowObj = attackArrowObj
+      this.PincerArrowObj = pincerArrowObj
     },
     load3dTiles(viewer) {
       var _self = this

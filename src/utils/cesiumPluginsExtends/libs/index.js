@@ -35,6 +35,15 @@ import {
   Plugin
 } from './Plugin'
 import {Analysis} from './Analysis'
+import {
+  AttackArrow
+} from './plot/AttackArrow';
+import {
+  StraightArrow
+} from './plot/StraightArrow';
+import {
+  PincerArrow
+} from './plot/PincerArrow';
 
 export {
   Base,
@@ -49,5 +58,8 @@ export {
   Math3d,
   Control,
   Plugin,
-  Analysis
+  Analysis,
+  AttackArrow,
+  StraightArrow,
+  PincerArrow
 }

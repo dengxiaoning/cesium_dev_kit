@@ -58,21 +58,24 @@ export default {
         viewer,
         analysis
       } = new initCesium(
-        Cesium,
-        'cesiumContainer',
         {
-          infoBox: false,
-          shouldAnimate: true,
-          depthTest: true, // 深度测试
-          imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-            url: "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer?f=jsapi"
-          }),
-          terrainProvider: new Cesium.ArcGISTiledElevationTerrainProvider({
-            url: 'https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer'
-          })
-        },
-        [],
-      )
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+            imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+              url: "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer?f=jsapi"
+            }),
+            terrainProvider: new Cesium.ArcGISTiledElevationTerrainProvider({
+              url: 'https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer'
+            })
+          },
+          extraConfig: {
+            depthTest: true, // 深度测试
+          },
+          MapImageryList: []
+        })
 
       this.c_viewer = viewer;
       this.analysis = analysis;

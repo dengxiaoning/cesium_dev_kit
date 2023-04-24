@@ -28,25 +28,27 @@ export default {
         viewer,
         control,
       } = new initCesium(
-        Cesium,
-        'cesiumContainer',
         {
-          infoBox: false,
-          shouldAnimate: true,
-        },
-        [],
-      )
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
       this.c_viewer = viewer;
       this.control = control;
 
-      let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TencentImageryProvider({layer:'vec'}));
+      let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TencentImageryProvider({ layer: 'vec' }));
       layer.name = '电子底图'; layer.id = 'layer1'; layer.show = true;
-      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TencentImageryProvider({layer:'imgimg'}));
+      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TencentImageryProvider({ layer: 'imgimg' }));
       layer2.name = '影像底图'; layer2.id = 'layer2'; layer2.show = false;
-      this.control.showLayerSwitchPanel([layer,layer2],{ elementId: 'cust-gui-box' })
+      this.control.showLayerSwitchPanel([layer, layer2], { elementId: 'cust-gui-box' })
       this.flyTo();
-      },
-      flyTo() {
+    },
+    flyTo() {
       this.control.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {

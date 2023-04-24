@@ -75,28 +75,23 @@
 - 雷达扫描
   ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/radar.gif)
 
-## 项目设置
-
-```
-yarn  or  npm install
-```
-
-### 编译开发环境
-
-```
-yarn dev  or  npm run dev
-```
-
-### 编译正式环境
-
-```
-yarn build or npm run build
-
-```
-
 ## 在线预览
 
-https://www.benpaodehenji.com/cesiumDevKit
+[https://www.benpaodehenji.com/cesiumDevKit](https://www.benpaodehenji.com/cesiumDevKit)
+
+## NPM 安装
+
+```
+
+yarn  or  npm install
+
+```
+
+## 使用案例
+
+```
+
+```
 
 ## 浏览器支持
 

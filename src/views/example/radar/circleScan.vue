@@ -15,14 +15,16 @@ export default {
   methods: {
     initMap() {
       const { viewer, passEffect } = new initCesium(
-        Cesium,
-        'cesiumContainer',
         {
-          infoBox: false,
-          shouldAnimate: true
-        },
-        []
-      )
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
 
       this.c_viewer = viewer;
       this.passEffect = passEffect;

@@ -18,15 +18,19 @@ export default {
       const { viewer,
         material,
         graphics,
-        math3d } = new initCesium(
-          Cesium,
-          'cesiumContainer',
-          {
+        math3d } = new initCesium({
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
             infoBox: false,
             shouldAnimate: true,
           },
-          [],
-        )
+          extreaConfig: {
+            initNavigate: true,
+            depthTest: true
+          },
+          MapImageryList: []
+        })
 
 
       this.c_viewer = viewer;

@@ -28,45 +28,47 @@ export default {
         viewer,
         control,
       } = new initCesium(
-        Cesium,
-        'cesiumContainer',
         {
-          infoBox: false,
-          shouldAnimate: true,
-        },
-        [],
-      )
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
       this.c_viewer = viewer;
 
       this.control = control;
       let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
-          url:
-            'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
-        }));
-        layer.name = '影像'; layer.id = 'layer1';
+        url:
+          'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
+      }));
+      layer.name = '影像'; layer.id = 'layer1';
 
-        let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
-          url:
-            'https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer '
-        }));
-        layer2.name = '电子'; layer2.id = 'layer2'; layer2.show = false;
+      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
+        url:
+          'https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer '
+      }));
+      layer2.name = '电子'; layer2.id = 'layer2'; layer2.show = false;
 
-        let layer3 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
-          url:
-            'https://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer'
-        }));
-        layer3.name = '地形'; layer3.id = 'layer3'; layer3.show = false;
+      let layer3 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
+        url:
+          'https://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer'
+      }));
+      layer3.name = '地形'; layer3.id = 'layer3'; layer3.show = false;
 
-        let layer4 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
-          url:
-            'https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer'
-        }));
-        layer4.name = '地形2'; layer4.id = 'layer4'; layer4.show = false;
+      let layer4 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
+        url:
+          'https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer'
+      }));
+      layer4.name = '地形2'; layer4.id = 'layer4'; layer4.show = false;
 
-        this.control.showLayerSwitchPanel([layer, layer2, layer3, layer4],{ elementId: 'cust-gui-box' })
-        this.flyto();
-      },
-      flyto() {
+      this.control.showLayerSwitchPanel([layer, layer2, layer3, layer4], { elementId: 'cust-gui-box' })
+      this.flyto();
+    },
+    flyto() {
       this.control.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {

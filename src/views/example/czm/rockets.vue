@@ -15,16 +15,16 @@ export default {
     initMap() {
       const { viewer,
       } = new initCesium(
-        Cesium,
-        'cesiumContainer',
         {
-          infoBox: false,
-          shouldAnimate: true,
-          initNavigate: true,
-          depthTest: true
-        },
-        [],
-      )
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
 
       var dataSourcePromise = viewer.dataSources.add(Cesium.CzmlDataSource.load('static/data/file/rockets.czml'));
 

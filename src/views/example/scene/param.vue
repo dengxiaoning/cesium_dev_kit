@@ -28,14 +28,16 @@ export default {
         viewer,
         control,
       } = new initCesium(
-        Cesium,
-        'cesiumContainer',
         {
-          infoBox: false,
-          shouldAnimate: true,
-        },
-        [],
-      )
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
 
 
       this.c_viewer = viewer;
@@ -63,7 +65,7 @@ export default {
       })
       this.c_viewer.flyTo(tileset);
       let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.GoogleImageryProvider({}));
-      this.control.showLayerParamPanel(layer,{ elementId: 'cust-gui-box' });
+      this.control.showLayerParamPanel(layer, { elementId: 'cust-gui-box' });
     }
   },
   beforeUnmount() {

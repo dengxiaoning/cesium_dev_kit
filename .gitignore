@@ -4,3 +4,4 @@ dist
 csdata
 dist-ssr
 *.local
+cesiumDevKit

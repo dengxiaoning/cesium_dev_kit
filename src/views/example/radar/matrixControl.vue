@@ -144,14 +144,16 @@ export default {
   methods: {
     initMap() {
       const { viewer, primitive } = new initCesium(
-        Cesium,
-        'cesiumContainer',
         {
-          infoBox: false,
-          shouldAnimate: true
-        },
-        []
-      )
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
 
       this.c_viewer = viewer
       this.primitive = primitive;

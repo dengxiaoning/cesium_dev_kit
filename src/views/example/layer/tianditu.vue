@@ -28,14 +28,16 @@ export default {
         viewer,
         control,
       } = new initCesium(
-        Cesium,
-        'cesiumContainer',
         {
-          infoBox: false,
-          shouldAnimate: true,
-        },
-        [],
-      )
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
       this.c_viewer = viewer;
       this.control = control;
 
@@ -44,7 +46,7 @@ export default {
         key,
         style: 'cva'
       }));
-      layer.name = '标注';layer.id = 'layer1';layer.show = false;
+      layer.name = '标注'; layer.id = 'layer1'; layer.show = false;
 
       let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({ key }));
       layer2.name = '电子'; layer2.id = 'layer2'; layer2.show = false;
@@ -53,7 +55,7 @@ export default {
         key,
         style: 'img'
       }));
-      layer3.name = '影像'; layer3.id = 'layer3';layer3.show = true;
+      layer3.name = '影像'; layer3.id = 'layer3'; layer3.show = true;
 
       let layer4 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({
         key,
@@ -61,10 +63,10 @@ export default {
       }));
       layer4.name = '地形'; layer4.id = 'layer3'; layer4.show = true;
 
-      this.control.showLayerSwitchPanel([layer, layer2, layer3, layer4],{ elementId: 'cust-gui-box' })
+      this.control.showLayerSwitchPanel([layer, layer2, layer3, layer4], { elementId: 'cust-gui-box' })
       this.flyTo();
     },
-      flyTo() {
+    flyTo() {
       this.control.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {

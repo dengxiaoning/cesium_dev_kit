@@ -15,13 +15,16 @@ export default {
       const { viewer,
         sceneMang,
         graphics,
-        material } = new initCesium(Cesium,
-          'cesiumContainer',
-          {
+        material } = new initCesium({
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
             infoBox: false,
             shouldAnimate: true,
-          }
-        )
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
       this.c_viewer = viewer;
       this.sceneMang = sceneMang;
 

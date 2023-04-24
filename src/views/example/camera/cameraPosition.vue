@@ -99,16 +99,19 @@ export default {
       const { viewer,
         base
       } = new initCesium(
-        Cesium,
-        'cesiumContainer',
         {
-          infoBox: false,
-          shouldAnimate: true,
-          initNavigate: true,
-          depthTest: true // 深度测试
-        },
-        tempData,
-      )
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {
+            initNavigate: true,
+            depthTest: true
+          },
+          MapImageryList: tempData
+        })
 
       this.c_viewer = viewer;
       this.base = base;
