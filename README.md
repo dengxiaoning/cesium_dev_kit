@@ -79,18 +79,113 @@
 
 [https://www.benpaodehenji.com/cesiumDevKit](https://www.benpaodehenji.com/cesiumDevKit)
 
-## NPM 安装
+## 项目安装与使用
+
+- 1、直接运行本案例项目
+
+```
+  git clone https://github.com/dengxiaoning/cesium_dev_kit.git
+  cd cesium_dev_kit
+  npm install
+  npm run dev
 
 ```
 
-yarn  or  npm install
+- 2、作为 libs 安装到已有项目中
+
+```shell
+
+  npm install cesium_dev_kit
 
 ```
 
 ## 使用案例
 
+```javaScript
+
+<template>
+  <div id="cesiumContainer"
+       class="map3d-contaner"></div>
+</template>
+<script>
+import { initCesium } from 'cesium_dev_kit'
+export default {
+  methods: {
+    initMap() {
+      const {
+        cesiumObj, // Cesium
+        viewer,   // viewer
+        material, // 材质模块（修改实体材质）
+        graphics, // 图形模块（如创建PolygonGraphics对象等）
+        math3d, // 三维数学工具
+        primitive, // 图元操作对象（如使用primivite创建polygon等）
+        draw, // 绘制模块（如多边形，矩形）
+        passEffect, // 后置处理模块
+        customCesiumPlugin,
+        control, // 控制模块（如模型位置调整，拖拽等）
+        plugin, // 额外插件（如拓展css3的动画 ，地形裁剪）
+        base, // 基础模块（如坐标转换，图层初始化等）
+        analysis, // 分析模块（如坡度，坡向，可视域，通视分析）
+        attackArrowObj, // 标绘（攻击）
+        straightArrowObj,// 标绘（直击）
+        pincerArrowObj, // 标绘（钳击）
+      } = new initCesium(
+          {
+            cesiumGlobal: Cesium,
+            containerId: 'cesiumContainer',
+            viewerConfig: {
+              infoBox: false,
+              shouldAnimate: true,
+            },
+            extraConfig: {},
+            MapImageryList: []
+          })
+    }
+  }
+}
+</script>
 ```
 
+- initCesium 参数说明
+
+```javaScript
+  /**
+   * 初始化入口函数
+   * @param {*} param0
+   * {
+   *   cesiumGlobal：{Object} ceiusm全局对象（如果为null或undef将使用 import直接导入Cesium）
+   *   containerId:{String} 容器id
+   *   viewerConfig:{Object} viewer基础配置
+   *      【参数格式】：{与官网一致}
+   *   extreaConfig：{Object }
+   *     【参数格式】：
+   *       {
+   *        initNavigate：true，指南针,
+   *        logo：true，// 是否显示logo
+   *        depthTest：true， //开启深度检测
+   *      }
+   *   MapImageryList:{Array} 配置底图，每一个元素格式为
+   *    【参数格式】 ：
+   *      [{
+   *        id: 3,
+            name: '',
+            type: '',//ImageryProvider类型
+            classConfig: {
+              url:  链接地址
+            },
+            interfaceConfig: {},
+            offset: '0,0',
+            invertswitch: 0,
+            filterRGB: '#ffffff',
+            showswitch: 1,
+            weight: 13,
+            createtime: 创建时间
+            updatetime: 更新时间,
+        }]
+   *
+   * }
+   * @returns
+   */
 ```
 
 ## 浏览器支持

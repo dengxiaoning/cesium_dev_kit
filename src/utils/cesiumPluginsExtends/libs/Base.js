@@ -1143,10 +1143,14 @@ Base.prototype = {
 
     Cesium.Scene.GroundSkyBox = SkyBoxOnGround
   },
-  removeHandler() {
-    this._viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    this._viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-    this._viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+  /**
+   * 
+   * @param {*} eventNameArr  handler名称数组，如['LEFT_CLICK','MOUSE_MOVE']
+   */
+  removeHandlerByName(eventNameArr=[]) {
+    eventNameArr.forEach(eHandler => {
+      this._viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType[eHandler]);
+    })
   }
 }
 

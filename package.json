@@ -8,7 +8,8 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@types/cesium": "^1.70.0",
+    "@turf/geojson-rbush": "^3.2.1",
+    "@turf/turf": "^6.4.0",
     "@vueup/vue-quill": "^1.0.0-beta.7",
     "axios": "^0.21.1",
     "cesium": "1.84.0",
@@ -25,7 +26,7 @@
     "nprogress": "0.2.0",
     "ol": "^6.9.0",
     "path-browserify": "^1.0.1",
-    "vue": "^3.0.5",
+    "vue": "^3.2.13",
     "vue-router": "^4.0.6",
     "vuex": "^4.0.0"
   },

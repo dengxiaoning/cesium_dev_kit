@@ -1,3 +1,4 @@
+// import * as turf from '@turf/turf';
 var defProperty = ['RGVwdGhGdW5jdGlvbg==', 'TEVTUw==', 'Q3VsbEZhY2U=', 'QkFDSw==', 'dW5pZm9ybU1hcA==',
   'cHJvamVjdGlvbk1hdHJpeA==', 'dW5pZm9ybVN0YXRl', 'cHJvamVjdGlvbg==', 'bW9kZWxWaWV3TWF0cml4', 'bW9kZWxWaWV3',
   'c2hpbmluZXNz', 'ZW1pc3Npb24=', 'c3BlY3VsYXI=', 'aXNMaW5l', 'cGlja2Vk', 'cGlja2VkQ29sb3I=', 'bm9ybWFsTWF0cml4',

@@ -1,5 +1,10 @@
 import * as dat from 'dat.gui';
 let Cesium = null;
+let currManualFlag = {};
+let pickedObject;
+let dragEntity;
+let mode = 'move';
+let _global_viewer = null;
 /**
  * 控件模块
  * @param {*} viewer
@@ -7,6 +12,7 @@ let Cesium = null;
 function Control(viewer, cesiumGlobal) {
   if (viewer) {
     this._viewer = viewer;
+    _global_viewer = viewer;
     Cesium = cesiumGlobal;
     this._installFileDragDropHandler()
   }
@@ -550,7 +556,22 @@ Control.prototype = {
     rotation.add(rotationParam, 'z+Axis')
     rotation.add(rotationParam, 'z-Axis')
     rotation.open()
-
+    if (param.cb) {
+      let getModelInfo = gui.addFolder('获取调整后的模型矩阵')
+      getModelInfo.add({
+        'getModelMaterix': () => {
+          primitive.readyPromise.then(data => {
+            let modelTransformMatrix = data.root.transform
+          param.cb({
+            modelTransformMatrix,
+             modelMatrix:primitives.modelMatrix
+            })
+          })
+  
+        }
+      }, 'getModelMaterix').name('获取模型矩阵')
+      getModelInfo.open();
+    }
     gui.__closeButton.innerHTML = '收缩面板'
   },
   /**
@@ -839,6 +860,120 @@ Control.prototype = {
       })
       Orientation.open()
     }
+  },
+  /**
+   * 定义事件
+   */
+  definedMouseEvent({targetEntity , ctrlFlag }) {
+    dragEntity = targetEntity; currManualFlag=ctrlFlag;
+    this.bindHandelEvent({
+      leftDown: this.defLeftDown,
+      mouseMove: this.defMouseMove,
+      mouseWheel: this.defMouseWheel,
+      leftUp: this.defLeftUp
+    });
+  },
+  defMouseMove(movement) {
+    if (currManualFlag.leftDown && pickedObject) {
+      //鼠标在场景中移动的位置
+      let ray = _global_viewer.camera.getPickRay(movement.endPosition);
+      //鼠标在移动过程中与三维场景中移动的坐标位置
+      let cartesian = _global_viewer.scene.globe.pick(ray, _global_viewer.scene);
+      //改变鼠标样式
+      document.body.style.cursor = 'pointer';
+      if (pickedObject && pickedObject.id && mode === "move") {
+        //获取到物体当前的位置
+        let currentTime = Cesium.JulianDate.fromDate(new Date())
+        let positionC3 = dragEntity.position.getValue(currentTime)
+        let catographic = Cesium.Cartographic.fromCartesian(positionC3);
+        let height = Number(catographic.height.toFixed(3));
+        //动态回调改变物体的位置
+        dragEntity.position = new Cesium.CallbackProperty(() => {
+          let cartographic = _global_viewer.scene.globe.ellipsoid.cartesianToCartographic(cartesian);
+          let longitude = Cesium.Math.toDegrees(cartographic.longitude);
+          let latitude = Cesium.Math.toDegrees(cartographic.latitude);
+          let position = Cesium.Cartesian3.fromDegrees(longitude, latitude, height)
+          return position;
+        }, false);
+      } else if (pickedObject && pickedObject.id && mode === "rotate") {
+        let currentTime = Cesium.JulianDate.fromDate(new Date())
+        let center = dragEntity.position.getValue(currentTime)
+
+        //获取鼠标移动起始位置与地球球面求交的开始位置和结束位置
+        let start = _global_viewer.scene.camera.pickEllipsoid(movement.startPosition)
+        let end = _global_viewer.scene.camera.pickEllipsoid(movement.endPosition);
+
+        //计算旋转轴
+        const vector2 = Cesium.Cartesian3.subtract(center, end, new Cesium.Cartesian3());
+        //归一化
+        const normal = Cesium.Cartesian3.normalize(vector2, new Cesium.Cartesian3());
+
+        //计算起始点的旋转角度
+        let startNormal = Cesium.Cartesian3.subtract(start, center, new Cesium.Cartesian3())
+        let endNormal = Cesium.Cartesian3.subtract(end, center, new Cesium.Cartesian3())
+        let angleBetween = Cesium.Cartesian3.angleBetween(startNormal, endNormal);
+        //旋转因子
+        const rotate = 100
+        //计算出朝向
+        const quaternion = Cesium.Quaternion.fromAxisAngle(normal, angleBetween * rotate)
+        dragEntity.orientation = quaternion
+      }
+    }
+  },
+  defLeftDown(movement) {
+    //选中物体
+    pickedObject =  _global_viewer.scene.pick(movement.position);
+    if (Cesium.defined(pickedObject) && mode) {
+      //选中
+      currManualFlag.selected = true;
+      currManualFlag.leftDown = true;
+    } else {
+    currManualFlag.selected = false;
+    }
+  },
+  defMouseWheel(movement) {
+    if (pickedObject && pickedObject.id && mode === "scale") {
+      //计算出当前盒子的尺寸
+      let currentTime = Cesium.JulianDate.fromDate(new Date())
+      let dimensions = dragEntity.box.dimensions.getValue(currentTime)
+      //计算缩放因子
+      let scale = movement > 0 ? 2 : 0.5
+      dragEntity.box.dimensions = new Cesium.CallbackProperty(() => {
+        let cartesian3 = Cesium.Cartesian3.multiplyByScalar(dimensions, scale, new Cesium.Cartesian3());
+        return cartesian3
+      }, false)
+    }
+  },
+  defLeftUp(movement) {
+    currManualFlag.leftDown = false;
+    document.body.style.cursor = 'default';
+  },
+  /**
+   * 移动模型
+   * @param {*} mode 
+   */
+  manualMoveModel: function (modifyMode) {
+    mode = modifyMode;
+    this._viewer.scene.screenSpaceCameraController.enableRotate = false;
+    this._viewer.scene.screenSpaceCameraController.enableZoom = true;
+  },
+  /**
+ * 旋转模型
+ * @param {*} mode 
+ */
+  manualRotateModel: function (modifyMode) {
+ 
+      mode = modifyMode;
+      this._viewer.scene.screenSpaceCameraController.enableRotate = false;
+      this._viewer.scene.screenSpaceCameraController.enableZoom = true;
+  },
+ /**
+ * 缩放模型
+ * @param {*} mode 
+ */
+  manualScaleModel: function (modifyMode) {
+    mode = modifyMode;
+    this._viewer.scene.screenSpaceCameraController.enableZoom = false;
   }
 }
 

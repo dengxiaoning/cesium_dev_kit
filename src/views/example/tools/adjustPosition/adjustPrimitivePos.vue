@@ -5,13 +5,37 @@
 
     <div class="cust-gui-box"
          id="cust-gui-box"></div>
+    <div v-cust-drag-dialog>
+      <el-dialog v-model="dialogDirectiveVisible"
+                 title="获取模型矩阵"
+                 width="30%"
+                 :close-on-click-modal="false">
+        <p>【modelTransformMatrix】{{ modelTransformMatrix }}</p>
+        <p>【modelMatrix】{{ modelMatrix }}</p>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogDirectiveVisible = false">取消</el-button>
+            <el-button type="primary"
+                       @click="dialogDirectiveVisible = false">
+              确定
+            </el-button>
+          </span>
+        </template>
+      </el-dialog>
+    </div>
   </div>
 </template>
 <script >
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-
 export default {
+  data() {
+    return {
+      dialogDirectiveVisible: false,
+      modelMatrix: '',
+      modelTransformMatrix: ''
+    }
+  },
   mounted() {
     this.initMap()
   },
@@ -75,7 +99,14 @@ export default {
         },
       })
       this.c_viewer.flyTo(tileset);
-      this.control.showPrimitiveMatrixPanel({ elementId: 'cust-gui-box', primitives: tileset });
+      this.control.showPrimitiveMatrixPanel({
+        elementId: 'cust-gui-box', primitives: tileset, cb: resModelMatrix => {
+          console.log(resModelMatrix)
+          this.modelTransformMatrix = JSON.stringify(resModelMatrix.modelTransformMatrix);
+          this.modelMatrix = resModelMatrix.modelMatrix;
+          this.dialogDirectiveVisible = true;
+        }
+      });
     }
   },
   beforeUnmount() {

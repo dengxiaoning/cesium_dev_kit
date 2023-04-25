@@ -21,11 +21,10 @@
 <script>
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-let selected = false
-let leftDown = false;
-let pickedObject;
-let entity;
-let mode = null;
+let ctrlManualFlag = {
+  selected: false,
+  leftDown: false
+}
 export default {
   data() {
     return {
@@ -51,7 +50,7 @@ export default {
   },
   methods: {
     initMap() {
-      const { viewer, graphics, } = new initCesium(
+      const { viewer, graphics, control } = new initCesium(
         {
           cesiumGlobal: Cesium,
           containerId: 'cesiumContainer',
@@ -64,20 +63,22 @@ export default {
         })
 
 
-      this.c_viewer = viewer
-      this.graphics = graphics
+      this.c_viewer = viewer;
+      this.graphics = graphics;
+      this.control = control;
 
-      this.definedMouseEvent()
+
       this.initModel(viewer);
+
     },
     initModel(viewer) {
-      entity = this.graphics.createBoxGraphics({
+      const entity = this.graphics.createBoxGraphics({
         position: Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883, 0.0),
         name: "box",
         box: {
           dimensions: new Cesium.Cartesian3(500.0, 500.0, 500.0),//尺寸，长宽高
           material: new Cesium.ColorMaterialProperty((new Cesium.CallbackProperty(() => {
-            if (selected && leftDown) {
+            if (ctrlManualFlag.selected && ctrlManualFlag.leftDown) {
               return Cesium.Color.GREENYELLOW.withAlpha(0.5)
             }
             return Cesium.Color.WHITE;
@@ -85,114 +86,31 @@ export default {
         }
       })
       viewer.flyTo(entity)
+      this.initMouseEvent(entity)
     },
-    definedMouseEvent() {
-      this.graphics.bindHandelEvent({
-        leftDown: this.defLeftDown,
-        mouseMove: this.defMouseMove,
-        mouseWheel: this.defMouseWheel,
-        leftUp: this.defLeftUp
-      });
-    },
-    defMouseMove(movement) {
-      const viewer = this.c_viewer;
-      if (leftDown && pickedObject) {
-        //鼠标在场景中移动的位置
-        let ray = viewer.camera.getPickRay(movement.endPosition);
-        //鼠标在移动过程中与三维场景中移动的坐标位置
-        let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
-        //改变鼠标样式
-        document.body.style.cursor = 'pointer';
-        if (pickedObject && pickedObject.id && mode === "move") {
-          //获取到物体当前的位置
-          let currentTime = Cesium.JulianDate.fromDate(new Date())
-          let positionC3 = entity.position.getValue(currentTime)
-          let catographic = Cesium.Cartographic.fromCartesian(positionC3);
-          let height = Number(catographic.height.toFixed(3));
-          //动态回调改变物体的位置
-          entity.position = new Cesium.CallbackProperty(() => {
-            let cartographic = viewer.scene.globe.ellipsoid.cartesianToCartographic(cartesian);
-            let longitude = Cesium.Math.toDegrees(cartographic.longitude);
-            let latitude = Cesium.Math.toDegrees(cartographic.latitude);
-            let position = Cesium.Cartesian3.fromDegrees(longitude, latitude, height)
-            return position;
-          }, false);
-        } else if (pickedObject && pickedObject.id && mode === "rotate") {
-          let currentTime = Cesium.JulianDate.fromDate(new Date())
-          let center = entity.position.getValue(currentTime)
-
-          //获取鼠标移动起始位置与地球球面求交的开始位置和结束位置
-          let start = viewer.scene.camera.pickEllipsoid(movement.startPosition)
-          let end = viewer.scene.camera.pickEllipsoid(movement.endPosition);
-
-          //计算旋转轴
-          const vector2 = Cesium.Cartesian3.subtract(center, end, new Cesium.Cartesian3());
-          //归一化
-          const normal = Cesium.Cartesian3.normalize(vector2, new Cesium.Cartesian3());
-
-          //计算起始点的旋转角度
-          let startNormal = Cesium.Cartesian3.subtract(start, center, new Cesium.Cartesian3())
-          let endNormal = Cesium.Cartesian3.subtract(end, center, new Cesium.Cartesian3())
-          let angleBetween = Cesium.Cartesian3.angleBetween(startNormal, endNormal);
-          //旋转因子
-          const rotate = 100
-          //计算出朝向
-          const quaternion = Cesium.Quaternion.fromAxisAngle(normal, angleBetween * rotate)
-          entity.orientation = quaternion
-        }
-      }
-    },
-    defLeftDown(movement) {
-      //选中物体
-      pickedObject = this.c_viewer.scene.pick(movement.position);
-      if (Cesium.defined(pickedObject) && mode) {
-        //选中
-        selected = true;
-        leftDown = true;
-      } else {
-        selected = false;
-      }
-    },
-    defMouseWheel(movement) {
-      if (pickedObject && pickedObject.id && mode === "scale") {
-        //计算出当前盒子的尺寸
-        let currentTime = Cesium.JulianDate.fromDate(new Date())
-        let dimensions = entity.box.dimensions.getValue(currentTime)
-        //计算缩放因子
-        let scale = movement > 0 ? 2 : 0.5
-        entity.box.dimensions = new Cesium.CallbackProperty(() => {
-          let cartesian3 = Cesium.Cartesian3.multiplyByScalar(dimensions, scale, new Cesium.Cartesian3());
-          return cartesian3
-        }, false)
-      }
-    },
-    defLeftUp(movement) {
-      leftDown = false;
-      document.body.style.cursor = 'default';
+    initMouseEvent(entity) {
+      this.control.definedMouseEvent({ targetEntity: entity, ctrlFlag: ctrlManualFlag })
     },
     caldDistain(item) {
       this.activeId = item.value
-      mode = item.value;
       switch (item.value) {
         case 'move':
-          //锁定相机
-          this.c_viewer.scene.screenSpaceCameraController.enableRotate = false;
-          this.c_viewer.scene.screenSpaceCameraController.enableZoom = true;
+          this.control.manualMoveModel(item.value);
           break
         case 'rotate':
-          //锁定相机
-          this.c_viewer.scene.screenSpaceCameraController.enableRotate = false;
-          this.c_viewer.scene.screenSpaceCameraController.enableZoom = true;
+          this.control.manualRotateModel(item.value);
           break
         case 'scale':
-          this.c_viewer.scene.screenSpaceCameraController.enableZoom = false;
+          this.control.manualScaleModel(item.value);
           break
       }
     },
   },
   beforeUnmount() {
-    this.c_viewer = null
-    this.graphics = null
+    // 清除绑定的事件
+    this.graphics.removeHandlerByName(['LEFT_CLICK', 'MOUSE_MOVE', 'LEFT_DOWN', 'LEFT_UP', 'WHEEL']);
+    this.c_viewer = null;
+    this.graphics = null;
   }
 }
 </script>
