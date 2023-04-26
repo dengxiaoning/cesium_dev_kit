@@ -8,12 +8,12 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@turf/geojson-rbush": "^3.2.1",
-    "@turf/turf": "^6.4.0",
+    "@turf/turf": "^6.5.0",
     "@vueup/vue-quill": "^1.0.0-beta.7",
     "axios": "^0.21.1",
     "cesium": "1.84.0",
     "cesium-navigation-es6": "^3.0.8",
+    "concaveman": "^1.1.1",
     "dat.gui": "^0.7.9",
     "echarts": "4.2.1",
     "element-plus": "^1.0.1-alpha.1",

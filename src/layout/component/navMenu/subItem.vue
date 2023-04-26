@@ -12,7 +12,7 @@
                 :parent-path="resolvePath(val.path)" />
     </el-submenu>
     <el-menu-item :index="resolvePath(val.path)"
-                  :key="val.path"
+                  :key="index+''+val.path"
                   v-else>
       <template v-if="!val.meta.isLink">
         <CIcon :icon-class="val.meta.icon ? val.meta.icon : ''" />

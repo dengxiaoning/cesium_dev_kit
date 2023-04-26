@@ -3,14 +3,15 @@
     <div id="cesiumContainer"
          class="map3d-contaner"></div>
     <section class="elslider-control">
-      <div class="block"
+      <div class="slider-demo-block"
            v-for="(item,idx) in menuList"
            :key="idx">
         <span class="demonstration">{{ item.label }}</span>
-        <el-slider v-model="item.bindVal.value"
-                   :max="item.bindVal.max"
-                   :min="item.bindVal.min"
-                   @change="sliderChanger(item.flag,$event)"></el-slider>
+        <input type="range"
+               v-model="item.bindVal.value"
+               :max="item.bindVal.max"
+               :min="item.bindVal.min"
+               @change="sliderChanger(item.flag,$event)">
       </div>
     </section>
   </div>
@@ -182,61 +183,61 @@ export default {
         repeat: 20
       })
     },
-    sliderChanger(flag, value) {
+    sliderChanger(flag, e) {
       const Probing = this.Probing;
       let translation = null, angel = null, rotation = null;
       switch (flag) {
         case 'X-Translation-Plus':
-          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(value, 0, 0))
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(e.target.value, 0, 0))
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
           break;
         case 'Y-Translation-Plus':
-          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, value, 0))
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, e.target.value, 0))
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
           break;
         case 'Z-Translation-Plus':
-          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, value))
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, e.target.value))
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
           break;
         case 'X-Translation-Minus':
-          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(value, 0, 0))
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(e.target.value, 0, 0))
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
           break;
         case 'Y-Translation-Minus':
-          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, value, 0))
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, e.target.value, 0))
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
           break;
         case 'Z-Translation-Minus':
-          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, value))
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, e.target.value))
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
           break;
         case 'X-Rotate-Plus':
-          angel = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(value))
+          angel = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(e.target.value))
           rotation = Cesium.Matrix4.fromRotationTranslation(angel)
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
           break;
         case 'Y-Rotate-Plus':
-          angel = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(value))
+          angel = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(e.target.value))
           rotation = Cesium.Matrix4.fromRotationTranslation(angel)
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
           break;
         case 'Z-Rotate-Plus':
-          angel = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(value))
+          angel = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(e.target.value))
           rotation = Cesium.Matrix4.fromRotationTranslation(angel)
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
           break;
         case 'X-Rotate-Minus':
-          angel = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(value))
+          angel = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(e.target.value))
           rotation = Cesium.Matrix4.fromRotationTranslation(angel)
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
           break;
         case 'Y-Rotate-Minus':
-          angel = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(value))
+          angel = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(e.target.value))
           rotation = Cesium.Matrix4.fromRotationTranslation(angel)
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
           break;
         case 'Z-Rotate-Minus':
-          angel = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(value))
+          angel = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(e.target.value))
           rotation = Cesium.Matrix4.fromRotationTranslation(angel)
           Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
           break;
@@ -276,6 +277,11 @@ export default {
     top: 10px;
     left: 8px;
     background: #fff;
+    .slider-demo-block {
+      line-height: 40px;
+      display: flex;
+      justify-content: space-around;
+    }
   }
   :deep(.el-slider__runway) {
     margin: 6px 0;

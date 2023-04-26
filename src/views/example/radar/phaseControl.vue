@@ -3,40 +3,45 @@
     <div id="cesiumContainer"
          class="map3d-contaner"></div>
     <section class="elslider-control">
-      <div class="block">
+      <div class="slider-demo-block">
         <span class="demonstration">xHalfAngle:</span>
-        <el-slider v-model="xHalfAngleDef.value"
-                   :max="xHalfAngleDef.max"
-                   :min="xHalfAngleDef.min"
-                   @change="xHalfAngleChange"></el-slider>
+        <input type="range"
+               v-model="xHalfAngleDef.value"
+               :max="xHalfAngleDef.max"
+               :min="xHalfAngleDef.min"
+               @change="xHalfAngleChange">
       </div>
-      <div class="block">
+      <div class="slider-demo-block">
         <span class="demonstration">yHalfAngle:</span>
-        <el-slider v-model="yHalfAngleDef.value"
-                   :max="yHalfAngleDef.max"
-                   :min="yHalfAngleDef.min"
-                   @change="yHalfAngleChange"></el-slider>
+        <input type="range"
+               v-model="yHalfAngleDef.value"
+               :max="yHalfAngleDef.max"
+               :min="yHalfAngleDef.min"
+               @change="yHalfAngleChange">
       </div>
-      <div class="block">
+      <div class="slider-demo-block">
         <span class="demonstration">Heading:</span>
-        <el-slider v-model="HeadingDef.value"
-                   :max="HeadingDef.max"
-                   :min="HeadingDef.min"
-                   @change="HeadingChange"></el-slider>
+        <input type="range"
+               v-model="HeadingDef.value"
+               :max="HeadingDef.max"
+               :min="HeadingDef.min"
+               @change="HeadingChange">
       </div>
-      <div class="block">
+      <div class="slider-demo-block">
         <span class="demonstration">Pitch:</span>
-        <el-slider v-model="PitchDef.value"
-                   :max="PitchDef.max"
-                   :min="PitchDef.min"
-                   @change="PitchChange"></el-slider>
+        <input type="range"
+               v-model="PitchDef.value"
+               :max="PitchDef.max"
+               :min="PitchDef.min"
+               @change="PitchChange">
       </div>
-      <div class="block">
+      <div class="slider-demo-block">
         <span class="demonstration">Roll:</span>
-        <el-slider v-model="RollDef.value"
-                   :max="RollDef.max"
-                   :min="RollDef.min"
-                   @change="RollChange"></el-slider>
+        <input type="range"
+               v-model="RollDef.value"
+               :max="RollDef.max"
+               :min="RollDef.min"
+               @change="RollChange">
       </div>
     </section>
   </div>
@@ -127,14 +132,14 @@ export default {
       })
     },
     xHalfAngleChange(e) {
-      this.sensorEntity.rectangularSensor.xHalfAngle = Cesium.Math.toRadians(e)
+      this.sensorEntity.rectangularSensor.xHalfAngle = Cesium.Math.toRadians(e.target.value)
     },
     yHalfAngleChange(e) {
-      this.sensorEntity.rectangularSensor.yHalfAngle = Cesium.Math.toRadians(e)
+      this.sensorEntity.rectangularSensor.yHalfAngle = Cesium.Math.toRadians(e.target.value)
     },
     HeadingChange(e) {
       const _this = this;
-      _this.heading = e;
+      _this.heading = e.target.value
       _this.sensorEntity.orientation = Cesium.Transforms.headingPitchRollQuaternion(
         _this.currPosition,
         new Cesium.HeadingPitchRoll(
@@ -146,7 +151,7 @@ export default {
     },
     PitchChange(e) {
       const _this = this;
-      _this.pitch = e;
+      _this.pitch = e.target.value
       _this.sensorEntity.orientation = Cesium.Transforms.headingPitchRollQuaternion(
         _this.currPosition,
         new Cesium.HeadingPitchRoll(
@@ -158,7 +163,7 @@ export default {
     },
     RollChange(e) {
       const _this = this;
-      this.roll = e;
+      this.roll = e.target.value
       this.sensorEntity.orientation = Cesium.Transforms.headingPitchRollQuaternion(
         _this.currPosition,
         new Cesium.HeadingPitchRoll(
@@ -200,6 +205,11 @@ export default {
     top: 10px;
     left: 8px;
     background: #fff;
+    .slider-demo-block {
+      line-height: 40px;
+      display: flex;
+      justify-content: space-around;
+    }
   }
 }
 </style>

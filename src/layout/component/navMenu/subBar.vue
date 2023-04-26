@@ -19,7 +19,7 @@
       </el-submenu>
 
       <el-menu-item :index="val.path"
-                    :key="val.path"
+                    :key="index+'_'+val.path"
                     v-else>
         <CIcon :icon-class="val.meta.icon ? val.meta.icon : ''" />
         <template #title
@@ -41,7 +41,7 @@
 <script lang="ts">
 import type { PropType } from 'vue'
 import type { Menu } from 'store/interface/index'
-import { ref, toRefs, reactive, computed, defineComponent,  } from 'vue'
+import { ref, toRefs, reactive, computed, defineComponent } from 'vue'
 import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import { useStore } from 'store/index'
 import SubItem from './subItem.vue'
