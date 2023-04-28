@@ -1,13 +1,15 @@
+import { Graphics } from './Graphics'
+let dfSt = undefined;
 let Cesium = null;
-import{Graphics} from './Graphics'
 /**
  * 画笔模块
  * @param {*} viewer
  */
-function Draw(viewer, cesiumGlobal) {
+function Draw(viewer, cesiumGlobal,defaultStatic) {
 
   if (viewer) {
     Cesium = cesiumGlobal;
+    dfSt = defaultStatic;
     this._drawLayer = new Cesium.CustomDataSource('drawLayer')
       this.$graphics = new Graphics(viewer,cesiumGlobal)
     viewer && viewer.dataSources.add(this._drawLayer)
@@ -22,7 +24,7 @@ Draw.prototype = {
   drawPointGraphics: function (options) {
     options = options || {}
     options.style = options.style || {
-      image: 'static/data/images/file/location4.png',
+      image: this.getDfSt(['drawPointGraphics'])||'static/data/images/file/location4.png',
       width: 35,
       height: 40,
       clampToGround: true,

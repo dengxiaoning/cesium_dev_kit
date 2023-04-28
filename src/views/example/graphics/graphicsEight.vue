@@ -7,7 +7,7 @@
 <script >
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-
+import { defaultStatic } from '../defaultStaticConf'
 
 export default {
   mounted() {
@@ -26,10 +26,10 @@ export default {
             shouldAnimate: true,
           },
           extreaConfig: {
-            initNavigate: true,
             depthTest: true
           },
-          MapImageryList: []
+          MapImageryList: [],
+          defaultStatic
         })
 
 

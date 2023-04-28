@@ -1,9 +1,10 @@
 let Cesium = {};
-
-function Base(viewer, cesiumGlobal) {
+let dfSt = undefined;
+function Base(viewer, cesiumGlobal,defaultStatic) {
   if (viewer) {
     this._viewer = viewer;
     Cesium = cesiumGlobal;
+    dfSt = defaultStatic;
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE';
     this._drawLayer = new Cesium.CustomDataSource('drawLayer');
     viewer && viewer.dataSources.add(this._drawLayer);
@@ -28,16 +29,29 @@ Base.prototype = {
   createGraphics: function () {
     return new Cesium.Entity()
   },
+  getDfSt(attrArr) {
+    if (dfSt) {
+     const res=  attrArr.reduce((pre, curr) => {
+        if (pre) {
+          return pre[curr]
+        } else {
+          return dfSt[curr]
+        }
+     }, undefined)
+      return dfSt.baseService + res;
+    }
+    return undefined;
+  },
   // 天空盒
   setOneSkyBox: function () {
     return new Cesium.SkyBox({
       sources: {
-        positiveX: 'static/data/images/SkyBox/00h+00.jpg',
-        negativeX: 'static/data/images/SkyBox/12h+00.jpg',
-        positiveY: 'static/data/images/SkyBox/06h+00.jpg',
-        negativeY: 'static/data/images/SkyBox/18h+00.jpg',
-        positiveZ: 'static/data/images/SkyBox/06h+90.jpg',
-        negativeZ: 'static/data/images/SkyBox/06h-90.jpg'
+        positiveX: this.getDfSt(['skyBox','one','positiveX'])||'static/data/images/SkyBox/00h+00.jpg',
+        negativeX: this.getDfSt(['skyBox','one','negativeX'])||'static/data/images/SkyBox/12h+00.jpg',
+        positiveY: this.getDfSt(['skyBox','one','positiveY'])||'static/data/images/SkyBox/06h+00.jpg',
+        negativeY: this.getDfSt(['skyBox','one','negativeY'])||'static/data/images/SkyBox/18h+00.jpg',
+        positiveZ: this.getDfSt(['skyBox','one','positiveZ'])||'static/data/images/SkyBox/06h+90.jpg',
+        negativeZ: this.getDfSt(['skyBox','one','negativeZ'])||'static/data/images/SkyBox/06h-90.jpg'
       }
     })
   },
@@ -45,12 +59,12 @@ Base.prototype = {
   setTwoSkyBox: function () {
     return new Cesium.SkyBox({
       sources: {
-        positiveX: 'static/data/images/SkyBox/Version2_dark_px.jpg',
-        negativeX: 'static/data/images/SkyBox/Version2_dark_mx.jpg',
-        positiveY: 'static/data/images/SkyBox/Version2_dark_py.jpg',
-        negativeY: 'static/data/images/SkyBox/Version2_dark_my.jpg',
-        positiveZ: 'static/data/images/SkyBox/Version2_dark_pz.jpg',
-        negativeZ: 'static/data/images/SkyBox/Version2_dark_mz.jpg'
+        positiveX: this.getDfSt(['skyBox','two','negativeZ'])||'static/data/images/SkyBox/Version2_dark_px.jpg',
+        negativeX: this.getDfSt(['skyBox','two','negativeX'])||'static/data/images/SkyBox/Version2_dark_mx.jpg',
+        positiveY: this.getDfSt(['skyBox','two','positiveY'])||'static/data/images/SkyBox/Version2_dark_py.jpg',
+        negativeY: this.getDfSt(['skyBox','two','negativeY'])||'static/data/images/SkyBox/Version2_dark_my.jpg',
+        positiveZ: this.getDfSt(['skyBox','two','positiveZ'])||'static/data/images/SkyBox/Version2_dark_pz.jpg',
+        negativeZ: this.getDfSt(['skyBox','two','negativeZ'])||'static/data/images/SkyBox/Version2_dark_mz.jpg'
       }
     })
   },
@@ -58,12 +72,12 @@ Base.prototype = {
   setThreeSkyBox: function () {
     return new Cesium.SkyBox({
       sources: {
-        positiveX: 'static/data/images/SkyBox/tycho2t3_80_pxs.jpg',
-        negativeX: 'static/data/images/SkyBox/tycho2t3_80_mxs.jpg',
-        positiveY: 'static/data/images/SkyBox/tycho2t3_80_pys.jpg',
-        negativeY: 'static/data/images/SkyBox/tycho2t3_80_mys.jpg',
-        positiveZ: 'static/data/images/SkyBox/tycho2t3_80_pzs.jpg',
-        negativeZ: 'static/data/images/SkyBox/tycho2t3_80_mzs.jpg'
+        positiveX: this.getDfSt(['skyBox','three','negativeZ'])||'static/data/images/SkyBox/tycho2t3_80_pxs.jpg',
+        negativeX: this.getDfSt(['skyBox','three','negativeX'])||'static/data/images/SkyBox/tycho2t3_80_mxs.jpg',
+        positiveY: this.getDfSt(['skyBox','three','positiveY'])||'static/data/images/SkyBox/tycho2t3_80_pys.jpg',
+        negativeY: this.getDfSt(['skyBox','three','negativeY'])||'static/data/images/SkyBox/tycho2t3_80_mys.jpg',
+        positiveZ: this.getDfSt(['skyBox','three','positiveZ'])||'static/data/images/SkyBox/tycho2t3_80_pzs.jpg',
+        negativeZ: this.getDfSt(['skyBox','three','negativeZ'])||'static/data/images/SkyBox/tycho2t3_80_mzs.jpg'
       }
     })
   },
@@ -71,12 +85,12 @@ Base.prototype = {
   setOneGroundSkyBox: function () {
     return new Cesium.Scene.GroundSkyBox({
       sources: {
-        positiveX: 'static/data/images/SkyBox/rightav9.jpg',
-        negativeX: 'static/data/images/SkyBox/leftav9.jpg',
-        positiveY: 'static/data/images/SkyBox/frontav9.jpg',
-        negativeY: 'static/data/images/SkyBox/backav9.jpg',
-        positiveZ: 'static/data/images/SkyBox/topav9.jpg',
-        negativeZ: 'static/data/images/SkyBox/bottomav9.jpg'
+        positiveX: this.getDfSt(['skyBox','nearOne','positiveX'])||'static/data/images/SkyBox/rightav9.jpg',
+        negativeX: this.getDfSt(['skyBox','nearOne','negativeX'])||'static/data/images/SkyBox/leftav9.jpg',
+        positiveY: this.getDfSt(['skyBox','nearOne','positiveY'])||'static/data/images/SkyBox/frontav9.jpg',
+        negativeY: this.getDfSt(['skyBox','nearOne','negativeY'])||'static/data/images/SkyBox/backav9.jpg',
+        positiveZ: this.getDfSt(['skyBox','nearOne','positiveZ'])||'static/data/images/SkyBox/topav9.jpg',
+        negativeZ: this.getDfSt(['skyBox','nearOne','negativeZ'])||'static/data/images/SkyBox/bottomav9.jpg'
       }
     })
   },
@@ -84,12 +98,12 @@ Base.prototype = {
   setTwoGroundSkyBox: function () {
     return new Cesium.Scene.GroundSkyBox({
       sources: {
-        positiveX: 'static/data/images/SkyBox/SunSetRight.png',
-        negativeX: 'static/data/images/SkyBox/SunSetLeft.png',
-        positiveY: 'static/data/images/SkyBox/SunSetFront.png',
-        negativeY: 'static/data/images/SkyBox/SunSetBack.png',
-        positiveZ: 'static/data/images/SkyBox/SunSetUp.png',
-        negativeZ: 'static/data/images/SkyBox/SunSetDown.png'
+        positiveX: this.getDfSt(['skyBox','nearTwo','positiveX'])||'static/data/images/SkyBox/SunSetRight.png',
+        negativeX: this.getDfSt(['skyBox','nearTwo','negativeX'])||'static/data/images/SkyBox/SunSetLeft.png',
+        positiveY: this.getDfSt(['skyBox','nearTwo','positiveY'])||'static/data/images/SkyBox/SunSetFront.png',
+        negativeY: this.getDfSt(['skyBox','nearTwo','negativeY'])||'static/data/images/SkyBox/SunSetBack.png',
+        positiveZ: this.getDfSt(['skyBox','nearTwo','positiveZ'])||'static/data/images/SkyBox/SunSetUp.png',
+        negativeZ: this.getDfSt(['skyBox','nearTwo','negativeZ'])||'static/data/images/SkyBox/SunSetDown.png'
       }
     })
   },
@@ -97,12 +111,12 @@ Base.prototype = {
   setThreeGroundSkyBox: function () {
     return new Cesium.Scene.GroundSkyBox({
       sources: {
-        positiveX: 'static/data/images/SkyBox/Right.jpg',
-        negativeX: 'static/data/images/SkyBox/Left.jpg',
-        positiveY: 'static/data/images/SkyBox/Front.jpg',
-        negativeY: 'static/data/images/SkyBox/Back.jpg',
-        positiveZ: 'static/data/images/SkyBox/Up.jpg',
-        negativeZ: 'static/data/images/SkyBox/Down.jpg'
+        positiveX: this.getDfSt(['skyBox','nearThree','positiveX'])||'static/data/images/SkyBox/Right.jpg',
+        negativeX: this.getDfSt(['skyBox','nearThree','negativeX'])||'static/data/images/SkyBox/Left.jpg',
+        positiveY: this.getDfSt(['skyBox','nearThree','positiveY'])||'static/data/images/SkyBox/Front.jpg',
+        negativeY: this.getDfSt(['skyBox','nearThree','negativeY'])||'static/data/images/SkyBox/Back.jpg',
+        positiveZ: this.getDfSt(['skyBox','nearThree','positiveZ'])||'static/data/images/SkyBox/Up.jpg',
+        negativeZ: this.getDfSt(['skyBox','nearThree','negativeZ'])||'static/data/images/SkyBox/Down.jpg'
       }
     })
   },

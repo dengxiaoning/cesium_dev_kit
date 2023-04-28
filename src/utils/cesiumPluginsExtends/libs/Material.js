@@ -1,11 +1,13 @@
 let Cesium = null;
+let dfSt = undefined;
 /**
  * 材质模块
  * @param {*} viewer
  */
-function Material(viewer, cesiumGlobal) {
+function Material(viewer, cesiumGlobal,defaultStatic) {
   if (viewer) {
     Cesium = cesiumGlobal;
+    dfSt = defaultStatic;
     this._installMaterial()
 
   }
@@ -492,7 +494,7 @@ Material.prototype = {
 
     Cesium.Scene.PolylineCityLinkMaterialProperty = PolylineCityLinkMaterialProperty
     Material.PolylineCityLinkType = 'PolylineCityLink'
-    Material.PolylineCityLinkImage = 'static/data/images/Textures/meteor_01.png'
+    Material.PolylineCityLinkImage = this.getDfSt(['material','PolylineCityLinkMaterialProperty'])||'static/data/images/Textures/meteor_01.png'
     Material._materialCache.addMaterial(Material.PolylineCityLinkType, {
       fabric: {
         type: Material.PolylineCityLinkType,
@@ -577,7 +579,7 @@ Material.prototype = {
 
     Cesium.Scene.WarnLinkMaterialProperty = WarnLinkMaterialProperty
     Material.WarnLinkType = 'WarnWallLinkType'
-    Material.WarnLinkImage = 'static/data/images/Textures/jsx2.png'
+    Material.WarnLinkImage = this.getDfSt(['material','WarnLinkMaterialProperty'])||'static/data/images/Textures/jsx2.png'
     Material._materialCache.addMaterial(Material.WarnLinkType, {
       fabric: {
         type: Material.WarnLinkType,

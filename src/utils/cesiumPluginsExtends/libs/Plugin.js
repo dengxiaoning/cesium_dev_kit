@@ -1,13 +1,15 @@
 let Cesium = null;
+let dfSt = undefined;
 /**
  * 外部插件模块
  * @param {*} viewer
  */
-function Plugin(viewer, cesiumGlobal) {
+function Plugin(viewer, cesiumGlobal,defaultStatic) {
 
   if (viewer) {
     this._viewer = viewer;
     Cesium = cesiumGlobal;
+    dfSt = defaultStatic;
     this._pluginLayer = new Cesium.CustomDataSource('pluginLayer')
 
     viewer && viewer.dataSources.add(this._pluginLayer)
@@ -621,7 +623,7 @@ Plugin.prototype = {
                 }
                 return s2;
               }, false),
-              material: "static/data/images/Textures/circle2.png",
+              material: this.getDfSt(['plugin','Css3Renderer_one'])||"static/data/images/Textures/circle2.png",
               rotation: new Cesium.CallbackProperty(function () {
                 rotation += 0.05;
                 return rotation;
@@ -657,7 +659,7 @@ Plugin.prototype = {
                 }
                 return s4;
               }, false),
-              material: "static/data/images/Textures/circle1.png",
+              material: this.getDfSt(['plugin','Css3Renderer_two'])||"static/data/images/Textures/circle1.png",
               rotation: new Cesium.CallbackProperty(function () {
                 rotation2 -= 0.03
                 return rotation2

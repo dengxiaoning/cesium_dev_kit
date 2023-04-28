@@ -2,15 +2,17 @@ import echarts from 'echarts'
 import { Math3d } from './Math3d'
 import { Graphics } from './Graphics'
 let Cesium = null;
+let dfSt = undefined;
 /**
  * @description D3Kit 拓展包
  *
  * 分析模块
  * @param {*} viewer
  */
-function Analysis(viewer,cesiumGlobal) {
+function Analysis(viewer,cesiumGlobal,defaultStatic) {
   if (viewer) {
     Cesium = cesiumGlobal;
+    dfSt = defaultStatic;
     this._analysisLayer = new Cesium.CustomDataSource('analysisLayer')
     this.$math3d = new Math3d(viewer, cesiumGlobal);
     this.$graphics = new Graphics(viewer, cesiumGlobal);
@@ -114,8 +116,8 @@ Analysis.prototype = {
       var $this = this
       var _height = options.height || 30,
         _splitNum = options.splitNum || 50,
-        _wallImg = options.wallImg || 'static/data/images/file/excavate_side_min.jpg',
-        _bottomImg = options.bottomImg || 'static/data/images/file/excavate_bottom_min.jpg'
+        _wallImg = options.wallImg ||this.getDfSt(['amalysis','createClipPlanAnalysis_wallImg'])|| 'static/data/images/file/excavate_side_min.jpg',
+        _bottomImg = options.bottomImg || this.getDfSt(['amalysis','createClipPlanAnalysis_bottomImg'])||'static/data/images/file/excavate_bottom_min.jpg'
 
       $this.drawPolygonGraphics({
         callback: function (polygon, polygonObj) {
@@ -149,7 +151,8 @@ Analysis.prototype = {
       var $this = this,
         _maxH = options.maxH || 15,
         _speed = options.speed || 1,
-        _interval = options.interval || 10
+        _interval = options.interval || 10,
+       _matrialUrl= this.getDfSt(['amalysis','createSubmergedAnalysis'])|| 'static/data/images/file/water.png'
       $this.drawPolygonGraphics({
         height: 1,
         callback: function (polygon, polygonObj) {
@@ -161,7 +164,7 @@ Analysis.prototype = {
             setTimeout(() => {
 
               polygonObj.polygon.heightReference = 'CLAMP_TO_GROUND'
-              polygonObj.polygon.material = 'static/data/images/file/water.png'
+              polygonObj.polygon.material = _matrialUrl
               var h = 0.0
               polygonObj.polygon.extrudedHeight = h
               var st = setInterval(function () {

@@ -34,7 +34,7 @@
 <script>
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-let cHander = null;
+import { defaultStatic } from '../defaultStaticConf'
 
 export default {
   data() {
@@ -107,10 +107,10 @@ export default {
             shouldAnimate: true,
           },
           extraConfig: {
-            initNavigate: true,
             depthTest: true
           },
-          MapImageryList: tempData
+          MapImageryList: tempData,
+          defaultStatic
         })
 
       this.c_viewer = viewer;

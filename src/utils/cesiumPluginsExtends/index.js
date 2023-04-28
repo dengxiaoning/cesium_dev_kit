@@ -19,23 +19,22 @@ import {
   StraightArrow,
   PincerArrow
 } from './libs'
-import * as alternateCesium from 'cesium'
 
-const prototypeExtends = function (viewer, cesiumGlobal) {
+const prototypeExtends = function (viewer, cesiumGlobal,defaultStatic) {
   function _inner(parents, children) {
     var curr = null;
     if (Array.isArray(parents)) {
       parents.forEach(pp => {
         exeClone(pp);
       })
-      curr = new children(viewer, cesiumGlobal);
+      curr = new children(viewer, cesiumGlobal,defaultStatic);
       parents.forEach(pp => {
-        pp.call(curr, viewer, cesiumGlobal);
+        pp.call(curr, viewer, cesiumGlobal,defaultStatic);
       })
     } else {
       exeClone(parents);
-      curr = new children(viewer, cesiumGlobal);
-      parents.call(curr, viewer, cesiumGlobal);
+      curr = new children(viewer, cesiumGlobal,defaultStatic);
+      parents.call(curr, viewer, cesiumGlobal,defaultStatic);
     }
 
     function exeClone(cloneTarget) {
@@ -51,49 +50,12 @@ const prototypeExtends = function (viewer, cesiumGlobal) {
   return _inner;
 }
 
-  /**
-   * 初始化入口函数
-   * @param {*} param0 
-   * {
-   *   cesiumGlobal：{Object} ceiusm全局对象
-   *   containerId:{String} 容器id
-   *   viewerConfig:{Object} viewer基础配置
-   *      【参数格式】：{与官网一致}
-   *   extreaConfig：{Object }
-   *     【参数格式】：
-   *       {
-   *        initNavigate：true，指南针,
-   *        logo：true，// 是否显示logo
-   *        depthTest：true， //开启深度检测 
-   *      }
-   *   MapImageryList:{Array} 配置底图，每一个元素格式为
-   *    【参数格式】 ：
-   *      [{
-   *        id: 3,
-            name: '',
-            type: '',//ImageryProvider类型
-            classConfig: {
-              url:  链接地址
-            },
-            interfaceConfig: {},
-            offset: '0,0',
-            invertswitch: 0,
-            filterRGB: '#ffffff',
-            showswitch: 1,
-            weight: 13,
-            createtime: 创建时间
-            updatetime: 更新时间,
-        }]
-   *   
-   * }
-   * @returns 
-   */
-export function initCesium({cesiumGlobal=alternateCesium, containerId,viewerConfig={}, extreaConfig={}, MapImageryList = [] }) {
+export function initCesium({cesiumGlobal,containerId,viewerConfig={}, extreaConfig={}, MapImageryList = [],defaultStatic }) {
   const initCom = new Controller(cesiumGlobal);
   const _viewer = initCom.init({containerId, viewerConfig, extreaConfig, MapImageryList});
 
   // 合并对象，实现继承
-  const protoExtends = prototypeExtends(_viewer, cesiumGlobal);
+  const protoExtends = prototypeExtends(_viewer, cesiumGlobal,defaultStatic);
   // 初始化材质
   const _material = protoExtends([Base, Shaders], Material);
   const _graphics = protoExtends(Base, Graphics);

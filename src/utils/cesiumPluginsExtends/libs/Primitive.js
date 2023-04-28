@@ -1,11 +1,13 @@
 let Cesium = null;
+let dfSt = undefined;
 /**
  * 图元拓展模块
  * @param {*} viewer
  */
-function Primitive(viewer, cesiumGlobal) {
+function Primitive(viewer, cesiumGlobal,defaultStatic) {
   if (viewer) {
     this._viewer = viewer;
+    dfSt = defaultStatic;
     Cesium = cesiumGlobal;
     this._installPrimitives()
   }
@@ -76,7 +78,8 @@ Primitive.prototype = {
         Resource = Cesium.Resource,
         Transforms = Cesium.Transforms,
         defaultValue = Cesium.defaultValue,
-        _viewer = this._viewer
+        _viewer = this._viewer,
+        defaultStatic = this.getDfSt(['primitive','TetrahedronPrimitive'])||'static/data/images/Textures/fence.png'
 
       const TetrahedronPrimitive = function (options) {
         this.show = true
@@ -93,7 +96,7 @@ Primitive.prototype = {
         this._color = defaultValue(options.color, new Color(1.0, 1.0, 0.0, 0.8))
         this._scale = defaultValue(options.scale, new Cartesian3(10, 10, 15))
         this._texture = undefined
-        this._imageUrl = buildModuleUrl('static/data/images/Textures/fence.png')
+        this._imageUrl = buildModuleUrl(defaultStatic)
         this._modelMatrix = computeModelMatrix(this)
         this._height = computeHeight(this)
         createTexture(this)
@@ -1396,7 +1399,7 @@ Primitive.prototype = {
     const WaterPrimitive = function (opt) {
 
       this._positions = opt.positions
-      this._url = opt.normalMapUrl || 'static/data/images/Textures/waterNormals.jpg'
+      this._url = opt.img ||this.getDfSt(['primitive','WaterPrimitive'])|| 'static/data/images/Textures/waterNormals.jpg'
       this._frequency = opt.frequency || 1000.0
       this._animationSpeed = opt.animationSpeed || 0.01
       this._amplitude = opt.amplitude || 10.0

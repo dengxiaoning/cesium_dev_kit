@@ -2081,6 +2081,18 @@
     "tslib" "^2.0.3"
     "upper-case-first" "^2.0.2"
 
+"cesium_dev_kit@^1.0.50":
+  "integrity" "sha512-VzPovD8fmR7bmbxeklhTHNVbRV+LARTYd0mAoluFpySgB/p5VmIhyIQyBVztD8d9x95QkEA+Zsd6YQOmsqB/xQ=="
+  "resolved" "https://registry.npmjs.org/cesium_dev_kit/-/cesium_dev_kit-1.0.50.tgz"
+  "version" "1.0.50"
+  dependencies:
+    "@turf/turf" "^6.5.0"
+    "cesium" "1.84.0"
+    "concaveman" "^1.1.1"
+    "dat.gui" "^0.7.9"
+    "echarts" "4.2.1"
+    "libgif" "0.0.3"
+
 "cesium-navigation-es6@^3.0.8":
   "integrity" "sha512-RyoY9T02fE9pRNgXCmOD8QlSV5XJ2LPf+O9IpYEkTcyiUztOIwVQwdeT0heHvk+R1eM8jAG6YnRPvfyDsRonEA=="
   "resolved" "https://registry.npmjs.org/cesium-navigation-es6/-/cesium-navigation-es6-3.0.8.tgz"

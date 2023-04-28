@@ -1,16 +1,17 @@
 import SuperGif from 'libgif'
 let Cesium = null;
-
+let dfSt = undefined;
 /**
  * 图形模块
  * 用于向地图加载各种实体对象
  * 
  * @param {*} viewer
  */
-function Graphics(viewer, cesiumGlobal) {
+function Graphics(viewer, cesiumGlobal,defaultStatic) {
 
   if (viewer) {
     Cesium = cesiumGlobal;
+    dfSt = defaultStatic;
     this._graphicsLayer = new Cesium.CustomDataSource('graphicsLayer')
     viewer && viewer.dataSources.add(this._graphicsLayer);
   }
@@ -369,7 +370,7 @@ Graphics.prototype = {
         topRadius: options.topRadius || 500,
         bottomRadius: options.bottomRadius || 500,
         material: options.material || new Cesium.ImageMaterialProperty({
-          image: options.imge || 'static/data/images/file/cc2.png',
+          image: options.img || this.getDfSt(['graphic','craeteRotateCylinderGraphics'])||'static/data/images/file/cc2.png',
           transparent: true,
           repeat: {
             x: 1,
@@ -437,7 +438,7 @@ Graphics.prototype = {
         _scale = options.scale || null,
         _scale2 = options.scale2 || null,
         _material = options.material || new Cesium.ImageMaterialProperty({
-          image: options.imge || 'static/data/images/Textures/circle_bg.png',
+          image: options.imge || this.getDfSt(['graphic','craeteDynamicCricleGraphics'])||'static/data/images/Textures/circle_bg.png',
           transparent: true
         })
 
@@ -507,7 +508,7 @@ Graphics.prototype = {
       wallEntity.wall = {
         positions: options.positions,
         material: new Cesium.ImageMaterialProperty({
-          image: 'static/data/images/Textures/fence.png',
+          image: options.img||this.getDfSt(['graphic','craeteDynamicShadeWallGraphics'])||'static/data/images/Textures/fence.png',
           transparent: true,
           color: new Cesium.CallbackProperty(function () {
 
@@ -536,7 +537,7 @@ Graphics.prototype = {
 
       var $this = this,
         img = document.createElement('img')
-      img.src = options.img || 'static/data/images/file/div1.png'
+      img.src = options.img || this.getDfSt(['graphic','createCustomDefBillboardGraphics'])||'static/data/images/file/div1.png'
 
       // 绘制canvas
       const drawCompanyTip = function (options) {

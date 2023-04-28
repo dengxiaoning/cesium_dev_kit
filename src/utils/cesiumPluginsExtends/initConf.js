@@ -4,7 +4,7 @@ import {
 import {
   evil
 } from './common'
-import CesiumNavigation from 'cesium-navigation-es6'
+
 let Cesium = null;
 class Controller {
   // 初始化 controller 类
@@ -62,15 +62,6 @@ class Controller {
       viewer.scene.globe.depthTestAgainstTerrain = true
     }
 
-    // 显示 fps
-    // viewer.scene.debugShowFramesPerSecond = true
-
-    // 是否需要 初始化 cesium-navigation 控件
-    if (extreaConfig['initNavigate']) {
-      this.initCesiumNavigation(viewer)
-    }
-
-
 
     // 增加配置图层
     this.setConfigMapList(viewer, MapImageryList)
@@ -79,21 +70,7 @@ class Controller {
     this.viewer = viewer
     return viewer
   }
-  initCesiumNavigation(viewer) {
-    const options = {}
-    // 用于在使用重置导航重置地图视图时设置默认视图控制。接受的值是Cesium.Cartographic 和 Cesium.Rectangle.
-    options.defaultResetView = new Cesium.Rectangle.fromDegrees(80, 22, 130, 50) // new Cesium.Rectangle.fromDegrees(113.8980, 22.4899, 113.9686, 22.5438)
-    // 用于启用或禁用罗盘。true是启用罗盘，false是禁用罗盘。默认值为true。如果将选项设置为false，则罗盘将不会添加到地图中。
-    options.enableCompass = true
-    // 用于启用或禁用缩放控件。true是启用，false是禁用。默认值为true。如果将选项设置为false，则缩放控件将不会添加到地图中。
-    options.enableZoomControls = true
-    // 用于启用或禁用距离图例。true是启用，false是禁用。默认值为true。如果将选项设置为false，距离图例将不会添加到地图中。
-    options.enableDistanceLegend = true
-    // 用于启用或禁用指南针外环。true是启用，false是禁用。默认值为true。如果将选项设置为false，则该环将可见但无效。
-    options.enableCompassOuterRing = true
-    // 注意需要new 否则Cannot set properties of undefined (setting 'terria')
-    new CesiumNavigation(viewer, options)
-  }
+
   setOneimageryProvider(MapImagery) {
     if (MapImagery.classConfig.customTags) {
       MapImagery.classConfig.customTags = evil(

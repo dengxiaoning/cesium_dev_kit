@@ -84,10 +84,10 @@
 - 1、直接运行本案例项目
 
 ```
-  git clone https://github.com/dengxiaoning/cesium_dev_kit.git
-  cd cesium_dev_kit
-  npm install
-  npm run dev
+c:\>  git clone https://github.com/dengxiaoning/cesium_dev_kit.git
+c:\>  cd cesium_dev_kit
+c:\> npm install
+c:\>  npm run dev
 
 ```
 
@@ -95,7 +95,7 @@
 
 ```shell
 
-  npm install cesium_dev_kit
+c:\> npm install cesium_dev_kit
 
 ```
 
@@ -153,14 +153,13 @@ export default {
    * 初始化入口函数
    * @param {*} param0
    * {
-   *   cesiumGlobal：{Object} ceiusm全局对象（如果为null或undef将使用 import直接导入Cesium）
+   *   cesiumGlobal：{Object} Ceiusm对象（项目需要安装配置获取Cesium传入）
    *   containerId:{String} 容器id
    *   viewerConfig:{Object} viewer基础配置
    *      【参数格式】：{与官网一致}
    *   extreaConfig：{Object }
    *     【参数格式】：
    *       {
-   *        initNavigate：true，指南针,
    *        logo：true，// 是否显示logo
    *        depthTest：true， //开启深度检测
    *      }
@@ -168,25 +167,33 @@ export default {
    *    【参数格式】 ：
    *      [{
    *        id: 3,
-            name: '',
-            type: '',//ImageryProvider类型
-            classConfig: {
-              url:  链接地址
-            },
-            interfaceConfig: {},
-            offset: '0,0',
-            invertswitch: 0,
-            filterRGB: '#ffffff',
-            showswitch: 1,
-            weight: 13,
-            createtime: 创建时间
-            updatetime: 更新时间,
-        }]
+   *        name: '',
+   *        type: '',//ImageryProvider类型
+   *         classConfig: {
+   *          url:  链接地址
+   *        },
+   *        interfaceConfig: {},
+   *        offset: '0,0',
+   *        invertswitch: 0,
+   *        filterRGB: '#ffffff',
+   *        showswitch: 1,
+   *        weight: 13,
+   *        createtime: 创建时间
+   *        updatetime: 更新时间,
+   *    }]
    *
    * }
    * @returns
    */
 ```
+
+- NPM 安装引入案例
+
+```
+
+```
+
+【注意】请将 static 拷贝至项目静态资源目录
 
 ## 浏览器支持
 
@@ -222,6 +229,5 @@ https://cesium.com/downloads/cesiumjs/releases/b23/Documentation/index.html
 
 - 1、cesium 工具类未使用 typeScript
 - 2、未配备使用文档
-- 3、未发布 npm 包
 
 <small>感兴趣朋友可以一起讨论交流继续完善功能，提升自己帮助他人。欢迎进行 fork，同时也请给个 star 以示鼓励谢谢。</small>

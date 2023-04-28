@@ -1,16 +1,15 @@
-
 import { createApp } from 'vue'
 import { setupStore } from './store' // 状态管理
 import router, { setupRouter } from './router' // 路由
 import { setupElementPlus } from './libs/element' // element UI
 import { setupGlobalCom } from './components/index'
-import {setupDirective } from './libs/directive/index'
+import { setupDirective } from './libs/directive/index'
 
 import './styles/index.scss'
-import mitt from 'mitt';
+import mitt from 'mitt'
 import App from './App'
 import './permission' // permission control
-import 'virtual:svg-icons-register';
+import 'virtual:svg-icons-register'
 
 const app = createApp(App)
 

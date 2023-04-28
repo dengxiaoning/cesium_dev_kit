@@ -4,8 +4,8 @@
 </template>
 <script>
 import * as Cesium from 'cesium'
-import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-
+// import { initCesium } from '@/utils/cesiumPluginsExtends/index'
+import { initCesium } from 'cesium_dev_kit'
 
 export default {
   mounted() {
@@ -65,10 +65,9 @@ export default {
               shouldAnimate: true,
             },
             extraConfig: {
-              initNavigate: true,
               depthTest: true
             },
-            MapImageryList: tempData
+            MapImageryList: []
           })
 
 

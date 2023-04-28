@@ -65,7 +65,6 @@ export default {
               shouldAnimate: true,
             },
             extraConfig: {
-              initNavigate: true,
               depthTest: true
             },
             MapImageryList: tempData
