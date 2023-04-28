@@ -99,10 +99,10 @@ c:\> npm install cesium_dev_kit
 
 ```
 
-## 使用案例
+- 2.1、VUE 中使用案例
 
 ```javaScript
-
+// test.vue
 <template>
   <div id="cesiumContainer"
        class="map3d-contaner"></div>
@@ -110,10 +110,12 @@ c:\> npm install cesium_dev_kit
 <script>
 import { initCesium } from 'cesium_dev_kit'
 export default {
+  mounted() {
+    this.initMap()
+  },
   methods: {
     initMap() {
       const {
-        cesiumObj, // Cesium
         viewer,   // viewer
         material, // 材质模块（修改实体材质）
         graphics, // 图形模块（如创建PolygonGraphics对象等）
@@ -146,7 +148,7 @@ export default {
 </script>
 ```
 
-- initCesium 参数说明
+- 2.2、initCesium({}) 参数说明
 
 ```javaScript
   /**
@@ -187,13 +189,11 @@ export default {
    */
 ```
 
-- NPM 安装引入案例
+- 2.3、NPM 安装引入案例
 
-```
+[https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)这是一个 vue 项目已安装 cesium_dev_kit,其中有使用 demo,可直接下载到本地运行查看
 
-```
-
-【注意】请将 static 拷贝至项目静态资源目录
+##
 
 ## 浏览器支持
 
