@@ -2081,13 +2081,12 @@
     "tslib" "^2.0.3"
     "upper-case-first" "^2.0.2"
 
-"cesium_dev_kit@^1.0.50":
-  "integrity" "sha512-VzPovD8fmR7bmbxeklhTHNVbRV+LARTYd0mAoluFpySgB/p5VmIhyIQyBVztD8d9x95QkEA+Zsd6YQOmsqB/xQ=="
-  "resolved" "https://registry.npmjs.org/cesium_dev_kit/-/cesium_dev_kit-1.0.50.tgz"
-  "version" "1.0.50"
+"cesium_dev_kit@^1.0.51":
+  "integrity" "sha512-sGIkqRqmgG8r2t4k1NazcoTh33/DJ43fuAp0/lG+OfnPu7BQ2Bv5lQsUPvwPYXVlItf4mMG69vqTBsXaAcILZw=="
+  "resolved" "https://registry.npmjs.org/cesium_dev_kit/-/cesium_dev_kit-1.0.51.tgz"
+  "version" "1.0.51"
   dependencies:
     "@turf/turf" "^6.5.0"
-    "cesium" "1.84.0"
     "concaveman" "^1.1.1"
     "dat.gui" "^0.7.9"
     "echarts" "4.2.1"

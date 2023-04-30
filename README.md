@@ -6,11 +6,11 @@
     <a href="https://jestjs.io"><img src="https://github.com/openlayers/openlayers/workflows/Test/badge.svg" alt="Test Status"></a>
 </p>
 
-## cersium_kit
+## cesium_dev_kit
 
 ## 简介
 
-本项目是一个封装 Cesium 基本操作的工具包，提供简单的方法调用来实现复杂的 API 操作；节省阅读 Cesium 原文档时间，从而降低入门难度增加学习信心，同时也希望能提高工作效率。
+旨在封装一个 Cesium 基本操作的工具包，提供简单的方法调用来实现复杂的 API 操作；达到节省阅读 Cesium 原文档时间，从而降低入门难度提升学习信心，同时也希望能提高工作效率减少重复劳动；案例中封装了常用功能配备使用案例，npm 安装后可以直接在项目中使用。
 
 ## 目录结构
 
@@ -99,7 +99,7 @@ c:\> npm install cesium_dev_kit
 
 ```
 
-- 2.1、VUE 中使用案例
+- 2.1、项目中使用案例
 
 ```javaScript
 // test.vue
@@ -191,7 +191,7 @@ export default {
 
 - 2.3、NPM 安装引入案例
 
-[https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)这是一个 vue 项目已安装 cesium_dev_kit,其中有使用 demo,可直接下载到本地运行查看
+[https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)这是一个 vue 项目已安装 cesium_dev_kit,其中有使用 demo,可直接下载到本地运行查看参照
 
 ##
 
@@ -228,6 +228,7 @@ https://cesium.com/downloads/cesiumjs/releases/b23/Documentation/index.html
 ## 项目不足与优化
 
 - 1、cesium 工具类未使用 typeScript
-- 2、未配备使用文档
+- 2、未配备使用文档（请参考案例）
+- 3、未作异常捕捉和处理
 
 <small>感兴趣朋友可以一起讨论交流继续完善功能，提升自己帮助他人。欢迎进行 fork，同时也请给个 star 以示鼓励谢谢。</small>
