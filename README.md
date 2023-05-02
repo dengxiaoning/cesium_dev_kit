@@ -12,57 +12,7 @@
 
 旨在封装一个 Cesium 基本操作的工具包，提供简单的方法调用来实现复杂的 API 操作；达到节省阅读 Cesium 原文档时间，从而降低入门难度提升学习信心，同时也希望能提高工作效率减少重复劳动；案例中封装了常用功能配备使用案例，npm 安装后可以直接在项目中使用。
 
-## 目录结构
-
-```md
-├── public # 静态资源
-│ ├── static # 模型文件
-│ │ ├── data # 3dtiles 及 model
-| └── favicon.ico # favicon 图标
-├── src # 源代码
-| ├── api # api 请求
-| ├── assets # 主题 变量等资源
-| | ├── scss # scss 变量
-| | └──theme # elemet 主题
-| ├── libs
-| | ├── directive # 全局指令
-| | └──element.ts # elemet 全局样式重写
-| ├──components # 全局公共组件
-| ├──hooks # 全局 hooks
-| ├── config # 全局公共配置
-| ├── layout # 全局 layout
-| ├── locale # 国际化
-| ├── plugin # 三方插件
-| ├── router # 全局路由
-| ├── store # 全局 vuex
-| ├── utils # 全局公用方法
-| | └──cesiumPluginsExtends # cesium 扩展工具包
-| ├── views # 所有页面
-| | └──example # cesium 扩展工具包案例
-| ├── App.tsx # 入口页面
-| ├── main.ts # 入口文件
-| ├── permission.ts #权限认证
-| └── shims-vue.d.ts # ts 声明文件
-├── static # 静态资源
-| ├── img # img
-| └── svg # svg
-├── .editorconfig # editorconfig
-├── .env.development # 环境变量 开发
-├── .env.production # 环境变量 生产
-├── .eslintignore # eslintignore
-├── .eslintrc.js # eslint 配置项
-├── .gitignore # gitignore
-├── .babelrc # babel 配置项
-├── index.html # html 模板
-├── package.json # package.json
-├── README.md # README
-├── tsconfig.json # tsconfig
-└── vite.config.ts # vite 配置文件
-```
-
-##
-
-## 项目演示
+## 功能展示
 
 - 材质
   ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/material.gif)
@@ -79,27 +29,23 @@
 
 [https://www.benpaodehenji.com/cesiumDevKit](https://www.benpaodehenji.com/cesiumDevKit)
 
-## 项目安装与使用
-
-- 1、直接运行本案例项目
-
-```
-c:\>  git clone https://github.com/dengxiaoning/cesium_dev_kit.git
-c:\>  cd cesium_dev_kit
-c:\> npm install
-c:\>  npm run dev
-
-```
-
-- 2、作为 libs 安装到已有项目中
+## 安装
 
 ```shell
 
-c:\> npm install cesium_dev_kit
+ npm install cesium_dev_kit
 
 ```
 
-- 2.1、项目中使用案例
+## 引入
+
+```
+
+import { initCesium } from 'cesium_dev_kit'
+
+```
+
+## 使用
 
 ```javaScript
 // test.vue
@@ -148,7 +94,17 @@ export default {
 </script>
 ```
 
-- 2.2、initCesium({}) 参数说明
+## API
+
+### initCesium
+
+**参数**
+
+- `cesiumGlobal` **Object** Ceiusm 对象
+- `containerId` **String** 容器 id
+- `viewerConfig` **Object** viewer 基础配置（与官网一致）
+- `extreaConfig` **Object** 额外参数配置，如 {logo：true// 是否显示 logo, depthTest：true //开启深度检测}
+- `MapImageryList` **Object** 配置底图,参考 ImageryProvider
 
 ```javaScript
   /**
@@ -189,7 +145,7 @@ export default {
    */
 ```
 
-- 2.3、NPM 安装引入案例
+## 参考案例
 
 [https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)这是一个 vue 项目已安装 cesium_dev_kit,其中有使用 demo,可直接下载到本地运行查看参照
 
@@ -200,23 +156,6 @@ export default {
 本地开发推荐使用`Chrome 80+` 浏览器
 
 支持现代（chrome，Firefox，Microsoft edge，etc.）浏览器, 不支持 IE
-
-## CesiumGlsl 文档
-
-```
-https://cesium.com/downloads/cesiumjs/releases/b23/Documentation/index.html
-
-```
-
-## iconify 使用方法
-
-[官网 https://icon-sets.iconify.design](https://icon-sets.iconify.design)
-
-```
-
-<CIcon icon-class="bx:time-five" icon-color="#333" />
-
-```
 
 ## 鸣谢
 
@@ -231,4 +170,4 @@ https://cesium.com/downloads/cesiumjs/releases/b23/Documentation/index.html
 - 2、未配备使用文档（请参考案例）
 - 3、未作异常捕捉和处理
 
-<small>感兴趣朋友可以一起讨论交流继续完善功能，提升自己帮助他人。欢迎进行 fork，同时也请给个 star 以示鼓励谢谢。</small>
+<small>感兴趣朋友可以一起讨论交流继续完善功能，提升自己帮助他人。</small>
