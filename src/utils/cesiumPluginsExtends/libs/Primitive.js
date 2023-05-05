@@ -303,14 +303,14 @@ Primitive.prototype = {
       const creaateVertexShader = function () {
         var vertexShader =
           `
-                    attribute vec3 position;
-                    attribute vec3 normal;
-                    attribute vec2 st;
-                    attribute float batchId;
-                    varying vec3 v_positionEC;
-                    varying vec3 v_normalEC;
-                    varying vec2 v_st;
-                    varying vec4 v_pickColor;
+                    in vec3 position;
+                    in vec3 normal;
+                    in vec2 st;
+                    in float batchId;
+                    out vec3 v_positionEC;
+                    out vec3 v_normalEC;
+                    out vec2 v_st;
+                    out vec4 v_pickColor;
                     void main()
                     {
                         v_positionEC = (czm_modelView * vec4(position, 1.0)).xyz;       // position in eye coordinates
@@ -327,11 +327,11 @@ Primitive.prototype = {
       const createFragmentShader = function () {
         var fragmentShader =
           `
-                    varying vec3 v_positionEC;
-                    varying vec3 v_normalEC;
-                    varying vec2 v_st;
+                    in vec3 v_positionEC;
+                    in vec3 v_normalEC;
+                    in vec2 v_st;
                     uniform vec4 color;
-                    varying vec4 v_pickColor;
+                    in vec4 v_pickColor;
                     uniform sampler2D myImage;
                     void main()
                     {
@@ -349,7 +349,7 @@ Primitive.prototype = {
                         float dt_a11 = fract(czm_frameNumber / 100.0) * 3.14159265 * 2.0;
                         float dt_a12 = sin(dt_a11);
                         float vst=smoothstep(0.7, 1.0, dt_a12)+0.4;
-                        vec4 colorImage = texture2D(myImage, vec2(fract(st.s- czm_frameNumber*0.003), st.t));
+                        vec4 colorImage = texture(myImage, vec2(fract(st.s- czm_frameNumber*0.003), st.t));
                         material.alpha =mix(0.1,1.0,clamp((1.0-st.t) * color.a,0.0,1.0)) +(1.0-sign(st.t-czm_frameNumber*0.001))*0.2*(1.0-colorImage.r)+0.4 ;
                         material.diffuse =(1.0-colorImage.a)*vec3(1.0,2.0,1.0)+colorImage.rgb*vec3(1.0,2.0,1.0);
                     #ifdef FLAT
@@ -1216,11 +1216,11 @@ Primitive.prototype = {
         }))
       },
       getVSPolylie: function () {
-        return 'attribute vec3 position3DHigh;\
-                attribute vec3 position3DLow;\
-                attribute vec4 color;\
-                varying vec4 v_color;\
-                attribute float batchId;\
+        return 'in vec3 position3DHigh;\
+                in vec3 position3DLow;\
+                in vec4 color;\
+                out vec4 v_color;\
+                in float batchId;\
                 void main()\
                 {\
                     vec4 p = czm_computePosition();\
@@ -1232,7 +1232,7 @@ Primitive.prototype = {
                 '
       },
       getFSPolyline: function () {
-        return 'varying vec4 v_color;\
+        return 'in vec4 v_color;\
                 void main()\
                 {\
                       float d = distance(gl_PointCoord, vec2(0.5,0.5));\
@@ -1453,9 +1453,9 @@ Primitive.prototype = {
 
     WaterPrimitive.prototype.getFS = function () {
 
-      return 'varying vec3 v_positionMC;\n\
-                varying vec3 v_positionEC;\n\
-                varying vec2 v_st;\n\
+      return 'in vec3 v_positionMC;\n\
+                in vec3 v_positionEC;\n\
+                in vec2 v_st;\n\
                 \n\
                 void main()\n\
                 {\n\
@@ -1608,11 +1608,11 @@ Primitive.prototype = {
     }
 
     TexturePrimitive.prototype.getVS = function () {
-      return 'attribute vec3 position3DHigh;\
-                attribute vec3 position3DLow;\
-                attribute vec2 st;\
-                attribute float batchId;\
-                varying vec2 v_st;\
+      return 'in vec3 position3DHigh;\
+                in vec3 position3DLow;\
+                in vec2 st;\
+                in float batchId;\
+                out vec2 v_st;\
                 void main()\
                 {\
                     vec4 p = czm_computePosition();\
@@ -1624,7 +1624,7 @@ Primitive.prototype = {
     }
 
     TexturePrimitive.prototype.getFS = function () {
-      return 'varying vec2 v_st;\
+      return 'in vec2 v_st;\
                 void main()\
                 {\
                     czm_materialInput materialInput;\
@@ -1639,7 +1639,7 @@ Primitive.prototype = {
     TexturePrimitive.prototype.getMS = function () {
       return 'czm_material czm_getMaterial(czm_materialInput materialInput,vec2 v_st)\
                     {\
-                        vec4 color = texture2D(image, v_st);\
+                        vec4 color = texture(image, v_st);\
                         czm_material material = czm_getDefaultMaterial(materialInput);\
                         material.diffuse= color.rgb;\
                         material.alpha=color.a;\

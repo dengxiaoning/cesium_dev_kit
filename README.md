@@ -1,12 +1,10 @@
-<p align="center">
-    <a href="https://npmjs.com/package/node"><img src="https://img.shields.io/node/v/vite.svg" alt="node compatility"></a>
-    <a href="https://npmjs.com/package/npm"><img src="https://img.shields.io/badge/npm-v6.14.10-blue" alt="npm package"></a>
-    <a href="https://npmjs.com/package/vue"><img src="https://img.shields.io/badge/vue-v3.0.5-success" alt="vue package"></a>
-    <a href="https://npmjs.com/package/vite"><img src="https://img.shields.io/badge/vite-v2.6.10-blue" alt="vite package"></a>
-    <a href="https://jestjs.io"><img src="https://github.com/openlayers/openlayers/workflows/Test/badge.svg" alt="Test Status"></a>
-</p>
-
 ## cesium_dev_kit
+
+<p align="left">
+    <a href="https://npmjs.com/package/node"><img src="https://img.shields.io/node/v/vite.svg" alt="node compatility"></a>
+    <a href="https://www.npmjs.com/package/cesium_dev_kit"><img src="https://img.shields.io/npm/v/cesium_dev_kit.svg" alt="npm"></a>
+    <a href="https://www.npmjs.com/package/cesium_dev_kit"><img src="https://img.shields.io/npm/dt/cesium_dev_kit.svg" alt="downloads"></a>
+</p>
 
 ## 简介
 
@@ -145,7 +143,7 @@ export default {
    */
 ```
 
-## 参考案例
+## 使用范例
 
 [https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)这是一个 vue 项目已安装 cesium_dev_kit,其中有使用 demo,可直接下载到本地运行查看参照
 
@@ -162,7 +160,8 @@ export default {
 [cesium-d3kit](https://github.com/zhangti0708/cesium-d3kit)<br/>
 [drawarrowforcesium](https://gitcode.net/mirrors/gitgitczl/drawarrowforcesium)<br/>
 [vue3-ts-cesium-map-show](https://gitee.com/hawk86104/vue3-ts-cesium-map-show)<br/>
-本项目借鉴和参考以上几个资料文件，非常感谢作者分享
+
+本项目包括但不限于借鉴和参考以上资料，非常感谢作者分享
 
 ## 项目不足与优化
 
@@ -170,4 +169,4 @@ export default {
 - 2、未配备使用文档（请参考案例）
 - 3、未作异常捕捉和处理
 
-<small>感兴趣朋友可以一起讨论交流继续完善功能，提升自己帮助他人。</small>
+<small>感兴趣朋友可以一起讨论交流继续完善功能，让工作效率更高、开发更加容易、生活更加惬意。</small>

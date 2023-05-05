@@ -703,17 +703,17 @@ Plugin.prototype = {
       ShaderSource = Cesium.ShaderSource
     //片元着色器，直接从源码复制
     var SkyBoxFS = 'uniform samplerCube u_cubeMap;\n\
-                varying vec3 v_texCoord;\n\
+                in vec3 v_texCoord;\n\
                 void main()\n\
                 {\n\
-                vec4 color = textureCube(u_cubeMap, normalize(v_texCoord));\n\
+                vec4 color = texture(u_cubeMap, normalize(v_texCoord));\n\
                 gl_FragColor = vec4(czm_gammaCorrect(color).rgb, czm_morphTime);\n\
                 }\n\
                 '
 
     //顶点着色器有修改，主要是乘了一个旋转矩阵
-    var SkyBoxVS = 'attribute vec3 position;\n\
-                varying vec3 v_texCoord;\n\
+    var SkyBoxVS = 'in vec3 position;\n\
+                out vec3 v_texCoord;\n\
                 uniform mat3 u_rotateMatrix;\n\
                 void main()\n\
                 {\n\

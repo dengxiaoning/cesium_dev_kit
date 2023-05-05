@@ -125,12 +125,12 @@ Base.prototype = {
     options = options || {}
     var fs =
       'uniform sampler2D colorTexture;\n' +
-      'varying vec2 v_textureCoordinates;\n' +
+      'in vec2 v_textureCoordinates;\n' +
       'uniform float scale;\n' +
       'uniform vec3 offset;\n' +
       'void main() {\n' +
-      ' // vec4 color = texture2D(colorTexture, v_textureCoordinates);\n' +
-      ' vec4 color = texture2D(colorTexture, v_textureCoordinates);\n' +
+      ' // vec4 color = texture(colorTexture, v_textureCoordinates);\n' +
+      ' vec4 color = texture(colorTexture, v_textureCoordinates);\n' +
       ' // float gray = 0.2989*color.r+0.5870*color.g+0.1140*color.b;\n' +
       ' // gl_FragColor = vec4(gray,gray,2.0*(gray+1.0), 1.0);\n' +
       ' gl_FragColor = vec4(color.r*0.2,color.g * 0.4,color.b*0.6, 1.0);\n' +
@@ -155,7 +155,7 @@ Base.prototype = {
         'uniform float width;\n' +
         'uniform sampler2D colorTexture1;\n' +
         '\n' +
-        'varying vec2 v_textureCoordinates;\n' +
+        'in vec2 v_textureCoordinates;\n' +
         '\n' +
         'const int SAMPLES = 9;\n' +
         'void main()\n' +
@@ -168,7 +168,7 @@ Base.prototype = {
         'for(int i = -SAMPLES; i <= SAMPLES; ++i){\n' +
         'for(int j = -SAMPLES; j <= SAMPLES; ++j){\n' +
         'vec2 offset = vec2(float(i) * wr, float(j) * hr);\n' +
-        'result += texture2D(colorTexture1, st + offset);\n' +
+        'result += texture(colorTexture1, st + offset);\n' +
         '}\n' +
         '}\n' +
         'result = result / float(count);\n' +
@@ -191,7 +191,7 @@ Base.prototype = {
 
     if (this._viewer) {
       var fs = 'uniform sampler2D colorTexture;\n\
-                  varying vec2 v_textureCoordinates;\n\
+                  in vec2 v_textureCoordinates;\n\
                   \n\
                   float hash(float x){\n\
                   return fract(sin(x*23.3)*13.13);\n\
@@ -209,7 +209,7 @@ Base.prototype = {
                       float v=1.-sin(hash(floor(uv.x*100.))*2.);\n\
                       float b=clamp(abs(sin(20.*time*v+uv.y*(5./(2.+v))))-.95,0.,1.)*20.;\n\
                       c*=v*b;\n\
-                      gl_FragColor = mix(texture2D(colorTexture, v_textureCoordinates), vec4(c, 1), 0.2);\n\
+                      gl_FragColor = mix(texture(colorTexture, v_textureCoordinates), vec4(c, 1), 0.2);\n\
                   }\n\
                   '
       return this._viewer.scene.postProcessStages.add(new Cesium.PostProcessStage({
@@ -224,7 +224,7 @@ Base.prototype = {
 
     if (this._viewer) {
       var fs = 'uniform sampler2D colorTexture;\n\
-                      varying vec2 v_textureCoordinates;\n\
+                      in vec2 v_textureCoordinates;\n\
                       \n\
                       float snow(vec2 uv,float scale){\n\
                           float time = czm_frameNumber / 60.0;\n\
@@ -256,7 +256,7 @@ Base.prototype = {
                           c+=snow(uv,6.);\n\
                           c+=snow(uv,5.);\n\
                           finalColor=(vec3(c));\n\
-                          gl_FragColor = mix(texture2D(colorTexture, v_textureCoordinates), vec4(finalColor,1), 0.3);\n\
+                          gl_FragColor = mix(texture(colorTexture, v_textureCoordinates), vec4(finalColor,1), 0.3);\n\
                           \n\
                       }\n\
                       '
@@ -297,11 +297,11 @@ Base.prototype = {
         'uniform sampler2D depthTexture; \n' +
         'uniform vec4 fogByDistance; \n' +
         'uniform vec4 fogColor; \n' +
-        'varying vec2 v_textureCoordinates; \n' +
+        'in vec2 v_textureCoordinates; \n' +
         'void main(void) \n' +
         '{ \n' +
         '    float distance = getDistance(depthTexture, v_textureCoordinates); \n' +
-        '    vec4 sceneColor = texture2D(colorTexture, v_textureCoordinates); \n' +
+        '    vec4 sceneColor = texture(colorTexture, v_textureCoordinates); \n' +
         '    float blendAmount = interpolateByDistance(fogByDistance, distance); \n' +
         '    vec4 finalFogColor = vec4(fogColor.rgb, fogColor.a * blendAmount); \n' +
         '    gl_FragColor = alphaBlend(finalFogColor, sceneColor); \n' +
@@ -990,17 +990,17 @@ Base.prototype = {
       ShaderSource = Cesium.ShaderSource
     //片元着色器，直接从源码复制
     var SkyBoxFS = 'uniform samplerCube u_cubeMap;\n\
-                    varying vec3 v_texCoord;\n\
+                    in vec3 v_texCoord;\n\
                     void main()\n\
                     {\n\
-                    vec4 color = textureCube(u_cubeMap, normalize(v_texCoord));\n\
+                    vec4 color = texture(u_cubeMap, normalize(v_texCoord));\n\
                     gl_FragColor = vec4(czm_gammaCorrect(color).rgb, czm_morphTime);\n\
                     }\n\
                     '
 
     //顶点着色器有修改，主要是乘了一个旋转矩阵
-    var SkyBoxVS = 'attribute vec3 position;\n\
-                    varying vec3 v_texCoord;\n\
+    var SkyBoxVS = 'in vec3 position;\n\
+                    out vec3 v_texCoord;\n\
                     uniform mat3 u_rotateMatrix;\n\
                     void main()\n\
                     {\n\

@@ -35,10 +35,10 @@ Shaders.prototype = {
                   czm_material material = czm_getDefaultMaterial(materialInput);\n\
                   vec2 st = materialInput.st;\n\
                   \n\
-                  if(texture2D(image, vec2(0.0, 0.0)).a == 1.0){\n\
+                  if(texture(image, vec2(0.0, 0.0)).a == 1.0){\n\
                       discard;\n\
                   }else{\n\
-                      material.alpha = texture2D(image, vec2(1.0 - fract(time - st.s), st.t)).a * color.a;\n\
+                      material.alpha = texture(image, vec2(1.0 - fract(time - st.s), st.t)).a * color.a;\n\
                   }\n\
                   \n\
                   material.diffuse = max(color.rgb * material.alpha * 3.0, color.rgb);\n\
@@ -56,7 +56,7 @@ Shaders.prototype = {
                   czm_material material = czm_getDefaultMaterial(materialInput);\n\
                   vec2 st = materialInput.st;\n\
                   \n\
-                  vec4 colorImage = texture2D(image, vec2(fract(1.0 *st.s - time), fract(st.t)));\n\
+                  vec4 colorImage = texture(image, vec2(fract(1.0 *st.s - time), fract(st.t)));\n\
                   \n\
                   vec4 fragColor;\n\
                   fragColor.rgb = (colorImage.rgb+color.rgb) / 1.0;\n\
@@ -87,10 +87,10 @@ Shaders.prototype = {
                   \n '
       if (options.freely == 'vertical') { //（由下到上）
 
-        materail += 'vec4 colorImage = texture2D(image, vec2(fract(float(' + options.count + ')*st.t ' + options.direction + ' time), fract(st.s)));\n '
+        materail += 'vec4 colorImage = texture(image, vec2(fract(float(' + options.count + ')*st.t ' + options.direction + ' time), fract(st.s)));\n '
       } else { //（逆时针）
 
-        materail += 'vec4 colorImage = texture2D(image, vec2(fract(float(' + options.count + ')*st.s ' + options.direction + ' time), fract(st.t)));\n '
+        materail += 'vec4 colorImage = texture(image, vec2(fract(float(' + options.count + ')*st.s ' + options.direction + ' time), fract(st.t)));\n '
       }
       //泛光
       materail += 'vec4 fragColor;\n\
@@ -180,7 +180,7 @@ Shaders.prototype = {
     if (options && options.get) {
       return 'uniform sampler2D colorTexture;\n\
               uniform sampler2D depthTexture;\n\
-              varying vec2 v_textureCoordinates;\n\
+              in vec2 v_textureCoordinates;\n\
               uniform vec4 u_scanCenterEC;\n\
               uniform vec3 u_scanPlaneNormalEC;\n\
               uniform vec3 u_scanLineNormalEC;\n\
@@ -222,8 +222,8 @@ Shaders.prototype = {
               }\n\
               \n\
               void main(){\n\
-              gl_FragColor = texture2D(colorTexture, v_textureCoordinates);\n\
-              float depth = getDepth( texture2D(depthTexture, v_textureCoordinates));\n\
+              gl_FragColor = texture(colorTexture, v_textureCoordinates);\n\
+              float depth = getDepth( texture(depthTexture, v_textureCoordinates));\n\
               vec4 viewPos = toEye(v_textureCoordinates, depth);\n\
               vec3 prjOnPlane = pointProjectOnPlane(u_scanPlaneNormalEC.xyz, u_scanCenterEC.xyz, viewPos.xyz);\n\
               float dis = length(prjOnPlane.xyz - u_scanCenterEC.xyz);\n\
@@ -254,7 +254,7 @@ Shaders.prototype = {
     if (options && options.get) {
       return 'uniform sampler2D colorTexture;\n\
               uniform sampler2D depthTexture;\n\
-              varying vec2 v_textureCoordinates;\n\
+              in vec2 v_textureCoordinates;\n\
               uniform vec4 u_scanCenterEC;\n\
               uniform vec3 u_scanPlaneNormalEC;\n\
               uniform float u_radius;\n\
@@ -282,8 +282,8 @@ Shaders.prototype = {
               }\n\
               \n\
               void main(){\n\
-                  gl_FragColor = texture2D(colorTexture, v_textureCoordinates);\n\
-                  float depth = getDepth(texture2D(depthTexture, v_textureCoordinates));\n\
+                  gl_FragColor = texture(colorTexture, v_textureCoordinates);\n\
+                  float depth = getDepth(texture(depthTexture, v_textureCoordinates));\n\
                   vec4 viewPos = toEye(v_textureCoordinates, depth);\n\
                   vec3 prjOnPlane = pointProjectOnPlane(u_scanPlaneNormalEC.xyz, u_scanCenterEC.xyz, viewPos.xyz);\n\
                   float dis = length(prjOnPlane.xyz - u_scanCenterEC.xyz);\n\
