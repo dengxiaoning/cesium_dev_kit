@@ -184,6 +184,7 @@ Shaders.prototype = {
               uniform vec4 u_scanCenterEC;\n\
               uniform vec3 u_scanPlaneNormalEC;\n\
               uniform vec3 u_scanLineNormalEC;\n\
+              out vec4 myOutputColor;\n\
               uniform float u_radius;\n\
               uniform vec4 u_scanColor;\n\
               \n\
@@ -222,7 +223,7 @@ Shaders.prototype = {
               }\n\
               \n\
               void main(){\n\
-              gl_FragColor = texture(colorTexture, v_textureCoordinates);\n\
+              myOutputColor = texture(colorTexture, v_textureCoordinates);\n\
               float depth = getDepth( texture(depthTexture, v_textureCoordinates));\n\
               vec4 viewPos = toEye(v_textureCoordinates, depth);\n\
               vec3 prjOnPlane = pointProjectOnPlane(u_scanPlaneNormalEC.xyz, u_scanCenterEC.xyz, viewPos.xyz);\n\
@@ -239,9 +240,9 @@ Shaders.prototype = {
                       f = pow(f, float(' + options.width + '));\n\
                   }\n\
                   if(float(' + options.border + ') > 0.0){\n\
-                      gl_FragColor = mix(gl_FragColor, u_scanColor, f + f0);\n\
+                    myOutputColor = mix(myOutputColor, u_scanColor, f + f0);\n\
                   } else {\n\
-                      gl_FragColor = mix(gl_FragColor, u_scanColor, f);\n\
+                    myOutputColor = mix(myOutputColor, u_scanColor, f);\n\
                   }\n\
                   }\n\
               }\n\
@@ -258,6 +259,7 @@ Shaders.prototype = {
               uniform vec4 u_scanCenterEC;\n\
               uniform vec3 u_scanPlaneNormalEC;\n\
               uniform float u_radius;\n\
+              out vec4 myOutputColor;\n\
               uniform vec4 u_scanColor;\n\
               \n\
               vec4 toEye(in vec2 uv, in float depth){\n\
@@ -282,7 +284,7 @@ Shaders.prototype = {
               }\n\
               \n\
               void main(){\n\
-                  gl_FragColor = texture(colorTexture, v_textureCoordinates);\n\
+                myOutputColor = texture(colorTexture, v_textureCoordinates);\n\
                   float depth = getDepth(texture(depthTexture, v_textureCoordinates));\n\
                   vec4 viewPos = toEye(v_textureCoordinates, depth);\n\
                   vec3 prjOnPlane = pointProjectOnPlane(u_scanPlaneNormalEC.xyz, u_scanCenterEC.xyz, viewPos.xyz);\n\
@@ -290,7 +292,7 @@ Shaders.prototype = {
                   if(dis < u_radius){\n\
                     float f = 1.0 - abs(u_radius - dis) / u_radius;\n\
                     f = pow(f, float(' + options.border + '));\n\
-                    gl_FragColor = mix(gl_FragColor, u_scanColor, f);\n\
+                    myOutputColor = mix(myOutputColor, u_scanColor, f);\n\
                   }\n\
                 }\n\
                 '

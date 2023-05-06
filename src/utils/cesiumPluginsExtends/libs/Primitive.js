@@ -330,6 +330,7 @@ Primitive.prototype = {
                     in vec3 v_positionEC;
                     in vec3 v_normalEC;
                     in vec2 v_st;
+                    out vec4 myOutputColor;
                     uniform vec4 color;
                     in vec4 v_pickColor;
                     uniform sampler2D myImage;
@@ -353,9 +354,9 @@ Primitive.prototype = {
                         material.alpha =mix(0.1,1.0,clamp((1.0-st.t) * color.a,0.0,1.0)) +(1.0-sign(st.t-czm_frameNumber*0.001))*0.2*(1.0-colorImage.r)+0.4 ;
                         material.diffuse =(1.0-colorImage.a)*vec3(1.0,2.0,1.0)+colorImage.rgb*vec3(1.0,2.0,1.0);
                     #ifdef FLAT
-                        gl_FragColor = vec4(material.diffuse + material.emission, material.alpha);
+                        myOutputColor = vec4(material.diffuse + material.emission, material.alpha);
                     #else
-                        gl_FragColor = czm_phong(normalize(positionToEyeEC), material, czm_lightDirectionEC);
+                        myOutputColor = czm_phong(normalize(positionToEyeEC), material, czm_lightDirectionEC);
                     #endif
                     }
                     `
@@ -762,9 +763,10 @@ Primitive.prototype = {
             }\n\
             '
     const ViewshedLineFS = 'uniform vec4 u_bgColor;\n\
+            out vec4 myOutputColor;\n\
             void main()\n\
             {\n\
-            gl_FragColor = u_bgColor;\n\
+              myOutputColor = u_bgColor;\n\
             }\n\
             '
 
@@ -1233,11 +1235,12 @@ Primitive.prototype = {
       },
       getFSPolyline: function () {
         return 'in vec4 v_color;\
+                out vec4 myOutputColor;\
                 void main()\
                 {\
                       float d = distance(gl_PointCoord, vec2(0.5,0.5));\
                       if(d < 0.5){\
-                        gl_FragColor = v_color;\
+                        myOutputColor = v_color;\
                       }else{\
                         discard;\
                       }\
@@ -1455,6 +1458,7 @@ Primitive.prototype = {
 
       return 'in vec3 v_positionMC;\n\
                 in vec3 v_positionEC;\n\
+                out vec4 myOutputColor;\n\
                 in vec2 v_st;\n\
                 \n\
                 void main()\n\
@@ -1473,10 +1477,10 @@ Primitive.prototype = {
                     materialInput.positionToEyeEC = positionToEyeEC;\n\
                     czm_material material = czm_getMaterial(materialInput);\n\
                 #ifdef FLAT\n\
-                    gl_FragColor = vec4(material.diffuse + material.emission, material.alpha);\n\
+                    myOutputColor = vec4(material.diffuse + material.emission, material.alpha);\n\
                 #else\n\
-                    gl_FragColor = czm_phong(normalize(positionToEyeEC), material);\n\
-                    gl_FragColor.a = 0.5;\n\
+                    myOutputColor = czm_phong(normalize(positionToEyeEC), material);\n\
+                    myOutputColor.a = 0.5;\n\
                 #endif\n\
                 }\n\
                 '
@@ -1625,13 +1629,14 @@ Primitive.prototype = {
 
     TexturePrimitive.prototype.getFS = function () {
       return 'in vec2 v_st;\
+                out vec4 myOutputColor;\
                 void main()\
                 {\
                     czm_materialInput materialInput;\
                     czm_material material=czm_getMaterial(materialInput,v_st);\
                     vec4 color=vec4(material.diffuse + material.emission,material.alpha);\
                     if(color.x==1.0&&color.y==1.0&&color.z==1.0&&color.w==1.0) color=vec4(vec3(0.0,0.0,0.0),0.0);\
-                    gl_FragColor =color;\
+                    myOutputColor =color;\
                 }\
                 '
     }
