@@ -1,10 +1,10 @@
 ## cesium_dev_kit
 
-<p align="left">
-    <a href="https://npmjs.com/package/node"><img src="https://img.shields.io/node/v/vite.svg" alt="node compatility"></a>
-    <a href="https://www.npmjs.com/package/cesium_dev_kit"><img src="https://img.shields.io/npm/v/cesium_dev_kit.svg" alt="npm"></a>
-    <a href="https://www.npmjs.com/package/cesium_dev_kit"><img src="https://img.shields.io/npm/dt/cesium_dev_kit.svg" alt="downloads"></a>
-</p>
+[![NPM Package][npm]][npm-url]
+[![Build Size][build-size]][build-size-url]
+[![NPM DownloadsWeekly][npm-download]][npmtrends-url]
+[![Build Status][build-main]][build-status]
+[![NPM Downloads][npm-downloads]][npmdownloads-url]
 
 ## 简介
 
@@ -170,3 +170,14 @@ export default {
 - 3、未作异常捕捉和处理
 
 <small>感兴趣朋友可以一起讨论交流继续完善功能，让工作效率更高、开发更加容易、生活更加惬意。</small>
+
+[npm]: https://img.shields.io/npm/v/cesium_dev_kit
+[npm-url]: https://www.npmjs.com/package/cesium_dev_kit
+[build-size]: https://badgen.net/bundlephobia/minzip/cesium_dev_kit
+[build-size-url]: https://bundlephobia.com/result?p=cesium_dev_kit
+[npm-download]: https://img.shields.io/npm/dw/cesium_dev_kit
+[npmtrends-url]: https://www.npmtrends.com/cesium_dev_kit
+[build-main]: https://api.travis-ci.com/dengxiaoning/cesium_dev_kit.svg?branch=main
+[build-status]: https://travis-ci.com/dengxiaoning/cesium_dev_kit
+[npm-downloads]: https://img.shields.io/npm/dt/cesium_dev_kit.svg
+[npmdownloads-url]: https://www.npmjs.com/package/cesium_dev_kit

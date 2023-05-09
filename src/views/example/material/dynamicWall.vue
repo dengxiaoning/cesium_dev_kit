@@ -16,6 +16,7 @@ export default {
     initMap() {
       const { viewer, material, graphics, math3d } = new initCesium(
         {
+          cesiumGlobal: Cesium,
           containerId: 'cesiumContainer',
           viewerConfig: {
             infoBox: false,

@@ -11,7 +11,7 @@
     "@turf/turf": "^6.5.0",
     "@vueup/vue-quill": "^1.0.0-beta.7",
     "axios": "^0.21.1",
-    "cesium": "1.84.0",
+    "cesium": "^1.105.0",
     "cesium_dev_kit": "^1.0.51",
     "cesium-navigation-es6": "^3.0.8",
     "concaveman": "^1.1.1",

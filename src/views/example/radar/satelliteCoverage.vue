@@ -98,6 +98,10 @@ export default {
           viewerConfig: {
             infoBox: false,
             shouldAnimate: true,
+            // 指定上下文
+            contextOptions: {
+              requestWebgl1: true,
+            },
           },
           extraConfig: {},
           MapImageryList: []

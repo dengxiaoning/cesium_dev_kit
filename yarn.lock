@@ -304,21 +304,21 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     "to-fast-properties" "^2.0.0"
 
-"@cesium/engine@2.0.0":
-  "integrity" "sha512-P0LMwJD5bJ2pvYp2s6B4B8Wx375TCMjV19/pyPUnqGeEDK85GHPcd50NNACXC8F+MqOrNZKlrzcfrksK/RTIuA=="
-  "resolved" "https://registry.npmjs.org/@cesium/engine/-/engine-2.0.0.tgz"
-  "version" "2.0.0"
+"@cesium/engine@2.3.0":
+  "integrity" "sha512-2NoBmDvNkvC+m/uKZNaPoMQZEyuqGGBo/I91rHx5i7UEJwAF/zfUTZ1k2Dx8otu6bDHT/azNo5LWocqP4hpwcw=="
+  "resolved" "https://registry.npmjs.org/@cesium/engine/-/engine-2.3.0.tgz"
+  "version" "2.3.0"
   dependencies:
     "@tweenjs/tween.js" "^18.6.4"
     "@zip.js/zip.js" "2.4.x"
     "autolinker" "^4.0.0"
     "bitmap-sdf" "^1.0.3"
-    "dompurify" "^2.2.2"
+    "dompurify" "^3.0.2"
     "earcut" "^2.2.4"
     "grapheme-splitter" "^1.0.4"
     "jsep" "^1.3.8"
-    "kdbush" "^3.0.0"
-    "ktx-parse" "^0.4.5"
+    "kdbush" "^4.0.1"
+    "ktx-parse" "^0.5.0"
     "lerc" "^2.0.0"
     "mersenne-twister" "^1.1.0"
     "meshoptimizer" "^0.18.1"
@@ -328,12 +328,12 @@
     "topojson-client" "^3.1.0"
     "urijs" "^1.19.7"
 
-"@cesium/widgets@2.0.0":
-  "integrity" "sha512-9pYmRCMhhEXB3BDdD9YixUIjd6RT7v35mFRtvLFf5psm7IRRxz2lgF87JuQGtoXNyG0rZRN5b2IwD99VeiidKg=="
-  "resolved" "https://registry.npmjs.org/@cesium/widgets/-/widgets-2.0.0.tgz"
-  "version" "2.0.0"
+"@cesium/widgets@2.2.0":
+  "integrity" "sha512-t15V02J5cJcq2GxJlWy6a5zT1P+kw7cGDOAKbWb/CMNXxc/bxl2FeOoX6PMT+FuPNxREkR+xMxtXig44hvbRJQ=="
+  "resolved" "https://registry.npmjs.org/@cesium/widgets/-/widgets-2.2.0.tgz"
+  "version" "2.2.0"
   dependencies:
-    "@cesium/engine" "2.0.0"
+    "@cesium/engine" "2.3.0"
     "nosleep.js" "^0.12.0"
 
 "@iconify/vue@^3.0.0":
@@ -2099,18 +2099,13 @@
   dependencies:
     "cesium" "^1.88"
 
-"cesium@^1.88":
-  "integrity" "sha512-6reR5r2l9vkNClAEbK0NB+7vg27fzHplM1atdDM5CdUQUwKF3my9edi5BHcGRCgZ3ONmjU+ruGHwRXtmMG7dng=="
-  "resolved" "https://registry.npmjs.org/cesium/-/cesium-1.102.0.tgz"
-  "version" "1.102.0"
+"cesium@^1.105.0", "cesium@^1.88":
+  "integrity" "sha512-gh7sv67GmVen7LbOcugtfmWPN6wYyWNd3fq69xA81hJq0vvXFk/Pxwg1ElLi33ZsVJFyy5Js/vFX6oJNKYSbbg=="
+  "resolved" "https://registry.npmjs.org/cesium/-/cesium-1.105.0.tgz"
+  "version" "1.105.0"
   dependencies:
-    "@cesium/engine" "2.0.0"
-    "@cesium/widgets" "2.0.0"
-
-"cesium@1.84.0":
-  "integrity" "sha512-rf3aBs+HKboKm1QATN0YKO+OnskV/q5T6Su1ew3gmXxFdD+k8BIxdf5fRSLQyxOIGk6ZB1LC3pCV9VG4+EzfzA=="
-  "resolved" "https://registry.npmjs.org/cesium/-/cesium-1.84.0.tgz"
-  "version" "1.84.0"
+    "@cesium/engine" "2.3.0"
+    "@cesium/widgets" "2.2.0"
 
 "chainsaw@~0.1.0":
   "integrity" "sha1-XqtQsor+WAdNDVgpE4iCi15fvJg="
@@ -2546,10 +2541,10 @@
   dependencies:
     "domelementtype" "^2.2.0"
 
-"dompurify@^2.2.2":
-  "integrity" "sha512-1e2SpqHiRx4DPvmRuXU5J0di3iQACwJM+mFGE2HAkkK7Tbnfk9WcghcAmyWc9CRrjyRRUpmuhPUH6LphQQR3EQ=="
-  "resolved" "https://registry.npmjs.org/dompurify/-/dompurify-2.4.4.tgz"
-  "version" "2.4.4"
+"dompurify@^3.0.2":
+  "integrity" "sha512-B8c6JdiEpxAKnd8Dm++QQxJL4lfuc757scZtcapj6qjTjrQzyq5iAyznLKVvK+77eYNiFblHBlt7MM0fOeqoKw=="
+  "resolved" "https://registry.npmjs.org/dompurify/-/dompurify-3.0.2.tgz"
+  "version" "3.0.2"
 
 "domutils@^1.5.1":
   "integrity" "sha512-Lgd2XcJ/NjEw+7tFvfKxOzCYKZsdct5lczQ2ZaQY8Djz7pfAD3Gbp8ySJWtreII/vDlMVmxwa6pHmdxIYgttDg=="
@@ -3419,10 +3414,10 @@
     "graceful-fs" "^4.1.6"
     "universalify" "^2.0.0"
 
-"kdbush@^3.0.0":
-  "integrity" "sha512-hRkd6/XW4HTsA9vjVpY9tuXJYLSlelnkTmVFu4M9/7MIYQtFcHpbugAU7UbOfjOiVSVYl2fqgBuJ32JUmRo5Ew=="
-  "resolved" "https://registry.npmjs.org/kdbush/-/kdbush-3.0.0.tgz"
-  "version" "3.0.0"
+"kdbush@^4.0.1":
+  "integrity" "sha512-WbCVYJ27Sz8zi9Q7Q0xHC+05iwkm3Znipc2XTlrnJbsHMYktW4hPhXUE8Ys1engBrvffoSCqbil1JQAa7clRpA=="
+  "resolved" "https://registry.npmjs.org/kdbush/-/kdbush-4.0.2.tgz"
+  "version" "4.0.2"
 
 "kind-of@^3.0.2":
   "integrity" "sha1-MeohpzS6ubuw8yRm2JOupR5KPGQ="
@@ -3462,10 +3457,10 @@
   "resolved" "https://registry.npmjs.org/kind-of/-/kind-of-6.0.3.tgz"
   "version" "6.0.3"
 
-"ktx-parse@^0.4.5":
-  "integrity" "sha512-MK3FOody4TXbFf8Yqv7EBbySw7aPvEcPX++Ipt6Sox+/YMFvR5xaTyhfNSk1AEmMy+RYIw81ctN4IMxCB8OAlg=="
-  "resolved" "https://registry.npmjs.org/ktx-parse/-/ktx-parse-0.4.5.tgz"
-  "version" "0.4.5"
+"ktx-parse@^0.5.0":
+  "integrity" "sha512-5IZrv5s1byUeDTIee1jjJQBiD5LPDB0w9pJJ0oT9BCKKJf16Tuj123vm1Ps0GOHSHmeWPgKM0zuViCVuTRpqaA=="
+  "resolved" "https://registry.npmjs.org/ktx-parse/-/ktx-parse-0.5.0.tgz"
+  "version" "0.5.0"
 
 "lerc@^2.0.0":
   "integrity" "sha512-7qo1Mq8ZNmaR4USHHm615nEW2lPeeWJ3bTyoqFbd35DLx0LUH7C6ptt5FDCTAlbIzs3+WKrk5SkJvw8AFDE2hg=="

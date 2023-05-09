@@ -44,7 +44,9 @@ import {
 import {
   PincerArrow
 } from './plot/PincerArrow';
-
+import {
+  RadarPlugin
+} from './radar/index';
 export {
   Base,
   Material,
@@ -61,5 +63,6 @@ export {
   Analysis,
   AttackArrow,
   StraightArrow,
-  PincerArrow
+  PincerArrow,
+  RadarPlugin
 }

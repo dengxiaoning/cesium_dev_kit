@@ -17,7 +17,8 @@ import {
   Analysis,
   AttackArrow,
   StraightArrow,
-  PincerArrow
+  PincerArrow,
+  RadarPlugin
 } from './libs'
 
 const prototypeExtends = function (viewer, cesiumGlobal,defaultStatic) {
@@ -50,9 +51,15 @@ const prototypeExtends = function (viewer, cesiumGlobal,defaultStatic) {
   return _inner;
 }
 
-export function initCesium({cesiumGlobal,containerId,viewerConfig={}, extreaConfig={}, MapImageryList = [],defaultStatic }) {
+export function initCesium({ cesiumGlobal, containerId, viewerConfig = {}, extraConfig = {}, MapImageryList = [], defaultStatic }) {
+  if (!cesiumGlobal) {
+    throw 'Missing cesiumGlobal parameter, please check the calling function initCesium.'
+  }
+  if (!containerId) {
+    throw 'Missing containerId parameter, please check the calling function initCesium.'
+  }
   const initCom = new Controller(cesiumGlobal);
-  const _viewer = initCom.init({containerId, viewerConfig, extreaConfig, MapImageryList});
+  const _viewer = initCom.init({containerId, viewerConfig, extraConfig, MapImageryList});
 
   // 合并对象，实现继承
   const protoExtends = prototypeExtends(_viewer, cesiumGlobal,defaultStatic);
@@ -71,7 +78,8 @@ export function initCesium({cesiumGlobal,containerId,viewerConfig={}, extreaConf
   const _attackArrowObj = new AttackArrow(_viewer, cesiumGlobal);
   const _straightArrowObj = new StraightArrow(_viewer, cesiumGlobal);
   const _pincerArrowObj = new PincerArrow(_viewer, cesiumGlobal);
-
+// 初始化相控相关对象
+     new RadarPlugin(_viewer,cesiumGlobal,defaultStatic)
   return {
     viewer: _viewer,
     material: _material,

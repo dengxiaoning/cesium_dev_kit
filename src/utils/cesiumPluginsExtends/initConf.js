@@ -15,7 +15,7 @@ class Controller {
   init_data() {
     this.viewer = null
   }
-  init({containerId, viewerConfig,extreaConfig, MapImageryList}) {
+  init({containerId, viewerConfig,extraConfig, MapImageryList}) {
     const mapID = containerId;
     let imageryProviderConfig = new Cesium.SingleTileImageryProvider({
       url: 'https://mapv-data.oss-cn-hangzhou.aliyuncs.com/Cesium-1.82-hawk/background.png',
@@ -51,13 +51,13 @@ class Controller {
     }
     vConfig = Object.assign(vConfig, viewerConfig) // 后台接口配置 融合替换 默认配置
     const viewer = new Cesium.Viewer(mapID, vConfig)
-    if (!extreaConfig['logo']) {
+    if (!extraConfig['logo']) {
       const cC = viewer.cesiumWidget.creditContainer
       cC.style.display = 'none' // 影藏logo
     }
 
     // 是否开启深度参数
-    if (extreaConfig['depthTest']) {
+    if (extraConfig['depthTest']) {
       // 设置开启深度检测
       viewer.scene.globe.depthTestAgainstTerrain = true
     }

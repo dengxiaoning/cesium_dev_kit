@@ -31,9 +31,7 @@ export default {
       dataSourcePromise.then(function (dataSource) {
         viewer.trackedEntity = dataSource.entities.getById('Vulcan');
 
-      }).otherwise(function (error) {
-        window.alert(error);
-      });
+      })
     }
   },
   beforeUnmount() {

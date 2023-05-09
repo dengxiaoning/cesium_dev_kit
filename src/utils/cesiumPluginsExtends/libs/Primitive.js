@@ -69,6 +69,7 @@ Primitive.prototype = {
         Pass = Cesium.Pass,
         Appearance = Cesium.Appearance,
         BufferUsage = Cesium.BufferUsage,
+        VertexLayout = Cesium.VertexLayout,
         Color = Cesium.Color,
         VertexArray = Cesium.VertexArray,
         buildModuleUrl = Cesium.buildModuleUrl,
@@ -96,7 +97,7 @@ Primitive.prototype = {
         this._color = defaultValue(options.color, new Color(1.0, 1.0, 0.0, 0.8))
         this._scale = defaultValue(options.scale, new Cartesian3(10, 10, 15))
         this._texture = undefined
-        this._imageUrl = buildModuleUrl(defaultStatic)
+        this._imageUrl =defaultStatic
         this._modelMatrix = computeModelMatrix(this)
         this._height = computeHeight(this)
         createTexture(this)
@@ -301,8 +302,7 @@ Primitive.prototype = {
 
       //创建顶点着色器
       const creaateVertexShader = function () {
-        var vertexShader =
-          `
+        var vertexShader =`#version 300 es
                     in vec3 position;
                     in vec3 normal;
                     in vec2 st;
@@ -313,10 +313,10 @@ Primitive.prototype = {
                     out vec4 v_pickColor;
                     void main()
                     {
-                        v_positionEC = (czm_modelView * vec4(position, 1.0)).xyz;       // position in eye coordinates
-                        v_normalEC = czm_normal * normal;                               // normal in eye coordinates
+                        v_positionEC = (czm_modelView * vec4(position, 1.0)).xyz;
+                        v_normalEC = czm_normal * normal;
                         v_st = st;
-                        //v_pickColor = czm_batchTable_pickColor(batchId);
+                        // v_pickColor = czm_batchTable_pickColor(batchId);
                         gl_Position = czm_modelViewProjection * vec4(position, 1.0);
                     }
                     `
@@ -325,15 +325,14 @@ Primitive.prototype = {
 
       //创建片源着色器
       const createFragmentShader = function () {
-        var fragmentShader =
-          `
-                    in vec3 v_positionEC;
-                    in vec3 v_normalEC;
-                    in vec2 v_st;
-                    out vec4 myOutputColor;
-                    uniform vec4 color;
-                    in vec4 v_pickColor;
-                    uniform sampler2D myImage;
+        var fragmentShader =`#version 300 es
+                     in vec3 v_positionEC;
+                     in vec3 v_normalEC;
+                     in vec2 v_st;
+                     layout(location=2) out vec4 my_fragColor;
+                     uniform vec4 color;
+                     in vec4 v_pickColor;
+                     uniform sampler2D myImage;
                     void main()
                     {
                         vec3 positionToEyeEC = -v_positionEC;
@@ -351,12 +350,12 @@ Primitive.prototype = {
                         float dt_a12 = sin(dt_a11);
                         float vst=smoothstep(0.7, 1.0, dt_a12)+0.4;
                         vec4 colorImage = texture(myImage, vec2(fract(st.s- czm_frameNumber*0.003), st.t));
-                        material.alpha =mix(0.1,1.0,clamp((1.0-st.t) * color.a,0.0,1.0)) +(1.0-sign(st.t-czm_frameNumber*0.001))*0.2*(1.0-colorImage.r)+0.4 ;
+                        material.alpha =mix(0.1,1.0,clamp((1.0-st.t) * color.a,0.0,1.0)) +(1.0-sign(st.t-czm_frameNumber*0.001))*0.2*(1.0-colorImage.r)+0.4;
                         material.diffuse =(1.0-colorImage.a)*vec3(1.0,2.0,1.0)+colorImage.rgb*vec3(1.0,2.0,1.0);
                     #ifdef FLAT
-                        myOutputColor = vec4(material.diffuse + material.emission, material.alpha);
+                        my_fragColor = vec4(material.diffuse + material.emission, material.alpha);
                     #else
-                        myOutputColor = czm_phong(normalize(positionToEyeEC), material, czm_lightDirectionEC);
+                        my_fragColor = czm_phong(normalize(positionToEyeEC), material, czm_lightDirectionEC);
                     #endif
                     }
                     `
@@ -435,11 +434,11 @@ Primitive.prototype = {
       this._xyzState = false
       this._xyzPid = undefined
 
-      this._build()
+      this._builds()
     }
 
     XyzAxisPrimitive.prototype = {
-      _build() {
+      _builds() {
         this._createAxisXYZ()
         this._bindHandler()
       },
