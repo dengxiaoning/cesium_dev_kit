@@ -7,18 +7,18 @@ branches:
 cache:
   directories:
     - node_modules
-before_install:
-  - export TZ='Asia/Shanghai'
 install:
-  - npm install -g gitbook-cli
+  - npm install
 script:
-  - gitbook build
+  - npm run build
 deploy:
   provider: pages
   skip-cleanup: true
   github-token: $GITHUB_TOKEN
-  local-dir: ./static/
-  target-branch: gh-pages
+  local-dir: dist/
   verbose: true
+  keep_history: true
+  name: dengxiaoning
+  email: d1236688@163.com
   on:
     branch: main
