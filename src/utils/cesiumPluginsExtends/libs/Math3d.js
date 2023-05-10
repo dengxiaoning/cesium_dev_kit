@@ -524,8 +524,8 @@ Math3d.prototype = {
           result.push(ellipsoid.cartesianToCartographic(updatedPositions[j]))
         }
         callback(result)
-      }).otherwise(function (error) {
-        console.log(error)
+      }).catch(function (error) {
+               console.log(error)
       })
     }
   },

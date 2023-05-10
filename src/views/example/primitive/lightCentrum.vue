@@ -25,6 +25,9 @@ export default {
             viewerConfig: {
               infoBox: false,
               shouldAnimate: true,
+              contextOptions: {
+                requestWebgl2: true,
+              }
             },
             extraConfig: {},
             MapImageryList: []

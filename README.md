@@ -4,7 +4,7 @@
 [![Build Size][build-size]][build-size-url]
 [![NPM DownloadsWeekly][npm-download]][npmtrends-url]
 [![Build Status][build-main]][build-status]
-[![NPM Downloads][npm-downloads]][npmdownloads-url]
+[![license][license-uri]][license-link]
 
 ## 简介
 
@@ -169,15 +169,15 @@ export default {
 - 2、未配备使用文档（请参考案例）
 - 3、未作异常捕捉和处理
 
-<small>感兴趣朋友可以一起讨论交流继续完善功能，让工作效率更高、开发更加容易、生活更加惬意。</small>
+<small>感兴趣朋友可以一起讨论交流继续完善功能，让工作效更高效、开发更简单、生活更惬意。</small>
 
 [npm]: https://img.shields.io/npm/v/cesium_dev_kit
 [npm-url]: https://www.npmjs.com/package/cesium_dev_kit
-[build-size]: https://badgen.net/bundlephobia/minzip/cesium_dev_kit
-[build-size-url]: https://bundlephobia.com/result?p=cesium_dev_kit
+[build-size]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit/1.0.57
+[build-size-url]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit
 [npm-download]: https://img.shields.io/npm/dw/cesium_dev_kit
 [npmtrends-url]: https://www.npmtrends.com/cesium_dev_kit
-[build-main]: https://api.travis-ci.com/dengxiaoning/cesium_dev_kit.svg?branch=main
+[build-main]: https://travis-ci.com/dengxiaoning/cesium_dev_kit.svg?branch=main
 [build-status]: https://travis-ci.com/dengxiaoning/cesium_dev_kit
-[npm-downloads]: https://img.shields.io/npm/dt/cesium_dev_kit.svg
-[npmdownloads-url]: https://www.npmjs.com/package/cesium_dev_kit
+[license-uri]: https://img.shields.io/npm/l/cesium_dev_kit.svg
+[license-link]: https://npm.im/cesium_dev_kit

@@ -1217,7 +1217,7 @@ Primitive.prototype = {
         }))
       },
       getVSPolylie: function () {
-        return 'in vec3 position3DHigh;\
+        return 'in vec3 position3DHigh; \
                 in vec3 position3DLow;\
                 in vec4 color;\
                 out vec4 v_color;\
@@ -1233,8 +1233,8 @@ Primitive.prototype = {
                 '
       },
       getFSPolyline: function () {
-        return 'in vec4 v_color;\
-                out vec4 myOutputColor;\
+        return 'in vec4 v_color; \
+                layout(location=2) out vec4 myOutputColor;\
                 void main()\
                 {\
                       float d = distance(gl_PointCoord, vec2(0.5,0.5));\

@@ -1,0 +1,24 @@
+language: node_js
+node_js:
+  - 'v16.0.0'
+branches:
+  only:
+    - main
+cache:
+  directories:
+    - node_modules
+before_install:
+  - export TZ='Asia/Shanghai'
+install:
+  - npm install -g gitbook-cli
+script:
+  - gitbook build
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  local-dir: ./static/
+  target-branch: gh-pages
+  verbose: true
+  on:
+    branch: main
