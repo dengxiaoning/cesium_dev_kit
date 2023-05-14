@@ -13,15 +13,15 @@
 ## 功能展示
 
 - 材质
-  ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/material.gif)
+  ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)
 - 分析
-  ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/analysis.gif)
+  ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)
 - 标绘
-  ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/plot.gif)
+  ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)
 - 拖拽
-  ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/drag.gif)
+  ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)
 - 雷达扫描
-  ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/master/src/assets/image/preview/radar.gif)
+  ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)
 
 ## 在线预览
 
