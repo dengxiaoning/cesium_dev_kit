@@ -1,14 +1,14 @@
 ## cesium_dev_kit
 
+[![Build Status][build-main]][build-status]
 [![NPM Package][npm]][npm-url]
 [![Build Size][build-size]][build-size-url]
 [![NPM DownloadsWeekly][npm-download]][npmtrends-url]
-[![Build Status][build-main]][build-status]
 [![license][license-uri]][license-link]
 
 ## 简介
 
-旨在封装一个 Cesium 基本操作的工具包，提供简单的方法调用来实现复杂的 API 操作；达到节省阅读 Cesium 原文档时间，从而降低入门难度提升学习信心，同时也希望能提高工作效率减少重复劳动；案例中封装了常用功能配备使用案例，npm 安装后可以直接在项目中使用。
+孜孜不倦夜夜 code 旨在封装一个开箱即用的 Cesium 工具包，提供简单的方法实现酷炫效果；从而提高工作效率，争取更多时间陪伴家人享受生活而不懈努力；本项目配备丰富的使用案例，直接 npm 安装拷贝案例根据实际业务修改参数即可获得完整功能。
 
 ## 功能展示
 
@@ -175,9 +175,9 @@ export default {
 [npm-url]: https://www.npmjs.com/package/cesium_dev_kit
 [build-size]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit/1.0.57
 [build-size-url]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit
-[npm-download]: https://img.shields.io/npm/dw/cesium_dev_kit
+[npm-download]: https://img.shields.io/npm/dt/cesium_dev_kit
 [npmtrends-url]: https://www.npmtrends.com/cesium_dev_kit
-[build-main]: https://travis-ci.com/dengxiaoning/cesium_dev_kit.svg?branch=main
-[build-status]: https://travis-ci.com/dengxiaoning/cesium_dev_kit
+[build-status]: https://github.com/dengxiaoning/cesium_dev_kit
 [license-uri]: https://img.shields.io/npm/l/cesium_dev_kit.svg
 [license-link]: https://npm.im/cesium_dev_kit
+[build-main]: https://img.shields.io/github/actions/workflow/status/dengxiaoning/cesium_dev_kit/project-build.yml?branch=main
