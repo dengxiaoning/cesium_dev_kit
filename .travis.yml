@@ -1,24 +1,28 @@
-language: node_js
-node_js:
-  - 'v16.0.0'
-branches:
-  only:
-    - main
-cache:
-  directories:
-    - node_modules
-install:
-  - npm install
-script:
-  - npm run build
-deploy:
-  provider: pages
-  skip-cleanup: true
-  github-token: $GITHUB_TOKEN
-  local-dir: dist/
-  verbose: true
-  keep_history: true
-  name: dengxiaoning
-  email: d1236688@163.com
-  on:
-    branch: main
+name: NodeJS with Gulp
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: build
+      run: |
+        npm install
+        npm run build
