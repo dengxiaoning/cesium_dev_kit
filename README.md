@@ -177,7 +177,7 @@ export default {
 [build-size-url]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit
 [npm-download]: https://img.shields.io/npm/dt/cesium_dev_kit
 [npmtrends-url]: https://www.npmtrends.com/cesium_dev_kit
-[build-status]: https://github.com/dengxiaoning/cesium_dev_kit
 [license-uri]: https://img.shields.io/npm/l/cesium_dev_kit.svg
 [license-link]: https://npm.im/cesium_dev_kit
+[build-status]: https://github.com/dengxiaoning/cesium_dev_kit
 [build-main]: https://img.shields.io/github/actions/workflow/status/dengxiaoning/cesium_dev_kit/project-build.yml?branch=main
