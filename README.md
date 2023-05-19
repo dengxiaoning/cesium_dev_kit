@@ -8,7 +8,7 @@
 
 ## 简介
 
-孜孜不倦夜夜 code 旨在封装一个开箱即用的 Cesium 工具包，提供简单的方法实现酷炫效果；从而提高工作效率，争取更多时间陪伴家人享受生活而不懈努力；本项目配备丰富的使用案例，直接 npm 安装拷贝案例根据实际业务修改参数即可获得完整功能。
+这是一个 Cesium 开发工具包，包含图层加载、坐标转换、坐标拾取、相机控制、测量、标绘、模型加载、模型平移旋转缩放、模型/3Dtiles 视角位置调整、模型拖拽、天气（雨，雪，雾）场景、雷达扫描、信息框、流动线、发光线、动态墙等各种发光材质、后置场景效果、通视分析、透视分析、坡度分析、淹没分析、方量分析、地形开挖等各种分析案例。
 
 ## 功能展示
 
@@ -92,6 +92,20 @@ export default {
 </script>
 ```
 
+### 如需在 H5 中使用
+
+- html 中直接引入 index.umd.js
+
+```javaScript
+	<script type="text/javascript" src="index.umd.js"></script>
+```
+
+- 初始化对象
+
+```javaScript
+  new cesium_dev_kit.initCesium({...})
+```
+
 ## API
 
 ### initCesium
@@ -145,7 +159,11 @@ export default {
 
 ## 使用范例
 
-[https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)这是一个 vue 项目已安装 cesium_dev_kit,其中有使用 demo,可直接下载到本地运行查看参照
+- ES6 使用案例
+  [https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)
+
+- H5 使用案例
+  [https://github.com/dengxiaoning/cesium_kit_test_h5](https://github.com/dengxiaoning/cesium_kit_test_h5)
 
 ##
 
