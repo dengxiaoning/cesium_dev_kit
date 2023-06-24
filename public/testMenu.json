@@ -746,49 +746,6 @@
     }]
   },
   {
-    "name": "dynForm",
-    "path": "/dynForm",
-    "component": "dynForm/index",
-    "append":"root",
-    "?append":"注意添加append：root 的菜单不能有子菜单，否则右边出现重复菜单列表",
-    "meta": {
-      "auth": ["admin", "test"],
-      "title": "动态创建form案例",
-      "icon": "carbon:rule-test",
-      "isAffix": false,
-      "isHide": false,
-      "isKeepAlive": true
-    }
-  },
-  {
-    "name": "dragDialog",
-    "path": "/dragDialog",
-    "component": "dragDialog/index",
-    "append":"root",
-    "meta": {
-      "auth": ["admin", "test"],
-      "title": "拖拽dialog",
-      "icon": "carbon:rule-test",
-      "isAffix": false,
-      "isHide": false,
-      "isKeepAlive": true
-    }
-  },
-  {
-    "name": "procTemplate",
-    "path": "/procTemplate",
-    "component": "process/index",
-    "append":"root",
-    "meta": {
-      "auth": ["admin", "test"],
-      "title": "动态流程模板",
-      "icon": "carbon:rule-test",
-      "isAffix": false,
-      "isHide": false,
-      "isKeepAlive": true
-    }
-  },
-  {
     "name": "sysManage",
     "path": "/sysManage",
     "component": "Layout",

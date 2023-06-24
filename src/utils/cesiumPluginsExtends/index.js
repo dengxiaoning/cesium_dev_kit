@@ -16,8 +16,7 @@ import {
   AttackArrow,
   StraightArrow,
   PincerArrow,
-  RadarPlugin,
-  initEntrySensor
+  RadarPlugin
 } from './libs'
 
 const prototypeExtends = function (viewer, cesiumGlobal, defaultStatic) {
@@ -91,7 +90,6 @@ export function initCesium({
   const _pincerArrowObj = new PincerArrow(_viewer, cesiumGlobal)
   // 初始化相控相关对象
   new RadarPlugin(_viewer, cesiumGlobal, defaultStatic)
-  new initEntrySensor(cesiumGlobal)
   return {
     viewer: _viewer,
     material: _material,

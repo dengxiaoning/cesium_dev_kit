@@ -15,7 +15,6 @@ import { AttackArrow } from './plot/AttackArrow'
 import { StraightArrow } from './plot/StraightArrow'
 import { PincerArrow } from './plot/PincerArrow'
 import { RadarPlugin } from './radar/index'
-import { initEntrySensor } from './radar/Source/Sensor/Sensor'
 export {
   Base,
   Material,
@@ -33,6 +32,5 @@ export {
   AttackArrow,
   StraightArrow,
   PincerArrow,
-  RadarPlugin,
-  initEntrySensor
+  RadarPlugin
 }

@@ -27,7 +27,7 @@ CustomCesiumPlugin.prototype = {
       return this._customPluginLayer.entities.add({
         position: l,
         orientation: Cesium.Transforms.headingPitchRollQuaternion(l, r),
-        rectangularSensor: new Cesium.Scene.RectangularSensorPrimitive({
+        rectangularSensor: new Cesium.Scene.RectangularSensorGraphics({
           radius: options.radius || 100000,
           xHalfAngle: Cesium.Math.toRadians(options.xHalfAngle || 45),
           yHalfAngle: Cesium.Math.toRadians(options.yHalfAngle || 45),
