@@ -704,11 +704,10 @@ Plugin.prototype = {
     //片元着色器，直接从源码复制
     var SkyBoxFS = 'uniform samplerCube u_cubeMap;\n\
                 in vec3 v_texCoord;\n\
-                out vec4 myOutputColor;\n\
                 void main()\n\
                 {\n\
                 vec4 color = texture(u_cubeMap, normalize(v_texCoord));\n\
-                myOutputColor = vec4(czm_gammaCorrect(color).rgb, czm_morphTime);\n\
+                out_FragColor = vec4(czm_gammaCorrect(color).rgb, czm_morphTime);\n\
                 }\n\
                 '
 

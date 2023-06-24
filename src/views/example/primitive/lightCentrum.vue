@@ -83,7 +83,7 @@ export default {
         this.c_viewer.scene.primitives.add(new Cesium.Scene.TetrahedronPrimitive({
           position: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 180.0),
           color: Cesium.Color.BLUE,
-          distance: 10.0,
+          distance: 100.0,
           speed: 2.0,
           scale: new Cesium.Cartesian3(30, 30, 50)
         }));

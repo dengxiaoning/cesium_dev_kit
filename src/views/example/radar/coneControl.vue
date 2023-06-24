@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     initMap() {
-      const { viewer, customCesiumPlugin } = new initCesium(
+      const { viewer, customCesiumPlugin, graphics } = new initCesium(
         {
           cesiumGlobal: Cesium,
           containerId: 'cesiumContainer',
@@ -95,7 +95,7 @@ export default {
           extraConfig: {},
           MapImageryList: []
         })
-
+      this.graphics = graphics;
       this.c_viewer = viewer
       this.customCesiumPlugin = customCesiumPlugin
 
@@ -117,7 +117,18 @@ export default {
       })
     },
     initPhaseControl() {
+
       const _this = this
+      // let trackedEntityTest = this.graphics.createBoxGraphics({
+      //   position: Cesium.Cartesian3.fromDegrees(117.224, 31.819, 128),
+      //   name: "box",
+      //   box: {
+      //     dimensions: new Cesium.Cartesian3(500.0, 500.0, 500.0),//尺寸，长宽高
+      //     material: new Cesium.ColorMaterialProperty((new Cesium.CallbackProperty(() => {
+      //       return Cesium.Color.WHITE;
+      //     }, false))),
+      //   }
+      // })
       this.sensorEntity = this.customCesiumPlugin.createRadarPrimitive(
         {
           position: _this.currPosition,

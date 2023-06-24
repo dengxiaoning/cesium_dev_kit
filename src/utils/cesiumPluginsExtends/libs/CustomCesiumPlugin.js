@@ -1,16 +1,14 @@
-import {
-  CesiumPlugin
-} from './cesium-plugin'
-let Cesium = null;
+import { CesiumPlugin } from './cesium-plugin'
+let Cesium = null
 /**
  * 自定义插件
  * @param {*} viewer
  */
 function CustomCesiumPlugin(viewer, cesiumGlobal) {
   if (viewer) {
-    this._viewer = viewer;
-    Cesium = cesiumGlobal;
-    new CesiumPlugin(Window, Cesium);
+    this._viewer = viewer
+    Cesium = cesiumGlobal
+    new CesiumPlugin(Window, Cesium)
     this._customPluginLayer = new Cesium.CustomDataSource('_customPluginLayer')
 
     viewer && viewer.dataSources.add(this._customPluginLayer)
@@ -18,33 +16,35 @@ function CustomCesiumPlugin(viewer, cesiumGlobal) {
 }
 
 CustomCesiumPlugin.prototype = {
-
   createRectangularSensorGraphics: function (options) {
     if (this._customPluginLayer && options) {
-      let r = new Cesium.HeadingPitchRoll(Cesium.Math.toRadians(options.heading || 90),
+      let r = new Cesium.HeadingPitchRoll(
+        Cesium.Math.toRadians(options.heading || 90),
         Cesium.Math.toRadians(options.pitch || 0),
-        Cesium.Math.toRadians(options.roll || 0))
+        Cesium.Math.toRadians(options.roll || 0)
+      )
       let l = options.position
       return this._customPluginLayer.entities.add({
         position: l,
         orientation: Cesium.Transforms.headingPitchRollQuaternion(l, r),
-        rectangularSensor: new Cesium.Scene.RectangularSensorGraphics({
+        rectangularSensor: new Cesium.Scene.RectangularSensorPrimitive({
           radius: options.radius || 100000,
           xHalfAngle: Cesium.Math.toRadians(options.xHalfAngle || 45),
           yHalfAngle: Cesium.Math.toRadians(options.yHalfAngle || 45),
           material: options.material || new Cesium.Color(1.0, 0.0, 1.0, 0.4),
           lineColor: options.lineColor || new Cesium.Color(1.0, 0.0, 1.0, 1.0),
           showScanPlane: options.showScanPlane || true,
-          scanPlaneColor: options.scanPlaneColor || new Cesium.Color(1.0, 0.0, 1.0, 1.0),
+          scanPlaneColor:
+            options.scanPlaneColor || new Cesium.Color(1.0, 0.0, 1.0, 1.0),
           scanPlaneMode: options.scanPlaneMode || 'vertical',
           scanPlaneRate: options.scanPlaneRate || 3,
-          showThroughEllipsoid: options.showThroughEllipsoid || !1
+          showThroughEllipsoid: options.showThroughEllipsoid || !1,
+          show: true
         })
       })
     }
   },
   createSatelliteCoverageSimulationGraphics: function (options) {
-
     if (options) {
       return new Cesium.Scene.SatelliteCoverageSimulation(this._viewer, {
         position: options.position,
@@ -66,9 +66,8 @@ CustomCesiumPlugin.prototype = {
     }
   },
   createRadarPrimitive: function (options) {
-
     if (options) {
-      return new Cesium.Scene.RadarPrimitive(this._viewer, {
+      return new Cesium.Scene.RadarPrimitiveRight(this._viewer, {
         position: options.position,
         angle: options.angle || 90 - 10,
         radius: options.radius || 700000,
@@ -94,6 +93,4 @@ CustomCesiumPlugin.prototype = {
   }
 }
 
-export {
-  CustomCesiumPlugin
-}
+export { CustomCesiumPlugin }

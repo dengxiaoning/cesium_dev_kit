@@ -1,14 +1,14 @@
-let Cesium = null;
-let dfSt = undefined;
+let Cesium = null
+let dfSt = undefined
 /**
  * 图元拓展模块
  * @param {*} viewer
  */
-function Primitive(viewer, cesiumGlobal,defaultStatic) {
+function Primitive(viewer, cesiumGlobal, defaultStatic) {
   if (viewer) {
-    this._viewer = viewer;
-    dfSt = defaultStatic;
-    Cesium = cesiumGlobal;
+    this._viewer = viewer
+    dfSt = defaultStatic
+    Cesium = cesiumGlobal
     this._installPrimitives()
   }
 }
@@ -18,7 +18,6 @@ Primitive.prototype = {
    * 安装拓展图元
    */
   _installPrimitives: function () {
-
     this._installProbingPrimitive()
 
     this._installTexturePrimitive()
@@ -36,15 +35,12 @@ Primitive.prototype = {
     this._installTetrahedronPrimitive()
 
     this._installCustomPrimitive()
-
   },
   /**
    * 自定义图元
    */
   _installCustomPrimitive: function () {
-
     // function CustomPrimitive(options) {
-
     // }
   },
   /**
@@ -52,8 +48,6 @@ Primitive.prototype = {
    */
   _installTetrahedronPrimitive: function () {
     try {
-
-
       var Cartesian3 = Cesium.Cartesian3,
         ComponentDatatype = Cesium.ComponentDatatype,
         PrimitiveType = Cesium.PrimitiveType,
@@ -69,7 +63,6 @@ Primitive.prototype = {
         Pass = Cesium.Pass,
         Appearance = Cesium.Appearance,
         BufferUsage = Cesium.BufferUsage,
-        VertexLayout = Cesium.VertexLayout,
         Color = Cesium.Color,
         VertexArray = Cesium.VertexArray,
         buildModuleUrl = Cesium.buildModuleUrl,
@@ -80,7 +73,9 @@ Primitive.prototype = {
         Transforms = Cesium.Transforms,
         defaultValue = Cesium.defaultValue,
         _viewer = this._viewer,
-        defaultStatic = this.getDfSt(['primitive','TetrahedronPrimitive'])||'static/data/images/Textures/fence.png'
+        defaultStatic =
+          this.getDfSt(['primitive', 'TetrahedronPrimitive']) ||
+          'static/data/images/Textures/fence.png'
 
       const TetrahedronPrimitive = function (options) {
         this.show = true
@@ -97,7 +92,7 @@ Primitive.prototype = {
         this._color = defaultValue(options.color, new Color(1.0, 1.0, 0.0, 0.8))
         this._scale = defaultValue(options.scale, new Cartesian3(10, 10, 15))
         this._texture = undefined
-        this._imageUrl =defaultStatic
+        this._imageUrl = defaultStatic
         this._modelMatrix = computeModelMatrix(this)
         this._height = computeHeight(this)
         createTexture(this)
@@ -109,7 +104,7 @@ Primitive.prototype = {
         }
         if (!defined(this._command)) {
           this._command = this._createCommand(frameState.context, this)
-          this._command.pickId = 'v_pickColor'
+          // this._command.pickId = 'v_pickColor'
         }
         if (defined(this._command)) {
           frameState.commandList.push(this._command)
@@ -120,7 +115,8 @@ Primitive.prototype = {
       }
       TetrahedronPrimitive.prototype.destroy = function () {
         if (defined(this._command)) {
-          this._command.shaderProgram = this._command.shaderProgram && this._command.shaderProgram.destroy()
+          this._command.shaderProgram =
+            this._command.shaderProgram && this._command.shaderProgram.destroy()
         }
         return destroyObject(this)
       }
@@ -131,10 +127,18 @@ Primitive.prototype = {
 
         function animateFunc() {
           that._angle = that._angle + 0.01
-          Math.sin(that._angle) > 0 ? that._height = 0.01 : that._height = -0.01
+          Math.sin(that._angle) > 0
+            ? (that._height = 0.01)
+            : (that._height = -0.01)
           let translation = new Cesium.Cartesian3(0, 0, that._height)
-          Matrix4.multiplyByTranslation(that._modelMatrix, translation, that._modelMatrix)
-          let rotationZ = Matrix4.fromRotationTranslation(Matrix3.fromRotationZ(Cesium.Math.toRadians(that._speed)))
+          Matrix4.multiplyByTranslation(
+            that._modelMatrix,
+            translation,
+            that._modelMatrix
+          )
+          let rotationZ = Matrix4.fromRotationTranslation(
+            Matrix3.fromRotationZ(Cesium.Math.toRadians(that._speed))
+          )
           Matrix4.multiply(that._modelMatrix, rotationZ, that._modelMatrix)
         }
       }
@@ -150,7 +154,11 @@ Primitive.prototype = {
         var vs = creaateVertexShader()
         var fs = createFragmentShader()
         // 借用一下Appearance.getDefaultRenderState
-        var rawRenderState = Appearance.getDefaultRenderState(translucent, closed, undefined)
+        var rawRenderState = Appearance.getDefaultRenderState(
+          translucent,
+          closed,
+          undefined
+        )
         var renderState = RenderState.fromCache(rawRenderState)
         var vertexShaderSource = new ShaderSource({
           sources: [vs]
@@ -188,7 +196,7 @@ Primitive.prototype = {
           uniformMap: uniformMap,
           owner: this,
           pass: Pass.TRANSLUCENT,
-          modelMatrix: tetrahedronPrimitive._modelMatrix,
+          modelMatrix: tetrahedronPrimitive._modelMatrix
         })
       }
 
@@ -212,12 +220,14 @@ Primitive.prototype = {
               componentDatatype: ComponentDatatype.FLOAT,
               componentsPerAttribute: 2,
               values: positionsAndIndice.sts
-            }),
+            })
           },
           // Workaround Internet Explorer 11.0.8 lack of TRIANGLE_FAN
           indices: positionsAndIndice.indices,
           primitiveType: PrimitiveType.TRIANGLES,
-          boundingSphere: BoundingSphere.fromVertices(positionsAndIndice.positions)
+          boundingSphere: BoundingSphere.fromVertices(
+            positionsAndIndice.positions
+          )
         })
         //计算geometry的法向量
         var geometryNormal = GeometryPipeline.computeNormal(geometry)
@@ -225,7 +235,7 @@ Primitive.prototype = {
           context: context,
           geometry: geometryNormal,
           attributeLocations: attributeLocations,
-          bufferUsage: BufferUsage.STATIC_DRAW,
+          bufferUsage: BufferUsage.STATIC_DRAW
         })
 
         return vertexArray
@@ -290,8 +300,16 @@ Primitive.prototype = {
 
         // 1.3 定义纹理数组
         var sts = new Float32Array([
-          0.0, 0.0, 1.0, 0.0, 1.0, 1.0,
-          0.0, 1.0, 0.5, 0.5,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          0.0,
+          1.0,
+          0.5,
+          0.5
         ])
         return {
           indices: indices,
@@ -302,7 +320,7 @@ Primitive.prototype = {
 
       //创建顶点着色器
       const creaateVertexShader = function () {
-        var vertexShader =`#version 300 es
+        var vertexShader = `#version 300 es
                     in vec3 position;
                     in vec3 normal;
                     in vec2 st;
@@ -325,11 +343,11 @@ Primitive.prototype = {
 
       //创建片源着色器
       const createFragmentShader = function () {
-        var fragmentShader =`#version 300 es
+        var fragmentShader = `#version 300 es
+                     precision mediump float;
                      in vec3 v_positionEC;
                      in vec3 v_normalEC;
                      in vec2 v_st;
-                     layout(location=2) out vec4 my_fragColor;
                      uniform vec4 color;
                      in vec4 v_pickColor;
                      uniform sampler2D myImage;
@@ -353,9 +371,9 @@ Primitive.prototype = {
                         material.alpha =mix(0.1,1.0,clamp((1.0-st.t) * color.a,0.0,1.0)) +(1.0-sign(st.t-czm_frameNumber*0.001))*0.2*(1.0-colorImage.r)+0.4;
                         material.diffuse =(1.0-colorImage.a)*vec3(1.0,2.0,1.0)+colorImage.rgb*vec3(1.0,2.0,1.0);
                     #ifdef FLAT
-                        my_fragColor = vec4(material.diffuse + material.emission, material.alpha);
+                        out_FragColor = vec4(material.diffuse + material.emission, material.alpha);
                     #else
-                        my_fragColor = czm_phong(normalize(positionToEyeEC), material, czm_lightDirectionEC);
+                      out_FragColor = czm_phong(normalize(positionToEyeEC), material, czm_lightDirectionEC);
                     #endif
                     }
                     `
@@ -364,35 +382,42 @@ Primitive.prototype = {
 
       //创建纹理
       const createTexture = function (tetrahedronPrimitive) {
-
-        Resource.createIfNeeded(tetrahedronPrimitive._imageUrl).fetchImage().then(function (image) {
-          var vTexture
-          var context = tetrahedronPrimitive._viewer.scene.context
-          if (defined(image.internalFormat)) {
-            vTexture = new Texture({
-              context: context,
-              pixelFormat: image.internalFormat,
-              width: image.naturalWidth,
-              height: image.naturalHeight,
-              source: {
-                arrayBufferView: image.bufferView
-              }
-            })
-          } else {
-            vTexture = new Texture({
-              context: context,
-              source: image
-            })
-          }
-          tetrahedronPrimitive._texture = vTexture
-        })
+        Resource.createIfNeeded(tetrahedronPrimitive._imageUrl)
+          .fetchImage()
+          .then(function (image) {
+            var vTexture
+            var context = tetrahedronPrimitive._viewer.scene.context
+            if (defined(image.internalFormat)) {
+              vTexture = new Texture({
+                context: context,
+                pixelFormat: image.internalFormat,
+                width: image.naturalWidth,
+                height: image.naturalHeight,
+                source: {
+                  arrayBufferView: image.bufferView
+                }
+              })
+            } else {
+              vTexture = new Texture({
+                context: context,
+                source: image
+              })
+            }
+            tetrahedronPrimitive._texture = vTexture
+          })
       }
 
       //计算矩阵
       const computeModelMatrix = function (tetrahedronPrimitive) {
-        let enuMatrix = Transforms.eastNorthUpToFixedFrame(tetrahedronPrimitive._localPosition)
+        let enuMatrix = Transforms.eastNorthUpToFixedFrame(
+          tetrahedronPrimitive._localPosition
+        )
         let scaleMatrix = Matrix4.fromScale(tetrahedronPrimitive._scale)
-        let modelMatrix = Matrix4.multiply(enuMatrix, scaleMatrix, new Matrix4())
+        let modelMatrix = Matrix4.multiply(
+          enuMatrix,
+          scaleMatrix,
+          new Matrix4()
+        )
         tetrahedronPrimitive._scaleMatrix = scaleMatrix
         tetrahedronPrimitive._enuMatrix = enuMatrix
         return modelMatrix
@@ -400,22 +425,36 @@ Primitive.prototype = {
 
       //计算高度
       const computeHeight = function (tetrahedronPrimitive) {
-        let point = Cartesian3.fromElements(0, 0, tetrahedronPrimitive._distance, new Cesium.Cartesian3())
-        let enuPoint = Cesium.Matrix4.multiplyByPoint(tetrahedronPrimitive._enuMatrix, point, new Cartesian3())
-        let upPositionEC = Matrix4.multiplyByPoint(tetrahedronPrimitive._viewer.scene.camera._viewMatrix, enuPoint, new Cartesian3())
-        let upPositionPC = Matrix4.multiplyByPoint(tetrahedronPrimitive._viewer.scene.camera.frustum.projectionMatrix, upPositionEC, new Cartesian3())
+        let point = Cartesian3.fromElements(
+          0,
+          0,
+          tetrahedronPrimitive._distance,
+          new Cesium.Cartesian3()
+        )
+        let enuPoint = Cesium.Matrix4.multiplyByPoint(
+          tetrahedronPrimitive._enuMatrix,
+          point,
+          new Cartesian3()
+        )
+        let upPositionEC = Matrix4.multiplyByPoint(
+          tetrahedronPrimitive._viewer.scene.camera._viewMatrix,
+          enuPoint,
+          new Cartesian3()
+        )
+        let upPositionPC = Matrix4.multiplyByPoint(
+          tetrahedronPrimitive._viewer.scene.camera.frustum.projectionMatrix,
+          upPositionEC,
+          new Cartesian3()
+        )
         return Cartesian3.normalize(upPositionPC, new Cartesian3()).z
       }
 
       Cesium.Scene.TetrahedronPrimitive = TetrahedronPrimitive
     } catch (error) {
-
       console.log(error)
     }
-
   },
   _installXyzAxisPrimitive: function () {
-
     function XyzAxisPrimitive(option) {
       this._viewer = option.viewer
 
@@ -429,7 +468,9 @@ Primitive.prototype = {
 
       this._viewer.dataSources.add(this._layer)
 
-      this._handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
+      this._handler = new Cesium.ScreenSpaceEventHandler(
+        this._viewer.scene.canvas
+      )
 
       this._xyzState = false
       this._xyzPid = undefined
@@ -447,8 +488,7 @@ Primitive.prototype = {
         this._handler.distory()
       },
       _createAxisXYZ: function () {
-
-        this._model.readyPromise.then(m => {
+        this._model.readyPromise.then((m) => {
           const center1 = Cesium.Matrix4.getTranslation(
             m.modelMatrix,
             new Cesium.Cartesian3()
@@ -582,12 +622,24 @@ Primitive.prototype = {
           let primitives = this._layer._primitives._primitives
           for (let i = 1, j = primitives.length; i < j; i++) {
             let primitive = primitives[i]
-            const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(cartesian.x, cartesian.y, cartesian.z))
-            Cesium.Matrix4.multiply(primitive.modelMatrix, translation, primitive.modelMatrix)
+            const translation = Cesium.Matrix4.fromTranslation(
+              new Cesium.Cartesian3(cartesian.x, cartesian.y, cartesian.z)
+            )
+            Cesium.Matrix4.multiply(
+              primitive.modelMatrix,
+              translation,
+              primitive.modelMatrix
+            )
           }
         }
-        const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(cartesian.x, cartesian.y, cartesian.z))
-        Cesium.Matrix4.multiply(this._model.modelMatrix, translation, this._model.modelMatrix)
+        const translation = Cesium.Matrix4.fromTranslation(
+          new Cesium.Cartesian3(cartesian.x, cartesian.y, cartesian.z)
+        )
+        Cesium.Matrix4.multiply(
+          this._model.modelMatrix,
+          translation,
+          this._model.modelMatrix
+        )
       },
       _updateAxisSphere(angel) {
         if (this._layer) {
@@ -595,11 +647,19 @@ Primitive.prototype = {
           for (let i = 1, j = primitives.length; i < j; i++) {
             let primitive = primitives[i]
             const rotation = Cesium.Matrix4.fromRotationTranslation(angel)
-            Cesium.Matrix4.multiply(primitive.modelMatrix, rotation, primitive.modelMatrix)
+            Cesium.Matrix4.multiply(
+              primitive.modelMatrix,
+              rotation,
+              primitive.modelMatrix
+            )
           }
         }
         const rotation = Cesium.Matrix4.fromRotationTranslation(angel)
-        Cesium.Matrix4.multiply(this._model.modelMatrix, rotation, this._model.modelMatrix)
+        Cesium.Matrix4.multiply(
+          this._model.modelMatrix,
+          rotation,
+          this._model.modelMatrix
+        )
       },
       _bindHandler() {
         //拖动
@@ -649,13 +709,19 @@ Primitive.prototype = {
                 })
                 break
               case 'axisSphereX':
-                this._updateAxisSphere(Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(1)))
+                this._updateAxisSphere(
+                  Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(1))
+                )
                 break
               case 'axisSphereY':
-                this._updateAxisSphere(Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(1)))
+                this._updateAxisSphere(
+                  Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(1))
+                )
                 break
               case 'axisSphereZ':
-                this._updateAxisSphere(Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(1)))
+                this._updateAxisSphere(
+                  Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(1))
+                )
                 break
             }
           }
@@ -665,16 +731,15 @@ Primitive.prototype = {
         this._handler.setInputAction((click) => {
           let pickObj = viewer.scene.pick(click.position)
           if (pickObj && pickObj.id) {
-            this._xyzPid = pickObj.id, this._xyzState = true
+            ;(this._xyzPid = pickObj.id), (this._xyzState = true)
           }
         }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
 
         //结束
         this._handler.setInputAction(() => {
-          this._xyzState = false, this._xyzPid = undefined
+          ;(this._xyzState = false), (this._xyzPid = undefined)
         }, Cesium.ScreenSpaceEventType.LEFT_UP)
       }
-
     }
     Cesium.Scene.XyzAxisPrimitive = XyzAxisPrimitive
   },
@@ -682,7 +747,6 @@ Primitive.prototype = {
    * 箭头线
    */
   _installArrowPolylinePrimitive: function () {
-
     function ArrowPolylinePrimitive(option = {}) {
       this._color = option.color || Cesium.Color.RED
       this._width = option.width || 3
@@ -693,16 +757,20 @@ Primitive.prototype = {
       this.position = option.position
       const id = option.id
       //这里用的是圆锥几何对象，当topRadius和bottomRadius相同时，它就是一个圆柱
-      const line = Cesium.CylinderGeometry.createGeometry(new Cesium.CylinderGeometry({
-        length: this._length,
-        topRadius: this._width,
-        bottomRadius: this._width
-      }))
-      const arrow = Cesium.CylinderGeometry.createGeometry(new Cesium.CylinderGeometry({
-        length: this._headLength,
-        topRadius: 0,
-        bottomRadius: this._headWidth
-      }))
+      const line = Cesium.CylinderGeometry.createGeometry(
+        new Cesium.CylinderGeometry({
+          length: this._length,
+          topRadius: this._width,
+          bottomRadius: this._width
+        })
+      )
+      const arrow = Cesium.CylinderGeometry.createGeometry(
+        new Cesium.CylinderGeometry({
+          length: this._headLength,
+          topRadius: 0,
+          bottomRadius: this._headWidth
+        })
+      )
       let offset = (this._length + this._headLength) / 2
       if (this._inverse) {
         offset = -offset
@@ -712,13 +780,14 @@ Primitive.prototype = {
 
       return new Cesium.Primitive({
         modelMatrix: Cesium.Transforms.eastNorthUpToFixedFrame(this.position),
-        geometryInstances: [new Cesium.GeometryInstance({
+        geometryInstances: [
+          new Cesium.GeometryInstance({
             id: id + '-line',
-            geometry: line,
+            geometry: line
           }),
           new Cesium.GeometryInstance({
             id: id + '-arrow',
-            geometry: arrow,
+            geometry: arrow
           })
         ],
         appearance: new Cesium.MaterialAppearance({
@@ -754,23 +823,23 @@ Primitive.prototype = {
    * 阴影图元
    */
   _installShadowPrimitive: function () {
-    const ViewshedLineVS = 'ttribute vec3 position;\n\
+    const ViewshedLineVS =
+      'ttribute vec3 position;\n\
             uniform mat4 u_modelViewMatrix;\n\
             void main()\n\
             {\n\
             gl_Position = czm_projection* u_modelViewMatrix* vec4(position.xyz,1.0);\n\
             }\n\
             '
-    const ViewshedLineFS = 'uniform vec4 u_bgColor;\n\
-            out vec4 myOutputColor;\n\
+    const ViewshedLineFS =
+      'uniform vec4 u_bgColor;\n\
             void main()\n\
             {\n\
-              myOutputColor = u_bgColor;\n\
+              out_FragColor = u_bgColor;\n\
             }\n\
             '
 
     function ShadowPrimitive(options) {
-
       options = Cesium.defaultValue(options, Cesium.defaultValue.EMPTY_OBJECT)
       var scene = options.scene
       if (!Cesium.defined(scene)) {
@@ -805,24 +874,24 @@ Primitive.prototype = {
       this._targetPoint = this._viewerPosition.clone()
 
       var t = new Cesium.Cartesian3(0, 0, 100)
-      var matrix_ENU = Cesium.Transforms.eastNorthUpToFixedFrame(this._viewerPosition)
+      var matrix_ENU = Cesium.Transforms.eastNorthUpToFixedFrame(
+        this._viewerPosition
+      )
       //Cesium.Matrix4.inverse(matrix_ENU, matrix_ENU),
       Cesium.Matrix4.multiplyByPoint(matrix_ENU, t, this._targetPoint)
 
       this._distance = 100
       this._cameraUpdated = false
-
-      this._modelMatrix = new Cesium.Matrix4,
-        this._shadowMap = new Cesium.ShadowMap({
+      ;(this._modelMatrix = new Cesium.Matrix4()),
+        (this._shadowMap = new Cesium.ShadowMap({
           context: context,
           enabled: true,
           lightCamera: this._depthCamera,
           cascadesEnabled: false
-        })
+        }))
       //this._shadowMap.debugShow=true;
 
       this.show = true
-
 
       this._invisiblyColor = Cesium.Color.RED
       this._visiblyColor = Cesium.Color.GREEN
@@ -833,29 +902,26 @@ Primitive.prototype = {
       }
 
       this._initialize = function () {
-        this._positions = new Float32Array(633),
-          this._indices = new Uint16Array(408)
+        ;(this._positions = new Float32Array(633)),
+          (this._indices = new Uint16Array(408))
         var indices = this._indices,
           r = 0
-        indices[r++] = 0,
-          indices[r++] = 1,
-          indices[r++] = 0,
-          indices[r++] = 21,
-          indices[r++] = 0,
-          indices[r++] = 85,
-          indices[r++] = 0,
-          indices[r++] = 105
+        ;(indices[r++] = 0),
+          (indices[r++] = 1),
+          (indices[r++] = 0),
+          (indices[r++] = 21),
+          (indices[r++] = 0),
+          (indices[r++] = 85),
+          (indices[r++] = 0),
+          (indices[r++] = 105)
         for (var i = 0, n = 0; n < 5; ++n) {
           i++
-          for (var a = 0; a < 20; ++a)
-            indices[r++] = i++,
-            indices[r++] = i
+          for (var a = 0; a < 20; ++a) (indices[r++] = i++), (indices[r++] = i)
         }
         i++
         for (var s = 0; s < 20; ++s)
           for (var l = 0; l < 5; ++l)
-            indices[r++] = i,
-            indices[r++] = 5 + i++
+            (indices[r++] = i), (indices[r++] = 5 + i++)
         this._initialized = true
       }
       //this._initialize();
@@ -863,12 +929,9 @@ Primitive.prototype = {
       this._debugLightFrustum = undefined
 
       this._debugShow = true
-
-
     }
 
     Object.defineProperties(ShadowPrimitive.prototype, {
-
       shadowMap: {
         get: function () {
           return this._shadowMap
@@ -913,8 +976,7 @@ Primitive.prototype = {
           return this._viewerPosition
         },
         set: function (position) {
-          this._viewerPosition = position,
-            this._cameraUpdated = !1
+          ;(this._viewerPosition = position), (this._cameraUpdated = !1)
         }
       },
       direction: {
@@ -922,8 +984,7 @@ Primitive.prototype = {
           return this._direction
         },
         set: function (direction) {
-          this._direction = direction,
-            this._cameraUpdated = !1
+          ;(this._direction = direction), (this._cameraUpdated = !1)
         }
       },
       pitch: {
@@ -931,8 +992,7 @@ Primitive.prototype = {
           return this._pitch
         },
         set: function (pitch) {
-          this._pitch = pitch,
-            this._cameraUpdated = !1
+          ;(this._pitch = pitch), (this._cameraUpdated = !1)
         }
       },
       horizontalFov: {
@@ -940,9 +1000,9 @@ Primitive.prototype = {
           return this._horizontalFov
         },
         set: function (e) {
-          this._horizontalFov = e,
-            this._cameraUpdated = !1,
-            this._hintLineUpdated = !1
+          ;(this._horizontalFov = e),
+            (this._cameraUpdated = !1),
+            (this._hintLineUpdated = !1)
         }
       },
       verticalFov: {
@@ -950,9 +1010,9 @@ Primitive.prototype = {
           return this._verticalFov
         },
         set: function (e) {
-          this._verticalFov = e,
-            this._cameraUpdated = !1,
-            this._hintLineUpdated = !1
+          ;(this._verticalFov = e),
+            (this._cameraUpdated = !1),
+            (this._hintLineUpdated = !1)
         }
       },
       distance: {
@@ -960,13 +1020,15 @@ Primitive.prototype = {
           return this._distance
         },
         set: function (distance) {
-          this._distance = distance,
-            this._cameraUpdated = !1
+          ;(this._distance = distance), (this._cameraUpdated = !1)
         }
-      },
+      }
     })
 
-    ShadowPrimitive.prototype.setDebugFrustumEffect = function (bShowPlane, bShowOutline) {
+    ShadowPrimitive.prototype.setDebugFrustumEffect = function (
+      bShowPlane,
+      bShowOutline
+    ) {
       if (!this.debugShow) return
       var planesPrimitives = this.debugLightFrustum._planesPrimitives
       var outlinePrimitives = this.debugLightFrustum._outlinePrimitives
@@ -1004,10 +1066,13 @@ Primitive.prototype = {
     }
 
     ShadowPrimitive.prototype._updateCamera = function () {
-      this._depthCamera.frustum.near = .001 * this._distance,
-        this._depthCamera.frustum.far = this._distance,
-        this._depthCamera.frustum.fov = Cesium.Math.toRadians(Math.max(this._horizontalFov, this._verticalFov)),
-        this._depthCamera.frustum.aspectRatio = this._horizontalFov / this._verticalFov,
+      ;(this._depthCamera.frustum.near = 0.001 * this._distance),
+        (this._depthCamera.frustum.far = this._distance),
+        (this._depthCamera.frustum.fov = Cesium.Math.toRadians(
+          Math.max(this._horizontalFov, this._verticalFov)
+        )),
+        (this._depthCamera.frustum.aspectRatio =
+          this._horizontalFov / this._verticalFov),
         this._depthCamera.setView({
           destination: this._viewerPosition,
           orientation: {
@@ -1015,58 +1080,78 @@ Primitive.prototype = {
             pitch: Cesium.Math.toRadians(this._pitch)
           }
         }),
-        this._modelMatrix = this._depthCamera.inverseViewMatrix
+        (this._modelMatrix = this._depthCamera.inverseViewMatrix)
       this._cameraUpdated = !0
     }
     ShadowPrimitive.prototype.setPoseByTargetPoint = function (point) {
       this.distance = Cesium.Cartesian3.distance(this._viewerPosition, point)
-      var t = new Cesium.Cartesian3,
-        matrix_ENU = Cesium.Transforms.eastNorthUpToFixedFrame(this._viewerPosition)
+      var t = new Cesium.Cartesian3(),
+        matrix_ENU = Cesium.Transforms.eastNorthUpToFixedFrame(
+          this._viewerPosition
+        )
       Cesium.Matrix4.inverse(matrix_ENU, matrix_ENU),
         Cesium.Matrix4.multiplyByPoint(matrix_ENU, point, t),
         Cesium.Cartesian3.normalize(t, t),
-        this.direction = Cesium.Math.toDegrees(Math.atan2(t.x, t.y)),
-        this.pitch = Cesium.Math.toDegrees(Math.asin(t.z))
+        (this.direction = Cesium.Math.toDegrees(Math.atan2(t.x, t.y))),
+        (this.pitch = Cesium.Math.toDegrees(Math.asin(t.z)))
     }
 
     ShadowPrimitive.prototype._updateHintLine = function (frameState) {
-      var i, a, s, d, p = this._positions,
+      var i,
+        a,
+        s,
+        d,
+        p = this._positions,
         m = Cesium.Math.toRadians(this._horizontalFov),
         v = Cesium.Math.toRadians(this._verticalFov),
-        b = Math.tan(.5 * m),
-        S = Math.tan(.5 * v)
-      a = this._distance * b,
-        d = this._distance * S,
-        i = -a,
-        s = -d
+        b = Math.tan(0.5 * m),
+        S = Math.tan(0.5 * v)
+      ;(a = this._distance * b), (d = this._distance * S), (i = -a), (s = -d)
       var w = new Cesium.Cartesian3(i, s, -this._distance),
         x = new Cesium.Cartesian3(a, d, 0)
       Cesium.Matrix4.multiplyByPoint(this._modelMatrix, w, w),
         Cesium.Matrix4.multiplyByPoint(this._modelMatrix, x, x)
       var boundingSphere = Cesium.BoundingSphere.fromCornerPoints(w, x)
-      if (frameState.cullingVolume.computeVisibility(boundingSphere) === Intersect.OUTSIDE)
-        return void(this._valid = !1)
+      if (
+        frameState.cullingVolume.computeVisibility(boundingSphere) ===
+        Intersect.OUTSIDE
+      )
+        return void (this._valid = !1)
       this._valid = !0
       var P = 0
-      p[P++] = 0,
-        p[P++] = 0,
-        p[P++] = 0
-      for (var D, I, M = Math.PI - .5 * m, R = m / 4, L = 0; L < 5; ++L) {
+      ;(p[P++] = 0), (p[P++] = 0), (p[P++] = 0)
+      for (var D, I, M = Math.PI - 0.5 * m, R = m / 4, L = 0; L < 5; ++L) {
         D = M + L * R
-        for (var B = d / (this._distance / Math.cos(D)), F = Math.atan(B), U = -F, V = F / 10, z = 0; z < 21; ++z)
-          I = U + z * V,
-          p[P++] = this._distance * Math.cos(I) * Math.sin(D),
-          p[P++] = this._distance * Math.sin(I),
-          p[P++] = this._distance * Math.cos(I) * Math.cos(D)
+        for (
+          var B = d / (this._distance / Math.cos(D)),
+            F = Math.atan(B),
+            U = -F,
+            V = F / 10,
+            z = 0;
+          z < 21;
+          ++z
+        )
+          (I = U + z * V),
+            (p[P++] = this._distance * Math.cos(I) * Math.sin(D)),
+            (p[P++] = this._distance * Math.sin(I)),
+            (p[P++] = this._distance * Math.cos(I) * Math.cos(D))
       }
       R = m / 20
       for (var G = 0; G < 21; ++G) {
         D = M + G * R
-        for (var B = d / (this._distance / Math.cos(D)), F = Math.atan(B), U = -F, V = F / 2, H = 0; H < 5; ++H)
-          I = U + H * V,
-          p[P++] = this._distance * Math.cos(I) * Math.sin(D),
-          p[P++] = this._distance * Math.sin(I),
-          p[P++] = this._distance * Math.cos(I) * Math.cos(D)
+        for (
+          var B = d / (this._distance / Math.cos(D)),
+            F = Math.atan(B),
+            U = -F,
+            V = F / 2,
+            H = 0;
+          H < 5;
+          ++H
+        )
+          (I = U + H * V),
+            (p[P++] = this._distance * Math.cos(I) * Math.sin(D)),
+            (p[P++] = this._distance * Math.sin(I)),
+            (p[P++] = this._distance * Math.cos(I) * Math.cos(D))
       }
       var context = frameState.context,
         indexBuffer = Cesium.Buffer.createIndexBuffer({
@@ -1077,7 +1162,10 @@ Primitive.prototype = {
         }),
         vertexBuffer = Cesium.Buffer.createVertexBuffer({
           context: context,
-          typedArray: Cesium.ComponentDatatype.createTypedArray(Cesium.ComponentDatatype.FLOAT, this._positions),
+          typedArray: Cesium.ComponentDatatype.createTypedArray(
+            Cesium.ComponentDatatype.FLOAT,
+            this._positions
+          ),
           usage: Cesium.BufferUsage.STATIC_DRAW
         }),
         attributes = []
@@ -1095,9 +1183,9 @@ Primitive.prototype = {
       })
       if (Cesium.defined(this._drawLineCommand))
         this._drawLineCommand.vertexArray.destroy(),
-        this._drawLineCommand.vertexArray = vertexArray,
-        this._drawLineCommand.modelMatrix = this._modelMatrix,
-        this._drawLineCommand.boundingVolume = boundingSphere
+          (this._drawLineCommand.vertexArray = vertexArray),
+          (this._drawLineCommand.modelMatrix = this._modelMatrix),
+          (this._drawLineCommand.boundingVolume = boundingSphere)
       else {
         var shaderProgram = Cesium.ShaderProgram.fromCache({
             context: context,
@@ -1145,7 +1233,6 @@ Primitive.prototype = {
      * @param {*} options
      */
     function PointsPrimitive(options) {
-
       if (options && options.viewer && options.Cartesians) {
         this._vertexShader = this.getVSPolylie()
         this._fragmentShader = this.getFSPolyline()
@@ -1159,12 +1246,14 @@ Primitive.prototype = {
 
     PointsPrimitive.prototype = {
       build: function (options) {
-
         if (options.Cartesians && options.Cartesians.length >= 2) {
           var postionsTemp = []
           var colorsTemp = []
           var indicesTesm = []
-          if (options.Colors && options.Colors.length === options.Cartesians.length * 4) {
+          if (
+            options.Colors &&
+            options.Colors.length === options.Cartesians.length * 4
+          ) {
             for (var i = 0; i < options.Cartesians.length; i++) {
               postionsTemp.push(options.Cartesians[i].x)
               postionsTemp.push(options.Cartesians[i].y)
@@ -1189,32 +1278,50 @@ Primitive.prototype = {
           this.positionArr = new Float64Array(postionsTemp)
           this.colorArr = new Float32Array(colorsTemp)
           this.indiceArr = new Uint16Array(indicesTesm)
-
         } else {
           var p1 = Cesium.Cartesian3.fromDegrees(0, 0, -10)
           var p2 = Cesium.Cartesian3.fromDegrees(0, 0.001, -10)
           this.positionArr = new Float64Array([
-            p1.x, p1.y, p1.z,
-            p2.x, p2.y, p2.z
+            p1.x,
+            p1.y,
+            p1.z,
+            p2.x,
+            p2.y,
+            p2.z
           ])
           //默认蓝色
           this.colorArr = new Float32Array([
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0
           ])
           this.indiceArr = new Uint16Array([0, 1])
         }
 
-        this._geometry = this.createGeometry(this.positionArr, this.colorArr, this.indiceArr)
-        this._appearance = this.createAppearence(this._fragmentShader, this._vertexShader)
+        this._geometry = this.createGeometry(
+          this.positionArr,
+          this.colorArr,
+          this.indiceArr
+        )
+        this._appearance = this.createAppearence(
+          this._fragmentShader,
+          this._vertexShader
+        )
 
-        this.primitive = this._viewer.scene.primitives.add(new Cesium.Primitive({
-          geometryInstances: new Cesium.GeometryInstance({
-            geometry: this._geometry
-          }),
-          appearance: this._appearance,
-          asynchronous: false
-        }))
+        this.primitive = this._viewer.scene.primitives.add(
+          new Cesium.Primitive({
+            geometryInstances: new Cesium.GeometryInstance({
+              geometry: this._geometry
+            }),
+            appearance: this._appearance,
+            asynchronous: false
+          })
+        )
       },
       getVSPolylie: function () {
         return 'in vec3 position3DHigh; \
@@ -1234,12 +1341,11 @@ Primitive.prototype = {
       },
       getFSPolyline: function () {
         return 'in vec4 v_color; \
-                layout(location=2) out vec4 myOutputColor;\
                 void main()\
                 {\
                       float d = distance(gl_PointCoord, vec2(0.5,0.5));\
                       if(d < 0.5){\
-                        myOutputColor = v_color;\
+                        out_FragColor = v_color;\
                       }else{\
                         discard;\
                       }\
@@ -1294,10 +1400,18 @@ Primitive.prototype = {
             var p1 = cartesians[0]
             var p2 = cartesians[1]
             this.positionArr = new Float64Array([
-              p1.x, p1.y, p1.z,
-              p2.x, p2.y, p2.z
+              p1.x,
+              p1.y,
+              p1.z,
+              p2.x,
+              p2.y,
+              p2.z
             ])
-            this._geometry = this.createGeometry(this.positionArr, this.colorArr, this.indiceArr)
+            this._geometry = this.createGeometry(
+              this.positionArr,
+              this.colorArr,
+              this.indiceArr
+            )
           } else {
             //默认蓝色
             var postionsTemp = []
@@ -1320,17 +1434,26 @@ Primitive.prototype = {
             this.colorArr = new Float32Array(colorsTemp)
             this.indiceArr = new Uint16Array(indicesTesm)
 
-            geometry = this.createGeometry(this.positionArr, this.colorArr, this.indiceArr)
-            appearance = this.createAppearence(this._fragmentShader, this._vertexShader)
+            geometry = this.createGeometry(
+              this.positionArr,
+              this.colorArr,
+              this.indiceArr
+            )
+            appearance = this.createAppearence(
+              this._fragmentShader,
+              this._vertexShader
+            )
           }
 
-          this.primitive = this._viewer.scene.primitives.add(new Cesium.Primitive({
-            geometryInstances: new Cesium.GeometryInstance({
-              geometry: this._geometry
-            }),
-            appearance: this._appearance,
-            asynchronous: false
-          }))
+          this.primitive = this._viewer.scene.primitives.add(
+            new Cesium.Primitive({
+              geometryInstances: new Cesium.GeometryInstance({
+                geometry: this._geometry
+              }),
+              appearance: this._appearance,
+              asynchronous: false
+            })
+          )
         } else {
           return
         }
@@ -1348,13 +1471,21 @@ Primitive.prototype = {
             var p1 = cartesians[0]
             var p2 = cartesians[1]
             this.positionArr = new Float64Array([
-              p1.x, p1.y, p1.z,
-              p2.x, p2.y, p2.z
+              p1.x,
+              p1.y,
+              p1.z,
+              p2.x,
+              p2.y,
+              p2.z
             ])
 
             this.colorArr = new Float32Array(colors)
 
-            geometry = CreateGeometry(this.positionArr, this.colorArr, this.indiceArr)
+            geometry = CreateGeometry(
+              this.positionArr,
+              this.colorArr,
+              this.indiceArr
+            )
           } else {
             var postionsTemp = []
             var indicesTesm = []
@@ -1371,17 +1502,26 @@ Primitive.prototype = {
             this.colorArr = new Float32Array(colors)
             this.indiceArr = new Uint16Array(indicesTesm)
 
-            this._geometry = this.createGeometry(this.positionArr, this.colorArr, this.indiceArr)
-            this._appearance = this.createAppearence(this._fragmentShader, this._vertexShader)
+            this._geometry = this.createGeometry(
+              this.positionArr,
+              this.colorArr,
+              this.indiceArr
+            )
+            this._appearance = this.createAppearence(
+              this._fragmentShader,
+              this._vertexShader
+            )
           }
 
-          this.primitive = viewer.scene.primitives.add(new Cesium.Primitive({
-            geometryInstances: new Cesium.GeometryInstance({
-              geometry: this._geometry
-            }),
-            appearance: this._appearance,
-            asynchronous: false
-          }))
+          this.primitive = viewer.scene.primitives.add(
+            new Cesium.Primitive({
+              geometryInstances: new Cesium.GeometryInstance({
+                geometry: this._geometry
+              }),
+              appearance: this._appearance,
+              asynchronous: false
+            })
+          )
         } else {
           return
         }
@@ -1399,9 +1539,11 @@ Primitive.prototype = {
      * @param {*} options
      */
     const WaterPrimitive = function (opt) {
-
       this._positions = opt.positions
-      this._url = opt.img ||this.getDfSt(['primitive','WaterPrimitive'])|| 'static/data/images/Textures/waterNormals.jpg'
+      this._url =
+        opt.img ||
+        this.getDfSt(['primitive', 'WaterPrimitive']) ||
+        'static/data/images/Textures/waterNormals.jpg'
       this._frequency = opt.frequency || 1000.0
       this._animationSpeed = opt.animationSpeed || 0.01
       this._amplitude = opt.amplitude || 10.0
@@ -1411,23 +1553,23 @@ Primitive.prototype = {
     }
 
     WaterPrimitive.prototype.build = function () {
-
       this._geometry = this._createGeometry()
 
       this._appearance = this._createAppearence()
 
-      this.primitive = this._viewer.scene.primitives.add(new Cesium.Primitive({
-        allowPicking: false,
-        geometryInstances: new Cesium.GeometryInstance({
-          geometry: this._geometry
-        }),
-        appearance: this._appearance,
-        asynchronous: false
-      }))
+      this.primitive = this._viewer.scene.primitives.add(
+        new Cesium.Primitive({
+          allowPicking: false,
+          geometryInstances: new Cesium.GeometryInstance({
+            geometry: this._geometry
+          }),
+          appearance: this._appearance,
+          asynchronous: false
+        })
+      )
     }
 
     WaterPrimitive.prototype._createAppearence = function () {
-
       return new Cesium.EllipsoidSurfaceAppearance({
         material: new Cesium.Material({
           fabric: {
@@ -1445,19 +1587,18 @@ Primitive.prototype = {
     }
 
     WaterPrimitive.prototype._createGeometry = function () {
-
       return new Cesium.PolygonGeometry({
-        polygonHierarchy: new Cesium.PolygonHierarchy(Cesium.Cartesian3.fromDegreesArrayHeights(this._positions)),
+        polygonHierarchy: new Cesium.PolygonHierarchy(
+          Cesium.Cartesian3.fromDegreesArrayHeights(this._positions)
+        ),
         extrudedHeight: this._extrudedHeight,
         perPositionHeight: true
       })
     }
 
     WaterPrimitive.prototype.getFS = function () {
-
       return 'in vec3 v_positionMC;\n\
                 in vec3 v_positionEC;\n\
-                out vec4 myOutputColor;\n\
                 in vec2 v_st;\n\
                 \n\
                 void main()\n\
@@ -1476,32 +1617,39 @@ Primitive.prototype = {
                     materialInput.positionToEyeEC = positionToEyeEC;\n\
                     czm_material material = czm_getMaterial(materialInput);\n\
                 #ifdef FLAT\n\
-                    myOutputColor = vec4(material.diffuse + material.emission, material.alpha);\n\
+                    out_FragColor = vec4(material.diffuse + material.emission, material.alpha);\n\
                 #else\n\
-                    myOutputColor = czm_phong(normalize(positionToEyeEC), material);\n\
-                    myOutputColor.a = 0.5;\n\
+                    out_FragColor = czm_phong(normalize(positionToEyeEC), material);\n\
+                    out_FragColor.a = 0.5;\n\
                 #endif\n\
                 }\n\
                 '
     }
 
-    Primitive.prototype.updateDegreesPosition = function (_degreesArrayHeights, _extrudedHeight) {
-
+    Primitive.prototype.updateDegreesPosition = function (
+      _degreesArrayHeights,
+      _extrudedHeight
+    ) {
       if (this.primitive != null) {
         this._viewer.scene.primitives.remove(this.primitive)
         if (_degreesArrayHeights && _degreesArrayHeights.length < 3) {
           return
         }
-        var geometry = this._createGeometry(_degreesArrayHeights, _extrudedHeight ? _extrudedHeight : 0)
+        var geometry = this._createGeometry(
+          _degreesArrayHeights,
+          _extrudedHeight ? _extrudedHeight : 0
+        )
 
-        this.primitive = this._viewer.scene.primitives.add(new Cesium.Primitive({
-          allowPicking: false,
-          geometryInstances: new Cesium.GeometryInstance({
-            geometry: geometry
-          }),
-          appearance: this._appearance,
-          asynchronous: false
-        }))
+        this.primitive = this._viewer.scene.primitives.add(
+          new Cesium.Primitive({
+            allowPicking: false,
+            geometryInstances: new Cesium.GeometryInstance({
+              geometry: geometry
+            }),
+            appearance: this._appearance,
+            asynchronous: false
+          })
+        )
       } else {
         return
       }
@@ -1518,7 +1666,6 @@ Primitive.prototype = {
      * @param {*} options
      */
     function TexturePrimitive(options) {
-
       this._vertexShader = this.getVS()
       this._fragmentShader = this.getFS()
       this._materialShader = this.getMS()
@@ -1526,16 +1673,13 @@ Primitive.prototype = {
       this._url = options.url
       this._cartesians = options.cartesians
       this._id = options.id || ''
-
     }
 
     // 构建
     TexturePrimitive.prototype.build = function () {
-
       var postionsTemp = [],
-        stsTemp = [0, 0, 1, 0, 1, 1, 0, 1] //纹理坐标，调整纹理坐标顺序即可完成贴图的旋转
+        stsTemp = [0, 0, 1, 0, 1, 1, 0, 1], //纹理坐标，调整纹理坐标顺序即可完成贴图的旋转
         // var stsTemp = [1,1,0,1,0,0,1,0];
-        ,
         indicesTesm = [0, 1, 2, 0, 2, 3] //索引数组
 
       for (var i = 0; i < this._cartesians.length; i++) {
@@ -1551,18 +1695,19 @@ Primitive.prototype = {
       this._geometry = this._createGeometry()
       this._appearance = this._createAppearence()
 
-      this.primitive = this._viewer.scene.primitives.add(new Cesium.Primitive({
-        geometryInstances: new Cesium.GeometryInstance({
-          geometry: this._geometry,
-          id: this._id
-        }),
-        appearance: this._appearance,
-        asynchronous: false
-      }))
+      this.primitive = this._viewer.scene.primitives.add(
+        new Cesium.Primitive({
+          geometryInstances: new Cesium.GeometryInstance({
+            geometry: this._geometry,
+            id: this._id
+          }),
+          appearance: this._appearance,
+          asynchronous: false
+        })
+      )
     }
     // 生成几何
     TexturePrimitive.prototype._createGeometry = function () {
-
       var sess = new Cesium.GeometryAttribute({
         componentDatatype: Cesium.ComponentDatatype.FLOAT,
         componentsPerAttribute: 2,
@@ -1584,7 +1729,6 @@ Primitive.prototype = {
     }
     //生成外观
     TexturePrimitive.prototype._createAppearence = function () {
-
       return new Cesium.Appearance({
         material: new Cesium.Material({
           fabric: {
@@ -1603,7 +1747,7 @@ Primitive.prototype = {
           depthTest: {
             enabled: true
           },
-          depthMask: true,
+          depthMask: true
         },
         fragmentShaderSource: this._fragmentShader,
         vertexShaderSource: this._vertexShader
@@ -1628,14 +1772,13 @@ Primitive.prototype = {
 
     TexturePrimitive.prototype.getFS = function () {
       return 'in vec2 v_st;\
-                out vec4 myOutputColor;\
                 void main()\
                 {\
                     czm_materialInput materialInput;\
                     czm_material material=czm_getMaterial(materialInput,v_st);\
                     vec4 color=vec4(material.diffuse + material.emission,material.alpha);\
                     if(color.x==1.0&&color.y==1.0&&color.z==1.0&&color.w==1.0) color=vec4(vec3(0.0,0.0,0.0),0.0);\
-                    myOutputColor =color;\
+                    out_FragColor =color;\
                 }\
                 '
     }
@@ -1658,7 +1801,6 @@ Primitive.prototype = {
    * 卫星雷达波
    */
   _installProbingPrimitive: function () {
-
     var DEF_OPT = {
       color: new Cesium.Color(1.0, 0.0, 1.0, 0.8),
       repeat: 30.0,
@@ -1676,7 +1818,6 @@ Primitive.prototype = {
      * @param {*} option
      */
     function ProbingPrimitive(option) {
-
       this._viewer = viewer
       this._length = option.length || DEF_OPT.length
       this._center = option.center || DEF_OPT.center
@@ -1692,16 +1833,16 @@ Primitive.prototype = {
     }
 
     ProbingPrimitive.prototype.build = function () {
-
       var cylinderGeometry = new Cesium.CylinderGeometry({
           length: this._length,
           topRadius: this._top,
           bottomRadius: this._bottom,
-          vertexFormat: Cesium.MaterialAppearance.MaterialSupport.TEXTURED.vertexFormat
+          vertexFormat:
+            Cesium.MaterialAppearance.MaterialSupport.TEXTURED.vertexFormat
         }),
         redCone = new Cesium.GeometryInstance({
           geometry: cylinderGeometry,
-          modelMatrix: this.getModelMatrix(),
+          modelMatrix: this.getModelMatrix()
         }),
         appearance = new Cesium.MaterialAppearance({
           material: this.getMaterial(),
@@ -1713,7 +1854,8 @@ Primitive.prototype = {
         new Cesium.Primitive({
           geometryInstances: [redCone],
           appearance: appearance
-        }))
+        })
+      )
       //监听渲染事件 动态修改雷达材质中的offset变量 从而实现动态效果
       this._viewer.scene.preUpdate.addEventListener(function () {
         var offset = $this._radar.appearance.material.uniforms.offset
@@ -1726,16 +1868,15 @@ Primitive.prototype = {
     }
 
     ProbingPrimitive.prototype.getModelMatrix = function () {
-      return Cesium.Matrix4.multiplyByTranslation( //转换矩阵
+      return Cesium.Matrix4.multiplyByTranslation(
+        //转换矩阵
         Cesium.Transforms.eastNorthUpToFixedFrame(this._center), //矩阵
         new Cesium.Cartesian3(0.0, 0.0, this._length * 0.5), //要转换的笛卡尔坐标
         new Cesium.Matrix4() //返回新的矩阵
       )
     }
 
-    ProbingPrimitive.prototype.updateModelMatrix = function () {
-
-    }
+    ProbingPrimitive.prototype.updateModelMatrix = function () {}
 
     ProbingPrimitive.prototype.getMaterial = function () {
       var materialSource = `uniform vec4 color; 
@@ -1759,11 +1900,12 @@ Primitive.prototype = {
       return new Cesium.Material({
         fabric: {
           type: 'radarPrimitive',
-          uniforms: { //动态传递参数
+          uniforms: {
+            //动态传递参数
             color: this._color,
             repeat: this._repeat,
             offset: this._offset,
-            thickness: this._thickness,
+            thickness: this._thickness
           },
           source: materialSource
         },
@@ -1772,7 +1914,6 @@ Primitive.prototype = {
     }
 
     ProbingPrimitive.prototype.remove = function () {
-
       if (this._radar) {
         this._viewer.scene.primitives.remove(this._radar)
       }
@@ -1780,8 +1921,5 @@ Primitive.prototype = {
 
     Cesium.Scene.ProbingPrimitive = ProbingPrimitive
   }
-
 }
-export {
-  Primitive
-}
+export { Primitive }
