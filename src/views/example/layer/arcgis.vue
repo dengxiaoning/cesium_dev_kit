@@ -41,17 +41,19 @@ export default {
       this.c_viewer = viewer;
 
       this.control = control;
-      let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
+      let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
         url:
-          'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
+          'https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        credit: ''
       }));
-      layer.name = '影像'; layer.id = 'layer1';
+      layer.name = '影像'; layer.id = 'layer1'; layer.show = false;
 
-      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
+      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
         url:
-          'https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer '
+          'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}',
+        credit: ''
       }));
-      layer2.name = '电子'; layer2.id = 'layer2'; layer2.show = false;
+      layer2.name = '电子'; layer2.id = 'layer2';
 
       let layer3 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
         url:

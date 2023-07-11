@@ -683,6 +683,19 @@
         "isKeepAlive": true
       }
     },{
+      "name": "lightCentrumScan",
+      "path": "lightCentrumScan",
+      "component": "example/radar/lightCentrumScan",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "锥形扫描",
+        "icon": "ion:scan-circle-outline",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+      
+    },{
       "name": "phaseControl",
       "path": "phaseControl",
       "component": "example/radar/phaseControl",
