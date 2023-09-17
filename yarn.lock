@@ -4879,7 +4879,7 @@
   dependencies:
     "unzipper" "0.10.11"
 
-"vue@^3.0.5", "vue@^3.2.13", "vue@3.2.47":
+"vue@^3.0.5", "vue@^3.2.13":
   "integrity" "sha512-60188y/9Dc9WVrAZeUVSDxRQOZ+z+y5nO2ts9jWXSTkMvayiWxCWOWtBQoYjLeccfXkiiPZWAHcV+WTPhkqJHQ=="
   "resolved" "https://registry.npmjs.org/vue/-/vue-3.2.47.tgz"
   "version" "3.2.47"

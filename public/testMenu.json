@@ -311,6 +311,42 @@
         "isKeepAlive": true
       }
     },{
+      "name": "fog",
+      "path": "fog",
+      "component": "example/scene/fog",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "雾天",
+        "icon": "tdesign:fog",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "nightView",
+      "path": "nightView",
+      "component": "example/scene/nightView",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "夜景",
+        "icon": "wpf:bright-moon",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "blueLightScene",
+      "path": "blueLightScene",
+      "component": "example/scene/blueLightScene",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "蓝光场景",
+        "icon": "iconoir:bright-crown",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
       "name": "sceneParam",
       "path": "sceneParam",
       "component": "example/scene/sceneParam",
