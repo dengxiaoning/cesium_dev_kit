@@ -4,40 +4,52 @@
 </template>
 <script >
 import * as Cesium from 'cesium'
-import { initCesium } from '@/utils/cesiumPluginsExtends/index'
+// import { initCesium } from '@/utils/cesiumPluginsExtends/index'
+import { Graphics } from '@/utils/cesiumPluginsExtends/singleImport/Graphics'
 
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
-      const { viewer,
-        material,
-        graphics,
-        math3d } = new initCesium(
-          {
-            cesiumGlobal: Cesium,
-            containerId: 'cesiumContainer',
-            viewerConfig: {
-              infoBox: false,
-              shouldAnimate: true,
-            },
-            MapImageryList: []
-          })
+    initMap () {
+      const graphicsObj = new Graphics({
+        cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer',
+        viewerConfig: {
+          infoBox: false,
+          shouldAnimate: true,
+        },
+        MapImageryList: []
+      })
 
 
-      this.c_viewer = viewer;
+      // const { viewer,
+      //   material,
+      //   graphics,
+      //   math3d } = new initCesium(
+      //     {
+      //       cesiumGlobal: Cesium,
+      //       containerId: 'cesiumContainer',
+      //       viewerConfig: {
+      //         infoBox: false,
+      //         shouldAnimate: true,
+      //       },
+      //       MapImageryList: []
+      //     })
 
-      this.material = material;
-      this.graphics = graphics;
-      this.math3d = math3d;
+
+      this.c_viewer = graphicsObj.viewer;
+
+      // this.material = material;
+      this.graphics = graphicsObj.graphics;
+      // this.math3d = math3d;
       // let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
       //   style: 'dark'
       // }));
-      this.material.setDefSceneConfig()
-      this.material.setBloomLightScene()
+      this.graphics.setDefSceneConfig()
+      this.graphics.setBloomLightScene()
       let tileset = this.c_viewer.scene.primitives.add(
         new Cesium.Cesium3DTileset({
           url: 'static/data/3DTiles/building/tileset.json',
@@ -62,8 +74,8 @@ export default {
 
       this.createModel();
     },
-    flyto() {
-      this.material.flyTo({
+    flyto () {
+      this.graphics.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
           heading: Cesium.Math.toRadians(1.0114629015290062),
@@ -72,7 +84,7 @@ export default {
         }
       })
     },
-    createModel() {
+    createModel () {
       this.graphics.craeteDynamicShadeWallGraphics({
         positions: Cesium.Cartesian3.fromDegreesArrayHeights([
           104.07263175401185, 30.647622150198725, 500.0,
@@ -85,9 +97,8 @@ export default {
 
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
-    this.material = null;
     this.graphics = null;
   }
 }

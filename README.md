@@ -45,6 +45,8 @@ import { initCesium } from 'cesium_dev_kit'
 
 ## 使用
 
+### 1、引入所有模块
+
 ```javaScript
 // test.vue
 <template>
@@ -86,6 +88,70 @@ export default {
             extraConfig: {},
             MapImageryList: []
           })
+    }
+  }
+}
+</script>
+```
+
+### 2、按需引入
+
+```javaScript
+// test.vue
+<template>
+  <div id="cesiumContainer"
+       class="map3d-contaner"></div>
+</template>
+<script>
+import { Draw } from 'cesium_dev_kit'
+export default {
+  mounted() {
+    this.initMap()
+  },
+  methods: {
+    initMap() {
+        const tempData = [
+        {
+          id: 3,
+          name: '高德地图02',
+          type: 'UrlTemplateImageryProvider',
+          classConfig: {
+            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
+          },
+          interfaceConfig: {},
+          offset: '0,0',
+          invertswitch: 0,
+          filterRGB: '#ffffff',
+          showswitch: 1,
+          weigh: 13,
+          createtime: 1624346908,
+          updatetime: 1647395260,
+        }]
+
+      const drawObj = new Draw({
+        cesiumGlobal: Cesium, // 全局Cesium对象
+        containerId: 'cesiumContainer', // 容器id
+        viewerConfig: { // 同官方的viewer配置相同
+          infoBox: false,
+          shouldAnimate: true,
+        },
+        extraConfig: {// 其他配置
+          logo:true, // 是否显示logo
+          depthTest:true // 是否开启深度测试
+        },
+        MapImageryList: tempData // 底图配置
+        defaultStatic // 默认服务器地址以及材质等基础信息配置，具体请参考src\views\example\defaultStaticConf\index.js
+      })
+
+      this.c_viewer = drawObj.viewer
+      this.draw = drawObj.draw
+      this.draw.setDefSceneConfig()
+      this.draw.setBloomLightScene()
+      this.load3dTiles(drawObj.viewer)
+
+      this.StraightArrowObj = drawObj.straightArrowObj
+      this.AttackArrowObj = drawObj.attackArrowObj
+      this.PincerArrowObj = drawObj.pincerArrowObj
     }
   }
 }

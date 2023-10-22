@@ -6,40 +6,50 @@
 </template>
 <script >
 import * as Cesium from 'cesium'
-import { initCesium } from '@/utils/cesiumPluginsExtends/index'
+// import { initCesium } from '@/utils/cesiumPluginsExtends/index'
+import { Material } from '@/utils/cesiumPluginsExtends/singleImport/Material'
 import { raod, raod2, raod3, raod4, raod5, raod6, raod7 } from './extraData'
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
-      const { viewer,
-        material,
-        graphics,
-        math3d } = new initCesium(
-          {
-            cesiumGlobal: Cesium,
-            containerId: 'cesiumContainer',
-            viewerConfig: {
-              infoBox: false,
-              shouldAnimate: true,
-            },
-            extraConfig: {},
-            MapImageryList: []
-          })
+    initMap () {
+      const materialObj = new Material({
+        cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer',
+        viewerConfig: {
+          infoBox: false,
+          shouldAnimate: true,
+        },
+        extraConfig: {},
+        MapImageryList: []
+      })
+      // const { viewer,
+      //   material,
+      //   graphics,
+      //   math3d } = new initCesium(
+      //     {
+      //       cesiumGlobal: Cesium,
+      //       containerId: 'cesiumContainer',
+      //       viewerConfig: {
+      //         infoBox: false,
+      //         shouldAnimate: true,
+      //       },
+      //       extraConfig: {},
+      //       MapImageryList: []
+      //     })
 
 
-      this.c_viewer = viewer;
-      this.material = material;
-      this.graphics = graphics;
-      this.math3d = math3d;
+      this.c_viewer = materialObj.viewer;
+      this.material = materialObj.material;
+
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
-      this.load3dTiles(viewer);
+      this.load3dTiles(materialObj.viewer);
     },
-    load3dTiles(viewer) {
+    load3dTiles (viewer) {
       var _self = this;
       viewer.scene.sun.show = false;
       viewer.scene.moon.show = false;
@@ -70,7 +80,7 @@ export default {
         _self.addEntityToScene(viewer);
       });
     },
-    addEntityToScene(viewer) {
+    addEntityToScene (viewer) {
 
       viewer.entities.add({
         polyline: {
@@ -147,10 +157,9 @@ export default {
       });
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
-    this.graphics = null;
   }
 }
 </script>

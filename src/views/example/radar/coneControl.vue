@@ -48,10 +48,10 @@
 </template>
 <script>
 import * as Cesium from 'cesium'
-import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-
+import { defaultStatic } from '../defaultStaticConf'
+import { CustomCesiumPlugin } from '@/utils/cesiumPluginsExtends/singleImport/CustomCesiumPlugin'
 export default {
-  data() {
+  data () {
     return {
       currPosition: Cesium.Cartesian3.fromDegrees(117.224, 31.819, 128),
       roll: 0,
@@ -79,30 +79,29 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
-      const { viewer, customCesiumPlugin, graphics } = new initCesium(
-        {
-          cesiumGlobal: Cesium,
-          containerId: 'cesiumContainer',
-          viewerConfig: {
-            infoBox: false,
-            shouldAnimate: true,
-          },
-          extraConfig: {},
-          MapImageryList: []
-        })
-      this.graphics = graphics;
-      this.c_viewer = viewer
-      this.customCesiumPlugin = customCesiumPlugin
+    initMap () {
+      const customCesiumPluginObj = new CustomCesiumPlugin({
+        cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer',
+        viewerConfig: {
+          infoBox: false,
+          shouldAnimate: true,
+        },
+        extraConfig: {},
+        MapImageryList: [],
+        defaultStatic
+      })
+      this.c_viewer = customCesiumPluginObj.viewer
+      this.customCesiumPlugin = customCesiumPluginObj.customCesiumPlugin
 
       this.flyToPos()
       this.initPhaseControl()
     },
-    flyToPos() {
+    flyToPos () {
       this.customCesiumPlugin.flyTo({
         position: {
           x: -1577100.7186109242,
@@ -116,7 +115,7 @@ export default {
         }
       })
     },
-    initPhaseControl() {
+    initPhaseControl () {
 
       const _this = this
       // let trackedEntityTest = this.graphics.createBoxGraphics({
@@ -138,28 +137,28 @@ export default {
         }
       )
     },
-    xHalfAngleChange(e) {
+    xHalfAngleChange (e) {
       this.sensorEntity.angle = e.target.value
     },
-    yHalfAngleChange(e) {
+    yHalfAngleChange (e) {
       this.sensorEntity.radius = e.target.value
     },
-    HeadingChange(e) {
+    HeadingChange (e) {
       this.heading = e.target.value
       this.sensorEntity._rotation.heading = Cesium.Math.toRadians(
         this.heading
       )
     },
-    PitchChange(e) {
+    PitchChange (e) {
       this.pitch = e.target.value
       this.sensorEntity._rotation.pitch = Cesium.Math.toRadians(this.pitch)
     },
-    RollChange(e) {
+    RollChange (e) {
       this.roll = e.target.value
       this.sensorEntity._rotation.roll = Cesium.Math.toRadians(this.roll)
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null
     this.customCesiumPlugin = null
   }

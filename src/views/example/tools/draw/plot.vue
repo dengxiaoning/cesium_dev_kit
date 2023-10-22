@@ -20,10 +20,11 @@
 </template>
 <script>
 import * as Cesium from 'cesium'
-import { initCesium } from '@/utils/cesiumPluginsExtends/index'
+// import { initCesium } from '@/utils/cesiumPluginsExtends/index'
+import { Draw } from '@/utils/cesiumPluginsExtends/singleImport/Draw'
 
 export default {
-  data() {
+  data () {
     return {
       activeId: 'pos',
       plotEntitiesId: [],
@@ -107,40 +108,48 @@ export default {
       ]
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
-      const { viewer, material, graphics, draw,
-        attackArrowObj,
-        straightArrowObj,
-        pincerArrowObj } = new initCesium(
-          {
-            cesiumGlobal: Cesium,
-            containerId: 'cesiumContainer',
-            viewerConfig: {
-              infoBox: false,
-              shouldAnimate: true,
-            },
-            extraConfig: {},
-            MapImageryList: []
-          })
+    initMap () {
+      const drawObj = new Draw({
+        cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer',
+        viewerConfig: {
+          infoBox: false,
+          shouldAnimate: true,
+        },
+        extraConfig: {},
+        MapImageryList: []
+      })
+      // const { viewer, material, graphics, draw,
+      //   attackArrowObj,
+      //   straightArrowObj,
+      //   pincerArrowObj } = new initCesium(
+      //     {
+      //       cesiumGlobal: Cesium,
+      //       containerId: 'cesiumContainer',
+      //       viewerConfig: {
+      //         infoBox: false,
+      //         shouldAnimate: true,
+      //       },
+      //       extraConfig: {},
+      //       MapImageryList: []
+      //     })
 
 
-      this.c_viewer = viewer
-      this.material = material
-      this.graphics = graphics
-      this.draw = draw
-      this.material.setDefSceneConfig()
-      this.material.setBloomLightScene()
-      this.load3dTiles(viewer)
+      this.c_viewer = drawObj.viewer
+      this.draw = drawObj.draw
+      this.draw.setDefSceneConfig()
+      this.draw.setBloomLightScene()
+      this.load3dTiles(drawObj.viewer)
 
-      this.StraightArrowObj = straightArrowObj
-      this.AttackArrowObj = attackArrowObj
-      this.PincerArrowObj = pincerArrowObj
+      this.StraightArrowObj = drawObj.straightArrowObj
+      this.AttackArrowObj = drawObj.attackArrowObj
+      this.PincerArrowObj = drawObj.pincerArrowObj
     },
-    load3dTiles(viewer) {
+    load3dTiles (viewer) {
       var _self = this
       viewer.scene.sun.show = false
       viewer.scene.moon.show = false
@@ -170,7 +179,7 @@ export default {
         viewer.flyTo(tileset)
       })
     },
-    caldDistain(item) {
+    caldDistain (item) {
       this.activeId = item.value
       this.drawAgain();
       switch (item.label) {
@@ -255,16 +264,15 @@ export default {
           break
       }
     },
-    drawAgain() {
+    drawAgain () {
       this.PincerArrowObj.disable()
       this.StraightArrowObj.disable()
       this.AttackArrowObj.disable()
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null
-    this.material = null
-    this.graphics = null
+    this.drawObj = null
   }
 }
 </script>
