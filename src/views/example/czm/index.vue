@@ -8,11 +8,11 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const tempData = [
         {
           id: 3,
@@ -35,7 +35,7 @@ export default {
           name: '高德地图01',
           type: 'UrlTemplateImageryProvider',
           classConfig: {
-            url: 'http://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
+            url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
           },
           interfaceConfig: {
             saturation: 0,
@@ -84,7 +84,7 @@ export default {
       let layerGrid = viewer.imageryLayers.addImageryProvider(mapGrid)
       viewer.imageryLayers.raiseToTop(layerGrid)
       let _rota = Date.now();
-      function rotate() {
+      function rotate () {
         let a = .1;
         let t = Date.now();
         let n = (t - _rota) / 1e3;
@@ -97,7 +97,7 @@ export default {
       }, 2000000)
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

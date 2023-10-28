@@ -64,7 +64,7 @@ export default {
           name: '高德地图01',
           type: 'UrlTemplateImageryProvider',
           classConfig: {
-            url: 'http://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
+            url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
           },
           interfaceConfig: {
             saturation: 0,
@@ -144,7 +144,7 @@ export default {
             clampToGround: true,
           },
           model: { // 配置漫游模型（不配置则不绘制）
-            url: '/static/data/model/man/walk.gltf',
+            url: 'static/data/model/man/walk.gltf',
             scale: 10
           },
           cameraOffset: () => {
