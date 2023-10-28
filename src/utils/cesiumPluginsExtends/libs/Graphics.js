@@ -1,30 +1,26 @@
 import SuperGif from 'libgif'
-let Cesium = null;
-let dfSt = undefined;
+let Cesium = null
+let dfSt = undefined
 /**
  * 图形模块
  * 用于向地图加载各种实体对象
- * 
+ *
  * @param {*} viewer
  */
-function Graphics(viewer, cesiumGlobal,defaultStatic) {
-
+function Graphics(viewer, cesiumGlobal, defaultStatic) {
   if (viewer) {
-    Cesium = cesiumGlobal;
-    dfSt = defaultStatic;
+    Cesium = cesiumGlobal
+    dfSt = defaultStatic
     this._graphicsLayer = new Cesium.CustomDataSource('graphicsLayer')
-    viewer && viewer.dataSources.add(this._graphicsLayer);
+    viewer && viewer.dataSources.add(this._graphicsLayer)
   }
-
 }
 
 Graphics.prototype = {
   //点
   getPointGraphics: function (options) {
-
     options = options || {}
     if (options) {
-
       return new Cesium.PointGraphics({
         color: options.color || Cesium.Color.GREEN,
         pixelSize: options.pixelSize || 5,
@@ -37,13 +33,12 @@ Graphics.prototype = {
   getLineGraphics: function (options) {
     options = options || {}
     if (options && options.positions) {
-
       return new Cesium.PolylineGraphics({
         show: true,
         positions: options.positions,
         material: options.material || Cesium.Color.YELLOW,
         width: options.width || 1,
-        clampToGround: options.clampToGround || false,
+        clampToGround: options.clampToGround || false
       })
     }
   },
@@ -51,7 +46,6 @@ Graphics.prototype = {
   getPolygonGraphics: function (options) {
     options = options || {}
     if (options && options.positions) {
-
       return new Cesium.PolygonGraphics({
         hierarchy: {
           positions: options.positions
@@ -63,30 +57,30 @@ Graphics.prototype = {
   },
   //标签
   getLabelGraphics: function (options) {
-
     options = options || {}
     if (options && options.l_text) {
-
-      return new Cesium.LabelGraphics({ //文字标签
+      return new Cesium.LabelGraphics({
+        //文字标签
         text: options.l_text,
         font: options.l_font || '14px sans-serif',
         fillColor: options.l_fillColor || Cesium.Color.GOLD,
         style: options.l_style || Cesium.LabelStyle.FILL_AND_OUTLINE,
         outlineWidth: options.l_outlineWidth || 2,
         showBackground: options.l_showBackground || false,
-        backgroundColor: options.l_backgroundColor || new Cesium.Color(0.165, 0.165, 0.165, 0.8),
-        verticalOrigin: options.l_verticalOrigin || Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: options.l_pixelOffset || new Cesium.Cartesian2(0, -30),
+        backgroundColor:
+          options.l_backgroundColor ||
+          new Cesium.Color(0.165, 0.165, 0.165, 0.8),
+        verticalOrigin:
+          options.l_verticalOrigin || Cesium.VerticalOrigin.BOTTOM,
+        pixelOffset: options.l_pixelOffset || new Cesium.Cartesian2(0, -30)
         //heightReference:Cesium.HeightReference.RELATIVE_TO_GROUND
       })
     }
   },
   //广告牌
   getBillboardGraphics: function (options) {
-
     options = options || {}
     if (options && options.b_img) {
-
       return new Cesium.BillboardGraphics({
         image: options.b_img,
         width: options.b_width || 35,
@@ -102,10 +96,8 @@ Graphics.prototype = {
   },
   //路径
   getPathGraphics: function (options) {
-
     options = options || {}
     if (options) {
-
       return new Cesium.PathGraphics({
         resolution: options.resolution || 1,
         //设置航线样式，线条颜色，内发光粗细，航线宽度等
@@ -119,24 +111,19 @@ Graphics.prototype = {
   },
   //模型
   getModelGraphics: function (options) {
-
     options = options || {}
     if (options) {
-
       return new Cesium.ModelGraphics({
-        uri: options.m_url,
-        scale: options.m_scale || 28,
-        minimumPixelSize: options.m_minimumPixelSize || 30,
-        color: options.m_color || Cesium.Color.WHITE
+        uri: options.m_url || options.url,
+        scale: options.m_scale || options.scale || 10,
+        clampAnimations: true
       })
     }
   },
   //椭圆
   getEllipseGraphics: function (options) {
-
     options = options || {}
     if (options) {
-
       return new Cesium.EllipseGraphics({
         semiMajorAxis: options.e_semiMinorAxis || 1000000.0,
         semiMinorAxis: options.e_semiMinorAxis || 1000000.0,
@@ -147,7 +134,6 @@ Graphics.prototype = {
   },
   //球
   getEllipsoidGraphics: function (options) {
-
     options = options || {}
     if (options) {
       var r = options.radii || 1000000.0 //默认100公里
@@ -168,17 +154,16 @@ Graphics.prototype = {
   },
   // box
   getBoxGraphics: function (options) {
-
-    options = options || {show:true,outline:false,fill:true}
+    options = options || { show: true, outline: false, fill: true }
     if (options) {
       return new Cesium.BoxGraphics({
         show: options.show,
         fill: options.fill,
-        dimensions:options.dimensions||new Cesium.Cartesian3(0, 0, 0),
+        dimensions: options.dimensions || new Cesium.Cartesian3(0, 0, 0),
         material: options.material,
-        outline:  options.outline,
+        outline: options.outline,
         outlineColor: options.outlineColor || Cesium.Color.BLACK,
-        distanceDisplayCondition:options.distanceDisplayCondition||undefined
+        distanceDisplayCondition: options.distanceDisplayCondition || undefined
       })
     }
   },
@@ -202,14 +187,13 @@ Graphics.prototype = {
         length: options.length || 500 / 2,
         topRadius: options.topRadius || 0,
         bottomRadius: options.bottomRadius || 0,
-        material: options.material || new Cesium.Color(0, 1, 1, .4),
+        material: options.material || new Cesium.Color(0, 1, 1, 0.4),
         slices: options.slices || 128
       })
     }
   },
   //创建点信息
   createPointsGraphics: function (options) {
-
     if (options && options.positions) {
       let positions = []
       for (let i in options.positions) {
@@ -219,7 +203,8 @@ Graphics.prototype = {
         entity.oid = options.oid || 'point'
         entity.position = position
         if (options.point) entity.point = this.getPointGraphics()
-        if (options.billboard) entity.billboard = this.getBillboardGraphics(options.billboard)
+        if (options.billboard)
+          entity.billboard = this.getBillboardGraphics(options.billboard)
         if (options.label) entity.label = this.getLabelGraphics(options.label)
         positions.push(this._graphicsLayer.entities.add(entity))
       }
@@ -228,7 +213,6 @@ Graphics.prototype = {
   },
   //创建线
   createLineGraphics: function (options) {
-
     if (options && options.positions) {
       var entity = this.createGraphics()
       entity.name = options.name || ''
@@ -241,7 +225,6 @@ Graphics.prototype = {
   },
   //创建面
   createPolygonGraphics: function (options) {
-
     options = options || {}
     if (options) {
       var entity = this.createGraphics()
@@ -262,11 +245,9 @@ Graphics.prototype = {
       entity.box = this.getBoxGraphics(options.box)
       return this._graphicsLayer.entities.add(entity)
     }
-    
   },
   //创建模型
   createModelGraphics: function (options) {
-
     if (options && options.position) {
       var entity = this.createGraphics()
       entity.model = this.getModelGraphics(options)
@@ -276,21 +257,21 @@ Graphics.prototype = {
   },
   // 创建地面指示
   craeteCorridorGraphics: function (options) {
-
     if (options && options.positions) {
       var entity = this.createGraphics()
       entity.corridor = {
         positions: options.positions,
         height: options.height || 6.0,
         width: options.width || 15.0,
-        material: options.material ||
+        material:
+          options.material ||
           new Cesium.Scene.WarnLinkMaterialProperty({
             freely: 'cross',
             color: Cesium.Color.YELLOW,
             duration: 1000,
             count: 1.0,
             direction: '+'
-          }),
+          })
       }
 
       return this._graphicsLayer.entities.add(entity)
@@ -298,7 +279,6 @@ Graphics.prototype = {
   },
   //构建动态线
   craeteDynamicPolyLineGraphics: function (options) {
-
     if (options && options.positions) {
       var entity = this.createGraphics()
       entity.polyline = {
@@ -318,24 +298,32 @@ Graphics.prototype = {
   },
   //动态椎体
   craeteDynamicCylinderGraphics: function (options) {
-    var param = {};
+    var param = {}
     if (options && options.cylinder) {
       var entity = options.entity,
         cylinder = options.cylinder,
         $this = this
       param.cylinder = this.getCylinderGraphics(cylinder)
       param.position = new Cesium.CallbackProperty(function () {
-        var positions = entity.position.getValue($this._viewer.clock.currentTime)
-        var cartographic = $this._viewer.scene.globe.ellipsoid.cartesianToCartographic(positions)
+        var positions = entity.position.getValue(
+          $this._viewer.clock.currentTime
+        )
+        var cartographic = $this._viewer.scene.globe.ellipsoid.cartesianToCartographic(
+          positions
+        )
         var lat = Cesium.Math.toDegrees(cartographic.latitude),
-          lng = Cesium.Math.toDegrees(cartographic.longitude);
+          lng = Cesium.Math.toDegrees(cartographic.longitude)
         // hei = parseFloat(cartographic.height / 4)
         return Cesium.Cartesian3.fromDegrees(lng, lat, 0)
       }, false)
 
       param.cylinder.length = new Cesium.CallbackProperty(function () {
-        var positions = entity.position.getValue($this._viewer.clock.currentTime)
-        var cartographic = $this._viewer.scene.globe.ellipsoid.cartesianToCartographic(positions)
+        var positions = entity.position.getValue(
+          $this._viewer.clock.currentTime
+        )
+        var cartographic = $this._viewer.scene.globe.ellipsoid.cartesianToCartographic(
+          positions
+        )
         return cartographic.height * 2
       }, false)
 
@@ -346,12 +334,11 @@ Graphics.prototype = {
   createFadeCylinderGraphics: function (options) {
     options = options || {}
     if (options && options.position) {
-
       let entity = this.createGraphics()
       entity.position = options.position
       options.material = new Cesium.Scene.CircleFadeMaterialProperty({
         color: options.color || Cesium.Color.fromCssColorString('#02ff00'),
-        duration: options.duration || 2000,
+        duration: options.duration || 2000
       })
       entity.cylinder = this.getCylinderGraphics(options)
 
@@ -360,24 +347,26 @@ Graphics.prototype = {
   },
   // 创建旋转圆柱
   craeteRotateCylinderGraphics: function (options) {
-
     if (options && options.position) {
-
       var cylinderEntity = this.createGraphics()
       cylinderEntity.cylinder = {
         HeightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
         length: options.length || 500,
         topRadius: options.topRadius || 500,
         bottomRadius: options.bottomRadius || 500,
-        material: options.material || new Cesium.ImageMaterialProperty({
-          image: options.img || this.getDfSt(['graphic','craeteRotateCylinderGraphics'])||'static/data/images/file/cc2.png',
-          transparent: true,
-          repeat: {
-            x: 1,
-            y: -1
-          }
-
-        }),
+        material:
+          options.material ||
+          new Cesium.ImageMaterialProperty({
+            image:
+              options.img ||
+              this.getDfSt(['graphic', 'craeteRotateCylinderGraphics']) ||
+              'static/data/images/file/cc2.png',
+            transparent: true,
+            repeat: {
+              x: 1,
+              y: -1
+            }
+          }),
         slices: options.slices || 128
       }
       cylinderEntity.position = options.position
@@ -392,9 +381,7 @@ Graphics.prototype = {
   },
   //闪烁圆
   craeteDynamicBlinkCircleGraphics: function (options) {
-
     if (options && options.position) {
-
       var entity = this.createGraphics(),
         alp = options.alp || 1,
         flog = options.flog || true
@@ -403,27 +390,28 @@ Graphics.prototype = {
         semiMinorAxis: options.semiMinorAxis || 2000.0,
         semiMajorAxis: options.semiMajorAxis || 2000.0,
         height: options.height || 10,
-        material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(function () {
-          if (flog) {
-            alp = alp - 0.05
-            if (alp <= 0) {
-              flog = false // hide
+        material: new Cesium.ColorMaterialProperty(
+          new Cesium.CallbackProperty(function () {
+            if (flog) {
+              alp = alp - 0.05
+              if (alp <= 0) {
+                flog = false // hide
+              }
+            } else {
+              alp = alp + 0.05
+              if (alp >= 1) {
+                flog = true // show
+              }
             }
-          } else {
-            alp = alp + 0.05
-            if (alp >= 1) {
-              flog = true // show
-            }
-          }
-          return Cesium.Color.RED.withAlpha(alp)
-        }, false))
+            return Cesium.Color.RED.withAlpha(alp)
+          }, false)
+        )
       }
       return this._graphicsLayer.entities.add(entity)
     }
   },
   //动态旋转圆
   craeteDynamicCricleGraphics: function (options) {
-
     if (options && options.center) {
       var entity = this.createGraphics(),
         $this = this,
@@ -437,18 +425,21 @@ Graphics.prototype = {
         roll = 0,
         _scale = options.scale || null,
         _scale2 = options.scale2 || null,
-        _material = options.material || new Cesium.ImageMaterialProperty({
-          image: options.imge || this.getDfSt(['graphic','craeteDynamicCricleGraphics'])||'static/data/images/Textures/circle_bg.png',
-          transparent: true
-        })
+        _material =
+          options.material ||
+          new Cesium.ImageMaterialProperty({
+            image:
+              options.imge ||
+              this.getDfSt(['graphic', 'craeteDynamicCricleGraphics']) ||
+              'static/data/images/Textures/circle_bg.png',
+            transparent: true
+          })
 
       entity.position = new Cesium.CallbackProperty(function () {
-
         return $this.transformWGS84ToCartesian(_center)
       }, false)
 
       entity.orientation = new Cesium.CallbackProperty(function () {
-
         return Cesium.Transforms.headingPitchRollQuaternion(
           $this.transformWGS84ToCartesian(_center),
           new Cesium.HeadingPitchRoll(
@@ -464,11 +455,10 @@ Graphics.prototype = {
         if (_radius >= _scale || _radius <= bg_scale) {
           flag = !flag
         }
-        flag ? _radius += 2 : _radius -= 2
+        flag ? (_radius += 2) : (_radius -= 2)
       }
       var updateScalerAxis2 = () => {
-
-        _scale2 >= _radius ? _radius += 2 : _radius = bg_scale
+        _scale2 >= _radius ? (_radius += 2) : (_radius = bg_scale)
       }
       entity.ellipse = {
         material: _material,
@@ -496,9 +486,7 @@ Graphics.prototype = {
   },
   //动态渐变墙
   craeteDynamicShadeWallGraphics: function (options) {
-
     if (options && options.positions) {
-
       var alp = options.alp || 1,
         num = options.num || 20,
         color = options.color || Cesium.Color.RED,
@@ -508,11 +496,13 @@ Graphics.prototype = {
       wallEntity.wall = {
         positions: options.positions,
         material: new Cesium.ImageMaterialProperty({
-          image: options.img||this.getDfSt(['graphic','craeteDynamicShadeWallGraphics'])||'static/data/images/Textures/fence.png',
+          image:
+            options.img ||
+            this.getDfSt(['graphic', 'craeteDynamicShadeWallGraphics']) ||
+            'static/data/images/Textures/fence.png',
           transparent: true,
           color: new Cesium.CallbackProperty(function () {
-
-            if ((num % 2) === 0) {
+            if (num % 2 === 0) {
               alp -= speed
             } else {
               alp += speed
@@ -532,12 +522,13 @@ Graphics.prototype = {
   },
   // 默认自定义标牌气泡框
   createCustomDefBillboardGraphics: function (options) {
-
     if (options && options.position) {
-
       var $this = this,
         img = document.createElement('img')
-      img.src = options.img || this.getDfSt(['graphic','createCustomDefBillboardGraphics'])||'static/data/images/file/div1.png'
+      img.src =
+        options.img ||
+        this.getDfSt(['graphic', 'createCustomDefBillboardGraphics']) ||
+        'static/data/images/file/div1.png'
 
       // 绘制canvas
       const drawCompanyTip = function (options) {
@@ -562,7 +553,8 @@ Graphics.prototype = {
             image: drawCompanyTip(options),
             scaleByDistance: new Cesium.NearFarScalar(1.5e2, 0.7, 1.5e7, 0.5),
             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            pixelOffset: options.b_pixelOffset || new Cesium.Cartesian2(80, -35),
+            pixelOffset:
+              options.b_pixelOffset || new Cesium.Cartesian2(80, -35),
             width: 140,
             height: 100,
             scale: options.b_scale || 1.5,
@@ -573,10 +565,9 @@ Graphics.prototype = {
               width: 200,
               height: 150
             }
-          },
+          }
         })
         if (typeof options.callback === 'function') {
-
           options.callback(entity)
         }
       }
@@ -584,23 +575,18 @@ Graphics.prototype = {
   },
   // 旋转面
   craeteRotatePlaneGraphics: function (options) {
-
     if (options && options.center && options.positions) {
-
       var entity = this.createGraphics(),
         index = 0,
         positions = options.positions,
         _position = positions[0]
       entity.position = new Cesium.CallbackProperty(function () {
-
         if (index == 0) {
-          _position = positions[0], index += 1
+          ;(_position = positions[0]), (index += 1)
         } else if (index < positions.length - 1) {
-
-          _position = positions[index], index += 1
+          ;(_position = positions[index]), (index += 1)
         } else if (index == positions.length - 1) {
-
-          _position = positions[index], index = 0
+          ;(_position = positions[index]), (index = 0)
         }
         return _position
       }, false)
@@ -625,13 +611,14 @@ Graphics.prototype = {
 
   // 视频投放
   createVideoPlaneGraphics: function (options) {
-
     if (options && options.position) {
-
       var entity = this.createGraphics()
       entity.position = options.position
       entity.plane = {
-        plane: new Cesium.Plane(options.normal || Cesium.Cartesian3.UNIT_Y, 0.0),
+        plane: new Cesium.Plane(
+          options.normal || Cesium.Cartesian3.UNIT_Y,
+          0.0
+        ),
         dimensions: options.dimensions || new Cesium.Cartesian2(200.0, 150.0),
         material: new Cesium.ImageMaterialProperty({
           image: options.videoElement
@@ -642,9 +629,7 @@ Graphics.prototype = {
   },
   //gif 图片投影
   createGifBillboardGraphics: function (options) {
-
     if (SuperGif && options && options.position) {
-
       var gif = [],
         url = options.url,
         i = 0,
@@ -652,7 +637,6 @@ Graphics.prototype = {
 
       // 遍历gif的每一帧
       const parseGifImages = function (url, imageArr) {
-
         var img = document.createElement('img')
         img.src = url
         img.setAttribute('rel:animated_src', url) // gif库需要img标签配置下面两个属性
@@ -680,7 +664,8 @@ Graphics.prototype = {
         billboard: {
           verticalOrigin: Cesium.VerticalOrigin.BASELINE,
           image: new Cesium.CallbackProperty(function () {
-            if (gif.length) { // 解析每一帧
+            if (gif.length) {
+              // 解析每一帧
               if (i < speed * (gif.length - 1)) {
                 i++
               } else {
@@ -698,16 +683,14 @@ Graphics.prototype = {
   },
   //图形旋转
   setGraphicsRotate: function (options) {
-
     if (options && options.entity && options.rotateAmount) {
-
       var entity = options.entity,
         rotateAmount = options.rotateAmount,
         _position = options.position,
         $this = this
-      _position.heading = 0, _position.pitch = 0, _position.roll = 0
+      ;(_position.heading = 0), (_position.pitch = 0), (_position.roll = 0)
       entity.position = new Cesium.CallbackProperty(function () {
-        return $this.transformWGS84ToCartesian(_position);
+        return $this.transformWGS84ToCartesian(_position)
       }, false)
 
       entity.orientation = new Cesium.CallbackProperty(function () {
@@ -730,7 +713,6 @@ Graphics.prototype = {
   },
   // 图形浮动
   setGraphicsFloat: function (options) {
-
     if (options && options.entity && options.maxHeiht) {
       try {
         var entity = options.entity,
@@ -743,27 +725,26 @@ Graphics.prototype = {
           flag = false
         if (cartesians.length) {
           entity.positions = new Cesium.CallbackProperty(function () {
-
-            var positions = $this.transformCartesianArrayToWGS84Array(cartesians)
+            var positions = $this.transformCartesianArrayToWGS84Array(
+              cartesians
+            )
             for (var i in positions) {
               var position = positions[i]
               if (minHeiht >= maxHeiht || minHeiht <= bg_minHeiht) {
                 flag = !flag
               }
-              flag ? minHeiht += speed : minHeiht -= speed
+              flag ? (minHeiht += speed) : (minHeiht -= speed)
               position.alt = minHeiht
             }
             return $this.transformWGS84ArrayToCartesianArray(positions)
           }, false)
         } else {
-
           entity.position = new Cesium.CallbackProperty(function () {
-
             var position = $this.transformCartesianToWGS84(cartesians)
             if (minHeiht >= maxHeiht || minHeiht <= bg_minHeiht) {
               flag = !flag
             }
-            flag ? minHeiht += speed : minHeiht -= speed
+            flag ? (minHeiht += speed) : (minHeiht -= speed)
             position.alt = minHeiht
             return $this.transformWGS84ToCartesian(position)
           }, false)
@@ -771,16 +752,13 @@ Graphics.prototype = {
       } catch (error) {
         console.log(error)
       }
-
     }
   },
   //canvas 贴图
   createCanvasGraphics: function (options) {
-
     if (options && options.positions) {
-
       const drawCanvasImage = function () {
-        var i = 0;
+        var i = 0
         var canvas = document.createElement('canvas')
         var ctx = canvas.getContext('2d')
         var img = new Image()
@@ -806,12 +784,9 @@ Graphics.prototype = {
       })
 
       if (typeof options.callback === 'function') {
-
         options.callback()
       }
     }
   }
 }
-export {
-  Graphics
-}
+export { Graphics }

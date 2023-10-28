@@ -1,17 +1,16 @@
 import { Graphics } from './Graphics'
-let dfSt = undefined;
-let Cesium = null;
+let dfSt = undefined
+let Cesium = null
 /**
  * 画笔模块
  * @param {*} viewer
  */
-function Draw(viewer, cesiumGlobal,defaultStatic) {
-
+function Draw(viewer, cesiumGlobal, defaultStatic) {
   if (viewer) {
-    Cesium = cesiumGlobal;
-    dfSt = defaultStatic;
+    Cesium = cesiumGlobal
+    dfSt = defaultStatic
     this._drawLayer = new Cesium.CustomDataSource('drawLayer')
-      this.$graphics = new Graphics(viewer,cesiumGlobal)
+    this.$graphics = new Graphics(viewer, cesiumGlobal)
     viewer && viewer.dataSources.add(this._drawLayer)
   }
 }
@@ -24,24 +23,31 @@ Draw.prototype = {
   drawPointGraphics: function (options) {
     options = options || {}
     options.style = options.style || {
-      image: this.getDfSt(['drawPointGraphics'])||'static/data/images/file/location4.png',
+      image:
+        this.getDfSt(['drawPointGraphics']) ||
+        'static/data/images/file/location4.png',
       width: 35,
       height: 40,
       clampToGround: true,
       scale: 1,
-      pixelOffset: new Cesium.Cartesian2(0, -20),
+      pixelOffset: new Cesium.Cartesian2(0, -20)
     }
 
     if (this._viewer && options) {
-
       var _poiEntity = new Cesium.Entity(),
-        position, positions = [],
-        poiObj, $this = this,
-        _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
+        position,
+        positions = [],
+        poiObj,
+        $this = this,
+        _handlers = new Cesium.ScreenSpaceEventHandler(
+          this._viewer.scene.canvas
+        )
       // left
       _handlers.setInputAction(function (movement) {
-
-        var cartesian = $this._viewer.scene.camera.pickEllipsoid(movement.position, $this._viewer.scene.globe.ellipsoid)
+        var cartesian = $this._viewer.scene.camera.pickEllipsoid(
+          movement.position,
+          $this._viewer.scene.globe.ellipsoid
+        )
         if (cartesian && cartesian.x) {
           position = cartesian
 
@@ -50,13 +56,14 @@ Draw.prototype = {
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
       // right
       _handlers.setInputAction(function (movement) {
-
         _handlers.destroy()
         _handlers = null
 
         if (typeof options.callback === 'function') {
-
-          options.callback($this.transformCartesianArrayToWGS84Array(positions), poiObj)
+          options.callback(
+            $this.transformCartesianArrayToWGS84Array(positions),
+            poiObj
+          )
         }
       }, Cesium.ScreenSpaceEventType.RIGHT_CLICK)
 
@@ -75,15 +82,15 @@ Draw.prototype = {
   drawLineGraphics: function (options) {
     options = options || {}
     if (this._viewer && options) {
-
       var positions = [],
         _lineEntity = new Cesium.Entity(),
         $this = this,
         lineObj,
-        _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
+        _handlers = new Cesium.ScreenSpaceEventHandler(
+          this._viewer.scene.canvas
+        )
       // left
       _handlers.setInputAction(function (movement) {
-
         var cartesian = $this.getCatesian3FromPX(movement.position)
         if (cartesian && cartesian.x) {
           if (positions.length == 0) {
@@ -97,8 +104,10 @@ Draw.prototype = {
             _handlers.destroy()
             _handlers = null
             if (typeof options.callback === 'function') {
-
-              options.callback($this.transformCartesianArrayToWGS84Array(positions), lineObj)
+              options.callback(
+                $this.transformCartesianArrayToWGS84Array(positions),
+                lineObj
+              )
             }
           }
           positions.push(cartesian)
@@ -106,7 +115,6 @@ Draw.prototype = {
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
       _handlers.setInputAction(function (movement) {
-
         var cartesian = $this.getCatesian3FromPX(movement.endPosition)
         if (positions.length >= 2) {
           if (cartesian && cartesian.x) {
@@ -117,7 +125,6 @@ Draw.prototype = {
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
       // right
       _handlers.setInputAction(function (movement) {
-
         _handlers.destroy()
         _handlers = null
 
@@ -126,8 +133,10 @@ Draw.prototype = {
           _addInfoPoint(cartesian)
         }
         if (typeof options.callback === 'function') {
-
-          options.callback($this.transformCartesianArrayToWGS84Array(positions), lineObj)
+          options.callback(
+            $this.transformCartesianArrayToWGS84Array(positions),
+            lineObj
+          )
         }
       }, Cesium.ScreenSpaceEventType.RIGHT_CLICK)
 
@@ -153,7 +162,12 @@ Draw.prototype = {
           outlineWidth: 5
         }
         _labelEntity.label = {
-          text: ($this.getPositionDistance($this.transformCartesianArrayToWGS84Array(positions)) / 1000).toFixed(4) + '公里',
+          text:
+            (
+              $this.getPositionDistance(
+                $this.transformCartesianArrayToWGS84Array(positions)
+              ) / 1000
+            ).toFixed(4) + '公里',
           show: true,
           showBackground: true,
           font: '14px monospace',
@@ -164,14 +178,12 @@ Draw.prototype = {
         $this._drawLayer.entities.add(_labelEntity)
       }
     }
-
   },
   /**
    * 画面 or 测面积
    * @param {*} options
    */
   drawPolygonGraphics: function (options) {
-
     options = options || {}
     options.style = options.style || {
       width: 3,
@@ -179,22 +191,23 @@ Draw.prototype = {
       clampToGround: true
     }
     if (this._viewer && options) {
-
       var positions = [],
         polygon = new Cesium.PolygonHierarchy(),
         _polygonEntity = new Cesium.Entity(),
         $this = this,
         polyObj = null,
-        _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas);
+        _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
       const create = function () {
         _polygonEntity.polyline = options.style
 
-        _polygonEntity.polyline.positions = new Cesium.CallbackProperty(function () {
-          return positions
-        }, false)
+        _polygonEntity.polyline.positions = new Cesium.CallbackProperty(
+          function () {
+            return positions
+          },
+          false
+        )
 
         _polygonEntity.polygon = {
-
           hierarchy: new Cesium.CallbackProperty(function () {
             return polygon
           }, false),
@@ -216,7 +229,12 @@ Draw.prototype = {
           outlineWidth: 5
         }
         _labelEntity.label = {
-          text: ($this.getPositionsArea($this.transformCartesianArrayToWGS84Array(positions)) / 1000000.0).toFixed(4) + '平方公里',
+          text:
+            (
+              $this.getPositionsArea(
+                $this.transformCartesianArrayToWGS84Array(positions)
+              ) / 1000000.0
+            ).toFixed(4) + '平方公里',
           show: true,
           showBackground: true,
           font: '14px monospace',
@@ -229,7 +247,6 @@ Draw.prototype = {
 
       // left
       _handler.setInputAction(function (movement) {
-
         var cartesian = $this.getCatesian3FromPX(movement.position)
         if (cartesian && cartesian.x) {
           if (positions.length == 0) {
@@ -244,7 +261,6 @@ Draw.prototype = {
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
       // mouse
       _handler.setInputAction(function (movement) {
-
         var cartesian = $this.getCatesian3FromPX(movement.endPosition)
         if (positions.length >= 2) {
           if (cartesian && cartesian.x) {
@@ -262,22 +278,23 @@ Draw.prototype = {
 
         positions.push(positions[0])
 
-        if (options.height) { //立体
+        if (options.height) {
+          //立体
           _polygonEntity.polygon.extrudedHeight = options.height
           _polygonEntity.polygon.material = Cesium.Color.BLUE.withAlpha(0.5)
         }
-        if (options.measure) { // 量测
+        if (options.measure) {
+          // 量测
           _addInfoPoint(positions[0])
         }
         if (typeof options.callback === 'function') {
-
-          options.callback($this.transformCartesianArrayToWGS84Array(positions), polyObj)
+          options.callback(
+            $this.transformCartesianArrayToWGS84Array(positions),
+            polyObj
+          )
         }
       }, Cesium.ScreenSpaceEventType.RIGHT_CLICK)
-
-
     }
-
   },
   /**
    * 画矩形
@@ -291,7 +308,6 @@ Draw.prototype = {
       clampToGround: true
     }
     if (this._viewer && options) {
-
       var _positions = [],
         _rectangleEntity = new Cesium.Entity(),
         _coordinates = new Cesium.Rectangle(),
@@ -300,45 +316,51 @@ Draw.prototype = {
         _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
       // left
       _handler.setInputAction(function (movement) {
-
         var cartesian = $this.getCatesian3FromPX(movement.position)
         if (cartesian && cartesian.x) {
-
           if (_positions.length == 0) {
-
             _positions.push(cartesian.clone())
           } else {
             _handler.destroy()
 
             _positions.push(cartesian.clone())
 
-            _coordinates = Cesium.Rectangle.fromCartesianArray([..._positions, cartesian], Cesium.Ellipsoid.WGS84)
+            _coordinates = Cesium.Rectangle.fromCartesianArray(
+              [..._positions, cartesian],
+              Cesium.Ellipsoid.WGS84
+            )
 
             if (typeof options.callback === 'function') {
-
-              options.callback($this.transformCartesianArrayToWGS84Array(_positions), rectangleObj)
+              options.callback(
+                $this.transformCartesianArrayToWGS84Array(_positions),
+                rectangleObj
+              )
             }
           }
         }
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
       // mouse
       _handler.setInputAction(function (movement) {
-
         var cartesian = $this.getCatesian3FromPX(movement.endPosition)
 
         if (cartesian) {
-
-          _coordinates = Cesium.Rectangle.fromCartesianArray([..._positions, cartesian], Cesium.Ellipsoid.WGS84)
-
+          _coordinates = Cesium.Rectangle.fromCartesianArray(
+            [..._positions, cartesian],
+            Cesium.Ellipsoid.WGS84
+          )
         }
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
 
       _rectangleEntity.rectangle = options.style
 
-      if (options.height) _rectangleEntity.rectangle.extrudedHeight = options.height
-      _rectangleEntity.rectangle.coordinates = new Cesium.CallbackProperty(function () {
-        return _coordinates
-      }, false)
+      if (options.height)
+        _rectangleEntity.rectangle.extrudedHeight = options.height
+      _rectangleEntity.rectangle.coordinates = new Cesium.CallbackProperty(
+        function () {
+          return _coordinates
+        },
+        false
+      )
       rectangleObj = this._drawLayer.entities.add(_rectangleEntity)
     }
   },
@@ -354,11 +376,11 @@ Draw.prototype = {
       clampToGround: true
     }
     if (this._viewer && options) {
-
       var _center = undefined,
         _circleEntity = new Cesium.Entity(),
         $this = this,
-        circleObj, _radius = 1,
+        circleObj,
+        _radius = 1,
         _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
 
       // 计算半径
@@ -368,22 +390,28 @@ Draw.prototype = {
         let geodesic = new Cesium.EllipsoidGeodesic()
         geodesic.setEndPoints(srcCartographic, destCartographic)
         let s = geodesic.surfaceDistance
-        _radius = Math.sqrt( //开平方
+        _radius = Math.sqrt(
+          //开平方
           Math.pow(s, 2) +
-          Math.pow(destCartographic.height - srcCartographic.height, 2)
+            Math.pow(destCartographic.height - srcCartographic.height, 2)
         )
       }
 
       //
       const drawGraphics = function () {
-
         _circleEntity.ellipse = options.style
-        _circleEntity.ellipse.semiMajorAxis = new Cesium.CallbackProperty(function () {
-          return _radius
-        }, false)
-        _circleEntity.ellipse.semiMinorAxis = new Cesium.CallbackProperty(function () {
-          return _radius
-        }, false)
+        _circleEntity.ellipse.semiMajorAxis = new Cesium.CallbackProperty(
+          function () {
+            return _radius
+          },
+          false
+        )
+        _circleEntity.ellipse.semiMinorAxis = new Cesium.CallbackProperty(
+          function () {
+            return _radius
+          },
+          false
+        )
         _circleEntity.position = new Cesium.CallbackProperty(function () {
           return _center
         }, false)
@@ -394,45 +422,45 @@ Draw.prototype = {
           outlineWidth: 3
         }
 
-        if (options.height) _circleEntity.ellipse.extrudedHeight = options.height
+        if (options.height)
+          _circleEntity.ellipse.extrudedHeight = options.height
 
         circleObj = $this._drawLayer.entities.add(_circleEntity)
       }
 
       // left
       _handler.setInputAction(function (movement) {
-
         var cartesian = $this.getCatesian3FromPX(movement.position)
 
         if (cartesian && cartesian.x) {
           if (!_center) {
-
             _center = cartesian
 
             drawGraphics()
-
           } else {
-
             computeRadius(_center, cartesian)
 
             _handler.destroy()
 
             if (typeof options.callback === 'function') {
-
-              options.callback({
-                center: _center,
-                radius: _radius
-              }, circleObj)
+              options.callback(
+                {
+                  center: _center,
+                  radius: _radius
+                },
+                circleObj
+              )
             }
           }
         }
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
       // mouse
       _handler.setInputAction(function (movement) {
-
-        var cartesian = $this._viewer.scene.camera.pickEllipsoid(movement.endPosition, $this._viewer.scene.globe.ellipsoid)
+        var cartesian = $this._viewer.scene.camera.pickEllipsoid(
+          movement.endPosition,
+          $this._viewer.scene.globe.ellipsoid
+        )
         if (_center && cartesian && cartesian.x) {
-
           computeRadius(_center, cartesian)
         }
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
@@ -449,7 +477,6 @@ Draw.prototype = {
       material: Cesium.Color.BLUE.withAlpha(0.5)
     }
     if (this._viewer && options) {
-
       var _trianglesEntity = new Cesium.Entity(),
         _tempLineEntity = new Cesium.Entity(),
         _tempLineEntity2 = new Cesium.Entity(),
@@ -481,7 +508,6 @@ Draw.prototype = {
 
       // left
       _handler.setInputAction(function (movement) {
-
         var position = $this.getCatesian3FromPX(movement.position)
         if (!position) return false
         if (_positions.length == 0) {
@@ -492,7 +518,6 @@ Draw.prototype = {
         } else {
           _handler.destroy()
           if (typeof options.callback === 'function') {
-
             options.callback({
               e: _trianglesEntity,
               e2: _tempLineEntity,
@@ -503,7 +528,6 @@ Draw.prototype = {
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
       // mouse
       _handler.setInputAction(function (movement) {
-
         var position = $this.getCatesian3FromPX(movement.endPosition)
         if (position && _positions.length > 0) {
           //直线
@@ -539,7 +563,13 @@ Draw.prototype = {
       }
       _trianglesEntity.label = {
         text: new Cesium.CallbackProperty(function () {
-          return '直线:' + $this.getPositionDistance($this.transformCartesianArrayToWGS84Array(_positions)) + '米'
+          return (
+            '直线:' +
+            $this.getPositionDistance(
+              $this.transformCartesianArrayToWGS84Array(_positions)
+            ) +
+            '米'
+          )
         }, false),
         show: true,
         showBackground: true,
@@ -591,7 +621,13 @@ Draw.prototype = {
       }
       _tempLineEntity2.label = {
         text: new Cesium.CallbackProperty(function () {
-          return '水平距离:' + $this.getPositionDistance($this.transformCartesianArrayToWGS84Array(_tempPoints2)) + '米'
+          return (
+            '水平距离:' +
+            $this.getPositionDistance(
+              $this.transformCartesianArrayToWGS84Array(_tempPoints2)
+            ) +
+            '米'
+          )
         }, false),
         show: true,
         showBackground: true,
@@ -620,7 +656,6 @@ Draw.prototype = {
       var $this = this
       this.drawPolygonGraphics({
         callback: function (polygon, polygonObj) {
-
           var wallEntity = $this._drawLayer.entities.add({
             wall: {
               positions: $this.transformWGS84ArrayToCartesianArray(polygon),
@@ -628,7 +663,6 @@ Draw.prototype = {
             }
           })
           if (typeof options.callback === 'function') {
-
             options.callback(polygon, wallEntity)
           }
         }
@@ -646,7 +680,6 @@ Draw.prototype = {
       var $this = this
       this.drawCircleGraphics({
         callback: function (result, obj) {
-
           var entity = $this.createGraphics()
           entity.ellipsoid = $this.$graphics.getEllipsoidGraphics({
             radii: result.radius
@@ -658,11 +691,13 @@ Draw.prototype = {
           var ellipsoidObj = $this._drawLayer.entities.add(entity)
 
           if (typeof options.callback === 'function') {
-
-            options.callback({
-              center: result.center,
-              radius: result.radius
-            }, ellipsoidObj)
+            options.callback(
+              {
+                center: result.center,
+                radius: result.radius
+              },
+              ellipsoidObj
+            )
           }
         }
       })
@@ -679,7 +714,6 @@ Draw.prototype = {
       var $this = this
       this.drawCircleGraphics({
         callback: function (result, obj) {
-
           var cylinderObj = $this._drawLayer.entities.add({
             position: result.center,
             cylinder: {
@@ -688,17 +722,19 @@ Draw.prototype = {
               bottomRadius: options.bottomRadius || result.radius,
               material: Cesium.Color.BLUE.withAlpha(0.5),
               outline: true,
-              outlineColor: Cesium.Color.WHITE,
-            },
+              outlineColor: Cesium.Color.WHITE
+            }
           })
           $this._drawLayer.entities.remove(obj)
 
           if (typeof options.callback === 'function') {
-
-            options.callback({
-              center: result.center,
-              radius: result.radius
-            }, cylinderObj)
+            options.callback(
+              {
+                center: result.center,
+                radius: result.radius
+              },
+              cylinderObj
+            )
           }
         }
       })
@@ -732,7 +768,6 @@ Draw.prototype = {
           var corridorObj = $this._drawLayer.entities.add(entity)
 
           if (typeof options.callback === 'function') {
-
             options.callback(line, corridorObj)
           }
         }
@@ -753,39 +788,41 @@ Draw.prototype = {
    * }
    */
   drawPolylineVolumeGraphics: function (options) {
-    options = options || {};
-    options.style = options.style || {};
+    options = options || {}
+    options.style = options.style || {}
     const circleRadius = options.circleRadius || 20,
       arms = options.arms || 7,
       rOuter = options.rOuter || 150,
-      rInner = options.rInner || 75;
+      rInner = options.rInner || 75
     if (this._viewer && options) {
       var $this = this
       $this.drawLineGraphics({
         callback: function (line, lineObj) {
-          var entity = $this.createGraphics();
-          let shapeVal = options.shape === 'fivePoint' ?
-            $this.computeStar2d(arms, rOuter, rInner) :
-            $this.computeCircleShap(circleRadius);
+          var entity = $this.createGraphics()
+          let shapeVal =
+            options.shape === 'fivePoint'
+              ? $this.computeStar2d(arms, rOuter, rInner)
+              : $this.computeCircleShap(circleRadius)
           entity.polylineVolume = {
             positions: $this.transformWGS84ArrayToCartesianArray(line),
             shape: shapeVal,
             cornerType: Cesium.CornerType.MITERED,
-            material: options.color||Cesium.Color.RED,
+            material: options.color || Cesium.Color.RED
           }
           $this._drawLayer.entities.remove(lineObj)
 
           var polylineVolumeObj = $this._drawLayer.entities.add(entity)
 
           if (typeof options.callback === 'function') {
-
             options.callback(line, polylineVolumeObj)
           }
         }
       })
     }
+  },
+  // 移除所有实体
+  removeAll() {
+    this._drawLayer.entities.removeAll()
   }
 }
-export {
-  Draw
-}
+export { Draw }

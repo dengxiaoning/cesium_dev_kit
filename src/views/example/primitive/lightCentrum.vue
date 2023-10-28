@@ -10,11 +10,11 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const { viewer,
         material,
         graphics,
@@ -68,7 +68,7 @@ export default {
 
       this.createModel();
     },
-    flyto() {
+    flyto () {
       this.material.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
@@ -78,7 +78,7 @@ export default {
         }
       })
     },
-    createModel() {
+    createModel () {
       let Tetrahedrod =
         this.c_viewer.scene.primitives.add(new Cesium.Scene.TetrahedronPrimitive({
           position: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 180.0),
@@ -90,7 +90,7 @@ export default {
       Tetrahedrod.startAnimate()
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

@@ -1,11 +1,11 @@
 import BaseExtends from './Base'
-import { Base, Plugin } from '../libs'
+import { Base, Graphics, Plugin } from '../libs'
 
 class PluginExtends extends BaseExtends {
   constructor(obj) {
     return super({
       ...obj,
-      baseExtendsCom: Base,
+      baseExtendsCom: [Base, Graphics],
       extendsCom: Plugin,
       extendsComName: 'plugin'
     })

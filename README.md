@@ -22,6 +22,8 @@
   ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)
 - 雷达扫描
   ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)
+- 第一人称漫游
+  ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)
 
 ## 在线预览
 
@@ -103,6 +105,13 @@ export default {
        class="map3d-contaner"></div>
 </template>
 <script>
+
+  /**
+  * 可导出对象 {Graphics, Material,Primitive,Draw,Analysis,CustomCesiumPlugin,PassEffect,Plugin}
+  * Graphics:各种图形操作、Material: 材质操作、Primitive: 配合shader的各种图元操作
+  * Draw: 各种绘制对象、Analysis: 各种分析对象、CustomCesiumPlugin: 自定义相控扩展
+  * PassEffect: 后期特效对象、Plugin: 各种扩展功能
+   */
 import { Draw } from 'cesium_dev_kit'
 export default {
   mounted() {
