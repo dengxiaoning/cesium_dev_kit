@@ -13,17 +13,17 @@
 ## 功能展示
 
 - 材质
-  ![material](https://www.benpaodehenji.com/cesium_dev_kit/static/preview/material.gif)
+  ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)
 - 分析
-  ![analysis](https://www.benpaodehenji.com/cesium_dev_kit/static/preview/analysis.gif)
+  ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)
 - 标绘
-  ![plot](https://www.benpaodehenji.com/cesium_dev_kit/static/preview/plot.gif)
+  ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)
 - 拖拽
-  ![drag](https://www.benpaodehenji.com/cesium_dev_kit/static/preview/drag.gif)
+  ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)
 - 雷达扫描
-  ![radar](https://www.benpaodehenji.com/cesium_dev_kit/static/preview/radar.gif)
+  ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)
 - 第一人称漫游
-  ![radar](https://www.benpaodehenji.com/cesium_dev_kit/static/preview/pathRoam.gif)
+  ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)
 
 ## 在线预览
 
