@@ -42,6 +42,34 @@ Graphics.prototype = {
       })
     }
   },
+  //线簇
+  getLineVolumeGraphics: function (options) {
+    options = options || {}
+    if (options && options.positions) {
+      return new Cesium.PolylineVolumeGraphics({
+        show: true,
+        positions: new Cesium.Cartesian3.fromDegreesArrayHeights(
+          options.positions
+        ),
+        material:
+          options.material ||
+          new Cesium.Scene.PolylineFlowWaterMaterialProperty({
+            riverColor: Cesium.Color.SKYBLUE,
+            flowDuration: 10000
+          }),
+        shape: new Cesium.CallbackProperty(function () {
+          var positions = []
+          for (var i = 0; i < 180; i++) {
+            let x = options.width * Math.cos((Math.PI * 2 * i) / 720)
+            let y = 0.1 * Math.sin((Math.PI * 2 * i) / 720)
+            positions.push(new Cesium.Cartesian2(x, y))
+          }
+          return positions
+        }, false),
+        cornerType: options.cornerType || Cesium.CornerType.ROUNDED
+      })
+    }
+  },
   // 面
   getPolygonGraphics: function (options) {
     options = options || {}
@@ -219,6 +247,18 @@ Graphics.prototype = {
       entity.oid = options.oid || 'line'
       entity.position = options.positions
       entity.polyline = this.getLineGraphics(options)
+
+      return this._graphicsLayer.entities.add(entity)
+    }
+  },
+
+  // 创建线簇
+  createLineVolumeGraphics: function (options) {
+    if (options && options.positions) {
+      var entity = this.createGraphics()
+      entity.name = options.name || 'lineVolumeWater'
+      entity.oid = options.oid || 'lineVolume'
+      entity.polylineVolume = this.getLineVolumeGraphics(options)
 
       return this._graphicsLayer.entities.add(entity)
     }

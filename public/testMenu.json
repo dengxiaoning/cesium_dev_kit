@@ -284,6 +284,19 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+ 
+      "name": "waterPath",
+      "path":"waterPath",
+      "component": "example/primitive/waterPath",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "河流",
+        "icon": "emojione-monotone:railway-track",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {

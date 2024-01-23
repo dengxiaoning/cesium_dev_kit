@@ -35,6 +35,8 @@ Primitive.prototype = {
     this._installTetrahedronPrimitive()
 
     this._installCustomPrimitive()
+
+    this._installFlowWaterPrimitive()
   },
   /**
    * 自定义图元
@@ -824,7 +826,7 @@ Primitive.prototype = {
    */
   _installShadowPrimitive: function () {
     const ViewshedLineVS =
-      'ttribute vec3 position;\n\
+      'in vec3 position;\n\
             uniform mat4 u_modelViewMatrix;\n\
             void main()\n\
             {\n\
@@ -1534,6 +1536,7 @@ Primitive.prototype = {
    * 水面效果
    */
   _installWaterPrimitive: function () {
+    let _self = this
     /**
      *
      * @param {*} options
@@ -1548,8 +1551,9 @@ Primitive.prototype = {
       this._animationSpeed = opt.animationSpeed || 0.01
       this._amplitude = opt.amplitude || 10.0
       this._extrudedHeight = opt.extrudedHeight || 0
-
+      this._viewer = _self._viewer
       this._fs = this.getFS()
+      // this._vs = this.getVS()
     }
 
     WaterPrimitive.prototype.build = function () {
@@ -1583,20 +1587,128 @@ Primitive.prototype = {
           }
         }),
         fragmentShaderSource: this._fs
+        // vertexShaderSource: this._vs
       })
     }
 
     WaterPrimitive.prototype._createGeometry = function () {
       return new Cesium.PolygonGeometry({
         polygonHierarchy: new Cesium.PolygonHierarchy(
-          Cesium.Cartesian3.fromDegreesArrayHeights(this._positions)
+          Cesium.Cartesian3.fromDegreesArray(this._positions)
         ),
         extrudedHeight: this._extrudedHeight,
         perPositionHeight: true
       })
     }
-
     WaterPrimitive.prototype.getFS = function () {
+      var fs = `
+      precision highp float;
+      struct Light {
+          vec3 position;
+          vec3 ambient;
+          vec3 diffuse;
+          vec3 specular;
+      };
+      in vec3 position;
+      in vec2 textureCoord;
+
+      uniform vec3 viewPos;
+      uniform Light light;
+
+      uniform sampler2D normalSampler;
+      uniform samplerCube skybox;
+      uniform float detalX;
+
+      void main() {
+
+      float z = gl_FragCoord.z / gl_FragCoord.w;
+      const float LOG2 = 1.442695;
+      float density = 0.005;
+      float normalFactor = exp(  -density * density *  z *  z * LOG2 );
+      normalFactor = clamp(normalFactor, 0.0, 1.0);
+
+      vec4 normalTex1 = texture(normalSampler, vec2(textureCoord.s + detalX/1024.0, textureCoord.t - detalX/1024.0));
+      vec3 normalTex2 = texture(normalSampler, vec2(textureCoord.t, textureCoord.s)).rgb;
+      vec3 normal1 = normalize(vec3(normalTex1.r * 2.0 - 1.0, normalTex1.b,normalTex1.g*2.0-1.0));
+      vec3 normal2 = normalize(vec3(normalTex2.r * 2.0 - 1.0, normalTex2.b,normalTex2.g*2.0-1.0));
+
+      vec3 normal = mix(normal1,normal2,0.2);
+
+      normal = mix(vec3(0.0,1.0,0.0),normal,0.2);
+
+      normal = mix(vec3(0.0,1.0,0.0),normal,normalFactor);
+
+      vec3 viewDir = normalize(viewPos - position);
+
+      vec3 I = normalize(position - viewPos);
+      vec3 R = reflect(I, normal);
+      vec3 reflection = texture(skybox, R).rgb;
+
+      float ratio = 1.00 / 1.33;
+      vec3 Rr = refract(I, normal , ratio);
+      vec3 refraction  = texture(skybox, Rr).rgb;
+
+      float reflectivity = 0.02;
+      float theta = max( dot( viewDir, normal ), 0.0 );
+      float reflectance = reflectivity + ( 1.0 - reflectivity ) * pow( ( 1.0 - theta ), 2.0 );
+
+      vec3 reflectanceColor = mix( refraction, reflection, reflectance );
+
+      out_FragColor =  vec4(reflectanceColor,1.0);
+
+      }
+      `
+      return fs
+    }
+
+    WaterPrimitive.prototype.getVS = function () {
+      var vs =
+        //-'in vec3 position;' +
+        ' in vec3 normal;' +
+        'in vec2 st;' +
+        'in float batchId;' +
+        ' out vec3 v_normalEC;' +
+        'uniform mat4 u_modelViewMatrix;' +
+        'uniform mat4 u_invWorldViewMatrix;' +
+        //'uniform vec2 u_texCoordOffset;' +
+        //'uniform vec2 u_texCoordScale;' +
+        //'uniform float u_frameTime;' +
+        'uniform int u_clampToGroud;' +
+        'uniform vec3 u_camPos;' +
+        'uniform vec3 u_scale;' +
+        //'varying vec3 eyeDir;' +
+        'out vec3 vToEye;' +
+        //'varying vec2 texCoord;' +
+        'out vec2 vUv;' +
+        //'varying float myTime;' +
+        //'varying vec4 projectionCoord;' +
+        'out vec4 vCoord;' +
+        'void main(void)' +
+        '{' +
+        'v_normalEC = czm_normal * normal;' +
+        //gl_Position = ftransform();
+        //- 'vec4 positionW = u_modelViewMatrix * vec4(position.xyz, 1.0);' +
+        //- 'vec4 eyep = czm_modelView * positionW;' +
+        //-  'gl_Position = czm_projection * eyep; ' +
+        'if (u_clampToGroud == 1)' +
+        '{' +
+        //'eyeDir = (u_camPos - position.xyz) * u_scale;' +vToEye
+        //- 'vToEye = (u_camPos - position.xyz) * u_scale;' +
+        '} else {' +
+        //- 'vec4 pos = u_modelViewMatrix * vec4(position.xyz,1.0);' +
+        //'eyeDir = vec3(u_invWorldViewMatrix*vec4(pos.xyz,0.0));' +
+        //-  'vToEye = vec3(u_invWorldViewMatrix*vec4(pos.xyz,0.0));' +
+        //'projectionCoord = gl_Position;' +
+        'vCoord = gl_Position;' +
+        '}' +
+        //'texCoord = (st+u_texCoordOffset)*u_texCoordScale;' +
+        //'vUv = (st+u_texCoordOffset)*u_texCoordScale;' +
+        'vUv = st;' +
+        //'myTime = 0.01 * u_frameTime;' +
+        '}'
+      return vs
+    }
+    WaterPrimitive.prototype.getFS2 = function () {
       return 'in vec3 v_positionMC;\n\
                 in vec3 v_positionEC;\n\
                 in vec2 v_st;\n\
@@ -1619,7 +1731,7 @@ Primitive.prototype = {
                 #ifdef FLAT\n\
                     out_FragColor = vec4(material.diffuse + material.emission, material.alpha);\n\
                 #else\n\
-                    out_FragColor = czm_phong(normalize(positionToEyeEC), material);\n\
+                    out_FragColor = czm_phong(normalize(positionToEyeEC), material, czm_lightDirectionEC);\n\
                     out_FragColor.a = 0.5;\n\
                 #endif\n\
                 }\n\
@@ -1656,6 +1768,105 @@ Primitive.prototype = {
     }
 
     Cesium.Scene.WaterPrimitive = WaterPrimitive
+  },
+  /**
+   * 流动水面
+   */
+  _installFlowWaterPrimitive: function () {
+    const waterImg = this.getDfSt(['primitive', 'WaterPrimitive']),
+      Property = Cesium.Property
+    function PolylineFlowWaterMaterialProperty({
+      riverColor,
+      flowDuration,
+      riverImg
+    }) {
+      this._definitionChanged = new Cesium.Event()
+      this._color = undefined
+      this._colorSubscription = undefined
+      this.color = riverColor
+      this.duration = flowDuration
+      this._time = new Date().getTime()
+      this._url =
+        riverImg || waterImg || 'static/data/images/Textures/movingRiver.png'
+    }
+
+    Object.defineProperties(PolylineFlowWaterMaterialProperty.prototype, {
+      isConstant: {
+        get: function () {
+          return false
+        }
+      },
+      definitionChanged: {
+        get: function () {
+          return this._definitionChanged
+        }
+      },
+      color: Cesium.createPropertyDescriptor('color')
+    })
+    PolylineFlowWaterMaterialProperty.prototype.getType = function (time) {
+      return 'PolylineTrailLink'
+    }
+    PolylineFlowWaterMaterialProperty.prototype.getValue = function (
+      time,
+      result
+    ) {
+      if (!Cesium.defined(result)) {
+        result = {}
+      }
+      result.color = Cesium.Property.getValueOrClonedDefault(
+        this._color,
+        time,
+        Cesium.Color.WHITE,
+        result.color
+      )
+      result.image = Cesium.Material.PolylineTrailLinkImage
+      result.time =
+        ((new Date().getTime() - this._time) % this.duration) / this.duration
+      return result
+    }
+    PolylineFlowWaterMaterialProperty.prototype.equals = function (other) {
+      return (
+        this === other ||
+        (other instanceof PolylineFlowWaterMaterialProperty &&
+          Property.equals(this._color, other._color))
+      )
+    }
+    Cesium.Scene.PolylineFlowWaterMaterialProperty = PolylineFlowWaterMaterialProperty
+    Cesium.Material.PolylineTrailLinkType = 'PolylineTrailLink'
+    Cesium.Material.PolylineTrailLinkImage =
+      waterImg || 'static/data/images/Textures/movingRiver.png'
+    Cesium.Material.PolylineTrailLinkSource =
+      '\
+        uniform vec4 color;\n\
+        uniform float time;\n\
+        uniform sampler2D image;\n\
+        czm_material czm_getMaterial(czm_materialInput materialInput)\n\
+        {\n\
+          czm_material material = czm_getDefaultMaterial(materialInput);\n\
+          vec2 st = materialInput.st;\n\
+          vec4 colorImage = texture(image, vec2(fract(st.s*5.0-time*1.0), st.t));\n\
+          material.alpha = 0.5;\n\
+          material.diffuse = colorImage.rgb;\n\
+          return material;\n\
+        }'
+    Cesium.Material._materialCache.addMaterial(
+      Cesium.Material.PolylineTrailLinkType,
+      {
+        fabric: {
+          type: Cesium.Material.PolylineTrailLinkType,
+          uniforms: {
+            color: new Cesium.Color(1.0, 0.0, 0.0, 0.5),
+            image: Cesium.Material.PolylineTrailLinkImage,
+            time: 0,
+            repeat: 1
+          },
+          source: Cesium.Material.PolylineTrailLinkSource
+        },
+        translucent: function (material) {
+          return true
+        }
+      }
+    )
   },
   /**
    * 纹理图 视频图像
