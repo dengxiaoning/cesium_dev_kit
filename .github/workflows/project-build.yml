@@ -24,6 +24,9 @@ jobs:
 
       - name: build
         run: |
+          npm config set registry http://registry.cnpmjs.org
+          npm config set registry http://registry.npm.taobao.org
+          npm config set strict-ssl false
           npm cache clean --force
           npm install
           npm run build
