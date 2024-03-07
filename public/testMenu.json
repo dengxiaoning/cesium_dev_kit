@@ -155,7 +155,7 @@
       "component": "example/material/polylineCityLink",
       "meta": {
         "auth": ["admin", "test"],
-        "title": "城市光效线",
+        "title": "动态泛光线",
         "icon": "fluent:text-align-right-rotate-90-16-filled",
         "isAffix": false,
         "isHide": false,
@@ -167,7 +167,7 @@
       "component": "example/material/linkPoint",
       "meta": {
         "auth": ["admin", "test"],
-        "title": "运动的发光点",
+        "title": "动态线(图片材质)",
         "icon": "icon-park-outline:log",
         "isAffix": false,
         "isHide": false,
@@ -179,7 +179,7 @@
       "component": "example/material/areaPolylineCityLink",
       "meta": {
         "auth": ["admin", "test"],
-        "title": "行政区发光道路线",
+        "title": "动态泛光线(随机颜色)",
         "icon": "carbon:rule-test",
         "isAffix": false,
         "isHide": false,
@@ -191,7 +191,7 @@
       "component": "example/material/linkPointFlow",
       "meta": {
         "auth": ["admin", "test"],
-        "title": "掉落的发光点",
+        "title": "流动线",
         "icon": "carbon:flow-modeler",
         "isAffix": false,
         "isHide": false,
