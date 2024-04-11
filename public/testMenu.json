@@ -818,6 +818,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "fanShapeScan",
+      "path": "fanShapeScan",
+      "component": "example/radar/fanShapeScan",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "扇形扫描",
+        "icon": "game-icons:ice-cream-cone",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {

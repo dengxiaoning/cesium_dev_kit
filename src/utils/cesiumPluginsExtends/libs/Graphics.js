@@ -827,6 +827,119 @@ Graphics.prototype = {
         options.callback()
       }
     }
+  },
+  /**
+   * 创建扇形
+   * @param {Object} viewer cesium 视图对象
+   * @param {Material} custMaterial 自定义材质
+   * @param {Number} speed 运动速度
+   * @param {Number} longitude 纬度
+   * @param {Number} latitude 经度
+   * @param {Number} alt 高度(z轴)
+   * @param {String} direction 扫描方向（"-"顺时针，"+"逆时针）
+   * @returns
+   */
+  createFanShape: function ({
+    viewer,
+    longitude,
+    latitude,
+    alt,
+    custMaterial,
+    speed = 0,
+    direction = '+'
+  }) {
+    if (viewer) {
+      var entity = this.createGraphics()
+      var heading = 0
+      var positionArr = this._calcPoints(longitude, latitude, alt, heading)
+      entity.wall = {
+        positions: new Cesium.CallbackProperty(() => {
+          return Cesium.Cartesian3.fromDegreesArrayHeights(positionArr)
+        }, false),
+        material: custMaterial || Cesium.Color.AQUAMARINE.withAlpha(0.5)
+      }
+
+      // 执行动画效果
+      viewer.clock.onTick.addEventListener(() => {
+        if (speed > 0) {
+          heading += speed
+          positionArr = this._calcPoints(
+            longitude,
+            latitude,
+            alt,
+            direction + heading
+          )
+        }
+      })
+
+      return this._graphicsLayer.entities.add(entity)
+    }
+  },
+  /**
+   * 根据两个点 开始角度、夹角度 求取立面的扇形
+   * @param {*} x1 第一个点x轴
+   * @param {*} y1 第一个点y轴
+   * @param {*} x2 第二个点x轴
+   * @param {*} y2 第二个点y轴
+   * @param {*} fx 扇形起始角度
+   * @param {*} angle 扇形角度
+   * @returns
+   */
+  _computeCirclularFlight(x1, y1, x2, y2, fx, angle) {
+    let positionArr = []
+    positionArr.push(x1)
+    positionArr.push(y1)
+    positionArr.push(0)
+
+    var radius = Cesium.Cartesian3.distance(
+      Cesium.Cartesian3.fromDegrees(x1, y1),
+      Cesium.Cartesian3.fromDegrees(x2, y2)
+    )
+
+    for (let i = fx; i <= fx + angle; i++) {
+      let h = radius * Math.sin((i * Math.PI) / 180.0)
+      let r = Math.cos((i * Math.PI) / 180.0)
+
+      let x = (x2 - x1) * r + x1
+      let y = (y2 - y1) * r + y1
+
+      positionArr.push(x)
+      positionArr.push(y)
+      positionArr.push(h)
+    }
+
+    return positionArr
+  },
+  /**
+   * 根据第一个点 偏移距离 角度 求取第二个点的坐标
+   * @param {*} x1  x轴
+   * @param {*} y1  y轴
+   * @param {*} radius 弧度
+   * @param {*} heading 朝向
+   * @returns
+   */
+  _calcPoints(x1, y1, radius, heading) {
+    var m = Cesium.Transforms.eastNorthUpToFixedFrame(
+      Cesium.Cartesian3.fromDegrees(x1, y1)
+    )
+
+    var rx = radius * Math.cos((heading * Math.PI) / 180.0)
+    var ry = radius * Math.sin((heading * Math.PI) / 180.0)
+
+    var translation = Cesium.Cartesian3.fromElements(rx, ry, 0)
+
+    var d = Cesium.Matrix4.multiplyByPoint(
+      m,
+      translation,
+      new Cesium.Cartesian3()
+    )
+
+    var c = Cesium.Cartographic.fromCartesian(d)
+
+    var x2 = Cesium.Math.toDegrees(c.longitude)
+    var y2 = Cesium.Math.toDegrees(c.latitude)
+
+    return this._computeCirclularFlight(x1, y1, x2, y2, 0, 90)
   }
 }
 export { Graphics }
