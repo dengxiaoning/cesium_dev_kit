@@ -709,6 +709,68 @@
     ]
   },
   {
+    "name":"sensor",
+    "path":"/sensor",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "传感器案例",
+      "icon": "mingcute:radar-line",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children":[{
+      "name": "umbrellaShapeSensor",
+      "path": "umbrellaShapeSensor",
+      "component": "example/sensor/umbrellaShapeSensor",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "伞形传感器",
+        "icon": "arcticons:moon-phase",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "semicircleSensor",
+      "path": "semicircleSensor",
+      "component": "example/sensor/semicircleSensor",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "半圆传感器",
+        "icon": "game-icons:explosive-materials",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "prismSensor",
+      "path": "prismSensor",
+      "component": "example/sensor/prismSensor",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "棱形传感器",
+        "icon": "carbon:tropical-storm-model-tracks",
+        "isAffix": false,
+        "isHide": true,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "coneSensor",
+      "path": "coneSensor",
+      "component": "example/sensor/coneSensor",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "锥形传感器",
+        "icon": "game-icons:ice-cream-cone",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
     "name": "radar",
     "path": "/radar",
     "component":"Layout",
@@ -745,6 +807,18 @@
         "isKeepAlive": true
       }
     },{
+      "name": "fanShapeScan",
+      "path": "fanShapeScan",
+      "component": "example/radar/fanShapeScan",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "扇形扫描",
+        "icon": "game-icons:ice-cream-cone",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
       "name": "lightCentrumScan",
       "path": "lightCentrumScan",
       "component": "example/radar/lightCentrumScan",
@@ -758,73 +832,12 @@
       }
       
     },{
-      "name": "phaseControl",
-      "path": "phaseControl",
-      "component": "example/radar/phaseControl",
-      "meta": {
-        "auth": ["admin", "test"],
-        "title": "相控雷达",
-        "icon": "arcticons:moon-phase",
-        "isAffix": false,
-        "isHide": false,
-        "isKeepAlive": true
-      }
-    },{
-      "name": "phaseControlMaterial",
-      "path": "phaseControlMaterial",
-      "component": "example/radar/phaseControlMaterial",
-      "meta": {
-        "auth": ["admin", "test"],
-        "title": "相控材质雷达",
-        "icon": "game-icons:explosive-materials",
-        "isAffix": false,
-        "isHide": false,
-        "isKeepAlive": true
-      }
-    },{
-      "name": "satelliteCoverage",
-      "path": "satelliteCoverage",
-      "component": "example/radar/satelliteCoverage",
-      "meta": {
-        "auth": ["admin", "test"],
-        "title": "椎体跟随",
-        "icon": "carbon:tropical-storm-model-tracks",
-        "isAffix": false,
-        "isHide": false,
-        "isKeepAlive": true
-      }
-      
-    },{
-      "name": "coneControl",
-      "path": "coneControl",
-      "component": "example/radar/coneControl",
-      "meta": {
-        "auth": ["admin", "test"],
-        "title": "椎体图形控制",
-        "icon": "game-icons:ice-cream-cone",
-        "isAffix": false,
-        "isHide": false,
-        "isKeepAlive": true
-      }
-    },{
       "name": "matrixControl",
       "path": "matrixControl",
       "component": "example/radar/matrixControl",
       "meta": {
         "auth": ["admin", "test"],
         "title": "矩阵平移旋转",
-        "icon": "game-icons:ice-cream-cone",
-        "isAffix": false,
-        "isHide": false,
-        "isKeepAlive": true
-      }
-    },{
-      "name": "fanShapeScan",
-      "path": "fanShapeScan",
-      "component": "example/radar/fanShapeScan",
-      "meta": {
-        "auth": ["admin", "test"],
-        "title": "扇形扫描",
         "icon": "game-icons:ice-cream-cone",
         "isAffix": false,
         "isHide": false,

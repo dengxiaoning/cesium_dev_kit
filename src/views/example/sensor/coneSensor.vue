@@ -1,5 +1,5 @@
 <template>
-  <div class="phase-page">
+  <div class="cone-page">
     <div id="cesiumContainer"
          class="map3d-contaner"></div>
     <section class="elslider-control">
@@ -118,16 +118,6 @@ export default {
     initPhaseControl () {
 
       const _this = this
-      // let trackedEntityTest = this.graphics.createBoxGraphics({
-      //   position: Cesium.Cartesian3.fromDegrees(117.224, 31.819, 128),
-      //   name: "box",
-      //   box: {
-      //     dimensions: new Cesium.Cartesian3(500.0, 500.0, 500.0),//尺寸，长宽高
-      //     material: new Cesium.ColorMaterialProperty((new Cesium.CallbackProperty(() => {
-      //       return Cesium.Color.WHITE;
-      //     }, false))),
-      //   }
-      // })
       this.sensorEntity = this.customCesiumPlugin.createRadarPrimitive(
         {
           position: _this.currPosition,
@@ -165,7 +155,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.phase-page {
+.cone-page {
   position: relative;
   .map3d-contaner {
     width: 100%;

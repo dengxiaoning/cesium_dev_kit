@@ -1,14 +1,12 @@
 let Cesium = null
-let dfSt = undefined
 /**
  * 外部插件模块
  * @param {*} viewer
  */
-function RadarPlugin(viewer, cesiumGlobal, defaultStatic) {
+function RadarPlugin(viewer, cesiumGlobal) {
   if (viewer) {
-    this._viewer = viewer
+    this.viewer = viewer
     Cesium = cesiumGlobal
-    dfSt = defaultStatic
     this._installPlugin()
   }
 }
@@ -885,7 +883,7 @@ RadarPlugin.prototype = {
         (this._drawCommands = []))
     }
 
-    Cesium.Scene.RadarPrimitiveRight = n
+    Cesium.Scene.ConeSensorPrimitive = n
   },
   _installCounputeVertex: function () {
     function n(t) {

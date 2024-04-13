@@ -1,6 +1,5 @@
 import BaseExtends from './Base'
 import { Base, CustomCesiumPlugin } from '../libs'
-import { RadarPlugin } from '../libs/radar/index'
 
 class CustomCesiumPluginTempExtends extends BaseExtends {
   constructor(obj) {
@@ -15,12 +14,7 @@ class CustomCesiumPluginTempExtends extends BaseExtends {
 
 class CustomCesiumPluginExtends {
   constructor(obj) {
-    let res = new CustomCesiumPluginTempExtends(obj)
-    return this._initInter(res, obj)
-  }
-  _initInter(res, obj) {
-    new RadarPlugin(res.viewer, obj.cesiumGlobal, obj.defaultStatic)
-    return res
+    return new CustomCesiumPluginTempExtends(obj)
   }
 }
 
