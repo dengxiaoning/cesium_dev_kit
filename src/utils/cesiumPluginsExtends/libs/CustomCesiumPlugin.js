@@ -1,4 +1,4 @@
-import { CesiumPlugin } from './cesium-plugin'
+import { initSensor } from './Sensor/index'
 let Cesium = null
 /**
  * 自定义插件
@@ -8,9 +8,9 @@ function CustomCesiumPlugin(viewer, cesiumGlobal) {
   if (viewer) {
     this._viewer = viewer
     Cesium = cesiumGlobal
-    new CesiumPlugin(Window, Cesium)
     this._customPluginLayer = new Cesium.CustomDataSource('_customPluginLayer')
-
+    // init rectangular sensor
+    new initSensor(viewer, cesiumGlobal)
     viewer && viewer.dataSources.add(this._customPluginLayer)
   }
 }
@@ -44,6 +44,7 @@ CustomCesiumPlugin.prototype = {
       })
     }
   },
+  // 棱形传感器正在加紧研究中......
   createSatelliteCoverageSimulationGraphics: function (options) {
     if (options) {
       return new Cesium.Scene.SatelliteCoverageSimulation(this._viewer, {
@@ -67,7 +68,7 @@ CustomCesiumPlugin.prototype = {
   },
   createRadarPrimitive: function (options) {
     if (options) {
-      return new Cesium.Scene.RadarPrimitiveRight(this._viewer, {
+      return new Cesium.Scene.ConeSensorPrimitive(this._viewer, {
         position: options.position,
         angle: options.angle || 90 - 10,
         radius: options.radius || 700000,

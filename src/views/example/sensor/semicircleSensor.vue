@@ -1,5 +1,5 @@
 <template>
-  <div class="phase-page">
+  <div class="semicircle-page">
     <div id="cesiumContainer"
          class="map3d-contaner"></div>
     <section class="elslider-control">
@@ -51,7 +51,7 @@ import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 export default {
-  data() {
+  data () {
     return {
       currPosition: Cesium.Cartesian3.fromDegrees(117.224, 31.819, 128),
       roll: 0,
@@ -85,11 +85,11 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const { viewer, customCesiumPlugin } = new initCesium(
         {
           cesiumGlobal: Cesium,
@@ -97,10 +97,6 @@ export default {
           viewerConfig: {
             infoBox: false,
             shouldAnimate: true,
-            // 指定上下文
-            contextOptions: {
-              requestWebgl1: true,
-            },
           },
           extraConfig: {},
           MapImageryList: []
@@ -112,7 +108,7 @@ export default {
       this.flyToPos()
       this.initPhaseControl()
     },
-    flyToPos() {
+    flyToPos () {
       this.customCesiumPlugin.flyTo({
         position: {
           x: -1577100.7186109242,
@@ -126,23 +122,34 @@ export default {
         }
       })
     },
-    initPhaseControl() {
-      const _this = this;
-      this.sensorEntity = this.customCesiumPlugin.createRectangularSensorGraphics({
-        position: _this.currPosition,
-        heading: _this.heading,
-        pitch: _this.pitch,
-        roll: _this.roll
-      })
+    initPhaseControl () {
+      const _this = this
+      this.sensorEntity = this.customCesiumPlugin.createRectangularSensorGraphics(
+        {
+          position: _this.currPosition,
+          xHalfAngle: 90,
+          yHalfAngle: 90,
+          heading: _this.heading,
+          pitch: _this.pitch,
+          roll: _this.roll,
+          scanPlaneColor: new Cesium.Color(1.0, 1.0, 1.5, 1.0),
+          material: new Cesium.Color(1.0, 1.0, 1.5, 0.4),
+          lineColor: new Cesium.Color(1.0, 1.0, 1.5, 1.0)
+        }
+      )
     },
-    xHalfAngleChange(e) {
-      this.sensorEntity.rectangularSensor.xHalfAngle = Cesium.Math.toRadians(e.target.value)
+    xHalfAngleChange (e) {
+      this.sensorEntity.rectangularSensor.xHalfAngle = Cesium.Math.toRadians(
+        e.target.value
+      )
     },
-    yHalfAngleChange(e) {
-      this.sensorEntity.rectangularSensor.yHalfAngle = Cesium.Math.toRadians(e.target.value)
+    yHalfAngleChange (e) {
+      this.sensorEntity.rectangularSensor.yHalfAngle = Cesium.Math.toRadians(
+        e.target.value
+      )
     },
-    HeadingChange(e) {
-      const _this = this;
+    HeadingChange (e) {
+      const _this = this
       _this.heading = e.target.value
       _this.sensorEntity.orientation = Cesium.Transforms.headingPitchRollQuaternion(
         _this.currPosition,
@@ -153,8 +160,8 @@ export default {
         )
       )
     },
-    PitchChange(e) {
-      const _this = this;
+    PitchChange (e) {
+      const _this = this
       _this.pitch = e.target.value
       _this.sensorEntity.orientation = Cesium.Transforms.headingPitchRollQuaternion(
         _this.currPosition,
@@ -165,8 +172,8 @@ export default {
         )
       )
     },
-    RollChange(e) {
-      const _this = this;
+    RollChange (e) {
+      const _this = this
       this.roll = e.target.value
       this.sensorEntity.orientation = Cesium.Transforms.headingPitchRollQuaternion(
         _this.currPosition,
@@ -178,14 +185,14 @@ export default {
       )
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null
     this.customCesiumPlugin = null
   }
 }
 </script>
 <style lang="scss" scoped>
-.phase-page {
+.semicircle-page {
   position: relative;
   .map3d-contaner {
     width: 100%;
