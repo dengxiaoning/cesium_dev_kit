@@ -2,8 +2,9 @@
 
 [![Build Status][build-main]][build-status]
 [![NPM Package][npm]][npm-url]
-[![Build Size][build-size]][build-size-url]
 [![NPM DownloadsWeekly][npm-download]][npmtrends-url]
+[![Build Size][build-size]][build-size-url]
+[![GitHub Repo stars][repo-stars]][build-status]
 [![license][license-uri]][license-link]
 
 ## 简介
@@ -32,63 +33,99 @@
 ## 安装
 
 ```shell
-
- npm install cesium_dev_kit
-
+  npm install cesium_dev_kit
 ```
 
 ## 引入
 
 ```
-
-import { initCesium } from 'cesium_dev_kit'
-
+  import { initCesium } from 'cesium_dev_kit'
 ```
 
 ## 使用
 
-### 1、引入所有模块
+### 1、完整引入
+
+通过初始化`initCesium` 可以获取到所有扩展模块
+
+### 1.1 initCesium 参数配置
+
+| Property       | Type   | Description                                                                   | Default Value |
+| -------------- | ------ | ----------------------------------------------------------------------------- | ------------- |
+| cesiumGlobal   | Object | Ceiusm 对象                                                                   | ''            |
+| containerId    | String | dom 容器 id                                                                   | ''            |
+| viewerConfig   | Object | viewer 基础配置（与官网一致）                                                 | {}            |
+| extreaConfig   | Object | 额外参数配置，如 {logo：true// 是否显示 logo, depthTest：true //开启深度检测} | {}            |
+| MapImageryList | Array  | 配置底图,参考 ImageryProvider                                                 | []            |
+| defaultStatic  | Array  | 着色器使用的静态资源配置(如图片 url)                                          | ''            |
+
+### 1.2 initCesium 返回对象
+
+| name               | Type   | Description                                      |
+| ------------------ | ------ | ------------------------------------------------ |
+| viewer             | Object | Ceiusm 实例对象                                  |
+| material           | Object | 材质模块（修改实体材质）                         |
+| graphics           | Object | 图形模块（如创建 PolygonGraphics 对象等）        |
+| math3d             | Object | 三维数学工具                                     |
+| primitive          | Object | 图元操作对象（如使用 primivite 创建 polygon 等） |
+| draw               | Object | 绘制模块（如多边形，矩形）                       |
+| passEffect         | Object | 后置处理模块                                     |
+| customCesiumPlugin | Object | 自定义传感器扩展                                 |
+| control            | Object | 控制模块（如模型位置调整，拖拽等）               |
+| plugin             | Object | 额外插件（如拓展 css3 的动画 ，地形裁剪）        |
+| base               | Object | 基础模块（如坐标转换，图层初始化等）             |
+| analysis           | Object | 分析模块（如坡度，坡向，可视域，通视分析）       |
+| attackArrowObj     | Object | 标绘（攻击）                                     |
+| straightArrowObj   | Object | 标绘（直击）                                     |
+| pincerArrowObj     | Object | 标绘（钳击）                                     |
+
+### 1.3 使用案例
 
 ```javaScript
 // test.vue
 <template>
-  <div id="cesiumContainer"
-       class="map3d-contaner"></div>
+  <div id="cesiumContainer" class="map3d-contaner"></div>
 </template>
 <script>
 import { initCesium } from 'cesium_dev_kit'
+import { defaultStatic } from '../defaultStaticConf'
 export default {
   mounted() {
     this.initMap()
   },
   methods: {
     initMap() {
-      const {
-        viewer,   // viewer
-        material, // 材质模块（修改实体材质）
-        graphics, // 图形模块（如创建PolygonGraphics对象等）
-        math3d, // 三维数学工具
-        primitive, // 图元操作对象（如使用primivite创建polygon等）
-        draw, // 绘制模块（如多边形，矩形）
-        passEffect, // 后置处理模块
-        customCesiumPlugin,
-        control, // 控制模块（如模型位置调整，拖拽等）
-        plugin, // 额外插件（如拓展css3的动画 ，地形裁剪）
-        base, // 基础模块（如坐标转换，图层初始化等）
-        analysis, // 分析模块（如坡度，坡向，可视域，通视分析）
-        attackArrowObj, // 标绘（攻击）
-        straightArrowObj,// 标绘（直击）
-        pincerArrowObj, // 标绘（钳击）
-      } = new initCesium(
-          {
+      const tempData = [
+        {
+          id: 3,
+          name: '高德地图02',
+          type: 'UrlTemplateImageryProvider',
+          classConfig: {
+            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
+          },
+          interfaceConfig: {},
+          offset: '0,0',
+          invertswitch: 0,
+          filterRGB: '#ffffff',
+          showswitch: 1,
+          weigh: 13,
+          createtime: 1624346908,
+          updatetime: 1647395260,
+        }
+      ]
+      const { viewer,material,graphics} =
+          new initCesium({
             cesiumGlobal: Cesium,
             containerId: 'cesiumContainer',
             viewerConfig: {
               infoBox: false,
               shouldAnimate: true,
             },
-            extraConfig: {},
-            MapImageryList: []
+            extraConfig: {
+              depthTest: true
+            },
+            MapImageryList: tempData,
+            defaultStatic
           })
     }
   }
@@ -98,20 +135,31 @@ export default {
 
 ### 2、按需引入
 
+可根据功能需求导出单一扩展类，减少代码冗余
+
+```javaScript
+   import {Graphics, Material,Primitive,Draw,Analysis,CustomCesiumPlugin,PassEffect,Plugin} from 'cesium_dev_kit'
+```
+
+### 2.1 扩展类：
+
+- Graphics:各种图形操作
+- Material: 材质操作
+- Primitive: 配合 shader 的各种图元操作
+- Draw: 各种绘制对象
+- Analysis: 各种分析对象
+- CustomCesiumPlugin: 自定义相控扩展
+- PassEffect: 后期特效对象
+- Plugin: 各种扩展功能
+
+### 2.2 Draw 使用案例：
+
 ```javaScript
 // test.vue
 <template>
-  <div id="cesiumContainer"
-       class="map3d-contaner"></div>
+  <div id="cesiumContainer" class="map3d-contaner"></div>
 </template>
 <script>
-
-  /**
-  * 可导出对象 {Graphics, Material,Primitive,Draw,Analysis,CustomCesiumPlugin,PassEffect,Plugin}
-  * Graphics:各种图形操作、Material: 材质操作、Primitive: 配合shader的各种图元操作
-  * Draw: 各种绘制对象、Analysis: 各种分析对象、CustomCesiumPlugin: 自定义相控扩展
-  * PassEffect: 后期特效对象、Plugin: 各种扩展功能
-   */
 import { Draw } from 'cesium_dev_kit'
 export default {
   mounted() {
@@ -181,57 +229,6 @@ export default {
   new cesium_dev_kit.initCesium({...})
 ```
 
-## API
-
-### initCesium
-
-**参数**
-
-- `cesiumGlobal` **Object** Ceiusm 对象
-- `containerId` **String** 容器 id
-- `viewerConfig` **Object** viewer 基础配置（与官网一致）
-- `extreaConfig` **Object** 额外参数配置，如 {logo：true// 是否显示 logo, depthTest：true //开启深度检测}
-- `MapImageryList` **Object** 配置底图,参考 ImageryProvider
-
-```javaScript
-  /**
-   * 初始化入口函数
-   * @param {*} param0
-   * {
-   *   cesiumGlobal：{Object} Ceiusm对象（项目需要安装配置获取Cesium传入）
-   *   containerId:{String} 容器id
-   *   viewerConfig:{Object} viewer基础配置
-   *      【参数格式】：{与官网一致}
-   *   extreaConfig：{Object }
-   *     【参数格式】：
-   *       {
-   *        logo：true，// 是否显示logo
-   *        depthTest：true， //开启深度检测
-   *      }
-   *   MapImageryList:{Array} 配置底图，每一个元素格式为
-   *    【参数格式】 ：
-   *      [{
-   *        id: 3,
-   *        name: '',
-   *        type: '',//ImageryProvider类型
-   *         classConfig: {
-   *          url:  链接地址
-   *        },
-   *        interfaceConfig: {},
-   *        offset: '0,0',
-   *        invertswitch: 0,
-   *        filterRGB: '#ffffff',
-   *        showswitch: 1,
-   *        weight: 13,
-   *        createtime: 创建时间
-   *        updatetime: 更新时间,
-   *    }]
-   *
-   * }
-   * @returns
-   */
-```
-
 ## 使用范例
 
 - ES6 使用案例
@@ -258,19 +255,20 @@ export default {
 
 ## 项目不足与优化
 
-- 1、cesium 工具类未使用 typeScript
+- 1、扩展类未使用类型检测(TS)
 - 2、未配备使用文档（请参考案例）
 - 3、未作异常捕捉和处理
 
-<small>感兴趣朋友可以一起讨论交流继续完善功能，让工作效更高效、开发更简单、生活更惬意。</small>
+<small>欢迎感兴趣朋友加入一起完善功能，让工作效更高效、开发更简单、生活更惬意。</small>
 
 [npm]: https://img.shields.io/npm/v/cesium_dev_kit
 [npm-url]: https://www.npmjs.com/package/cesium_dev_kit
-[build-size]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit/1.0.57
+[build-size]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit/1.0.70?logo=travis
 [build-size-url]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit
-[npm-download]: https://img.shields.io/npm/dt/cesium_dev_kit
+[npm-download]: https://img.shields.io/npm/dt/cesium_dev_kit?logo=npm
 [npmtrends-url]: https://www.npmtrends.com/cesium_dev_kit
 [license-uri]: https://img.shields.io/npm/l/cesium_dev_kit.svg
 [license-link]: https://npm.im/cesium_dev_kit
 [build-status]: https://github.com/dengxiaoning/cesium_dev_kit
-[build-main]: https://img.shields.io/github/actions/workflow/status/dengxiaoning/cesium_dev_kit/project-build.yml?branch=main
+[build-main]: https://img.shields.io/github/actions/workflow/status/dengxiaoning/cesium_dev_kit/project-build.yml?branch=main&logo=github
+[repo-stars]: https://img.shields.io/github/stars/dengxiaoning/cesium_dev_kit?style=plastic&logo=github
