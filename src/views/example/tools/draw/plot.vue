@@ -21,7 +21,7 @@
 <script>
 import * as Cesium from 'cesium'
 // import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-import { Draw } from '@/utils/cesiumPluginsExtends/singleImport/Draw'
+import { Draw } from '@/utils/cesiumPluginsExtends/singleImport'
 
 export default {
   data () {

@@ -15,7 +15,8 @@ import {
   Analysis,
   AttackArrow,
   StraightArrow,
-  PincerArrow
+  PincerArrow,
+  ThreeJs
 } from './libs'
 
 const prototypeExtends = function (viewer, cesiumGlobal, defaultStatic) {
@@ -50,6 +51,7 @@ const prototypeExtends = function (viewer, cesiumGlobal, defaultStatic) {
 
 export function initCesium({
   cesiumGlobal,
+  threeGlobal,
   containerId,
   viewerConfig = {},
   extraConfig = {},
@@ -87,6 +89,12 @@ export function initCesium({
   const _attackArrowObj = new AttackArrow(_viewer, cesiumGlobal)
   const _straightArrowObj = new StraightArrow(_viewer, cesiumGlobal)
   const _pincerArrowObj = new PincerArrow(_viewer, cesiumGlobal)
+  const _threeJs = new ThreeJs(
+    _viewer,
+    cesiumGlobal,
+    defaultStatic,
+    threeGlobal
+  )
 
   return {
     viewer: _viewer,
@@ -103,6 +111,7 @@ export function initCesium({
     analysis: _analysis,
     attackArrowObj: _attackArrowObj,
     straightArrowObj: _straightArrowObj,
-    pincerArrowObj: _pincerArrowObj
+    pincerArrowObj: _pincerArrowObj,
+    threeJs: _threeJs
   }
 }

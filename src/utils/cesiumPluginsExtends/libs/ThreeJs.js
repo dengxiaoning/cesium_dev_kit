@@ -1,3 +1,5 @@
+let Cesium = null
+let THREE = null
 /**
  * 基于three的融合
  *
@@ -5,9 +7,11 @@
  * useDefaultRenderLoop: false
  * @param {*} viewer
  */
-function ThreeJs(viewer) {
-  if (viewer) {
-
+function ThreeJs(viewer, cesiumGlobal, defaultStatic, threeGlobal) {
+  if (viewer && threeGlobal) {
+    Cesium = cesiumGlobal
+    THREE = threeGlobal
+    this._viewer = viewer
     this._initContainer()
     this._initThree()
   }
@@ -18,22 +22,18 @@ ThreeJs.prototype = {
    * 初始化容器
    */
   _initContainer: function () {
-
     this.cesiumContainer = undefined
     this.threeContainer = undefined
     this.cesiumContainer = document.getElementById('cesiumContainer')
     this.threeContainer = document.getElementById('threeContainer')
 
     //元素都已经创建默认集成
-    if (this.cesiumContainer && this.threeContainer) {
-
-      return false
-    }
+    // if (this.cesiumContainer && this.threeContainer) {
+    //   return false
+    // }
     if (!this.cesiumContainer) {
-
       alert('未获取到 cesiumContainer 容器!')
       return false
-
     } else {
       //是否符合
       if (this.cesiumContainer.style.position !== 'absolute') {
@@ -73,7 +73,6 @@ ThreeJs.prototype = {
    * 初始化three
    */
   _initThree: function () {
-
     var fov = 45,
       width = window.innerWidth,
       height = window.innerHeight,
@@ -94,7 +93,6 @@ ThreeJs.prototype = {
     })
 
     if (this.threeContainer) {
-
       this.threeContainer.appendChild(this._three.renderer.domElement)
     }
   },
@@ -104,7 +102,6 @@ ThreeJs.prototype = {
    * 用于实例化到cesium球上
    */
   createThreeObject: function () {
-
     function _3DObject() {
       this.threeMesh = null
       this.minWGS84 = null
@@ -117,9 +114,7 @@ ThreeJs.prototype = {
    * 添加three obj对象
    */
   addThreeObjects: function (objects) {
-
     if (objects && objects.length > 0) {
-
       this._3Dobjects = objects
       //注册
       this._renderCesium()
@@ -127,31 +122,28 @@ ThreeJs.prototype = {
       this._loop()
     }
   },
-  /**
-   * 开始渲染cesium和three
-   */
   _loop: function () {
+    let $this = this
 
     window.loop = function () {
       //循环渲染
-      requestAnimationFrame(window.loop)
+      $this.requestID = requestAnimationFrame(window.loop)
       //渲染cesium
       window.renderCesium()
       //渲染three
-      window.renderThreeObj()
+      // window.renderThreeObj()
+      $this._renderThreeObjOfSize.call($this)
+      $this._renderCamera.call($this)
     }
 
     window.loop()
   },
-
   /**
    * 渲染cesium
    */
   _renderCesium: function () {
-
     var $this = this
     window.renderCesium = function () {
-
       $this._viewer && $this._viewer.render()
     }
   },
@@ -161,63 +153,144 @@ ThreeJs.prototype = {
   _renderThreeObj: function () {
     var $this = this
     window.renderThreeObj = function () {
-
       var cartToVec = function (cart) {
         return new THREE.Vector3(cart.x, cart.y, cart.z)
       }
 
       if ($this._three && $this._viewer && $this._3Dobjects) {
         //同步相机事件
-        $this._three.camera.fov = Cesium.Math.toDegrees($this._viewer.camera.frustum.fovy)
+        $this._three.camera.fov = Cesium.Math.toDegrees(
+          $this._viewer.camera.frustum.fovy
+        )
         $this._three.camera.updateProjectionMatrix()
-
         // 同步位置 Configure Three.js meshes to stand against globe center position up direction
-        for (var id in $this._3Dobjects) {
+        for (var id = 0; id < $this._3Dobjects.length; id++) {
           var minWGS84 = $this._3Dobjects[id].minWGS84,
             maxWGS84 = $this._3Dobjects[id].maxWGS84,
             // convert lat/long center position to Cartesian3
-            center = Cesium.Cartesian3.fromDegrees((minWGS84[0] + maxWGS84[0]) / 2, (minWGS84[1] + maxWGS84[1]) / 2),
+            center = Cesium.Cartesian3.fromDegrees(
+              (minWGS84[0] + maxWGS84[0]) / 2,
+              (minWGS84[1] + maxWGS84[1]) / 2
+            ),
             // get forward direction for orienting model
-            centerHigh = Cesium.Cartesian3.fromDegrees((minWGS84[0] + maxWGS84[0]) / 2, (minWGS84[1] + maxWGS84[1]) / 2, 1)
+            centerHigh = Cesium.Cartesian3.fromDegrees(
+              (minWGS84[0] + maxWGS84[0]) / 2,
+              (minWGS84[1] + maxWGS84[1]) / 2,
+              1
+            )
+
           // use direction from bottom left to top left as up-vector
-          var bottomLeft = cartToVec(Cesium.Cartesian3.fromDegrees(minWGS84[0], minWGS84[1]))
-          var topLeft = cartToVec(Cesium.Cartesian3.fromDegrees(minWGS84[0], maxWGS84[1]))
-          var latDir = new THREE.Vector3().subVectors(bottomLeft, topLeft).normalize()
+          var bottomLeft = cartToVec(
+            Cesium.Cartesian3.fromDegrees(minWGS84[0], minWGS84[1])
+          )
+          var topLeft = cartToVec(
+            Cesium.Cartesian3.fromDegrees(minWGS84[0], maxWGS84[1])
+          )
+          var latDir = new THREE.Vector3()
+            .subVectors(bottomLeft, topLeft)
+            .normalize()
           // configure entity position and orientation
           $this._3Dobjects[id].threeMesh.position.copy(center)
           $this._3Dobjects[id].threeMesh.lookAt(centerHigh)
           $this._3Dobjects[id].threeMesh.up.copy(latDir)
         }
-
-        // Clone Cesium Camera projection position so the
-        // Three.js Object will appear to be at the same place as above the Cesium Globe
-        $this._three.camera.matrixAutoUpdate = false
-        var cvm = $this._viewer.camera.viewMatrix,
-          civm = $this._viewer.camera.inverseViewMatrix
-        $this._three.camera.matrixWorld.set(
-          civm[0], civm[4], civm[8], civm[12],
-          civm[1], civm[5], civm[9], civm[13],
-          civm[2], civm[6], civm[10], civm[14],
-          civm[3], civm[7], civm[11], civm[15]
-        )
-        $this._three.camera.matrixWorldInverse.set(
-          cvm[0], cvm[4], cvm[8], cvm[12],
-          cvm[1], cvm[5], cvm[9], cvm[13],
-          cvm[2], cvm[6], cvm[10], cvm[14],
-          cvm[3], cvm[7], cvm[11], cvm[15]
-        )
-        $this._three.camera.lookAt(new THREE.Vector3(0, 0, 0))
-
-        var width = $this.threeContainer.clientWidth,
-          height = $this.threeContainer.clientHeight,
-          aspect = width / height
-        $this._three.camera.aspect = aspect
-        $this._three.camera.updateProjectionMatrix()
-
-        $this._three.renderer.setSize(width, height)
-        $this._three.renderer.render($this._three.scene, $this._three.camera)
       }
     }
+  },
+  _renderThreeObjOfSize() {
+    var width = this.threeContainer.clientWidth
+    var height = this.threeContainer.clientHeight
+    this._three.renderer.setSize(width, height)
+    this._three.renderer.render(this._three.scene, this._three.camera)
+  },
+  /**
+   * 视角重置
+   */
+  _renderCamera() {
+    let three = this._three
 
+    // register Three.js scene with Cesium
+    three.camera.fov = Cesium.Math.toDegrees(this._viewer.camera.frustum.fovy) // ThreeJS FOV is vertical
+    three.camera.updateProjectionMatrix()
+
+    // Clone Cesium Camera projection position so the
+    // Three.js Object will appear to be at the same place as above the Cesium Globe
+
+    three.camera.matrixAutoUpdate = false
+    var cvm = this._viewer.camera.viewMatrix
+    var civm = this._viewer.camera.inverseViewMatrix
+
+    three.camera.lookAt(0, 0, 0)
+
+    three.camera.matrixWorld.set(
+      civm[0],
+      civm[4],
+      civm[8],
+      civm[12],
+      civm[1],
+      civm[5],
+      civm[9],
+      civm[13],
+      civm[2],
+      civm[6],
+      civm[10],
+      civm[14],
+      civm[3],
+      civm[7],
+      civm[11],
+      civm[15]
+    )
+    three.camera.matrixWorldInverse.set(
+      cvm[0],
+      cvm[4],
+      cvm[8],
+      cvm[12],
+      cvm[1],
+      cvm[5],
+      cvm[9],
+      cvm[13],
+      cvm[2],
+      cvm[6],
+      cvm[10],
+      cvm[14],
+      cvm[3],
+      cvm[7],
+      cvm[11],
+      cvm[15]
+    )
+    //three.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+    var width = this.threeContainer.clientWidth
+    var height = this.threeContainer.clientHeight
+    var aspect = width / height
+    three.camera.aspect = aspect
+    three.camera.updateProjectionMatrix()
+  },
+  destroyThreeJS() {
+    cancelAnimationFrame(this.requestID)
+    // 清理场景和渲染器
+    while (this.threeContainer.firstChild) {
+      this.threeContainer.removeChild(this.threeContainer.firstChild)
+    }
+    if (this._three.scene) {
+      this._three.scene.traverse((child) => {
+        if (child.isMesh) {
+          child.geometry.dispose()
+          if (child.material.isMaterial) {
+            child.material.dispose()
+          }
+        }
+      })
+      this._three.scene = null
+    }
+    if (this._three.renderer) {
+      this._three.renderer.forceContextLoss()
+      this._three.renderer.dispose()
+      this._three.renderer = null
+    }
+    if (this._three.camera) {
+      this._three.camera = null
+    }
   }
 }
+export { ThreeJs }

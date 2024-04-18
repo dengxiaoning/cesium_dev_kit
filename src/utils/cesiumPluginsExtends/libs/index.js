@@ -14,6 +14,7 @@ import { Analysis } from './Analysis'
 import { AttackArrow } from './plot/AttackArrow'
 import { StraightArrow } from './plot/StraightArrow'
 import { PincerArrow } from './plot/PincerArrow'
+import { ThreeJs } from './ThreeJs'
 export {
   Base,
   Material,
@@ -30,5 +31,6 @@ export {
   Analysis,
   AttackArrow,
   StraightArrow,
-  PincerArrow
+  PincerArrow,
+  ThreeJs
 }

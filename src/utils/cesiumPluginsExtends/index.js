@@ -7,7 +7,8 @@ import {
   Analysis,
   CustomCesiumPlugin,
   PassEffect,
-  Plugin
+  Plugin,
+  ThreeJs
 } from './singleImport/index'
 
 export {
@@ -19,5 +20,6 @@ export {
   Analysis,
   CustomCesiumPlugin,
   PassEffect,
-  Plugin
+  Plugin,
+  ThreeJs
 }

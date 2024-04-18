@@ -846,6 +846,32 @@
     }]
   },
   {
+    "name": "cesiumThreejs",
+    "path": "/cesiumThreejs",
+    "component":"Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "集成ThreeJs",
+      "icon": "mingcute:radar-line",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [{
+      "name": "cesiumAndThree",
+      "path": "cesiumAndThree",
+      "component": "example/cesiumAndThree/index",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "cesiumAndThreeJs",
+        "icon": "fluent:radar-20-regular",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
     "name": "sysManage",
     "path": "/sysManage",
     "component": "Layout",

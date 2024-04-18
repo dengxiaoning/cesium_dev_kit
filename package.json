@@ -1,6 +1,6 @@
 {
   "name": "cesium_dev_kit",
-  "version": "1.0.71",
+  "version": "1.0.72",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
@@ -13,8 +13,8 @@
     "@vueup/vue-quill": "^1.0.0-beta.7",
     "axios": "^0.21.1",
     "cesium": "^1.105.0",
-    "cesium_dev_kit": "^1.0.51",
     "cesium-navigation-es6": "^3.0.8",
+    "cesium_dev_kit": "^1.0.51",
     "concaveman": "^1.1.1",
     "dat.gui": "^0.7.9",
     "echarts": "4.2.1",
@@ -28,6 +28,7 @@
     "nprogress": "0.2.0",
     "ol": "^6.9.0",
     "path-browserify": "^1.0.1",
+    "three": "^0.163.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.6",
     "vuex": "^4.0.0"

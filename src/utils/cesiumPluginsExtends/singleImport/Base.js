@@ -5,6 +5,7 @@ export default class BaseExtends {
   }
   init({
     cesiumGlobal,
+    threeGlobal,
     containerId,
     viewerConfig = {},
     extraConfig = {},
@@ -31,7 +32,8 @@ export default class BaseExtends {
     const protoExtends = this.prototypeExtends(
       _viewer,
       cesiumGlobal,
-      defaultStatic
+      defaultStatic,
+      threeGlobal
     )
     const _tempName = protoExtends(baseExtendsCom, extendsCom)
     return {
@@ -39,21 +41,21 @@ export default class BaseExtends {
       [extendsComName]: _tempName
     }
   }
-  prototypeExtends(viewer, cesiumGlobal, defaultStatic) {
+  prototypeExtends(viewer, cesiumGlobal, defaultStatic, threeGlobal) {
     function _inner(parents, children) {
       var curr = null
       if (Array.isArray(parents)) {
         parents.forEach((pp) => {
           exeClone(pp)
         })
-        curr = new children(viewer, cesiumGlobal, defaultStatic)
+        curr = new children(viewer, cesiumGlobal, defaultStatic, threeGlobal)
         parents.forEach((pp) => {
-          pp.call(curr, viewer, cesiumGlobal, defaultStatic)
+          pp.call(curr, viewer, cesiumGlobal, defaultStatic, threeGlobal)
         })
       } else {
         exeClone(parents)
-        curr = new children(viewer, cesiumGlobal, defaultStatic)
-        parents.call(curr, viewer, cesiumGlobal, defaultStatic)
+        curr = new children(viewer, cesiumGlobal, defaultStatic, threeGlobal)
+        parents.call(curr, viewer, cesiumGlobal, defaultStatic, threeGlobal)
       }
 
       function exeClone(cloneTarget) {

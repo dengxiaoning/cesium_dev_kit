@@ -6,6 +6,7 @@ import { Analysis } from './Analysis'
 import { CustomCesiumPlugin } from './CustomCesiumPlugin'
 import { PassEffect } from './PassEffect'
 import { Plugin } from './Plugin'
+import { ThreeJs } from './ThreeJs'
 export {
   Graphics,
   Material,
@@ -14,5 +15,6 @@ export {
   Analysis,
   CustomCesiumPlugin,
   PassEffect,
-  Plugin
+  Plugin,
+  ThreeJs
 }
