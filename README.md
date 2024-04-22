@@ -33,13 +33,13 @@
 ## 安装
 
 ```shell
-  npm install cesium_dev_kit
+npm install cesium_dev_kit
 ```
 
 ## 引入
 
 ```
-  import { initCesium } from 'cesium_dev_kit'
+import { initCesium } from 'cesium_dev_kit'
 ```
 
 ## 使用
@@ -78,6 +78,7 @@
 | attackArrowObj     | Object | 标绘（攻击）                                     |
 | straightArrowObj   | Object | 标绘（直击）                                     |
 | pincerArrowObj     | Object | 标绘（钳击）                                     |
+| ThreeJs            | Object | 集成 ThreeJS 扩展对象                            |
 
 ### 1.3 使用案例
 
@@ -138,7 +139,7 @@ export default {
 可根据功能需求导出单一扩展类，减少代码冗余
 
 ```javaScript
-   import {Graphics, Material,Primitive,Draw,Analysis,CustomCesiumPlugin,PassEffect,Plugin} from 'cesium_dev_kit'
+   import {Graphics, Material,Primitive,Draw,Analysis,CustomCesiumPlugin,PassEffect,Plugin,ThreeJs} from 'cesium_dev_kit'
 ```
 
 ### 2.1 扩展类：
@@ -151,6 +152,7 @@ export default {
 - CustomCesiumPlugin: 自定义相控扩展
 - PassEffect: 后期特效对象
 - Plugin: 各种扩展功能
+- ThreeJs: 集成 ThreeJS 扩展对象
 
 ### 2.2 Draw 使用案例：
 
@@ -220,13 +222,13 @@ export default {
 - html 中直接引入 index.umd.js
 
 ```javaScript
-	<script type="text/javascript" src="index.umd.js"></script>
+<script type="text/javascript" src="index.umd.js"></script>
 ```
 
 - 初始化对象
 
 ```javaScript
-  new cesium_dev_kit.initCesium({...})
+new cesium_dev_kit.initCesium({...})
 ```
 
 ## 使用范例

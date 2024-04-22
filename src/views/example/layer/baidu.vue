@@ -11,19 +11,17 @@
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
-let skyObj = null;
-let flag = true;
 export default {
-  data() {
+  data () {
     return {
       activeId: 'light'
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const {
         viewer,
         control,
@@ -41,34 +39,53 @@ export default {
       this.c_viewer = viewer;
 
       this.control = control;
-      let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({}));
-      layer.name = '电子'; layer.id = 'layer1';
+      const commonOption = { url: 'https://api.map.baidu.com/customimage/tile?udt=20181205&scale=1&ak=1XjLLEhZhQNUzd93EjU5nOGQ' };
+      let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider(commonOption));
+      layer.name = '电子'; layer.id = 'layer1'; layer.show = true;
 
       let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
+        ...commonOption,
         style: 'midnight'
       }));
       layer2.name = '午夜蓝'; layer2.id = 'layer2'; layer2.show = false;
 
       let layer3 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
+        ...commonOption,
         style: 'dark'
       }));
       layer3.name = '黑夜'; layer3.id = 'layer3'; layer3.show = false;
 
       let layer4 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
+        ...commonOption,
         style: 'googlelite'
       }));
       layer4.name = '精简'; layer4.id = 'layer4'; layer4.show = false;
 
       let layer5 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
+        ...commonOption,
         style: 'redalert'
       }));
       layer5.name = '红色警戒'; layer5.id = 'layer5'; layer5.show = false;
-
-      this.control.showLayerSwitchPanel([layer, layer2, layer3, layer4, layer5], { elementId: 'cust-gui-box' })
-
+      const conLayArr = [layer, layer2, layer3, layer4, layer5];
+      this.control.showLayerSwitchPanel(conLayArr, { elementId: 'cust-gui-box' }, res => {
+        console.log('selected:', res);
+      })
+      this.control.flyTo({
+        position: {
+          x: -1340866.8753050675,
+          y: 5346629.099064495,
+          z: 3237702.755069747
+        },
+        orientation: {
+          heading: 6.155983939697551,
+          pitch: -0.9509397537106805,
+          roll: 6.28318444986502
+        },
+        duration: 5
+      })
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.control = null;
   }

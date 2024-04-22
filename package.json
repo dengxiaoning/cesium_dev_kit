@@ -1,6 +1,6 @@
 {
   "name": "cesium_dev_kit",
-  "version": "1.0.72",
+  "version": "1.0.73",
   "license": "MIT",
   "scripts": {
     "dev": "vite",

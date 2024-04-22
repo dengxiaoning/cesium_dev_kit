@@ -951,7 +951,7 @@ Base.prototype = {
       'http://api{s}.map.bdimg.com/customimage/tile?&x={x}&y={y}&z={z}&scale=1&customid={style}'
 
     function BaiduImageryProvider(options) {
-      TEMP_MAP_URL = options.temp_url || TEMP_MAP_URL
+      TEMP_MAP_URL = options.url || TEMP_MAP_URL
 
       this._url = TEMP_MAP_URL
       this._tileWidth = 256
@@ -965,6 +965,7 @@ Base.prototype = {
       this._rectangle = this._tilingScheme.rectangle
       this._credit = undefined
       this._style = options.style || 'normal'
+      this._ready = true
     }
 
     Object.defineProperties(BaiduImageryProvider.prototype, {
@@ -1050,10 +1051,43 @@ Base.prototype = {
         get: function () {
           return this._credit
         }
+      },
+      readyPromise: {
+        get: function () {
+          return this._readyPromise.promise
+        }
+      },
+      usingPrecachedTiles: {
+        get: function () {
+          return this._useTiles
+        }
+      },
+      hasAlphaChannel: {
+        get: function () {
+          return true
+        }
+      },
+      layers: {
+        get: function () {
+          return this._layers
+        }
       }
     })
+    function buildImageUrl(imageryProvider, x, y, level, _style) {
+      var url = imageryProvider._url + '&x={x}&y={y}&z={z}&customid={style}'
+      var tileW = imageryProvider._tilingScheme.getNumberOfXTilesAtLevel(level)
+      var tileH = imageryProvider._tilingScheme.getNumberOfYTilesAtLevel(level)
 
-    // BaiduImageryProvider.prototype.getTileCredits = function (x, y, level) {}
+      url = url
+        .replace('{x}', x - tileW / 2)
+        .replace('{y}', tileH / 2 - y - 1)
+        .replace('{z}', level)
+        .replace('{style}', _style)
+      return url
+    }
+    BaiduImageryProvider.prototype.getTileCredits = function (x, y, level) {
+      return undefined
+    }
 
     BaiduImageryProvider.prototype.requestImage = function (x, y, level) {
       if (!this.ready) {
@@ -1061,14 +1095,8 @@ Base.prototype = {
           'requestImage must not be called before the imagery provider is ready.'
         )
       }
-      var xTiles = this._tilingScheme.getNumberOfXTilesAtLevel(level)
-      var yTiles = this._tilingScheme.getNumberOfYTilesAtLevel(level)
-      var url = this._url
-        .replace('{x}', x - xTiles / 2)
-        .replace('{y}', yTiles / 2 - y - 1)
-        .replace('{z}', level)
-        .replace('{s}', 1)
-        .replace('{style}', this._style)
+      var url = buildImageUrl(this, x, y, level, this._style)
+
       return Cesium.ImageryProvider.loadImage(this, url)
     }
 
