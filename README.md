@@ -263,6 +263,18 @@ new cesium_dev_kit.initCesium({...})
 
 <small>欢迎感兴趣朋友加入一起完善功能，让工作效更高效、开发更简单、生活更惬意。</small>
 
+## `Star`
+
+非常感谢留下星星的好心人，感谢您的支持 :heart:
+
+[![Stargazers repo roster for @dengxiaoning/cesium_dev_kit][stargazers-url]][stargazers-link]
+
+## `Fork`
+
+@sincely、`@ooil929`、 @InPanda、 `luyufanzhi`、AllenChiangCN、`Liquid-Zhangliquan` :heart:
+
+[![Forkers repo roster for @dengxiaoning/cesium_dev_kit][forkers-url]][forkers-link]
+
 [npm]: https://img.shields.io/npm/v/cesium_dev_kit
 [npm-url]: https://www.npmjs.com/package/cesium_dev_kit
 [build-size]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit/1.0.70?logo=travis
@@ -274,3 +286,7 @@ new cesium_dev_kit.initCesium({...})
 [build-status]: https://github.com/dengxiaoning/cesium_dev_kit
 [build-main]: https://img.shields.io/github/actions/workflow/status/dengxiaoning/cesium_dev_kit/project-build.yml?branch=main&logo=github
 [repo-stars]: https://img.shields.io/github/stars/dengxiaoning/cesium_dev_kit?style=plastic&logo=github
+[forkers-url]: https://bytecrank.com/nastyox/reporoster/php/forkersSVG.php?user=dengxiaoning&repo=cesium_dev_kit
+[forkers-link]: https://github.com/dengxiaoning/cesium_dev_kit/network/members
+[stargazers-url]: https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?user=dengxiaoning&repo=cesium_dev_kit
+[stargazers-link]: https://github.com/dengxiaoning/cesium_dev_kit/stargazers

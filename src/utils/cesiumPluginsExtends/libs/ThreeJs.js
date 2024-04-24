@@ -7,11 +7,14 @@ let THREE = null
  * useDefaultRenderLoop: false
  * @param {*} viewer
  */
-function ThreeJs(viewer, cesiumGlobal, defaultStatic, threeGlobal) {
-  if (viewer && threeGlobal) {
+function ThreeJs(viewer, cesiumGlobal, defaultStatic, threeConf) {
+  if (viewer && threeConf) {
+    const { threeGlobal, containerId, threeContainerId } = threeConf
     Cesium = cesiumGlobal
     THREE = threeGlobal
     this._viewer = viewer
+    this._containerId = containerId
+    this._threeContainerId = threeContainerId
     this._initContainer()
     this._initThree()
   }
@@ -24,8 +27,8 @@ ThreeJs.prototype = {
   _initContainer: function () {
     this.cesiumContainer = undefined
     this.threeContainer = undefined
-    this.cesiumContainer = document.getElementById('cesiumContainer')
-    this.threeContainer = document.getElementById('threeContainer')
+    this.cesiumContainer = document.getElementById(this._containerId)
+    this.threeContainer = document.getElementById(this._threeContainerId)
 
     //元素都已经创建默认集成
     // if (this.cesiumContainer && this.threeContainer) {
@@ -54,7 +57,7 @@ ThreeJs.prototype = {
       var body = document.getElementsByTagName('body')[0]
       if (body) {
         this.threeContainer = document.createElement('div')
-        this.threeContainer.id = 'threeContainer'
+        this.threeContainer.id = this._threeContainerId
         this.threeContainer.style.position = 'absolute'
         this.threeContainer.style.top = 0
         this.threeContainer.style.left = 0

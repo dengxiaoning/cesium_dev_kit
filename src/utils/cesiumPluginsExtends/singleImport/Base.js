@@ -7,6 +7,7 @@ export default class BaseExtends {
     cesiumGlobal,
     threeGlobal,
     containerId,
+    threeContainerId,
     viewerConfig = {},
     extraConfig = {},
     MapImageryList = [],
@@ -28,12 +29,16 @@ export default class BaseExtends {
       extraConfig,
       MapImageryList
     })
+    // three 容器绑定优化
+    const threeConf = threeGlobal
+      ? { threeGlobal, containerId, threeContainerId }
+      : ''
     // 合并对象，实现继承
     const protoExtends = this.prototypeExtends(
       _viewer,
       cesiumGlobal,
       defaultStatic,
-      threeGlobal
+      threeConf
     )
     const _tempName = protoExtends(baseExtendsCom, extendsCom)
     return {

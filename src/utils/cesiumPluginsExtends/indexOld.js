@@ -53,6 +53,7 @@ export function initCesium({
   cesiumGlobal,
   threeGlobal,
   containerId,
+  threeContainerId,
   viewerConfig = {},
   extraConfig = {},
   MapImageryList = [],
@@ -89,12 +90,11 @@ export function initCesium({
   const _attackArrowObj = new AttackArrow(_viewer, cesiumGlobal)
   const _straightArrowObj = new StraightArrow(_viewer, cesiumGlobal)
   const _pincerArrowObj = new PincerArrow(_viewer, cesiumGlobal)
-  const _threeJs = new ThreeJs(
-    _viewer,
-    cesiumGlobal,
-    defaultStatic,
-    threeGlobal
-  )
+  // three 容器绑定优化
+  const threeConf = threeGlobal
+    ? { threeGlobal, containerId, threeContainerId }
+    : ''
+  const _threeJs = new ThreeJs(_viewer, cesiumGlobal, defaultStatic, threeConf)
 
   return {
     viewer: _viewer,

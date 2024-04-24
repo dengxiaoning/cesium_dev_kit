@@ -25,6 +25,7 @@ export default {
         cesiumGlobal: Cesium,
         threeGlobal: THREE,
         containerId: 'cesiumContainer',
+        threeContainerId: 'threeContainer',
         viewerConfig: {
           useDefaultRenderLoop: false,
           selectionIndicator: false,
