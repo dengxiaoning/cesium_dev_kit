@@ -19,6 +19,8 @@ class Controller {
     const mapID = containerId;
     let imageryProviderConfig = new Cesium.SingleTileImageryProvider({
       url: 'https://mapv-data.oss-cn-hangzhou.aliyuncs.com/Cesium-1.82-hawk/background.png',
+      tileWidth: 256,
+      tileHeight: 256
     })
     if (MapImageryList.length !== 0) {
       imageryProviderConfig = this.setOneimageryProvider(MapImageryList[0])
