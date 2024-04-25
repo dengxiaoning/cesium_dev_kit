@@ -14,16 +14,16 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 let skyObj = null;
 let flag = true;
 export default {
-  data() {
+  data () {
     return {
       activeId: 'light'
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const {
         viewer,
         control,
@@ -41,14 +41,22 @@ export default {
       this.c_viewer = viewer;
       this.control = control;
 
-      let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TencentImageryProvider({ layer: 'vec' }));
+      let layer = this.c_viewer.imageryLayers.addImageryProvider(
+        new Cesium.Scene.TencentImageryProvider({
+          layer: 'elec',
+          url: 'https://rt3.map.gtimg.com/tile?z={z}&x={x}&y={reverseY}&type=vector&styleid=1'
+        }));
       layer.name = '电子底图'; layer.id = 'layer1'; layer.show = true;
-      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TencentImageryProvider({ layer: 'imgimg' }));
+      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(
+        new Cesium.Scene.TencentImageryProvider({
+          layer: 'img',
+          url: 'https://p2.map.gtimg.com/sateTiles/{z}/{sx}/{sy}/{x}_{reverseY}.jpg?version=229'
+        }));
       layer2.name = '影像底图'; layer2.id = 'layer2'; layer2.show = false;
       this.control.showLayerSwitchPanel([layer, layer2], { elementId: 'cust-gui-box' })
       this.flyTo();
     },
-    flyTo() {
+    flyTo () {
       this.control.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
@@ -59,7 +67,7 @@ export default {
       })
     },
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.control = null;
   }

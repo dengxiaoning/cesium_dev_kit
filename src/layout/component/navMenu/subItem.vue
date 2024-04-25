@@ -12,7 +12,7 @@
                 :parent-path="resolvePath(val.path)" />
     </el-submenu>
     <el-menu-item :index="resolvePath(val.path)"
-                  :key="index+''+val.path"
+                  :key="val.path"
                   v-else>
       <template v-if="!val.meta.isLink">
         <CIcon :icon-class="val.meta.icon ? val.meta.icon : ''" />
@@ -56,8 +56,7 @@ export default defineComponent({
     const resolvePath = (routePath: string) => {
       if (Utils.isExternal(routePath)) {
         return routePath
-      }
-      if (Utils.isExternal(props.parentPath)) {
+      } else if (Utils.isExternal(props.parentPath)) {
         return props.parentPath
       }
       const respath = path.resolve(props.parentPath, routePath)

@@ -891,11 +891,13 @@ Base.prototype = {
     const IMG_URL =
       'https://p2.map.gtimg.com/sateTiles/{z}/{sx}/{sy}/{x}_{reverseY}.jpg?version=229'
     const ELEC_URL =
-      'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+      'https://rt3.map.gtimg.com/tile?z={z}&x={x}&y={reverseY}&type=vector&styleid=1'
 
     function TencentImageryProvider(options) {
-      if ((options.layer = 'img')) {
-        options['url'] = IMG_URL
+      if (options.layer === 'img') {
+        if (!options['url']) {
+          options['url'] = IMG_URL
+        }
         if (!options.subdomains) {
           options['subdomains'] = ['0', '1', '2']
         }
@@ -908,9 +910,10 @@ Base.prototype = {
           }
         }
       } else {
-        options['url'] = ELEC_URL
+        if (!options['url']) {
+          options['url'] = ELEC_URL
+        }
       }
-
       return new Cesium.UrlTemplateImageryProvider(options)
     }
 

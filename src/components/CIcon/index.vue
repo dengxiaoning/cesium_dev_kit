@@ -53,7 +53,9 @@ export default defineComponent({
         return 'iconfont'
       }
     })
-    return { custClassOnIcon }
+    return {
+      custClassOnIcon
+    }
   }
 })
 </script>
