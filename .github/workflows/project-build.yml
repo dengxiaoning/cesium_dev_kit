@@ -27,7 +27,6 @@ jobs:
           npm config set registry http://registry.cnpmjs.org
           npm config set registry http://registry.npm.taobao.org
           npm config set strict-ssl false
-          npm i --legacy-peer-deps
           npm cache clean --force
-          npm install
+          npm install --force
           npm run build
