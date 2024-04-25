@@ -50,20 +50,22 @@ import { initCesium } from 'cesium_dev_kit'
 
 ### 1.1 initCesium 参数配置
 
-| Property       | Type   | Description                                                                   | Default Value |
-| -------------- | ------ | ----------------------------------------------------------------------------- | ------------- |
-| cesiumGlobal   | Object | Ceiusm 对象                                                                   | ''            |
-| containerId    | String | dom 容器 id                                                                   | ''            |
-| viewerConfig   | Object | viewer 基础配置（与官网一致）                                                 | {}            |
-| extreaConfig   | Object | 额外参数配置，如 {logo：true// 是否显示 logo, depthTest：true //开启深度检测} | {}            |
-| MapImageryList | Array  | 配置底图,参考 ImageryProvider                                                 | []            |
-| defaultStatic  | Array  | 着色器使用的静态资源配置(如图片 url)                                          | ''            |
+| Property         | Type   | Description                                                                   | Default   |
+| ---------------- | ------ | ----------------------------------------------------------------------------- | --------- |
+| cesiumGlobal     | Object | Cesium 对象                                                                   | undefined |
+| threeGlobal      | Object | THREE 对象                                                                    | undefined |
+| containerId      | String | Cesium 挂载 dom 容器 id                                                       | undefined |
+| threeContainerId | String | Three 挂载 dom 容器 id                                                        | undefined |
+| viewerConfig     | Object | viewer 基础配置（与官网一致）                                                 | {}        |
+| extreaConfig     | Object | 额外参数配置，如 {logo：true// 是否显示 logo, depthTest：true //开启深度检测} | {}        |
+| MapImageryList   | Array  | 配置底图,参考 ImageryProvider                                                 | []        |
+| defaultStatic    | Array  | 着色器使用的静态资源配置(如图片 url)                                          | undefined |
 
 ### 1.2 initCesium 返回对象
 
 | name               | Type   | Description                                      |
 | ------------------ | ------ | ------------------------------------------------ |
-| viewer             | Object | Ceiusm 实例对象                                  |
+| viewer             | Object | Cesium 实例对象                                  |
 | material           | Object | 材质模块（修改实体材质）                         |
 | graphics           | Object | 图形模块（如创建 PolygonGraphics 对象等）        |
 | math3d             | Object | 三维数学工具                                     |

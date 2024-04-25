@@ -715,7 +715,7 @@
     "meta": {
       "auth": ["admin", "test"],
       "title": "传感器案例",
-      "icon": "mingcute:radar-line",
+      "icon": "game-icons:explosive-materials",
       "isAffix": false,
       "isHide": false,
       "isKeepAlive": true
@@ -777,7 +777,7 @@
     "meta": {
       "auth": ["admin", "test"],
       "title": "雷达案例",
-      "icon": "mingcute:radar-line",
+      "icon": "ion:scan-circle-outline",
       "isAffix": false,
       "isHide": false,
       "isKeepAlive": true

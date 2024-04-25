@@ -120,7 +120,8 @@ export default {
     // 1、添加 tagsView：未设置隐藏（isHide）也添加到在 tagsView 中
     const addTagsView = (routeAgr: any) => {
       if (state.tagsViewList.some((v) => v.path === routeAgr.path)) return false
-      /**
+
+         /**
        * 【notice】
        * The following notation will throw an "Avoid app logic that relies on enumerating keys on a component instance.
        * The keys will be empty in production mode to avoid performance overhead." exception.

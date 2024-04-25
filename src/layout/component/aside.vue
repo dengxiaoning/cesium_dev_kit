@@ -1,7 +1,7 @@
 <template>
   <el-aside class="layout-aside"
             :class="setCollapseWidth"
-            v-if="clientMuateOne">
+            v-if="clientWidth > 1000">
     <Logo v-if="setShowLogo" />
     <el-scrollbar class="flex-auto"
                   ref="layoutAsideScrollbarRef"
@@ -57,13 +57,7 @@ export default {
     })
 
     // 获取布局配置信息
-    const getThemeConfig = computed(() => {
-      return store.state.themeConfig
-    })
-
-    const clientMuateOne = computed(() => {
-      return Number(state.clientWidth ) > 1000
-    })
+    const getThemeConfig = computed(() => store.state.themeConfig)
 
     // 设置显示/隐藏 logo
     const setShowLogo = computed(() => {
@@ -149,8 +143,7 @@ export default {
       getThemeConfig,
       setShowLogo,
       setCollapseWidth,
-      ...toRefs(state),
-      clientMuateOne
+      ...toRefs(state)
     }
   }
 }

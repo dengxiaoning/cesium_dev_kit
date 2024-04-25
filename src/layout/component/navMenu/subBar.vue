@@ -12,14 +12,14 @@
                   :key="val.path">
         <template #title>
           <CIcon :icon-class="val.meta.icon ? val.meta.icon : ''" />
-          <span>{{ val.meta.title }}</span>
+          <span>{{ val.meta.title}}</span>
         </template>
         <SubItem :chil="val.children"
                  :parent-path="val.path" />
       </el-submenu>
 
       <el-menu-item :index="val.path"
-                    :key="index+'_'+val.path"
+                    :key="val.path"
                     v-else>
         <CIcon :icon-class="val.meta.icon ? val.meta.icon : ''" />
         <template #title
