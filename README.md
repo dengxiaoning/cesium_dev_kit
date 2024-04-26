@@ -7,84 +7,84 @@
 [![GitHub Repo stars][repo-stars]][build-status]
 [![license][license-uri]][license-link]
 
-**English** | [中文](./README.zh-CN.md)
+**中文** | [English](./README.en-US.md)
 
-## Introduction
+## 简介
 
-This is a Cesium development kit that includes layer loading, coordinate conversion, coordinate picking, camera control, measurement, plotting, model loading, model translation rotation scaling, model/3Dtiles view position adjustment, model dragging, weather(rain, snow, snow, fog, etc.), scene, radar scan, information frame, flow line, light, dynamic wall and other luminous materials, post-scene effect, visibility analysis, perspective analysis, slope analysis, flooding analysis, volume analysis, terrain excavation and other analysis cases.
+这是一个 Cesium 开发工具包，包含图层加载、坐标转换、坐标拾取、相机控制、测量、标绘、模型加载、模型平移旋转缩放、模型/3Dtiles 视角位置调整、模型拖拽、天气（雨，雪，雾）场景、雷达扫描、信息框、流动线、发光线、动态墙等各种发光材质、后置场景效果、通视分析、透视分析、坡度分析、淹没分析、方量分析、地形开挖等各种分析案例。
 
-## Feature
+## 功能展示
 
-- materials
+- 材质
   ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)
-- analysis
+- 分析
   ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)
-- plotting
+- 标绘
   ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)
-- dragging
+- 拖拽
   ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)
-- radar scan
+- 雷达扫描
   ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)
-- First-person roaming
-  ![roaming](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)
+- 第一人称漫游
+  ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)
 
-## Preview
+## 在线预览
 
 [https://www.benpaodehenji.com/cesiumDevKit](https://www.benpaodehenji.com/cesiumDevKit)
 
-## Install
+## 安装
 
 ```shell
 npm install cesium_dev_kit
 ```
 
-## Import
+## 引入
 
 ```
 import { initCesium } from 'cesium_dev_kit'
 ```
 
-## Use
+## 使用
 
-### 1、Import all
+### 1、完整引入
 
-All extension modules can be obtained by initializing 'initCesium'
+通过初始化`initCesium` 可以获取到所有扩展模块
 
-### 1.1 The initCesium method configuration parameter list
+### 1.1 initCesium 参数配置
 
-| Property         | Type   | Description                                                                                                               | Default   |
-| ---------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- | --------- |
-| cesiumGlobal     | Object | Cesium Object                                                                                                             | undefined |
-| threeGlobal      | Object | THREE Object                                                                                                              | undefined |
-| containerId      | String | Cesium mounts dom container id                                                                                            | undefined |
-| threeContainerId | String | Three mounts dom container id                                                                                             | undefined |
-| viewerConfig     | Object | viewer base configuration (same as official website)                                                                      | {}        |
-| extreaConfig     | Object | Configure additional parameters, such as {logo: true// Whether to display logo, depthTest: true// Enable depth detection} | {}        |
-| MapImageryList   | Array  | To configure the base image, see ImageryProvider                                                                          | []        |
-| defaultStatic    | Array  | Static resource configurations used by shaders (such as image urls)                                                       | undefined |
+| Property         | Type   | Description                                                                   | Default   |
+| ---------------- | ------ | ----------------------------------------------------------------------------- | --------- |
+| cesiumGlobal     | Object | Cesium 对象                                                                   | undefined |
+| threeGlobal      | Object | THREE 对象                                                                    | undefined |
+| containerId      | String | Cesium 挂载 dom 容器 id                                                       | undefined |
+| threeContainerId | String | Three 挂载 dom 容器 id                                                        | undefined |
+| viewerConfig     | Object | viewer 基础配置（与官网一致）                                                 | {}        |
+| extreaConfig     | Object | 额外参数配置，如 {logo：true// 是否显示 logo, depthTest：true //开启深度检测} | {}        |
+| MapImageryList   | Array  | 配置底图,参考 ImageryProvider                                                 | []        |
+| defaultStatic    | Array  | 着色器使用的静态资源配置(如图片 url)                                          | undefined |
 
-### 1.2 The initCesium method returns the result
+### 1.2 initCesium 返回对象
 
-| name               | Type   | Description                                                                    |
-| ------------------ | ------ | ------------------------------------------------------------------------------ |
-| viewer             | Object | Cesium instance object                                                         |
-| material           | Object | Material module (Modify physical material)                                     |
-| graphics           | Object | Graphics modules (e.g. creating PolygonGraphics objects, etc.)                 |
-| math3d             | Object | Three-dimensional mathematical tool                                            |
-| primitive          | Object | Primitives manipulate objects (such as creating polygon using primivite, etc.) |
-| draw               | Object | Drawing modules (e.g. polygons, rectangles)                                    |
-| passEffect         | Object | Post-processing module                                                         |
-| customCesiumPlugin | Object | Custom sensor extensions                                                       |
-| control            | Object | Control modules (such as model positioning, dragging, etc.)                    |
-| plugin             | Object | Additional plugins (such as expanding css3 animation, terrain cropping)        |
-| base               | Object | Basic modules (e.g. coordinate conversion, layer initialization, etc.)         |
-| analysis           | Object | Analysis modules (e.g., slope, direction, visibility, visibility analysis)     |
-| attackArrowObj     | Object | Plotting (attack)                                                              |
-| straightArrowObj   | Object | Plotting (straight hit)                                                        |
-| pincerArrowObj     | Object | Plotting（Pincer attack）                                                      |
-| ThreeJs            | Object | Integrate ThreeJS extension objects                                            |
+| name               | Type   | Description                                      |
+| ------------------ | ------ | ------------------------------------------------ |
+| viewer             | Object | Cesium 实例对象                                  |
+| material           | Object | 材质模块（修改实体材质）                         |
+| graphics           | Object | 图形模块（如创建 PolygonGraphics 对象等）        |
+| math3d             | Object | 三维数学工具                                     |
+| primitive          | Object | 图元操作对象（如使用 primivite 创建 polygon 等） |
+| draw               | Object | 绘制模块（如多边形，矩形）                       |
+| passEffect         | Object | 后置处理模块                                     |
+| customCesiumPlugin | Object | 自定义传感器扩展                                 |
+| control            | Object | 控制模块（如模型位置调整，拖拽等）               |
+| plugin             | Object | 额外插件（如拓展 css3 的动画 ，地形裁剪）        |
+| base               | Object | 基础模块（如坐标转换，图层初始化等）             |
+| analysis           | Object | 分析模块（如坡度，坡向，可视域，通视分析）       |
+| attackArrowObj     | Object | 标绘（攻击）                                     |
+| straightArrowObj   | Object | 标绘（直击）                                     |
+| pincerArrowObj     | Object | 标绘（钳击）                                     |
+| ThreeJs            | Object | 集成 ThreeJS 扩展对象                            |
 
-### 1.3 Use case
+### 1.3 使用案例
 
 ```javaScript
 // test.vue
@@ -103,7 +103,7 @@ export default {
       const tempData = [
         {
           id: 3,
-          name: 'gaodeMap02',
+          name: '高德地图02',
           type: 'UrlTemplateImageryProvider',
           classConfig: {
             url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
@@ -138,27 +138,27 @@ export default {
 </script>
 ```
 
-### 2、Import on demand
+### 2、按需引入
 
-A single extension class can be exported according to functional requirements to reduce code redundancy
+可根据功能需求导出单一扩展类，减少代码冗余
 
 ```javaScript
 import {Graphics, Material,Primitive,Draw,Analysis,CustomCesiumPlugin,PassEffect,Plugin,ThreeJs} from 'cesium_dev_kit'
 ```
 
-### 2.1 Extension class：
+### 2.1 扩展类：
 
-- Graphics:Various graphic operations
-- Material: Material manipulation
-- Primitive: Cooperate with various primitive operations of shader
-- Draw: Various drawing objects
-- Analysis: Various analysis objects
-- CustomCesiumPlugin: Custom sensor expansion
-- PassEffect: Post effect object
-- Plugin: Various extension functions
-- ThreeJs: Integrate ThreeJS extension objects
+- Graphics:各种图形操作
+- Material: 材质操作
+- Primitive: 配合 shader 的各种图元操作
+- Draw: 各种绘制对象
+- Analysis: 各种分析对象
+- CustomCesiumPlugin: 自定义相控扩展
+- PassEffect: 后期特效对象
+- Plugin: 各种扩展功能
+- ThreeJs: 集成 ThreeJS 扩展对象
 
-### 2.2 Draw Use case：
+### 2.2 Draw 使用案例：
 
 ```javaScript
 // test.vue
@@ -176,7 +176,7 @@ export default {
         const tempData = [
         {
           id: 3,
-          name: 'gaodeMap02',
+          name: '高德地图02',
           type: 'UrlTemplateImageryProvider',
           classConfig: {
             url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
@@ -192,18 +192,18 @@ export default {
         }]
 
       const drawObj = new Draw({
-        cesiumGlobal: Cesium, //Global Cesium object
-        containerId: 'cesiumContainer', // Container id
-        viewerConfig: { // Same as the official viewer configuration
+        cesiumGlobal: Cesium, // 全局Cesium对象
+        containerId: 'cesiumContainer', // 容器id
+        viewerConfig: { // 同官方的viewer配置相同
           infoBox: false,
           shouldAnimate: true,
         },
-        extraConfig: {// Other configuration
-          logo:true, // Whether to display logo
-          depthTest:true // Whether to enable the depth test
+        extraConfig: {// 其他配置
+          logo:true, // 是否显示logo
+          depthTest:true // 是否开启深度测试
         },
-        MapImageryList: tempData // Base map configuration
-        defaultStatic // default server address and material and other basic information configuration, please refer to src\views\example\defaultStaticConf\index.js
+        MapImageryList: tempData // 底图配置
+        defaultStatic // 默认服务器地址以及材质等基础信息配置，具体请参考src\views\example\defaultStaticConf\index.js
       })
 
       this.c_viewer = drawObj.viewer
@@ -221,89 +221,89 @@ export default {
 </script>
 ```
 
-### Used in h5
+### 如需在 H5 中使用
 
-- Import index.umd.js directly into html
+- html 中直接引入 index.umd.js
 
 ```javaScript
 <script type="text/javascript" src="index.umd.js"></script>
 ```
 
-- Initialize object
+- 初始化对象
 
 ```javaScript
 new cesium_dev_kit.initCesium({...})
 ```
 
-## Use example
+## 使用范例
 
-- ES6 Use case
+- ES6 使用案例
   [https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)
 
-- H5 Use case
+- H5 使用案例
   [https://github.com/dengxiaoning/cesium_kit_test_h5](https://github.com/dengxiaoning/cesium_kit_test_h5)
 
 ##
 
-## Browser support
+## 浏览器支持
 
-The 'Chrome 80+' browser is recommended for local development
+本地开发推荐使用`Chrome 80+` 浏览器
 
-Modern browsers (chrome, Firefox, Microsoft edge, etc.) are supported. Internet Explorer is not supported
+支持现代（chrome，Firefox，Microsoft edge，etc.）浏览器, 不支持 IE
 
-## Thanks
+## 鸣谢
 
 [cesium-d3kit](https://github.com/zhangti0708/cesium-d3kit)<br/>
 [drawarrowforcesium](https://gitcode.net/mirrors/gitgitczl/drawarrowforcesium)<br/>
 [vue3-ts-cesium-map-show](https://gitee.com/hawk86104/vue3-ts-cesium-map-show)<br/>
 
-This project includes but is not limited to the reference and reference of the above materials, thank you very much for sharing
+本项目包括但不限于借鉴和参考以上资料，非常感谢作者分享
 
-## Project deficiency and optimization
+## 项目不足与优化
 
-- 1、Extended classes not using type detection (TS)
-- 2、No usage documentation (please refer to the case)
-- 3、No exception catching and handling
+- 1、扩展类未使用类型检测(TS)
+- 2、未配备使用文档（请参考案例）
+- 3、未作异常捕捉和处理
 
-## How to contribute
+## 如何贡献
 
 <a href="https://github.com/dengxiaoning/cesium_dev_kit/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=dengxiaoning/cesium_dev_kit" />
 </a>
 
-You can [Raise an issue](https://github.com/dengxiaoning/cesium_dev_kit/issues/new) Or submit a Pull Request.
+你可以[提一个 issue](https://github.com/dengxiaoning/cesium_dev_kit/issues/new) 或者提交一个 Pull Request。
 
 **Pull Request:**
 
-1. Fork code
-2. Create your own branch: `git checkout -b feat/xxxx`
-3. Submit your changes: `git commit -am 'feat(function): add xxxxx'`
-4. Push your branch: `git push origin feat/xxxx`
-5. submit `pull request`
+1. Fork 代码
+2. 创建自己的分支: `git checkout -b feat/xxxx`
+3. 提交你的修改: `git commit -am 'feat(function): add xxxxx'`
+4. 推送您的分支: `git push origin feat/xxxx`
+5. 提交 `pull request`
 
-## Git Contribution submission specification
+## Git 贡献提交规范
 
-- `feat` New features
-- `fix` Fix bugs
-- `docs` document
-- `style` Format and style (changes that do not affect code operation)
-- `refactor` Refactor
-- `perf` Optimize related, such as improving performance and experience
-- `test` Add test
-- `build` Compilation related modifications, changes to project construction or dependencies
-- `ci` Continuous integration modification
-- `chore` Changes in the construction process or auxiliary tools
-- `revert` Rollback to previous version
-- `workflow` Workflow improvement
-- `mod` Uncertain modification classification
-- `wip` Under development
-- `types` type
+- `feat` 新功能
+- `fix` 修补 bug
+- `docs` 文档
+- `style` 格式、样式(不影响代码运行的变动)
+- `refactor` 重构(即不是新增功能，也不是修改 BUG 的代码)
+- `perf` 优化相关，比如提升性能、体验
+- `test` 添加测试
+- `build` 编译相关的修改，对项目构建或者依赖的改动
+- `ci` 持续集成修改
+- `chore` 构建过程或辅助工具的变动
+- `revert` 回滚到上一个版本
+- `workflow` 工作流改进
+- `mod` 不确定分类的修改
+- `wip` 开发中
+- `types` 类型
 
-<small>Welcome interested friends to join together to improve the function, so that the work is more efficient, the development is simpler, and the life is more comfortable.</small>
+<small>欢迎感兴趣朋友加入一起完善功能，让工作效更高效、开发更简单、生活更惬意。</small>
 
 ## `Star`
 
-Many thanks to the kind people who left the star, thank you for your support :heart:
+非常感谢留下星星的好心人，感谢您的支持 :heart:
 
 [![Stargazers repo roster for @dengxiaoning/cesium_dev_kit][stargazers-url]][stargazers-link]
 
