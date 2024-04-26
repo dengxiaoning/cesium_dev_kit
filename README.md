@@ -11,9 +11,10 @@
 
 ## Introduction
 
-This is a Cesium development kit that includes functionalities such as layer loading, coordinate conversion, coordinate picking, camera control, measurement, plotting, model loading and manipulation (translation, rotation scaling), 3Dtiles view position adjustment, weather effects (rain, snow, fog), scene rendering with radar scan and information frame display capabilities. It also provides features for flow line visualization, lighting effects including dynamic wall and other luminous materials rendering. Additionally it supports post-scene effects application along with visibility analysis tools for perspective analysis and slope analysis. Furthermore it offers flooding analysis tools as well as volume analysis capabilities and terrain excavation functionality.
+&emsp;This is a Cesium development kit that includes functionalities such as layer loading, coordinate conversion, coordinate picking, camera control, measurement, plotting, model loading and manipulation (translation, rotation scaling), 3Dtiles view position adjustment, weather effects (rain, snow, fog), scene rendering with radar scan and information box display capabilities. It also provides features for flow line visualization, lighting effects including dynamic wall and other luminous materials rendering.
+Additionally it supports Post effects, visibility analysis tools for perspective analysis and slope analysis. Furthermore it offers Inundation analysis as well as volume analysis capabilities and terrain excavation functionality.
 
-## Feature
+## Features
 
 - materials
   ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)
@@ -30,7 +31,7 @@ This is a Cesium development kit that includes functionalities such as layer loa
 
 ## Preview
 
-[https://www.benpaodehenji.com/cesiumDevKit](https://www.benpaodehenji.com/cesiumDevKit)
+[https://benpaodehenji.com/cesiumDevKit](https://benpaodehenji.com/cesiumDevKit)
 
 ## Install
 
@@ -136,6 +137,7 @@ export default {
   }
 }
 </script>
+
 ```
 
 ### 2、Import on demand

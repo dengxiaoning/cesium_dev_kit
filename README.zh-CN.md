@@ -30,7 +30,7 @@
 
 ## 在线预览
 
-[https://www.benpaodehenji.com/cesiumDevKit](https://www.benpaodehenji.com/cesiumDevKit)
+[https://benpaodehenji.com/cesiumDevKit](https://benpaodehenji.com/cesiumDevKit)
 
 ## 安装
 
