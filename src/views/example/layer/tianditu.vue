@@ -14,16 +14,16 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 let skyObj = null;
 let flag = true;
 export default {
-  data() {
+  data () {
     return {
       activeId: 'light'
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const {
         viewer,
         control,
@@ -34,6 +34,12 @@ export default {
           viewerConfig: {
             infoBox: false,
             shouldAnimate: true,
+            contextOptions: {
+              webgl: {
+                alpha: true,
+              },
+            },
+
           },
           extraConfig: {},
           MapImageryList: []
@@ -46,38 +52,38 @@ export default {
         key,
         style: 'cva'
       }));
-      layer.name = '标注'; layer.id = 'layer1'; layer.show = false;
+      layer.name = '标注'; layer.id = 'layer1'; layer.show = true;
 
-      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({ key }));
-      layer2.name = '电子'; layer2.id = 'layer2'; layer2.show = false;
+      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({ key }), 2);
+      layer2.name = '电子'; layer2.id = 'layer2'; layer2.show = true; layer2.alpha = 0.4;
 
       let layer3 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({
         key,
         style: 'img'
       }));
-      layer3.name = '影像'; layer3.id = 'layer3'; layer3.show = true;
+      layer3.name = '影像'; layer3.id = 'layer3'; layer3.show = false; layer3.alpha = 0.3;
 
       let layer4 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({
         key,
         style: 'ter'
       }));
-      layer4.name = '地形'; layer4.id = 'layer3'; layer4.show = true;
+      layer4.name = '地形'; layer4.id = 'layer3'; layer4.show = false; layer4.alpha = 0.3;
 
       this.control.showLayerSwitchPanel([layer, layer2, layer3, layer4], { elementId: 'cust-gui-box' })
       this.flyTo();
     },
-    flyTo() {
+    flyTo () {
       this.control.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
           heading: Cesium.Math.toRadians(1.0114629015290062),
-          pitch: Cesium.Math.toRadians(-23.53661660731824),
-          roll: Cesium.Math.toRadians(0.00324596311071617)
+          pitch: Cesium.Math.toRadians(-43.53661660731824),
+          roll: Cesium.Math.toRadians(0.20324596311071617)
         }
       })
     },
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.control = null;
   }

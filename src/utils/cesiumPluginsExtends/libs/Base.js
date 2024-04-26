@@ -859,26 +859,21 @@ Base.prototype = {
    */
   _installTdtImageryProvider: function () {
     const MAP_URL =
-      'http://t{s}.tianditu.gov.cn/{layer}_c/wmts?service=WMTS&version=1.0.0&request=GetTile&tilematrix={TileMatrix}&layer={layer}&style={style}&tilerow={TileRow}&tilecol={TileCol}&tilematrixset={TileMatrixSet}&format=tiles&tk={key}'
+      'https://{s}.tianditu.gov.cn/{layer}_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER={layer}&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk={key}'
 
     function TdtImageryProvider(options) {
-      return new Cesium.UrlTemplateImageryProvider({
+      return new Cesium.WebMapTileServiceImageryProvider({
         url: MAP_URL.replace(/\{layer\}/g, options.style || 'vec').replace(
           /\{key\}/g,
           options.key || ''
         ),
-        style: 'default',
-        format: 'tiles',
-        tileMatrixSetID: 'c',
-        matrixSet: 'c',
-        wrapX: true,
-        crossOrigin: 'anonymous', // 跨域
-        subdomains: [...Array(6).keys()].map((item) => (item + 1).toString()),
-        tileMatrixLabels: [...Array(18).keys()].map((item) =>
-          (item + 1).toString()
-        ),
-        tilingScheme: new Cesium.GeographicTilingScheme(),
-        maximumLevel: 18
+        layer: options.style + '_w',
+        style: 'default', // WMTS请求的样式名称
+        format: 'tiles', // MIME类型，用于从服务器检索图像
+        tileMatrixSetID: 'GoogleMapsCompatible', //	用于WMTS请求的TileMatrixSet的标识符
+        subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'], // 天地图8个服务器
+        minimumLevel: 0, // 最小层级
+        maximumLevel: 18 // 最大层级
       })
     }
 
