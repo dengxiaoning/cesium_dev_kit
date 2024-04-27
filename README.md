@@ -142,7 +142,7 @@ export default {
 
 ### 2、Import on demand
 
-A single extension class can be exported according to functional requirements to reduce code redundancy
+The import of a single extension class can be tailored to meet specific functional requirements, thereby minimizing code redundancy.
 
 ```javaScript
 import {Graphics, Material,Primitive,Draw,Analysis,CustomCesiumPlugin,PassEffect,Plugin,ThreeJs} from 'cesium_dev_kit'
@@ -305,13 +305,13 @@ You can [Raise an issue](https://github.com/dengxiaoning/cesium_dev_kit/issues/n
 
 ## `Star`
 
-Many thanks to the kind people who left the star, thank you for your support :heart:
+I am grateful to the those good people who awarded me These stars, and I appreciate your ongoing support. :heart:
 
 [![Stargazers repo roster for @dengxiaoning/cesium_dev_kit][stargazers-url]][stargazers-link]
 
 ## `Fork`
 
-@sincely、`@ooil929`、 @InPanda、 `luyufanzhi`、AllenChiangCN、`Liquid-Zhangliquan` :heart:
+@sincely、`@ooil929`、 @InPanda、 `luyufanzhi`、AllenChiangCN、`Liquid-Zhangliquan` Thank you for your attention. :heart:
 
 [![Forkers repo roster for @dengxiaoning/cesium_dev_kit][forkers-url]][forkers-link]
 
