@@ -151,7 +151,7 @@
       "gltf": [
         {
           "interval": "2019-08-28T04:00:00Z/9999-12-31T23:59:59.9999999Z",
-          "uri": "http://assets.agi.com/models/launchvehicle.glb"
+          "uri": "https://assets.agi.com/models/launchvehicle.glb"
         }
       ],
       "minimumPixelSize": 128,
