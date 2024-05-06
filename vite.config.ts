@@ -73,14 +73,14 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       //服务器启动时自动在浏览器中打开应用程序,当此值为字符串时，会被用作 URL 的路径名
       open: false,
       //自定义代理规则
-      // proxy: {
-      //   // 选项写法
-      //   '/gaodeMapOne': {
-      //     target: 'http://webst03.is.autonavi.com/',
-      //     changeOrigin: true,
-      //     rewrite: (path) => path.replace(/^\/gaodeMapOne/, '')
-      //   }
-      // }
+      proxy: {
+        // 选项写法
+        '/marsgisUri': {
+          target: 'https://data.marsgis.cn',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/marsgisUri/, '')
+        }
+      }
     },
     build: {
       outDir: 'cesiumDevKit'
