@@ -24,7 +24,7 @@ export default {
     this.initMap()
   },
   methods: {
-    initMap () {
+    async initMap () {
       const {
         viewer,
         material,
@@ -48,15 +48,13 @@ export default {
               subdomains: ['0', '1', '2', '3'],
               tilingScheme: new Cesium.WebMercatorTilingScheme()
             }),
-            terrainProvider: new Cesium.CesiumTerrainProvider({
-              url: 'https://data.marsgis.cn/terrain'
-            })
+            terrainProvider:
+              await Cesium.CesiumTerrainProvider.fromIonAssetId(1),
           },
           extraConfig: { depthTest: true },
           MapImageryList: [],
           defaultStatic
         })
-
 
       this.c_viewer = viewer;
       this.drawObj = draw;
@@ -81,6 +79,7 @@ export default {
             pos.push(r.lat)
           })
           if (pos.length > 0) {
+            // console.log(pos);
             this.drawObj.removeAll();
             this.createWaterPath(Cesium.Cartesian3.fromDegreesArray(pos))
           }
@@ -97,7 +96,7 @@ export default {
       let waterH = 40;
       this.graphics.craeteCorridorGraphics({
         positions: ps,
-        width: 1000.0,
+        width: 1500.0,
         height: 0,
         extrudedHeight: new Cesium.CallbackProperty(() => {
           waterH += 0.05 * x
