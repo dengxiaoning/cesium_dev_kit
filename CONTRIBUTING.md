@@ -31,3 +31,5 @@ You can [Raise an issue](https://github.com/dengxiaoning/cesium_dev_kit/issues/n
 - `mod` Uncertain modification classification
 - `wip` Under development
 - `types` type
+
+Welcome interested friends to join together to improve the function, so that the work is more efficient, the development is simpler, and the life is more comfortable.
