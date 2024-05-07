@@ -24,7 +24,7 @@ export default {
     this.initMap()
   },
   methods: {
-    initMap () {
+    async initMap () {
       const {
         viewer,
         material,
@@ -38,15 +38,23 @@ export default {
           viewerConfig: {
             infoBox: false,
             shouldAnimate: true,
-            contextOptions: {
-              requestWebgl2: true,
-            }
+            geocoder: false,
+            navigationHelpButton: false,
+            selectionIndicator: false,
+            baseLayerPicker: false,
+            showRenderLoopErrors: false,
+            imageryProvider: new Cesium.UrlTemplateImageryProvider({
+              url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+              subdomains: ['0', '1', '2', '3'],
+              tilingScheme: new Cesium.WebMercatorTilingScheme()
+            }),
+            terrainProvider:
+              await Cesium.CesiumTerrainProvider.fromIonAssetId(1),
           },
-          extraConfig: {},
+          extraConfig: { depthTest: true },
           MapImageryList: [],
-          // defaultStatic
+          defaultStatic
         })
-
 
       this.c_viewer = viewer;
       this.drawObj = draw;
@@ -54,69 +62,60 @@ export default {
       this.graphics = graphics;
       this.base = base;
       this.flyto();
-      this.createWaterPath();
+      this.createRiverByData();
     },
     flyto () {
       this.c_viewer.camera.flyTo({
-        orientation: {
-          heading: 1.6802671089814538,
-          pitch: -0.5942780176871376,
-          roll: 0.00009774854244337661
-        },
-        destination: {
-          x: -1316325.8004510372,
-          y: 5328682.353043815,
-          z: 3246432.9086183477
-        }
+        destination: Cesium.Cartesian3.fromDegrees(110.32749851112206, 31.050083305294777, 10000),
+        duration: 1.6
       })
     },
     caldDistain () {
-      const pp = this.base.getCameraPosition();
-      console.log(this.c_viewer.camera.positions)
       const pos = [];
       this.drawObj.drawLineGraphics({
         callback: res => {
           res.forEach(r => {
             pos.push(r.lng)
             pos.push(r.lat)
-            pos.push(r.alt)
           })
           if (pos.length > 0) {
+            // console.log(pos);
             this.drawObj.removeAll();
-            this.graphics.createLineVolumeGraphics({
-              name: 'water_01',
-              oid: 'lineWater_01',
-              positions: pos,
-              width: 1050,
-              cornerType: Cesium.CornerType.ROUNDED,
-              material:
-                new Cesium.Scene.PolylineFlowWaterMaterialProperty(
-                  {
-                    riverColor: Cesium.Color.SKYBLUE,
-                    flowDuration: 50000
-                  }
-                ),
-            })
-
+            this.createWaterPath(Cesium.Cartesian3.fromDegreesArray(pos))
           }
         }
       })
     },
-    createWaterPath () {
+    createRiverByData () {
       waterData.forEach((wE, index) => {
-        this.graphics.createLineVolumeGraphics({
-          name: 'water_' + index + 1,
-          oid: 'lineWater_' + index + 1,
-          positions: wE.pos,
-          width: 6550,
-          material:
-            new Cesium.Scene.PolylineFlowWaterMaterialProperty(
-              {
-                riverColor: Cesium.Color.SKYBLUE,
-                flowDuration: 10000
-              }
-            ),
-        })
+        this.createWaterPath(Cesium.Cartesian3.fromDegreesArray(wE.pos));
+      })
+    },
+    createWaterPath (ps) {
+      let x = 1;
+      let waterH = 40;
+      this.graphics.craeteCorridorGraphics({
+        positions: ps,
+        width: 1500.0,
+        height: 0,
+        extrudedHeight: new Cesium.CallbackProperty(() => {
+          waterH += 0.05 * x
+          if (waterH > 50) {
+            x = -1
+          }
+          if (waterH < 45) {
+            x = 1
+          }
+          return waterH
+        }, false),
+        cornerType: Cesium.CornerType.MITERED,
+        outline: false,
+        material: new Cesium.Scene.PolylineTrailLinkMaterial({
+          color: Cesium.Color.BLUE.withAlpha(0.4),
+          duration: 15000,
+          image: 'static/data/images/Textures/river.png',
+          speed: 0.5
+        }),
       })
     }
   },

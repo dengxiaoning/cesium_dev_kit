@@ -87,7 +87,7 @@ const defaultStatic = {
   },
   primitive: {
     TetrahedronPrimitive: 'static/data/images/Textures/fence.png', //光锥图元
-    WaterPrimitive: 'static/data/images/Textures/movingRiver.jpg' //水面效果
+    WaterPrimitive: 'static/data/images/Textures/river.png' //水面效果
   },
   amalysis: {
     createClipPlanAnalysis_wallImg:

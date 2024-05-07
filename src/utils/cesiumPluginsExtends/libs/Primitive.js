@@ -35,8 +35,6 @@ Primitive.prototype = {
     this._installTetrahedronPrimitive()
 
     this._installCustomPrimitive()
-
-    this._installFlowWaterPrimitive()
   },
   /**
    * 自定义图元
@@ -1768,105 +1766,6 @@ Primitive.prototype = {
     }
 
     Cesium.Scene.WaterPrimitive = WaterPrimitive
-  },
-  /**
-   * 流动水面
-   */
-  _installFlowWaterPrimitive: function () {
-    const waterImg = this.getDfSt(['primitive', 'WaterPrimitive']),
-      Property = Cesium.Property
-    function PolylineFlowWaterMaterialProperty({
-      riverColor,
-      flowDuration,
-      riverImg
-    }) {
-      this._definitionChanged = new Cesium.Event()
-      this._color = undefined
-      this._colorSubscription = undefined
-      this.color = riverColor
-      this.duration = flowDuration
-      this._time = new Date().getTime()
-      this._url =
-        riverImg || waterImg || 'static/data/images/Textures/movingRiver.png'
-    }
-
-    Object.defineProperties(PolylineFlowWaterMaterialProperty.prototype, {
-      isConstant: {
-        get: function () {
-          return false
-        }
-      },
-      definitionChanged: {
-        get: function () {
-          return this._definitionChanged
-        }
-      },
-      color: Cesium.createPropertyDescriptor('color')
-    })
-    PolylineFlowWaterMaterialProperty.prototype.getType = function (time) {
-      return 'PolylineTrailLink'
-    }
-    PolylineFlowWaterMaterialProperty.prototype.getValue = function (
-      time,
-      result
-    ) {
-      if (!Cesium.defined(result)) {
-        result = {}
-      }
-      result.color = Cesium.Property.getValueOrClonedDefault(
-        this._color,
-        time,
-        Cesium.Color.WHITE,
-        result.color
-      )
-      result.image = Cesium.Material.PolylineTrailLinkImage
-      result.time =
-        ((new Date().getTime() - this._time) % this.duration) / this.duration
-      return result
-    }
-    PolylineFlowWaterMaterialProperty.prototype.equals = function (other) {
-      return (
-        this === other ||
-        (other instanceof PolylineFlowWaterMaterialProperty &&
-          Property.equals(this._color, other._color))
-      )
-    }
-    Cesium.Scene.PolylineFlowWaterMaterialProperty = PolylineFlowWaterMaterialProperty
-    Cesium.Material.PolylineTrailLinkType = 'PolylineTrailLink'
-    Cesium.Material.PolylineTrailLinkImage =
-      waterImg || 'static/data/images/Textures/movingRiver.png'
-    Cesium.Material.PolylineTrailLinkSource =
-      '\
-        uniform vec4 color;\n\
-        uniform float time;\n\
-        uniform sampler2D image;\n\
-        czm_material czm_getMaterial(czm_materialInput materialInput)\n\
-        {\n\
-          czm_material material = czm_getDefaultMaterial(materialInput);\n\
-          vec2 st = materialInput.st;\n\
-          vec4 colorImage = texture(image, vec2(fract(st.s*5.0-time*1.0), st.t));\n\
-          material.alpha = 0.5;\n\
-          material.diffuse = colorImage.rgb;\n\
-          return material;\n\
-        }'
-    Cesium.Material._materialCache.addMaterial(
-      Cesium.Material.PolylineTrailLinkType,
-      {
-        fabric: {
-          type: Cesium.Material.PolylineTrailLinkType,
-          uniforms: {
-            color: new Cesium.Color(1.0, 0.0, 0.0, 0.5),
-            image: Cesium.Material.PolylineTrailLinkImage,
-            time: 0,
-            repeat: 1
-          },
-          source: Cesium.Material.PolylineTrailLinkSource
-        },
-        translucent: function (material) {
-          return true
-        }
-      }
-    )
   },
   /**
    * 纹理图 视频图像

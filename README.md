@@ -305,13 +305,13 @@ You can [Raise an issue](https://github.com/dengxiaoning/cesium_dev_kit/issues/n
 
 ## `Star`
 
-I am grateful to the those good people who awarded me These stars, and I appreciate your ongoing support. :heart:
+I am grateful to the generous individuals who awarded me these little stars, thank you for your support :heart:
 
 [![Stargazers repo roster for @dengxiaoning/cesium_dev_kit][stargazers-url]][stargazers-link]
 
 ## `Fork`
 
-@sincely、`@ooil929`、 @InPanda、 `luyufanzhi`、AllenChiangCN、`Liquid-Zhangliquan` Thank you for your attention. :heart:
+@sincely、`@ooil929`、 @InPanda、 `luyufanzhi`、AllenChiangCN、`Liquid-Zhangliquan`... thank you for your attention :heart:
 
 [![Forkers repo roster for @dengxiaoning/cesium_dev_kit][forkers-url]][forkers-link]
 

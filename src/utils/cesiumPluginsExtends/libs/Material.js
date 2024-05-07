@@ -1,15 +1,14 @@
-let Cesium = null;
-let dfSt = undefined;
+let Cesium = null
+let dfSt = undefined
 /**
  * 材质模块
  * @param {*} viewer
  */
-function Material(viewer, cesiumGlobal,defaultStatic) {
+function Material(viewer, cesiumGlobal, defaultStatic) {
   if (viewer) {
-    Cesium = cesiumGlobal;
-    dfSt = defaultStatic;
+    Cesium = cesiumGlobal
+    dfSt = defaultStatic
     this._installMaterial()
-
   }
 }
 
@@ -20,7 +19,6 @@ Material.prototype = {
    * @param {*} options
    */
   addMaterialLineGraphics: function (options) {
-
     if (this._viewer && options && options.image) {
       // 初始化自定义材质线
       this._initPolylineCustomMaterialProperty(options)
@@ -38,14 +36,12 @@ Material.prototype = {
 
       return this._viewer.entities.add(_entity)
     }
-
   },
   /**
    * 获取一个材质线
    * @param {*} options
    */
   getCustomMaterialLine: function (options) {
-
     if (this._viewer && options && options.image) {
       // 初始化自定义材质线
       return this._initPolylineCustomMaterialProperty(options)
@@ -53,9 +49,7 @@ Material.prototype = {
   },
   // 动态初始化材质线
   _initPolylineCustomMaterialProperty(options) {
-
     if (options) {
-
       var Color = Cesium.Color,
         defaultValue = Cesium.defaultValue,
         defined = Cesium.defined,
@@ -65,10 +59,10 @@ Material.prototype = {
         Property = Cesium.Property,
         Material = Cesium.Material,
         defaultColor = Color.WHITE,
-        MaterialType = options.MaterialType || 'wallType' + parseInt(Math.random() * 1000)
+        MaterialType =
+          options.MaterialType || 'wallType' + parseInt(Math.random() * 1000)
 
       const PolylineCustomMaterialProperty = function (options) {
-
         options = defaultValue(options, defaultValue.EMPTY_OBJECT)
         this._definitionChanged = new Event()
         this._color = undefined
@@ -94,22 +88,32 @@ Material.prototype = {
       PolylineCustomMaterialProperty.prototype.getType = function () {
         return MaterialType
       }
-      PolylineCustomMaterialProperty.prototype.getValue = function (time, result) {
+      PolylineCustomMaterialProperty.prototype.getValue = function (
+        time,
+        result
+      ) {
         if (!defined(result)) {
           result = {}
         }
-        result.color = Property.getValueOrClonedDefault(this._color, time, defaultColor, result.color)
+        result.color = Property.getValueOrClonedDefault(
+          this._color,
+          time,
+          defaultColor,
+          result.color
+        )
         result.image = options.image
         if (this._time === undefined) {
           this._time = time.secondsOfDay
         }
-        result.time = (time.secondsOfDay - this._time) * 1000 / this.duration
+        result.time = ((time.secondsOfDay - this._time) * 1000) / this.duration
         return result
       }
       PolylineCustomMaterialProperty.prototype.equals = function (other) {
-        return this === other || //
+        return (
+          this === other || //
           (other instanceof PolylineCustomMaterialProperty &&
             Property.equals(this._color, other._color))
+        )
       }
       Material._materialCache.addMaterial(MaterialType, {
         fabric: {
@@ -153,7 +157,6 @@ Material.prototype = {
 
       return this._viewer.entities.add(_entity)
     }
-
   },
   /**
    * 获取一个材质围栏
@@ -161,13 +164,11 @@ Material.prototype = {
    */
   getCustomMaterialWall: function (options) {
     if (this._viewer && options && options.image) {
-
       return this._initWallCustomMaterialProperty(options)
     }
   },
   // 动态初始化材质线
   _initWallCustomMaterialProperty(options) {
-
     var Color = Cesium.Color,
       defaultValue = Cesium.defaultValue,
       defined = Cesium.defined,
@@ -176,10 +177,10 @@ Material.prototype = {
       createPropertyDescriptor = Cesium.createPropertyDescriptor,
       Property = Cesium.Property,
       Material = Cesium.Material,
-      MaterialType = options.MaterialType || 'wallType' + parseInt(Math.random() * 1000)
+      MaterialType =
+        options.MaterialType || 'wallType' + parseInt(Math.random() * 1000)
 
     const WallLinkCustomMaterialProperty = function (options) {
-
       options = defaultValue(options, defaultValue.EMPTY_OBJECT)
       this._definitionChanged = new Event()
       this._color = undefined
@@ -205,7 +206,10 @@ Material.prototype = {
     WallLinkCustomMaterialProperty.prototype.getType = function () {
       return MaterialType
     }
-    WallLinkCustomMaterialProperty.prototype.getValue = function (time, result) {
+    WallLinkCustomMaterialProperty.prototype.getValue = function (
+      time,
+      result
+    ) {
       if (!defined(result)) {
         result = {}
       }
@@ -248,14 +252,13 @@ Material.prototype = {
         return true
       }
     })
-    Cesium.Scene.WallLinkCustomMaterialProperty = WallLinkCustomMaterialProperty;
+    Cesium.Scene.WallLinkCustomMaterialProperty = WallLinkCustomMaterialProperty
     return new WallLinkCustomMaterialProperty(options)
   },
   /**
    * 安装默认拓展材质
    */
   _installMaterial: function () {
-
     this._installWaveCircleMaterial()
 
     this._installCircleFadeMaterial()
@@ -265,7 +268,7 @@ Material.prototype = {
     this._installWarnMaterial()
 
     this._installFlowMaterial()
-
+    this._installPolylineTrailLinkMaterial()
   },
   // 波动圆材质
   _installWaveCircleMaterial: function () {
@@ -278,7 +281,6 @@ Material.prototype = {
       Material = Cesium.Material
 
     function CircleWaveMaterialProperty(options) {
-
       options = options || {}
       this._definitionChanged = new Event()
       this._color = undefined
@@ -369,9 +371,8 @@ Material.prototype = {
       _color = new Color(0, 0, 0, 0)
 
     function CircleFadeMaterialProperty(options) {
-
       options = defaultValue(options, defaultValue.EMPTY_OBJECT)
-      this._definitionChanged = new Event
+      this._definitionChanged = new Event()
       this._color = void 0
       this._colorSubscription = void 0
       this.color = defaultValue(options.color, _color)
@@ -399,9 +400,14 @@ Material.prototype = {
       if (!result) {
         result = {}
       }
-      result.color = Property.getValueOrClonedDefault(this._color, time, _color, result.color),
-        void 0 === this._time && (this._time = (new Date).getTime()),
-        result.time = ((new Date).getTime() - this._time) / this._duration
+      ;(result.color = Property.getValueOrClonedDefault(
+        this._color,
+        time,
+        _color,
+        result.color
+      )),
+        void 0 === this._time && (this._time = new Date().getTime()),
+        (result.time = (new Date().getTime() - this._time) / this._duration)
       return result
     }
     CircleFadeMaterialProperty.prototype.equals = function (other) {
@@ -434,7 +440,6 @@ Material.prototype = {
   },
   // 城市光效线
   _installCityLineMaterial: function () {
-
     var Color = Cesium.Color,
       defaultValue = Cesium.defaultValue,
       defined = Cesium.defined,
@@ -446,7 +451,6 @@ Material.prototype = {
       defaultColor = Color.WHITE
 
     function PolylineCityLinkMaterialProperty(options) {
-
       options = defaultValue(options, defaultValue.EMPTY_OBJECT)
       this._definitionChanged = new Event()
       this._color = undefined
@@ -454,7 +458,7 @@ Material.prototype = {
       this.color = options.color || Cesium.Color.BLUE
       this.duration = options.duration || 1000
       this._time = undefined
-      this._img=options.imgUrl||Material.PolylineCityLinkImage
+      this._img = options.imgUrl || Material.PolylineCityLinkImage
     }
 
     defineProperties(PolylineCityLinkMaterialProperty.prototype, {
@@ -473,35 +477,47 @@ Material.prototype = {
     PolylineCityLinkMaterialProperty.prototype.getType = function () {
       return Material.PolylineCityLinkType
     }
-    PolylineCityLinkMaterialProperty.prototype.getValue = function (time, result) {
+    PolylineCityLinkMaterialProperty.prototype.getValue = function (
+      time,
+      result
+    ) {
       if (!defined(result)) {
         result = {}
       }
- 
-      result.color = Property.getValueOrClonedDefault(this._color, time, defaultColor, result.color)
-      result.image = this._img//Material.PolylineCityLinkImage
+
+      result.color = Property.getValueOrClonedDefault(
+        this._color,
+        time,
+        defaultColor,
+        result.color
+      )
+      result.image = this._img //Material.PolylineCityLinkImage
       if (this._time === undefined) {
         this._time = time.secondsOfDay
       }
-      result.time = (time.secondsOfDay - this._time) * 1000 / this.duration
+      result.time = ((time.secondsOfDay - this._time) * 1000) / this.duration
       return result
     }
     PolylineCityLinkMaterialProperty.prototype.equals = function (other) {
-      return this === other || //
+      return (
+        this === other || //
         (other instanceof PolylineCityLinkMaterialProperty &&
           Property.equals(this._color, other._color))
+      )
     }
 
     Cesium.Scene.PolylineCityLinkMaterialProperty = PolylineCityLinkMaterialProperty
     Material.PolylineCityLinkType = 'PolylineCityLink'
-    Material.PolylineCityLinkImage = this.getDfSt(['material','PolylineCityLinkMaterialProperty'])||'static/data/images/Textures/meteor_01.png'
+    Material.PolylineCityLinkImage =
+      this.getDfSt(['material', 'PolylineCityLinkMaterialProperty']) ||
+      'static/data/images/Textures/meteor_01.png'
     Material._materialCache.addMaterial(Material.PolylineCityLinkType, {
       fabric: {
         type: Material.PolylineCityLinkType,
         uniforms: {
           color: new Color(1, 0, 0, 1.0),
           image: Material.PolylineCityLinkImage,
-          time: 0,
+          time: 0
         },
         source: this._getDynamicLightLineShader({
           get: true
@@ -524,7 +540,6 @@ Material.prototype = {
       Material = Cesium.Material
 
     function WarnLinkMaterialProperty(options) {
-
       options = defaultValue(options, defaultValue.EMPTY_OBJECT)
       this._definitionChanged = new Event()
       this._color = undefined
@@ -576,10 +591,11 @@ Material.prototype = {
       color: createPropertyDescriptor('color')
     })
 
-
     Cesium.Scene.WarnLinkMaterialProperty = WarnLinkMaterialProperty
     Material.WarnLinkType = 'WarnWallLinkType'
-    Material.WarnLinkImage = this.getDfSt(['material','WarnLinkMaterialProperty'])||'static/data/images/Textures/jsx2.png'
+    Material.WarnLinkImage =
+      this.getDfSt(['material', 'WarnLinkMaterialProperty']) ||
+      'static/data/images/Textures/jsx2.png'
     Material._materialCache.addMaterial(Material.WarnLinkType, {
       fabric: {
         type: Material.WarnLinkType,
@@ -602,7 +618,6 @@ Material.prototype = {
   },
   // 轨迹流动线
   _installFlowMaterial: function () {
-
     var Color = Cesium.Color,
       defaultValue = Cesium.defaultValue,
       defineProperties = Object.defineProperties,
@@ -612,7 +627,6 @@ Material.prototype = {
       Material = Cesium.Material
 
     function PolylineFlowMaterialProperty(options) {
-
       options = defaultValue(options, defaultValue.EMPTY_OBJECT)
       this._definitionChanged = new Event()
       this._color = undefined
@@ -682,9 +696,114 @@ Material.prototype = {
         return true
       }
     })
+  },
+  // 多线段尾链
+  _installPolylineTrailLinkMaterial: function () {
+    var Color = Cesium.Color,
+      defaultValue = Cesium.defaultValue,
+      defineProperties = Object.defineProperties,
+      createPropertyDescriptor = Cesium.createPropertyDescriptor,
+      Event = Cesium.Event,
+      Property = Cesium.Property,
+      Material = Cesium.Material,
+      waterImg = this.getDfSt(['primitive', 'WaterPrimitive'])
+    /**
+     *
+     * @param {*} options
+     * {color：颜色,duration:持续时间,speed：速度,image：图片}
+     */
+    function PolylineTrailLinkMaterial(options) {
+      options = defaultValue(options, defaultValue.EMPTY_OBJECT)
+      this._definitionChanged = new Event()
+      this._color = undefined
+      this.color = options.color || Cesium.Color.WHITE
+      this.image = options.image || waterImg
+      this._colorSubscription = undefined
+      this.duration = options.duration || 3000
+      this._time = new Date().getTime()
+      this.speed = options.speed // speed, larger is faster
+      this.isTranslucent = function () {
+        return true
+      }
+    }
+
+    defineProperties(PolylineTrailLinkMaterial.prototype, {
+      isConstant: {
+        get: function () {
+          return false
+        },
+        configurable: true
+      },
+      definitionChanged: {
+        get: function () {
+          return this._definitionChanged
+        },
+        configurable: true
+      },
+      color: createPropertyDescriptor('color'),
+      duration: createPropertyDescriptor('duration')
+    })
+
+    PolylineTrailLinkMaterial.prototype.getType = function () {
+      return Material.PolylineTrailLinkType
+    }
+
+    PolylineTrailLinkMaterial.prototype.getValue = function (time, result) {
+      if (!Cesium.defined(result)) {
+        result = {}
+      }
+      result.color = Property.getValueOrClonedDefault(
+        this._color,
+        time,
+        this.color,
+        result.color
+      )
+      result.image = Material.PolylineTrailLinkImage
+      result.time =
+        (((new Date().getTime() - this._time) % this.duration) /
+          this.duration) *
+        this.speed
+      return result
+    }
+    PolylineTrailLinkMaterial.prototype.equals = function (other) {
+      return (
+        this === other ||
+        (other instanceof PolylineTrailLinkMaterial &&
+          Property.equals(this._color, other._color))
+      )
+    }
+
+    Material.PolylineTrailLinkSource = `
+    uniform vec4 color;
+    uniform float time;
+    uniform sampler2D image;
+    czm_material czm_getMaterial(czm_materialInput materialInput)
+    {
+        czm_material material = czm_getDefaultMaterial(materialInput);
+        vec2 st = materialInput.st;
+        vec4 colorImage = texture(image, vec2(fract(st.s - time), st.t));
+        material.alpha = colorImage.a * color.a;
+        material.diffuse = (colorImage.rgb+color.rgb)/2.0;
+        return material;
+    }`
+    Cesium.Scene.PolylineTrailLinkMaterial = PolylineTrailLinkMaterial
+    Material.PolylineTrailLinkType = 'PolylineTrailLinkMaterial'
+    Material.PolylineTrailLinkImage =
+      this.image || waterImg || 'static/data/images/Textures/river.png'
+    Material._materialCache.addMaterial(Material.PolylineTrailLinkType, {
+      fabric: {
+        type: Material.PolylineTrailLinkType,
+        uniforms: {
+          color: new Color(1.0, 1.0, 1.0, 1),
+          image: Material.PolylineTrailLinkImage,
+          time: -20
+        },
+        source: Material.PolylineTrailLinkSource
+      },
+      translucent: function () {
+        return true
+      }
+    })
   }
 }
-
-export {
-  Material
-}
+export { Material }

@@ -75,10 +75,10 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       //自定义代理规则
       // proxy: {
       //   // 选项写法
-      //   '/gaodeMapOne': {
-      //     target: 'http://webst03.is.autonavi.com/',
+      //   '/marsgisUri': {
+      //     target: 'https://data.marsgis.cn',
       //     changeOrigin: true,
-      //     rewrite: (path) => path.replace(/^\/gaodeMapOne/, '')
+      //     rewrite: (path) => path.replace(/^\/marsgisUri/, '')
       //   }
       // }
     },
