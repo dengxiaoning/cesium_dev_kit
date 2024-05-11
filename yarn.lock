@@ -4140,9 +4140,9 @@ vary@^1:
   version "1.1.2"
   resolved "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz"
 
-vite-plugin-cesium@^1.2.9:
-  version "1.2.10"
-  resolved "https://registry.npmjs.org/vite-plugin-cesium/-/vite-plugin-cesium-1.2.10.tgz"
+vite-plugin-cesium@^1.2.22:
+  version "1.2.22"
+  resolved "https://registry.yarnpkg.com/vite-plugin-cesium/-/vite-plugin-cesium-1.2.22.tgz#55dc6d7dba6f8c28ee815e0d70359d67ef763694"
   dependencies:
     fs-extra "^9.1.0"
     rollup-plugin-external-globals "^0.6.1"
