@@ -4061,9 +4061,9 @@ two-sum@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/two-sum/-/two-sum-1.0.0.tgz"
 
-typescript@^4.1.3:
-  version "4.2.4"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.2.4.tgz"
+typescript@^5.4.5:
+  version "5.4.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.5.tgz#42ccef2c571fdbd0f6718b1d1f5e6e5ef006f611"
 
 union-value@^1.0.0:
   version "1.0.1"
