@@ -5,7 +5,22 @@
 
 version: 2
 updates:
-  - package-ecosystem: "" # See documentation for possible values
-    directory: "/" # Location of package manifests
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for Composer
+  - package-ecosystem: "cesium_dev_kit"
+    directory: "/"
     schedule:
       interval: "weekly"
