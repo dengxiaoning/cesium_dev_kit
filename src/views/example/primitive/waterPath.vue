@@ -24,7 +24,16 @@ export default {
     this.initMap()
   },
   methods: {
-    async initMap () {
+        // 添加地形数据
+    async addWorldTerrainAsync (viewer) {
+      try {
+        const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+        viewer.terrainProvider = terrainProvider;
+      } catch (error) {
+        console.log(`Failed to add world imagery: ${error}`);
+      }
+    },
+     initMap () {
       const {
         viewer,
         material,
@@ -48,14 +57,12 @@ export default {
               subdomains: ['0', '1', '2', '3'],
               tilingScheme: new Cesium.WebMercatorTilingScheme()
             }),
-            terrainProvider:
-              await Cesium.CesiumTerrainProvider.fromIonAssetId(1),
           },
           extraConfig: { depthTest: true },
           MapImageryList: [],
           defaultStatic
         })
-
+      this.addWorldTerrainAsync(viewer);
       this.c_viewer = viewer;
       this.drawObj = draw;
       this.material = material;
