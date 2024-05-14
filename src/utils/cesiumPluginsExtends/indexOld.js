@@ -65,6 +65,7 @@ export function initCesium({
   if (!containerId) {
     throw 'Missing containerId parameter, please check the calling function initCesium.'
   }
+
   const initCom = new Controller(cesiumGlobal)
   const _viewer = initCom.init({
     containerId,

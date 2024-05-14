@@ -60,7 +60,7 @@ The initialization of 'initCesium' allows for the acquisition of all extension m
 | containerId      | String | Cesium mounts dom container id                                                                                            | undefined |
 | threeContainerId | String | Three mounts dom container id                                                                                             | undefined |
 | viewerConfig     | Object | viewer base configuration (same as official website)                                                                      | {}        |
-| extreaConfig     | Object | Configure additional parameters, such as {logo: true// Whether to display logo, depthTest: true// Enable depth detection} | {}        |
+| extreaConfig     | Object | Configure additional parameters, such as {logo: true, // Whether to display logo  depthTest: true, // Enable depth detection AccessToken:'', // configure access_token } | {}        |
 | MapImageryList   | Array  | To configure the base image, see ImageryProvider                                                                          | []        |
 | defaultStatic    | Array  | Static resource configurations used by shaders (such as image urls)                                                       | undefined |
 

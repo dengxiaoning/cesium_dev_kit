@@ -51,6 +51,10 @@ class Controller {
       navigation: false,
       showRenderLoopErrors: true, // 是否显示render异常信息
     }
+    // configure the access_token
+    Cesium.Ion.defaultAccessToken =
+      extraConfig['AccessToken'] ||
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
     vConfig = Object.assign(vConfig, viewerConfig) // 后台接口配置 融合替换 默认配置
     const viewer = new Cesium.Viewer(mapID, vConfig)
     if (!extraConfig['logo']) {
