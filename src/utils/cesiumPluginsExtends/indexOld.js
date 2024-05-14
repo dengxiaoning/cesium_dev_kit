@@ -65,8 +65,7 @@ export function initCesium({
   if (!containerId) {
     throw 'Missing containerId parameter, please check the calling function initCesium.'
   }
-  cesiumGlobal.Ion.defaultAccessToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
+
   const initCom = new Controller(cesiumGlobal)
   const _viewer = initCom.init({
     containerId,
