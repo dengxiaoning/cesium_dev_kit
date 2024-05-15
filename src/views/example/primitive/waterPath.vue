@@ -24,7 +24,7 @@ export default {
     this.initMap()
   },
   methods: {
-        // 添加地形数据
+    // 添加地形数据
     async addWorldTerrainAsync (viewer) {
       try {
         const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
@@ -33,7 +33,7 @@ export default {
         console.log(`Failed to add world imagery: ${error}`);
       }
     },
-     initMap () {
+    initMap () {
       const {
         viewer,
         material,
@@ -51,18 +51,31 @@ export default {
             navigationHelpButton: false,
             selectionIndicator: false,
             baseLayerPicker: false,
-            showRenderLoopErrors: false,
-            imageryProvider: new Cesium.UrlTemplateImageryProvider({
-              url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-              subdomains: ['0', '1', '2', '3'],
-              tilingScheme: new Cesium.WebMercatorTilingScheme()
-            }),
+            showRenderLoopErrors: false
           },
-         extraConfig: {
+          extraConfig: {
             depthTest: true,
             AccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
           },
-          MapImageryList: [],
+          MapImageryList: [{ // 配置地形图片
+            id: 12,
+            name: '地形底图',
+            type: 'UrlTemplateImageryProvider',
+            classConfig: {
+              url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            },
+            interfaceConfig: {
+              subdomains: ['0', '1', '2', '3'],
+              tilingScheme: new Cesium.WebMercatorTilingScheme()
+            },
+            offset: '0,0',
+            invertswitch: 0,
+            filterRGB: '#ffffff',
+            showswitch: 1,
+            weigh: 13,
+            createtime: 1624346908,
+            updatetime: 1647395260,
+          }],
           defaultStatic
         })
       this.addWorldTerrainAsync(viewer);
