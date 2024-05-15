@@ -1562,6 +1562,10 @@
     "@vue/compiler-dom" "3.4.25"
     "@vue/shared" "3.4.25"
 
+"@vue/devtools-api@^6.0.0-beta.11":
+  version "6.6.1"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-api/-/devtools-api-6.6.1.tgz#7c14346383751d9f6ad4bea0963245b30220ef83"
+
 "@vue/reactivity@3.4.25":
   version "3.4.25"
   resolved "https://registry.npmjs.org/@vue/reactivity/-/reactivity-3.4.25.tgz"
@@ -4231,9 +4235,11 @@ vue@^3.0.5, vue@^3.2.13:
     "@vue/server-renderer" "3.4.25"
     "@vue/shared" "3.4.25"
 
-vuex@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/vuex/-/vuex-4.0.0.tgz"
+vuex@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-4.1.0.tgz#aa1b3ea5c7385812b074c86faeeec2217872e36c"
+  dependencies:
+    "@vue/devtools-api" "^6.0.0-beta.11"
 
 webfont-matcher@^1.1.0:
   version "1.1.0"
