@@ -112,6 +112,15 @@ export default {
     this.initMap()
   },
   methods: {
+    // 添加地形数据
+    async addWorldTerrainAsync (viewer) {
+      try {
+        const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+        viewer.terrainProvider = terrainProvider;
+      } catch (error) {
+        console.log(`Failed to add world imagery: ${error}`);
+      }
+    },
     initMap () {
       const drawObj = new Draw({
         cesiumGlobal: Cesium,
@@ -119,26 +128,37 @@ export default {
         viewerConfig: {
           infoBox: false,
           shouldAnimate: true,
+          // imageryProvider: new Cesium.UrlTemplateImageryProvider({
+          //   url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          //   subdomains: ['0', '1', '2', '3'],
+          //   tilingScheme: new Cesium.WebMercatorTilingScheme()
+          // }),
         },
-        extraConfig: {},
-        MapImageryList: []
+        extraConfig: {
+          depthTest: true,
+          AccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
+        },
+        MapImageryList: [{ // 配置地形图片
+          id: 96,
+          name: '地形底图',
+          type: 'UrlTemplateImageryProvider',
+          classConfig: {
+            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          },
+          interfaceConfig: {
+            subdomains: ['0', '1', '2', '3'],
+            tilingScheme: new Cesium.WebMercatorTilingScheme()
+          },
+          offset: '0,0',
+          invertswitch: 0,
+          filterRGB: '#ffffff',
+          showswitch: 1,
+          weigh: 13,
+          createtime: 1624346908,
+          updatetime: 1647395260,
+        }]
       })
-      // const { viewer, material, graphics, draw,
-      //   attackArrowObj,
-      //   straightArrowObj,
-      //   pincerArrowObj } = new initCesium(
-      //     {
-      //       cesiumGlobal: Cesium,
-      //       containerId: 'cesiumContainer',
-      //       viewerConfig: {
-      //         infoBox: false,
-      //         shouldAnimate: true,
-      //       },
-      //       extraConfig: {},
-      //       MapImageryList: []
-      //     })
-
-
+      this.addWorldTerrainAsync(drawObj.viewer);
       this.c_viewer = drawObj.viewer
       this.draw = drawObj.draw
       this.draw.setDefSceneConfig()
