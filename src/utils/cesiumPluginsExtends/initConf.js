@@ -1,37 +1,29 @@
-import {
-  colorRgb
-} from './ColorDeal'
-import {
-  evil
-} from './common'
+import { colorRgb } from './ColorDeal'
+import { evil } from './common'
 
-let Cesium = null;
+let Cesium = null
 class Controller {
   // 初始化 controller 类
   constructor(cesiumGlobal) {
-    Cesium = cesiumGlobal;
+    Cesium = cesiumGlobal
     this.init_data()
   }
   init_data() {
     this.viewer = null
   }
-  init({containerId, viewerConfig,extraConfig, MapImageryList}) {
-    const mapID = containerId;
+  init({ containerId, viewerConfig, extraConfig, MapImageryList }) {
+    const mapID = containerId
     let imageryProviderConfig = new Cesium.SingleTileImageryProvider({
-      url: 'https://mapv-data.oss-cn-hangzhou.aliyuncs.com/Cesium-1.82-hawk/background.png',
+      url:
+        'https://mapv-data.oss-cn-hangzhou.aliyuncs.com/Cesium-1.82-hawk/background.png',
       tileWidth: 256,
       tileHeight: 256
     })
-    if (MapImageryList.length !== 0) {
-      imageryProviderConfig = this.setOneimageryProvider(MapImageryList[0])
-    }
     let vConfig = {
-      // 加载单张影像 第一层最小最透明的
-      imageryProvider: imageryProviderConfig,
       contextOptions: {
         webgl: {
-          alpha: false,
-        },
+          alpha: false
+        }
       },
       // 默认设置
       animation: false, //动画控件
@@ -49,7 +41,7 @@ class Controller {
       baseLayerPicker: false,
       shouldAnimate: true,
       navigation: false,
-      showRenderLoopErrors: true, // 是否显示render异常信息
+      showRenderLoopErrors: true // 是否显示render异常信息
     }
     // configure the access_token
     Cesium.Ion.defaultAccessToken =
@@ -57,6 +49,14 @@ class Controller {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
     vConfig = Object.assign(vConfig, viewerConfig) // 后台接口配置 融合替换 默认配置
     const viewer = new Cesium.Viewer(mapID, vConfig)
+    if (MapImageryList.length !== 0) {
+      const imgProviderObj = this.setOneimageryProvider(MapImageryList[0])
+      // 加载单张影像 第一层最小最透明的
+      this.addImageLayerToScene(viewer, imgProviderObj)
+    } else {
+      // 加载默认底图
+      this.addImageLayerToScene(viewer, imageryProviderConfig)
+    }
     if (!extraConfig['logo']) {
       const cC = viewer.cesiumWidget.creditContainer
       cC.style.display = 'none' // 影藏logo
@@ -67,7 +67,6 @@ class Controller {
       // 设置开启深度检测
       viewer.scene.globe.depthTestAgainstTerrain = true
     }
-
 
     // 增加配置图层
     this.setConfigMapList(viewer, MapImageryList)
@@ -85,13 +84,29 @@ class Controller {
     }
     return new Cesium[MapImagery.type](MapImagery.classConfig)
   }
+  /**
+   * 构建imageLayer
+   * @param {*} viewer
+   * @param {*} elem
+   */
+  addImageLayerToScene(viewer, imgProviderObj) {
+    const imageryLayers = viewer.imageryLayers
+    // 2、利用ImageryProvider创建ImageryLayer实例
+    const imageryLayer = new Cesium.ImageryLayer(imgProviderObj)
+
+    // 3、利用imageryLayer创建Viewer实例
+    imageryLayers.add(imageryLayer)
+  }
   setConfigMapList(viewer, MapImageryList) {
     const imageryLayers = viewer.imageryLayers
     MapImageryList.some((elem, index) => {
       if (index === 0) {
         return false
       }
-      imageryLayers.addImageryProvider(this.setOneimageryProvider(elem))
+      // 1、获取ImageryProvider实例
+      const imgProviderObj = this.setOneimageryProvider(elem)
+      this.addImageLayerToScene(viewer, imgProviderObj)
+      // imageryLayers.addImageryProvider(this.setOneimageryProvider(elem))
     })
     // 设置具体的 ImageryLayer 参数
     MapImageryList.some((elem, index) => {
@@ -114,14 +129,13 @@ class Controller {
       const offset = elem.offset.split(',')
       if (offset.length === 2) {
         try {
-          const oxy = [
-            parseFloat(offset[0]),
-            parseFloat(offset[1]),
-          ]
-          baseLayer._imageryProvider._tilingScheme._rectangleNortheastInMeters.x +=
-            oxy[0]
-          baseLayer._imageryProvider._tilingScheme._rectangleNortheastInMeters.y +=
-            oxy[1]
+          const oxy = [parseFloat(offset[0]), parseFloat(offset[1])]
+          if (baseLayer._imageryProvider) {
+            baseLayer._imageryProvider._tilingScheme._rectangleNortheastInMeters.x +=
+              oxy[0]
+            baseLayer._imageryProvider._tilingScheme._rectangleNortheastInMeters.y +=
+              oxy[1]
+          }
         } catch (error) {
           console.log(error)
         }
@@ -189,11 +203,9 @@ class Controller {
     let lat = (curPosition.latitude * 180) / Math.PI
     return {
       lon: lon,
-      lat: lat,
+      lat: lat
     }
   }
 }
 
-export {
-  Controller
-}
+export { Controller }
