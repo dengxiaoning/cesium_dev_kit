@@ -240,6 +240,8 @@ new cesium_dev_kit.initCesium({...})
 - ES6 使用案例
   [https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)
 
+- React Use case
+  [https://github.com/dengxiaoning/react-cesium](https://github.com/dengxiaoning/react-cesium)
 - H5 使用案例
   [https://github.com/dengxiaoning/cesium_kit_test_h5](https://github.com/dengxiaoning/cesium_kit_test_h5)
 

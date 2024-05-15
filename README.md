@@ -53,16 +53,16 @@ The initialization of 'initCesium' allows for the acquisition of all extension m
 
 ### 1.1 The initCesium method configuration parameter list
 
-| Property         | Type   | Description                                                                                                               | Default   |
-| ---------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- | --------- |
-| cesiumGlobal     | Object | Cesium Object                                                                                                             | undefined |
-| threeGlobal      | Object | THREE Object                                                                                                              | undefined |
-| containerId      | String | Cesium mounts dom container id                                                                                            | undefined |
-| threeContainerId | String | Three mounts dom container id                                                                                             | undefined |
-| viewerConfig     | Object | viewer base configuration (same as official website)                                                                      | {}        |
-| extreaConfig     | Object | Configure additional parameters, such as {logo: true// Whether to display logo, depthTest: true// Enable depth detection} | {}        |
-| MapImageryList   | Array  | To configure the base image, see ImageryProvider                                                                          | []        |
-| defaultStatic    | Array  | Static resource configurations used by shaders (such as image urls)                                                       | undefined |
+| Property         | Type   | Description                                                                                                                                                             | Default   |
+| ---------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| cesiumGlobal     | Object | Cesium Object                                                                                                                                                           | undefined |
+| threeGlobal      | Object | THREE Object                                                                                                                                                            | undefined |
+| containerId      | String | Cesium mounts dom container id                                                                                                                                          | undefined |
+| threeContainerId | String | Three mounts dom container id                                                                                                                                           | undefined |
+| viewerConfig     | Object | viewer base configuration (same as official website)                                                                                                                    | {}        |
+| extreaConfig     | Object | Configure additional parameters, such as {logo: true, // Whether to display logo depthTest: true, // Enable depth detection AccessToken:'', // configure access_token } | {}        |
+| MapImageryList   | Array  | To configure the base image, see ImageryProvider                                                                                                                        | []        |
+| defaultStatic    | Array  | Static resource configurations used by shaders (such as image urls)                                                                                                     | undefined |
 
 ### 1.2 The initCesium method returns the result
 
@@ -239,9 +239,11 @@ new cesium_dev_kit.initCesium({...})
 
 ## Use example
 
-- ES6 Use case
+- Vue Use case
   [https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)
 
+- React Use case
+  [https://github.com/dengxiaoning/react-cesium](https://github.com/dengxiaoning/react-cesium)
 - H5 Use case
   [https://github.com/dengxiaoning/cesium_kit_test_h5](https://github.com/dengxiaoning/cesium_kit_test_h5)
 

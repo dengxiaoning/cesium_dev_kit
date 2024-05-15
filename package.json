@@ -13,8 +13,8 @@
     "@vueup/vue-quill": "^1.0.0-beta.7",
     "axios": "^0.21.1",
     "cesium": "^1.105.0",
-    "cesium_dev_kit": "^1.0.51",
-    "cesium-navigation-es6": "^3.0.8",
+    "cesium_dev_kit": "^1.0.76",
+    "cesium-navigation-es6": "^3.0.9",
     "concaveman": "^1.1.1",
     "dat.gui": "^0.7.9",
     "echarts": "4.2.1",
@@ -31,7 +31,7 @@
     "three": "^0.163.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.6",
-    "vuex": "^4.0.0"
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.14.5",
@@ -43,7 +43,7 @@
     "mitt": "^2.1.0",
     "prettier": "^2.2.1",
     "sass": "1.55.0",
-    "typescript": "^4.1.3",
+    "typescript": "^5.4.5",
     "vite": "^2.6.10",
     "vite-plugin-cesium": "^1.2.9",
     "vite-plugin-compression": "^0.2.5",
