@@ -839,9 +839,11 @@ Draw.prototype = {
   },
   // 移除所以handler 监听
   removeEventHandler() {
+    if(drawHandler){
     drawHandler.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE)
     drawHandler.removeInputAction(Cesium.ScreenSpaceEventType.RIGHT_CLICK)
     drawHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK) //移除事件
+    }
   }
 }
 export { Draw }
