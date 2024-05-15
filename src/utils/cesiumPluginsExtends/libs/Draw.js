@@ -1,6 +1,7 @@
 import { Graphics } from './Graphics'
 let dfSt = undefined
 let Cesium = null
+let drawHandler = null
 /**
  * 画笔模块
  * @param {*} viewer
@@ -42,6 +43,8 @@ Draw.prototype = {
         _handlers = new Cesium.ScreenSpaceEventHandler(
           this._viewer.scene.canvas
         )
+      // 获取handler
+      drawHandler = _handlers
       // left
       _handlers.setInputAction(function (movement) {
         var cartesian = $this._viewer.scene.camera.pickEllipsoid(
@@ -89,6 +92,8 @@ Draw.prototype = {
         _handlers = new Cesium.ScreenSpaceEventHandler(
           this._viewer.scene.canvas
         )
+      // 获取handler
+      drawHandler = _handlers
       // left
       _handlers.setInputAction(function (movement) {
         var cartesian = $this.getCatesian3FromPX(movement.position)
@@ -197,6 +202,8 @@ Draw.prototype = {
         $this = this,
         polyObj = null,
         _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
+      // 获取handler
+      drawHandler = _handler
       const create = function () {
         _polygonEntity.polyline = options.style
 
@@ -314,6 +321,8 @@ Draw.prototype = {
         $this = this,
         rectangleObj,
         _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
+      // 获取handler
+      drawHandler = _handler
       // left
       _handler.setInputAction(function (movement) {
         var cartesian = $this.getCatesian3FromPX(movement.position)
@@ -382,6 +391,8 @@ Draw.prototype = {
         circleObj,
         _radius = 1,
         _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
+      // 获取handler
+      drawHandler = _handler
 
       // 计算半径
       const computeRadius = function (src, dest) {
@@ -485,6 +496,8 @@ Draw.prototype = {
         _tempPoints2 = [],
         $this = this,
         _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas)
+      // 获取handler
+      drawHandler = _handler
 
       // 高度
       const _getHeading = function (startPosition, endPosition) {
@@ -823,6 +836,12 @@ Draw.prototype = {
   // 移除所有实体
   removeAll() {
     this._drawLayer.entities.removeAll()
+  },
+  // 移除所以handler 监听
+  removeEventHandler() {
+    drawHandler.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+    drawHandler.removeInputAction(Cesium.ScreenSpaceEventType.RIGHT_CLICK)
+    drawHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK) //移除事件
   }
 }
 export { Draw }
