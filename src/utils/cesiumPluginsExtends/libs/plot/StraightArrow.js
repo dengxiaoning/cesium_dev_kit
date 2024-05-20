@@ -1,15 +1,23 @@
-import {
-  BasePlot
-} from './BasePlot'
+import { BasePlot } from "./BasePlot";
 let Cesium = null;
-//直线箭头
+/**
+ * 标会（直线箭头）模块
+ * @class
+ * @param {object} viewer - cesium 实例
+ * @param {object}  cesiumGlobal - cesium 全局对象
+ * @exports StraightArrow
+ */
 var StraightArrow = function (viewer, cesiumGlobal) {
   BasePlot.call(this, viewer, cesiumGlobal);
   Cesium = cesiumGlobal;
   this.type = "StraightArrow";
-  this.fillMaterial = Cesium.Color.fromCssColorString('#0000FF').withAlpha(0.8);
-}
+  this.fillMaterial = Cesium.Color.fromCssColorString("#0000FF").withAlpha(0.8);
+};
 StraightArrow.prototype = {
+  /**
+   * 销毁绘制操作
+   * @function
+   */
   disable: function () {
     this.positions = [];
     if (this.firstPoint) {
@@ -39,12 +47,21 @@ StraightArrow.prototype = {
     }
     this.clickStep = 0;
   },
-
+  /**
+   * 开始绘制直线箭头
+   * @function
+   * @param {function} cb  - 回调函数
+   * @example
+   * import { StraightArrow } from 'cesium_dev_kit'
+   * const straightArrowObj = new AttackArrow(viewer, Cesium)
+   * straightArrowObj.startDraw((res)=>{console.log(res))
+   */
   startDraw: function (cb) {
-    this.objId = Number((new Date()).getTime() + "" + Number(Math.random() * 1000).toFixed(0)); //用于区分多个相同箭头时
+    this.objId = Number(new Date().getTime() + "" + Number(Math.random() * 1000).toFixed(0)); //用于区分多个相同箭头时
     var $this = this;
     this.state = 1;
-    this.handler.setInputAction(function (evt) { //单机开始绘制
+    this.handler.setInputAction(function (evt) {
+      //单机开始绘制
       var cartesian;
       cartesian = getCatesian3FromPX(evt.position, $this.viewer);
       if (!cartesian) return;
@@ -67,7 +84,8 @@ StraightArrow.prototype = {
       // 增加最后一个光标点
       $this.positions.push(cartesian.clone());
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    this.handler.setInputAction(function (evt) { //移动时绘制面
+    this.handler.setInputAction(function (evt) {
+      //移动时绘制面
       if ($this.positions.length < 1) return;
       var cartesian;
       cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
@@ -96,21 +114,22 @@ StraightArrow.prototype = {
       $this.positions.push(cartesian.clone());
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
   },
-  startModify: function () { //修改箭头
+  startModify: function () {
+    //修改箭头
     this.state = 2;
     this.firstPoint.show = true;
     this.floatPoint.show = true;
     var $this = this;
     this.clickStep = 0;
-    if (!this.modifyHandler) this.modifyHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene
-      .canvas);
-    this.modifyHandler.setInputAction(function (evt) { //单机开始绘制
+    if (!this.modifyHandler) this.modifyHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
+    this.modifyHandler.setInputAction(function (evt) {
+      //单机开始绘制
       var pick = $this.viewer.scene.pick(evt.position);
       if (Cesium.defined(pick) && pick.id) {
         $this.clickStep++;
-        if (!pick.id.objId)
-          $this.selectPoint = pick.id;
-      } else { //激活移动点之后 单机面之外 移除这个事件
+        if (!pick.id.objId) $this.selectPoint = pick.id;
+      } else {
+        //激活移动点之后 单机面之外 移除这个事件
         $this.modifyHandler.destroy();
         $this.modifyHandler = null;
         $this.firstPoint.show = false;
@@ -128,7 +147,7 @@ StraightArrow.prototype = {
           $this.selectPoint.position.setValue(cartesian);
           $this.selectPoint = null;
         }
-      };
+      }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     this.modifyHandler.setInputAction(function (evt) {
       if ($this.selectPoint) {
@@ -147,7 +166,8 @@ StraightArrow.prototype = {
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
   },
-  createByData: function (data) { //通过传入的经纬度数组 构建箭头
+  createByData: function (data) {
+    //通过传入的经纬度数组 构建箭头
     this.state = -1;
     this.positions = [];
     var arr = [];
@@ -173,7 +193,8 @@ StraightArrow.prototype = {
     }
     return arr;
   },
-  getPositions: function () { //获取直角箭头中的关键点
+  getPositions: function () {
+    //获取直角箭头中的关键点
     return this.positions;
   },
   creatPoint: function (cartesian) {
@@ -182,7 +203,7 @@ StraightArrow.prototype = {
       point: {
         pixelSize: 10,
         color: Cesium.Color.YELLOW,
-      }
+      },
     });
     point.attr = "editPoint";
     return point;
@@ -206,15 +227,15 @@ StraightArrow.prototype = {
         arrow.push(c3);
       }
       return new Cesium.PolygonHierarchy(arrow);
-    }
+    };
     return this.viewer.entities.add({
-      id:$this.objId,
+      id: $this.objId,
       polygon: new Cesium.PolygonGraphics({
         hierarchy: new Cesium.CallbackProperty(update, false),
         show: true,
         fill: true,
-        material: $this.fillMaterial
-      })
+        material: $this.fillMaterial,
+      }),
     });
   },
   cartesianToLatlng: function (cartesian) {
@@ -222,10 +243,10 @@ StraightArrow.prototype = {
     var lat = Cesium.Math.toDegrees(latlng.latitude);
     var lng = Cesium.Math.toDegrees(latlng.longitude);
     return [lng, lat];
-  }
-}
+  },
+};
 StraightArrow.prototype = Object.create(Object.assign({}, StraightArrow.prototype, BasePlot.prototype));
-StraightArrow.prototype.constructor = StraightArrow
+StraightArrow.prototype.constructor = StraightArrow;
 
 function getCatesian3FromPX(px, viewer) {
   var cartesian;
@@ -235,6 +256,4 @@ function getCatesian3FromPX(px, viewer) {
   return cartesian;
 }
 
-export {
-  StraightArrow
-}
+export { StraightArrow };

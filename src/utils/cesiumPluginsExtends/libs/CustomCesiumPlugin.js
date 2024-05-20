@@ -1,17 +1,20 @@
-import { initSensor } from './Sensor/index'
-let Cesium = null
+import { initSensor } from "./Sensor/index";
+let Cesium = null;
 /**
- * 自定义插件
- * @param {*} viewer
+ * 自定义插件(传感器)
+ * @class
+ * @param {object} viewer - cesium 实例
+ * @param {object}  cesiumGlobal - cesium 全局对象
+ * @exports CustomCesiumPlugin
  */
 function CustomCesiumPlugin(viewer, cesiumGlobal) {
   if (viewer) {
-    this._viewer = viewer
-    Cesium = cesiumGlobal
-    this._customPluginLayer = new Cesium.CustomDataSource('_customPluginLayer')
+    this._viewer = viewer;
+    Cesium = cesiumGlobal;
+    this._customPluginLayer = new Cesium.CustomDataSource("_customPluginLayer");
     // init rectangular sensor
-    new initSensor(viewer, cesiumGlobal)
-    viewer && viewer.dataSources.add(this._customPluginLayer)
+    new initSensor(viewer, cesiumGlobal);
+    viewer && viewer.dataSources.add(this._customPluginLayer);
   }
 }
 
@@ -22,8 +25,8 @@ CustomCesiumPlugin.prototype = {
         Cesium.Math.toRadians(options.heading || 90),
         Cesium.Math.toRadians(options.pitch || 0),
         Cesium.Math.toRadians(options.roll || 0)
-      )
-      let l = options.position
+      );
+      let l = options.position;
       return this._customPluginLayer.entities.add({
         position: l,
         orientation: Cesium.Transforms.headingPitchRollQuaternion(l, r),
@@ -34,14 +37,13 @@ CustomCesiumPlugin.prototype = {
           material: options.material || new Cesium.Color(1.0, 0.0, 1.0, 0.4),
           lineColor: options.lineColor || new Cesium.Color(1.0, 0.0, 1.0, 1.0),
           showScanPlane: options.showScanPlane || true,
-          scanPlaneColor:
-            options.scanPlaneColor || new Cesium.Color(1.0, 0.0, 1.0, 1.0),
-          scanPlaneMode: options.scanPlaneMode || 'vertical',
+          scanPlaneColor: options.scanPlaneColor || new Cesium.Color(1.0, 0.0, 1.0, 1.0),
+          scanPlaneMode: options.scanPlaneMode || "vertical",
           scanPlaneRate: options.scanPlaneRate || 3,
           showThroughEllipsoid: options.showThroughEllipsoid || !1,
-          show: true
-        })
-      })
+          show: true,
+        }),
+      });
     }
   },
   // 棱形传感器正在加紧研究中......
@@ -55,17 +57,45 @@ CustomCesiumPlugin.prototype = {
         rotation: {
           heading: Cesium.Math.toRadians(options.heading || 0),
           pitch: Cesium.Math.toRadians(options.pitch || 0),
-          roll: Cesium.Math.toRadians(options.roll || 0)
+          roll: Cesium.Math.toRadians(options.roll || 0),
         },
         color: options.color || {
           red: 0.43137254901960786,
           green: 0.9607843137254902,
           blue: 0,
-          alpha: 0.8
-        }
-      })
+          alpha: 0.8,
+        },
+      });
     }
   },
+  /**
+   * 锥形传感器
+   * @function
+   * @param {object} options
+   * @param {Cartesian3} options.position - 坐标
+   * @param {number} options.angle - 角度
+   * @param {number} options.radius - 半径
+   * @param {number} options.heading - 方向
+   * @param {number} options.pitch - 倾斜度
+   * @param {object} options.roll - 翻滚角
+   * @param {object} options.color - 颜色
+   * @param {object} options.lineColor - 线条颜色
+   * @example
+   * import { CustomCesiumPlugin } from 'cesium_dev_kit'
+   * const {customCesiumPlugin} = new CustomCesiumPlugin({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   * customCesiumPlugin.createRadarPrimitive(
+        {
+          position:Cesium.Cartesian3.fromDegrees(117.224, 31.819, 128),
+          roll: 0,
+          pitch: 40,
+          heading: 0
+        }
+      )
+   * @returns {ConeSensorPrimitive}
+   */
   createRadarPrimitive: function (options) {
     if (options) {
       return new Cesium.Scene.ConeSensorPrimitive(this._viewer, {
@@ -75,23 +105,23 @@ CustomCesiumPlugin.prototype = {
         rotation: {
           heading: Cesium.Math.toRadians(options.heading || 0),
           pitch: Cesium.Math.toRadians(options.pitch || 40),
-          roll: Cesium.Math.toRadians(options.roll || 0)
+          roll: Cesium.Math.toRadians(options.roll || 0),
         },
         color: options.color || {
           red: 1,
           green: 0,
           blue: 0,
-          alpha: 0.4
+          alpha: 0.4,
         },
         lineColor: options.lineColor || {
           red: 1,
           green: 1,
           blue: 1,
-          alpha: 0.9
-        }
-      })
+          alpha: 0.9,
+        },
+      });
     }
-  }
-}
+  },
+};
 
-export { CustomCesiumPlugin }
+export { CustomCesiumPlugin };
