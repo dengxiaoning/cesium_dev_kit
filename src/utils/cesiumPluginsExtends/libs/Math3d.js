@@ -42,11 +42,18 @@ Math3d.prototype = {
   },
 
   /**
-   * 计算链路的点集
-   * @param startPoint 开始节点
-   * @param endPoint 结束节点
-   * @param angularityFactor 曲率
-   * @param numOfSingleLine 点集数量
+   * 计算两点的点集
+   * @param {	Cartesian3} startPoint - 开始节点
+   * @param {	Cartesian3} endPoint - 结束节点
+   * @param {number} angularityFactor - 曲率
+   * @param {number} numOfSingleLine - 点集数量
+   * @example
+   * import { Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   * var startPoint = Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988)
+     var endPoint = Cesium.Cartesian3.fromDegrees((Math.random() / 100) + 104.081701757991, (Math.random() / 100) + 30.627042558105988);
+
+     var positions = math3d.getLinkedPointList(startPoint, endPoint, 100000, 50);
    * @returns {Array}
    */
   getLinkedPointList: function (startPoint, endPoint, angularityFactor, numOfSingleLine) {
