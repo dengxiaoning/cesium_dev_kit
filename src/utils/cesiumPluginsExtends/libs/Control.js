@@ -6,6 +6,11 @@ let dragEntity;
 let mode = "move";
 let _global_viewer = null;
 /**
+ * @typedef {object} ctrlManualFlag - 模型拖拽标识
+ * @property {boolean} selected - 是否选中
+ * @property {boolean} leftDown - 左键按下
+ */
+/**
  * 控件模块
  * @class
  * @augments  module:Base
@@ -106,7 +111,7 @@ Control.prototype = {
 
     Cesium.Scene.FileDragDropMixin = FileDragDropMixin;
   },
-  /**
+  /*
    * 加载本地数据
    * @param {object} param
    */
@@ -221,6 +226,15 @@ Control.prototype = {
   /**
    * 后处理面板
    * @param {object} param
+   * @param {string} param.elementId - gui 组件绑定的dom
+   * @param {object} param.silhouetteColor - 轮廓颜色
+   * @example
+   * import { Control } from 'cesium_dev_kit'
+   * const {control} = new Control({
+   *    cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer'
+      })
+   * control.showPostProcessStagesPanel({ elementId: 'cust-gui-box' });
    */
   showPostProcessStagesPanel(param) {
     param = param || {};
@@ -298,6 +312,14 @@ Control.prototype = {
   /**
    * 环境控制
    * @param {object} param
+   * @param {string} param.elementId - gui 组件绑定的dom
+   * @example
+   * import { Control } from 'cesium_dev_kit'
+   * const {control} = new Control({
+   *    cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer'
+      })
+   * control.showSceneBloomPanel({ elementId: 'cust-gui-box' });
    */
   showSceneBloomPanel(param) {
     let Options = function () {
@@ -399,6 +421,22 @@ Control.prototype = {
   /**
    * 矩阵调整面板
    * @param {object} param
+   * @param {Primitive} param.primitives - 操作的目标图元
+   * @param {string} param.elementId - gui对象绑定的dom id
+   * @example
+   * import { Control } from 'cesium_dev_kit'
+   * const {control,viewer} = new Control({
+   *    cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer'
+      })
+     let tileset =  viewer.scene.primitives.add(new Cesium.Cesium3DTileset({url: 'static/data/3DTiles/building/tileset.json'}));
+      control.showPrimitiveMatrixPanel({
+         elementId: 'cust-gui-box',
+         primitives: tileset, 
+         cb: resModelMatrix => {
+          console.log(resModelMatrix);
+        }
+      });
    */
   showPrimitiveMatrixPanel(param) {
     let primitive = param.primitives._delegate || param.primitives,
@@ -638,8 +676,16 @@ Control.prototype = {
   },
   /**
    * 图层参数调整
-   * @param {object} layer
-   * @param {object} param
+   * @param {ImageryLayer} layer - ImageryLayer对象
+   * @param {string} param.elementId - gui对象绑定的dom id
+   * @example
+   * import { Control } from 'cesium_dev_kit'
+   * const {viewer,control} = new Control({
+   *    cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer'
+      })
+      let layer = viewer.imageryLayers.addImageryProvider(new Cesium.Scene.GoogleImageryProvider({}));
+   * control.showLayerParamPanel(layer, { elementId: 'cust-gui-box' });
    */
   showLayerParamPanel: function (layer, param) {
     if (layer) {
@@ -791,6 +837,34 @@ Control.prototype = {
   /**
    * 场景效果调整面板
    * @param {object} options
+   * @param {boolean} options.colorCorrection - 开启颜色校正
+   * @param {boolean}  options.bloomEffect - 泛光开关
+   * @param {number} options.threshold - 泛光阈值
+   * @param {number} options.bloomIntensity - 泛光强度
+   * @param {number}  options.ambientLightColor - 环境光
+   * @param {boolean}  options.hdrEnabled - HDR开关
+   * @param {number}  options.saturation - 饱和度
+   * @param {number} options.brightness - 亮度
+   * @param {number} options.contrast - 对比度
+   * @param {number} options.hue - 色调
+   * @example
+   * import { Control } from 'cesium_dev_kit'
+   * const {control} = new Control({
+   *    cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer'
+      })
+   * control.showSceneEffectEditPanel({
+        colorCorrection:false,
+        saturation :3.1,
+        brightness : 1.8,
+        contrast :1.2,
+        hue :0,
+        bloomEffect: false,
+        hdrEnabled : true,
+        threshold :1,
+        bloomIntensity : 2,
+        ambientLightColor: new Cesium.Color(0.3, 0.3, 0.3, 1)
+     });
    */
   showSceneEffectEditPanel: function (options) {
     options = options || {};
@@ -798,7 +872,7 @@ Control.prototype = {
       var gui = new dat.GUI(),
         viewer = this._viewer;
 
-      /**
+      /*
        * 初始化场景
        */
       //设置环境光
@@ -816,7 +890,7 @@ Control.prototype = {
       viewer.scene.bloomEffect.threshold = options.threshold || 1;
       viewer.scene.bloomEffect.bloomIntensity = options.bloomIntensity || 2;
 
-      /**
+      /*
        * 初始化dat
        */
       var sceneObj = new (function () {
@@ -908,8 +982,26 @@ Control.prototype = {
     }
   },
   /**
-   * 位置姿态编辑面板啊
+   * 实体位置、角度编辑面板
    * @param {object} param
+   * @param {Entity} param.entity - 控制的目标实体
+   * @param {string} param.elementId - gui 绑定的dom id
+   * @param {function} param.cb - 回调函数
+   * @example
+   * import { Control } from 'cesium_dev_kit'
+   * const {control} = new Control({
+   *    cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer'
+      })
+      // 调用base 的createGraphics创建一个实体
+      const crEnt = control.createGraphics()
+      control.showEntityOrientationEditPanel({
+        elementId: 'cust-gui-box', 
+        entity:crEnt, 
+        cb: orientationRes => {
+          console.log(orientationRes)
+        }
+      });
    */
   showEntityOrientationEditPanel: function (param = {}) {
     if (param.entity) {
@@ -985,8 +1077,24 @@ Control.prototype = {
       Orientation.open();
     }
   },
-  /*
+
+  /**
    * 定义事件
+   * @param {Entity} targetEntity - 操作的目标实体
+   * @param {ctrlManualFlag} ctrlFlag - 操作常量定义
+   * @example
+   * import { Control } from 'cesium_dev_kit'
+   * const {control} = new Control({
+   *    cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer'
+      })
+   * let ctrlManualFlag = {
+        selected: false,
+        leftDown: false
+      }
+     // 调用base 的createGraphics创建一个实体
+      const entity = control.createGraphics()
+   * control.definedMouseEvent({ targetEntity: entity, ctrlFlag: ctrlManualFlag })
    */
   definedMouseEvent({ targetEntity, ctrlFlag }) {
     dragEntity = targetEntity;
@@ -1074,8 +1182,15 @@ Control.prototype = {
     document.body.style.cursor = "default";
   },
   /**
-   * 移动模型
-   * @param {object} modifyMode
+   * 平移模型
+   * @param {string} modifyMode - 移动标识，可选['move','rotate','scale']
+   * @example
+   * import { Control } from 'cesium_dev_kit'
+   * const {control} = new Control({
+   *    cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer'
+      })
+   * control.manualMoveModel('move')
    */
   manualMoveModel: function (modifyMode) {
     mode = modifyMode;
@@ -1083,8 +1198,15 @@ Control.prototype = {
     this._viewer.scene.screenSpaceCameraController.enableZoom = true;
   },
   /**
-   * 旋转模型
-   * @param {object} modifyMode
+   *  旋转模型
+   * @param {string} modifyMode - 移动标识，可选['move','rotate','scale']
+   * @example
+   * import { Control } from 'cesium_dev_kit'
+   * const {control} = new Control({
+   *    cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer'
+      })
+   * control.manualRotateModel('rotate')
    */
   manualRotateModel: function (modifyMode) {
     mode = modifyMode;
@@ -1092,8 +1214,15 @@ Control.prototype = {
     this._viewer.scene.screenSpaceCameraController.enableZoom = true;
   },
   /**
-   * 缩放模型
-   * @param {object} modifyMode
+   *  缩放模型
+   * @param {string} modifyMode - 移动标识，可选['move','rotate','scale']
+   * @example
+   * import { Control } from 'cesium_dev_kit'
+   * const {control} = new Control({
+   *    cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer'
+      })
+   * control.manualScaleModel('scale')
    */
   manualScaleModel: function (modifyMode) {
     mode = modifyMode;

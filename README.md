@@ -82,7 +82,7 @@ const {viewer,graphics} = new Graphics({
 new cesium_dev_kit.initCesium({...})
 ```
 
-See [API documentation](https://benpaodehenji.com/cesiumDevKitDoc) for more details...
+See [API documentation :bookmark_tabs: ](https://benpaodehenji.com/cesiumDevKitDoc) (Cheap server, please be patient) for more details...
 
 ---
 

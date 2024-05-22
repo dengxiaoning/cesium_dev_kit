@@ -67,7 +67,7 @@ const {viewer,graphics} = new Graphics({
   })
 ```
 
-更多详情见[ API 文档](https://benpaodehenji.com/cesiumDevKitDoc)
+更多详情见[ API 文档 :bookmark_tabs: ](https://benpaodehenji.com/cesiumDevKitDoc)(廉价服务器，请耐心等待)...
 
 ---
 
