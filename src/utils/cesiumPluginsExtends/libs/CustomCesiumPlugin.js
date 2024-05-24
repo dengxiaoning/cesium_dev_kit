@@ -19,6 +19,45 @@ function CustomCesiumPlugin(viewer, cesiumGlobal) {
 }
 
 CustomCesiumPlugin.prototype = {
+  /**
+   * 伞形传感器
+   * @function
+   * @param {object} options
+   * @param {Cartesian3} options.position - 坐标位置
+   * @param {object} options.show - 是否显示
+   * @param {number} options.heading  - 朝向
+   * @param {number} options.pitch - 倾斜度
+   * @param {number} options.roll - 翻滚角
+   * @param {number} options.slice -切分段数
+   * @param {number} options.radius - 传感器的半径
+   * @param {Material} options.material -  材质
+   * @param {Matrix4} options.modelMatrix - 模型矩阵
+   * @param {Color} options.showSectorLines - 是否显示扇面的线
+   * @param {Color} options.lineColor - 线的颜色
+   * @param {boolean} options.showScanPlane - 显示扫描面板
+   * @param {Color} options.scanPlaneColor - 扫描面板颜色
+   * @param {string} options.scanPlaneMode - 扫描面模式 可选[垂直vertical/水平horizontal]
+   * @param {number} options.scanPlaneRate  - 扫描速率
+   * @param {number} options.showLateralSurfaces -  是否显示侧面
+   * @param {number} options.xHalfAngle -  传感器水平半角
+   * @param {number} options.yHalfAngle - 传感器垂直半角
+   * @param {boolean} options.showThroughEllipsoid - 是否穿过地球
+   * @example
+   * import { CustomCesiumPlugin } from 'cesium_dev_kit'
+   * const {customCesiumPlugin} = new CustomCesiumPlugin({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   * customCesiumPlugin.createRectangularSensorGraphics({
+          position: Cesium.Cartesian3.fromDegrees(117.224, 31.819, 128),
+          roll: 0,
+          pitch: 0,
+          heading: 90,
+          xHalfAngle:0,
+          yHalfAngle:0
+      })
+   * @returns {Entity}
+   */
   createRectangularSensorGraphics: function (options) {
     if (this._customPluginLayer && options) {
       let r = new Cesium.HeadingPitchRoll(
@@ -36,15 +75,29 @@ CustomCesiumPlugin.prototype = {
           yHalfAngle: Cesium.Math.toRadians(options.yHalfAngle || 45),
           material: options.material || new Cesium.Color(1.0, 0.0, 1.0, 0.4),
           lineColor: options.lineColor || new Cesium.Color(1.0, 0.0, 1.0, 1.0),
-          showScanPlane: options.showScanPlane || true,
+          showScanPlane: this._objHasOwnProperty(options, "showScanPlane", true),
+          showSectorLines: this._objHasOwnProperty(options, "showSectorLines", true),
+          showLateralSurfaces: this._objHasOwnProperty(options, "showLateralSurfaces", true),
+          modelMatrix: options.modelMatrix || new Cesium.Matrix4(),
           scanPlaneColor: options.scanPlaneColor || new Cesium.Color(1.0, 0.0, 1.0, 1.0),
           scanPlaneMode: options.scanPlaneMode || "vertical",
           scanPlaneRate: options.scanPlaneRate || 3,
-          showThroughEllipsoid: options.showThroughEllipsoid || !1,
-          show: true,
+          showThroughEllipsoid: this._objHasOwnProperty(options, "showThroughEllipsoid", false),
+          show: this._objHasOwnProperty(options, "show", true),
         }),
       });
     }
+  },
+  /**
+   * 判断对象是否有某个属性
+   * @private
+   * @param {object} obj 对象
+   * @param {string} field  属性字段
+   * @param {string} defVal  默认返回
+   * @returns {string}
+   */
+  _objHasOwnProperty(obj, field, defVal) {
+    return obj.hasOwnProperty(field) ? obj.field : defVal;
   },
   // 棱形传感器正在加紧研究中......
   createSatelliteCoverageSimulationGraphics: function (options) {

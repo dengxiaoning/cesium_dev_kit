@@ -332,7 +332,7 @@ Graphics.prototype = {
         semiMajorAxis: options.e_semiMajorAxis || 1000000.0,
         semiMinorAxis: options.e_semiMinorAxis || 1000000.0,
         metarial: options.e_metarial || Cesium.Color.RED.withAlpha(0.5),
-        outline: options.hasOwnProperty("e_outline") ? options.e_outline : true,
+        outline: this._objHasOwnProperty(options, "e_outline", true),
       });
     }
   },
