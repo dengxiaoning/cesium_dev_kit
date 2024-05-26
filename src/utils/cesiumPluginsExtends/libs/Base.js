@@ -690,7 +690,7 @@ Base.prototype = {
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.transformWGS84ArrayToCartesianArray([{lng:110.16018735617934, lat:31.036076859828338, lat:0 }])
+   * baseObj.base.transformWGS84ArrayToCartesianArray([{lng:110.16018735617934, lat:31.036076859828338, alt:0 }])
    * @returns {Cartesian3|Array} 转换后的笛卡尔积数组
    */
   transformWGS84ArrayToCartesianArray: function (WSG84Arr, alt) {
@@ -717,7 +717,7 @@ Base.prototype = {
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.transformWGS84ToCartesian({lng:110.16018735617934, lat:31.036076859828338, lat:0 },30)
+   * baseObj.base.transformWGS84ToCartesian({lng:110.16018735617934, lat:31.036076859828338, alt:0 },30)
    * @returns {Cartesian3} 转换后的笛卡尔积数组
    */
   transformWGS84ToCartesian: function (position, alt) {
@@ -828,7 +828,7 @@ Base.prototype = {
    * const wgs84 =  baseObj.base.transformCartesianToWGS84(Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338));
    * const cartographic = baseObj.base.transformWGS84ToCartographic(wgs84)
    * // or
-   * const cartographic2 = baseObj.base.transformWGS84ToCartographic({lng:110.16018735617934, lat:31.036076859828338, lat:0 });
+   * const cartographic2 = baseObj.base.transformWGS84ToCartographic({lng:110.16018735617934, lat:31.036076859828338, alt:0 });
    * @returns {Cartographic} 地理坐标
    *
    */

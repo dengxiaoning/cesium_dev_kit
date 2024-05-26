@@ -142,7 +142,19 @@ Math3d.prototype = {
   },
   /**
    * 计算一组坐标组成的面的面积
-   * @param {Array} positions
+   * @param {Array} positions - 需要计算的84数组（数据格式见： {@link WGS84Type}）
+   * @example
+   * import { Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   *const orgArr = [
+      { lng: 110.16018735617934, lat: 31.036076859828338, alt: 0 },
+      { lng: 110.17845812703679, lat: 31.033686527335444, alt: 0 },
+      { lng: 110.19261040403379, lat: 31.02892781958261, alt: 0 },
+      { lng: 110.20775152895165, lat: 31.02475678594998, alt: 0 },
+    ];
+   * const areaNum =  math3d.getPositionsArea(orgArr)
+   * @returns {number} 面积数据
+   * @see {@link module:Base#transformWGS84ToCartographic|transformWGS84ToCartographic}
    */
   getPositionsArea: function (positions) {
     let result = 0;
@@ -162,56 +174,81 @@ Math3d.prototype = {
   /**
    * 计算多边形的面积
    * @function
-   * @param {Array} points
+   * @param {Array} points - 多边形数组（数据格式见： {@link WGS84Type}）
+   * @example
+   * import { Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   *const orgArr = [
+      { lon: 110.16018735617934, lat: 31.036076859828338, alt: 0 },
+      { lon: 110.17845812703679, lat: 31.033686527335444, alt: 0 },
+      { lon: 110.19261040403379, lat: 31.02892781958261, alt: 0 },
+      { lon: 110.20775152895165, lat: 31.02475678594998, alt: 0 },
+    ];
+   * const areaNum =  math3d.getPolygonArea(orgArr)
+   * @returns {number} 面积数据
+   * @see {@link module:Base#transformWGS84ToCartesian|transformWGS84ToCartesian}
+   * @see {@link module:Math3d#getPointDistance|getPointDistance}
    */
-  getPolygonArea: function (points) {
+  getPolygonArea: function (positions) {
     if (this._viewer) {
-      var Bearing = function (from, to) {
+      let radiansPerDegree = Math.PI / 180.0; //角度转化为弧度(rad)
+      let degreesPerRadian = 180.0 / Math.PI; //弧度转化为角度
+      // 方向
+      const Bearing = function (from, to) {
         var lat1 = from.lat * radiansPerDegree,
           lon1 = from.lon * radiansPerDegree,
           lat2 = to.lat * radiansPerDegree,
-          lon2 = to.lon * radiansPerDegree,
-          angle = -Math.atan2(
-            Math.sin(lon1 - lon2) * Math.cos(lat2),
-            Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon1 - lon2)
-          );
+          lon2 = to.lon * radiansPerDegree;
+
+        let angle = -Math.atan2(
+          Math.sin(lon1 - lon2) * Math.cos(lat2),
+          Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon1 - lon2)
+        );
         if (angle < 0) {
           angle += Math.PI * 2.0;
         }
         angle = angle * degreesPerRadian; //角度
         return angle;
       };
-
-      var Angle = function (p1, p2, p3) {
-        var bearing21 = Bearing(p2, p1),
-          bearing23 = Bearing(p2, p3),
-          angle = bearing21 - bearing23;
+      // 角度
+      const pointAngle = function (point1, point2, point3) {
+        let bearing21 = Bearing(point2, point1);
+        let bearing23 = Bearing(point2, point3);
+        let angle = bearing21 - bearing23;
         if (angle < 0) {
           angle += 360;
         }
         return angle;
       };
-      var res = 0;
       //拆分三角曲面
-
-      for (var i = 0; i < points.length - 2; i++) {
-        var j = (i + 1) % points.length,
-          k = (i + 2) % points.length,
-          totalAngle = Angle(points[i], points[j], points[k]),
-          dis_temp1 = this.getPositionsDistance(positions[i], positions[j]),
-          dis_temp2 = this.getPositionsDistance(positions[j], positions[k]);
-
-        res += dis_temp1 * dis_temp2 * Math.abs(Math.sin(totalAngle));
+      let res = 0;
+      for (let i = 0; i < positions.length - 2; i++) {
+        let j = (i + 1) % positions.length;
+        let k = (i + 2) % positions.length;
+        let totalAngle = pointAngle(positions[i], positions[j], positions[k]);
+        let tempLength1 = this.getPointDistance(
+          this.transformWGS84ToCartesian(positions[i]),
+          this.transformWGS84ToCartesian(positions[j])
+        );
+        let tempLength2 = this.getPointDistance(
+          this.transformWGS84ToCartesian(positions[j]),
+          this.transformWGS84ToCartesian(positions[k])
+        );
+        res += tempLength1 * tempLength2 * Math.abs(Math.sin(totalAngle));
       }
-
-      return (res / 1000000.0).toFixed(4);
+      return res.toFixed(2);
     }
   },
   /**
    * 获取两点距离
    * @function
-   * @param {Cartesian3} point1
-   * @param {Cartesian3} point2
+   * @param {Cartesian3} point1 - 坐标1
+   * @param {Cartesian3} point2 - 坐标2
+   * @example
+   * import { Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   * const dis =  math3d.getPointDistance(Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338),Cesium.Cartesian3.fromDegrees(110.20775152895165,31.02475678594998))
+   * @returns {number} 距离
    */
   getPointDistance: function (point1, point2) {
     if (this._viewer) {
@@ -230,7 +267,7 @@ Math3d.prototype = {
   },
   /**
    * 获取84坐标的距离
-   * @param {Array} positions
+   * @param {Array} positions - 84坐标数组（数据格式见： {@link WGS84Type}）
    * @example
    * import { Math3d } from 'cesium_dev_kit'
    * const math3d = new Math3d(viewer,Cesium);
