@@ -552,10 +552,14 @@ Math3d.prototype = {
     }
   },
   /**
-   * 获取3DTiles高度
-   * 传入Cartographic类型数组 弧度制经纬度
-   * @param {Array} Cartographics - 地理坐标数组
+   * 传入Cartographic类型数组 弧度制经纬度,计算位于地形中高度
+   * @param {Array<CartographicType>} Cartographics - 地理坐标数组
    * @param {function} callback
+   * @example
+   * import { Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   * const coors = [new Cesium.Cartographic(110.16018735617934, 31.036076859828338,5000), new Cesium.Cartographic(110.17845812703679,31.033686527335444,5000)];
+   * math3d.computeCartographicPointsTerrainData(coors,res=>{console.log(res)});
    */
   computeCartographicPointsTerrainData: function (Cartographics, callback) {
     if (this._viewer) {
@@ -707,14 +711,20 @@ Math3d.prototype = {
     }
     return result;
   },
-  /*
-        线段插值
-        经纬度高程插值
-        Cartographic start.longitude start.latitude 单位:弧度 start.height 高程单位m
-        num:分总段数  传入数组长度-1
-        index:获取到第index点的所有插值 0点是开始点
-        return [Cartographic,...]
-        */
+  /**
+   * 线段插值/经纬度高程插值
+   * @param {CartographicType} start - 开始坐标点
+   * @param {CartographicType} end - 结束坐标点
+   * @param {number} num - 分总段数  传入数组长度
+   * @param {Array} curIndex - 第index个插值点数组
+   * @example
+   * import { Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   * const strCartCoor = new Cesium.Cartographic(110.16018735617934, 31.036076859828338,5000)
+   * const endCartCoor = new Cesium.Cartographic(110.17845812703679,31.033686527335444,5000)
+   * let curPoint = math3d.computeInterpolate2IndexLineHeightCartographic(strCartCoor, endCartCoor,20,[0,3,7,9]);
+   * @returns {Array<CartographicType>}
+   */
   computeInterpolate2IndexLineHeightCartographic: function (start, end, num, curIndex) {
     if (!start || !end) {
       return null;
@@ -736,15 +746,20 @@ Math3d.prototype = {
     //result.push(new Cesium.Cartographic(end.longitude, end.latitude, end.height));
     return result;
   },
-
-  /*
-        线段插值 指定第index值
-        经纬度高程插值
-        Cartographic start.longitude start.latitude 单位:弧度 start.height 高程单位m
-        num:分总段数  传入数组长度-1
-        index:获取第index个插值点  0点是开始点
-        return Cartographic
-        */
+  /**
+   * 经纬度高程插值,指定插值位置index
+   * @param {CartographicType} start - 开始坐标点
+   * @param {CartographicType} end - 结束坐标点
+   * @param {number} num - 分总段数  传入数组长度
+   * @param {number} index - 获取第index个插值点  0点是开始点
+   * @example
+   * import { Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   * const strCartCoor = new Cesium.Cartographic(110.16018735617934, 31.036076859828338,5000)
+   * const endCartCoor = new Cesium.Cartographic(110.17845812703679,31.033686527335444,5000)
+   * let curPoint = math3d.computeInterpolateIndexLineHeightCartographic(strCartCoor, endCartCoor,1,0 );
+   * @returns {CartographicType}
+   */
   computeInterpolateIndexLineHeightCartographic: function (start, end, num, index) {
     if (!start || !end) {
       return null;

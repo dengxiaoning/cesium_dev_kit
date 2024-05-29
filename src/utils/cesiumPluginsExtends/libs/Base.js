@@ -16,6 +16,12 @@ let dfSt = undefined;
  * @property {object} direction - 方向
  */
 /**
+ * @typedef {Object}  CartographicType - WGS84地理坐标
+ * @property {number} longitude  - 经度
+ * @property {number} latitude - 纬度
+ * @property {number} height - 高度
+ */
+/**
  * @typedef {Object}  WGS84Type - 84坐标信息
  * @property {number} lng - 经度
  * @property {number} lat - 纬度
@@ -38,8 +44,6 @@ function Base(viewer, cesiumGlobal, defaultStatic) {
     Cesium = cesiumGlobal;
     /** @access private */
     dfSt = defaultStatic;
-    //Cesium.Ion.defaultAccessToken =
-    //  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
     /** @private */
     this._drawLayer = new Cesium.CustomDataSource("drawLayer");
     viewer && viewer.dataSources.add(this._drawLayer);
@@ -837,15 +841,26 @@ Base.prototype = {
       ? Cesium.Cartographic.fromDegrees(position.lng || position.lon, position.lat, position.alt)
       : Cesium.Cartographic.ZERO;
   },
-  // 拾取位置点
+  /**
+   * 拾取位置点
+   * @param {Cartesian2} px - 屏幕二维坐标
+   * @see {@link module:Base#transformWGS84ToCartesian|transformWGS84ToCartesian}
+   * @see {@link module:Base#transformCartesianToWGS84|transformCartesianToWGS84}
+   * @example
+   * import { Base } from 'cesium_dev_kit'
+   * const {viewer,base} = new Base({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   *  const _handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+   * _handler.setInputAction(function (movement) {
+        var cartesian = base.getCatesian3FromPX(movement.endPosition);
+         console.log(cartesian)
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+   * @returns  {boolean|Cartesian3}
+   */
   getCatesian3FromPX: function (px) {
     if (this._viewer && px) {
-      // var picks = this._viewer.scene.drillPick(px); // 3dtilset
-      // for (var i = 0; i < picks.length; i++) {
-      //     if (picks[i] instanceof Cesium.Cesium3DTileFeature) { //模型上拾取
-      //         isOn3dtiles = true;
-      //     }
-      // }
       var picks = this._viewer.scene.pick(px);
       var cartesian = null;
       var isOn3dtiles = false,
@@ -896,7 +911,13 @@ Base.prototype = {
    * 获取相机位置
    * @function
    * @returns {cameraPosType} 相机位置信息
-   *
+   * @example
+   * import { Base } from 'cesium_dev_kit'
+   * const {base} = new Base({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   * const cameraPos = base.getCameraPosition();
    */
   getCameraPosition: function () {
     if (this._viewer) {
@@ -964,6 +985,20 @@ Base.prototype = {
    * @param {object} options.leftDown - 左键按下
    * @param {object} options.mouseWheel - 鼠标滚动
    * @param {object} options.leftUp - 左键弹起
+   * @example
+   * import { Base } from 'cesium_dev_kit'
+   * const {base} = new Base({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   *  base.bindHandelEvent({
+        leftClick: function click(event, _handlers) {
+             todo something...
+        },
+        mouseMove: function move(event) {
+          todo something...
+        },
+      });
    */
   bindHandelEvent: function ({
     leftClick: _mouseLeftClickHandler,
@@ -1006,7 +1041,17 @@ Base.prototype = {
         }, Cesium.ScreenSpaceEventType.LEFT_UP);
     }
   },
-  //获取鼠标信息
+  /**
+   * 获取鼠标信息
+   * @param {function} callback
+   * @example
+   * import { Base } from 'cesium_dev_kit'
+   * const {base} = new Base({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   * base.getHandelPosition(res=>{console.log(res)})
+   */
   getHandelPosition: function (callback) {
     if (this._viewer) {
       var _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas),
@@ -1020,7 +1065,16 @@ Base.prototype = {
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     }
   },
-  //保存当前场景png
+  /**
+   * 保存当前场景png
+   * @example
+   * import { Base } from 'cesium_dev_kit'
+   * const {base} = new Base({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   * base.saveSceneImages()
+   */
   saveSceneImages: function () {
     if (this._viewer) {
       const dataURLtoBlob = function (dataurl) {
@@ -1057,6 +1111,7 @@ Base.prototype = {
     const IMG_URL = "https://webst{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}";
     const ELEC_URL = "http://webrd{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}";
     /**
+     * 高度地图扩展
      * @global
      * @param {object} options
      * @param {string} options.style - 图层类型，可选['elec'| 'img']
@@ -1394,7 +1449,7 @@ Base.prototype = {
                     v_texCoord = position.xyz;\n\
                     }\n\
                     ";
-    /**
+    /*
      * 为了兼容高版本的Cesium，因为新版cesium中getRotation被移除
      */
     if (!defined(Matrix4.getRotation)) {
@@ -1402,7 +1457,7 @@ Base.prototype = {
     }
     /**
      * 拓展近景天空盒
-     * @function
+     * @global
      * @param {object} options
      * @param {object} options.sources - 配置天空盒六面的图片
      * @param {boolean} options.show - 是否显示

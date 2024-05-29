@@ -35,6 +35,7 @@ Draw.prototype = {
    * @param {object} options
    * @param {object} options.style - 样式对象
    * @param {function} options.callback - 回调函数
+   * @see {@link module:Base#transformCartesianArrayToWGS84Array|transformCartesianArrayToWGS84Array}
    * @example
    * import { Draw } from 'cesium_dev_kit'
    * const drawObj = new Draw({
@@ -111,6 +112,8 @@ Draw.prototype = {
    * @param {boolean} options.clampToGround - 是否贴地
    * @param {boolean} options.clampToS3M - 是否贴于s3m 模型上
    * @param {function} options.callback - 回调函数
+   * @see {@link module:Base#getCatesian3FromPX|getCatesian3FromPX}
+   * @see {@link module:Base#transformCartesianArrayToWGS84Array|transformCartesianArrayToWGS84Array}
    * @example
    *  import { Draw } from 'cesium_dev_kit'
    * const drawObj = new Draw({
@@ -225,6 +228,9 @@ Draw.prototype = {
    * @param {number} options.height - 拉伸高度
    * @param {boolean} options.clampToGround - 是否贴地
    * @param {function} options.callback - 回调函数
+   * @see {@link module:Base#getCatesian3FromPX|getCatesian3FromPX}
+   * @see {@link module:Math3d#getPositionsArea|getPositionsArea}
+   * @see {@link module:Base#transformCartesianArrayToWGS84Array|transformCartesianArrayToWGS84Array}
    * @example
    *  import { Draw } from 'cesium_dev_kit'
    * const drawObj = new Draw({
@@ -356,6 +362,8 @@ Draw.prototype = {
    * @param {boolean} options.style - 图形风格配置
    * @param {number} options.height - 拉伸高度
    * @param {function} options.callback - 回调函数
+   * @see {@link module:Base#getCatesian3FromPX|getCatesian3FromPX}
+   * @see {@link module:Base#transformCartesianArrayToWGS84Array|transformCartesianArrayToWGS84Array}
    * @example
    *  import { Draw } from 'cesium_dev_kit'
    * const drawObj = new Draw({
@@ -432,6 +440,7 @@ Draw.prototype = {
    * @param {boolean} options.style - 图形风格配置
    * @param {number} options.height - 拉伸高度
    * @param {function} options.callback - 回调函数
+   * @see {@link module:Base#getCatesian3FromPX|getCatesian3FromPX}
    * @example
    *  import { Draw } from 'cesium_dev_kit'
    * const drawObj = new Draw({
@@ -543,6 +552,8 @@ Draw.prototype = {
    * @param {object} options
    * @param {boolean} options.style - 图形风格配置
    * @param {function} options.callback - 回调函数
+   * @see {@link module:Base#getCatesian3FromPX|getCatesian3FromPX}
+   * @see {@link module:Base#transformCartesianArrayToWGS84Array|transformCartesianArrayToWGS84Array}
    * @example
    *  import { Draw } from 'cesium_dev_kit'
    * const drawObj = new Draw({
@@ -724,6 +735,7 @@ Draw.prototype = {
    * @param {object} options
    * @param {boolean} options.style - 图形风格配置
    * @param {function} options.callback - 回调函数
+   * @see {@link module:Base#transformWGS84ArrayToCartesianArray|transformWGS84ArrayToCartesianArray}
    * @example
    *  import { Draw } from 'cesium_dev_kit'
    * const drawObj = new Draw({
@@ -769,6 +781,8 @@ Draw.prototype = {
    * @param {object} options
    * @param {boolean} options.style - 图形风格配置
    * @param {function} options.callback - 回调函数
+   * @see {@link module:Draw#drawCircleGraphics|drawCircleGraphics}
+   * @see {@link module:Base#createGraphics|createGraphics}
    * @example
    *  import { Draw } from 'cesium_dev_kit'
    * const drawObj = new Draw({
@@ -873,6 +887,7 @@ Draw.prototype = {
    * @param {number} options.height - 高度
    * @param {number} options.extrudedHeight - 拉伸高度
    * @param {function} options.callback - 回调函数
+    * @see {@link module:Base#transformWGS84ArrayToCartesianArray|transformWGS84ArrayToCartesianArray}
    * @example
    *  import { Draw } from 'cesium_dev_kit'
    * const drawObj = new Draw({
@@ -928,6 +943,7 @@ Draw.prototype = {
    * @param {number} options.arms - 管道角数量
    * @param {number} options.shape - 管道形状 如：fivePoint
    * @param {function} options.callback - 回调函数
+   * @see {@link module:Base#transformWGS84ArrayToCartesianArray|transformWGS84ArrayToCartesianArray}
    * @example
    *  import { Draw } from 'cesium_dev_kit'
    * const drawObj = new Draw({
