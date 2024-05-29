@@ -1,17 +1,25 @@
-import {
-  BasePlot
-} from './BasePlot'
+import { BasePlot } from "./BasePlot";
 let Cesium = null;
-//攻击箭头
+/**
+ * 标会（攻击箭头）模块
+ * @class
+ * @param {object} viewer - cesium 实例
+ * @param {object}  cesiumGlobal - cesium 全局对象
+ * @exports AttackArrow
+ */
 var AttackArrow = function (viewer, cesiumGlobal) {
   BasePlot.call(this, viewer, cesiumGlobal);
   Cesium = cesiumGlobal;
   this.type = "AttackArrow";
 
   this.fillMaterial = Cesium.Color.RED.withAlpha(0.5);
-}
+};
 
 AttackArrow.prototype = {
+  /**
+   * 销毁绘制操作
+   * @function
+   */
   disable: function () {
     this.positions = [];
     if (this.arrowEntity) {
@@ -40,14 +48,24 @@ AttackArrow.prototype = {
     }
     this.clickStep = 0;
   },
+  /**
+   * 开始绘制攻击箭头
+   * @function
+   * @param {function} cb  - 回调函数
+   * @example
+   * import { AttackArrow } from 'cesium_dev_kit'
+   * const attackArrowObj = new AttackArrow(viewer, Cesium)
+   * attackArrowObj.startDraw((res)=>{console.log(res))
+   */
   startDraw: function (cb) {
-    this.objId = Number((new Date()).getTime() + "" + Number(Math.random() * 1000).toFixed(0))
+    this.objId = Number(new Date().getTime() + "" + Number(Math.random() * 1000).toFixed(0));
     var $this = this;
     this.state = 1;
     if (!this.handler) {
       this.handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
     }
-    this.handler.setInputAction(function (evt) { //单机开始绘制
+    this.handler.setInputAction(function (evt) {
+      //单机开始绘制
       var cartesian;
       cartesian = getCatesian3FromPX(evt.position, $this.viewer);
       if (!cartesian) return;
@@ -63,11 +81,12 @@ AttackArrow.prototype = {
       if ($this.positions.length > 2) {
         point.wz = $this.positions.length - 1; //点对应的在positions中的位置  屏蔽mouseMove里往postions添加时 未创建点
       } else {
-        point.wz = $this.positions.length; //点对应的在positions中的位置 
+        point.wz = $this.positions.length; //点对应的在positions中的位置
       }
       $this.pointArr.push(point);
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    this.handler.setInputAction(function (evt) { //移动时绘制面
+    this.handler.setInputAction(function (evt) {
+      //移动时绘制面
       if (!$this.floatPoint || $this.positions.length < 2) return;
       // var ray = viewer.camera.getPickRay(evt.endPosition);
       // if (!ray) return;
@@ -88,7 +107,8 @@ AttackArrow.prototype = {
         }
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-    this.handler.setInputAction(function (evt) { //右击结束绘制
+    this.handler.setInputAction(function (evt) {
+      //右击结束绘制
       // var ray = viewer.camera.getPickRay(evt.position);
       // if (!ray) return;
       // var cartesian = viewer.scene.globe.pick(ray, $this.viewer.scene);
@@ -110,9 +130,10 @@ AttackArrow.prototype = {
       $this.arrowEntity = null;
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
   },
-  createByData: function (data) { //根据传入的数据构建箭头
+  createByData: function (data) {
+    //根据传入的数据构建箭头
     this.positions = []; //控制点
-    this.state = -1; //state用于区分当前的状态 0 为删除 1为添加 2为编辑 
+    this.state = -1; //state用于区分当前的状态 0 为删除 1为添加 2为编辑
     this.floatPoint = null;
     this.pointArr = []; //中间各点
     this.selectPoint = null;
@@ -134,20 +155,22 @@ AttackArrow.prototype = {
     this.arrowEntity = this.showArrowOnMap(this.positions);
     this.arrowEntity.objId = this.objId;
   },
-  startModify: function () { //修改箭头
+  startModify: function () {
+    //修改箭头
     this.state = 2;
     var $this = this;
     for (var i = 0; i < $this.pointArr.length; i++) {
       $this.pointArr[i].show = true;
     }
     if (!this.modifyHandler) this.modifyHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
-    this.modifyHandler.setInputAction(function (evt) { //单机开始绘制
+    this.modifyHandler.setInputAction(function (evt) {
+      //单机开始绘制
       var pick = $this.viewer.scene.pick(evt.position);
       if (Cesium.defined(pick) && pick.id) {
         $this.clickStep++;
-        if (!pick.id.objId)
-          $this.selectPoint = pick.id;
-      } else { //激活移动点之后 单机面之外 移除这个事件
+        if (!pick.id.objId) $this.selectPoint = pick.id;
+      } else {
+        //激活移动点之后 单机面之外 移除这个事件
         for (var i = 0; i < $this.pointArr.length; i++) {
           $this.pointArr[i].show = false;
         }
@@ -168,10 +191,10 @@ AttackArrow.prototype = {
           $this.selectPoint.position.setValue(cartesian);
           $this.selectPoint = null;
         }
-
-      };
+      }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    this.modifyHandler.setInputAction(function (evt) { //单机开始绘制
+    this.modifyHandler.setInputAction(function (evt) {
+      //单机开始绘制
       // var ray = $this.viewer.camera.getPickRay(evt.endPosition);
       // if (!ray) return;
       // var cartesian = $this.viewer.scene.globe.pick(ray, $this.viewer.scene);
@@ -194,7 +217,8 @@ AttackArrow.prototype = {
     }
     return arr;
   },
-  getPositions: function () { //获取直角箭头中的控制点 世界坐标
+  getPositions: function () {
+    //获取直角箭头中的控制点 世界坐标
     return this.positions;
   },
   creatPoint: function (cartesian) {
@@ -203,7 +227,7 @@ AttackArrow.prototype = {
       point: {
         pixelSize: 10,
         color: Cesium.Color.YELLOW,
-      }
+      },
     });
     point.attr = "editPoint";
     return point;
@@ -218,22 +242,22 @@ AttackArrow.prototype = {
       var lnglatArr = [];
       for (var i = 0; i < positions.length; i++) {
         var lnglat = $this.cartesianToLatlng(positions[i]);
-        lnglatArr.push(lnglat)
+        lnglatArr.push(lnglat);
       }
       var res = $this.xp.algorithm.tailedAttackArrow(lnglatArr, Cesium);
       var index = JSON.stringify(res.polygonalPoint).indexOf("null");
       var returnData = [];
       if (index == -1) returnData = res.polygonalPoint;
       return new Cesium.PolygonHierarchy(returnData);
-    }
+    };
     return this.viewer.entities.add({
-      id:$this.objId,
+      id: $this.objId,
       polygon: new Cesium.PolygonGraphics({
         hierarchy: new Cesium.CallbackProperty(update, false),
         show: true,
         fill: true,
-        material: $this.fillMaterial
-      })
+        material: $this.fillMaterial,
+      }),
     });
   },
   cartesianToLatlng: function (cartesian) {
@@ -241,10 +265,10 @@ AttackArrow.prototype = {
     var lat = Cesium.Math.toDegrees(latlng.latitude);
     var lng = Cesium.Math.toDegrees(latlng.longitude);
     return [lng, lat];
-  }
-}
+  },
+};
 AttackArrow.prototype = Object.create(Object.assign({}, AttackArrow.prototype, BasePlot.prototype));
-AttackArrow.prototype.constructor = AttackArrow
+AttackArrow.prototype.constructor = AttackArrow;
 
 function getCatesian3FromPX(px, viewer) {
   var cartesian;
@@ -254,6 +278,4 @@ function getCatesian3FromPX(px, viewer) {
   return cartesian;
 }
 
-export {
-  AttackArrow
-}
+export { AttackArrow };

@@ -9,11 +9,11 @@ import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const { viewer, material, graphics, math3d } = new initCesium(
         {
           cesiumGlobal: Cesium,
@@ -62,7 +62,7 @@ export default {
       this.createEllipsoidTwo()
       this.createEllipsoidThree()
     },
-    createCustMaterialWall(imgUrl, colorVal, durationNum, countNum) {
+    createCustMaterialWall (imgUrl, colorVal, durationNum, countNum) {
       return this.material.getCustomMaterialWall({
         image: imgUrl,
         freely: 'cross',
@@ -73,7 +73,7 @@ export default {
       })
     },
     // ellipsoid one
-    createEllipsoidOne() {
+    createEllipsoidOne () {
       var ellipsoid = new Cesium.EllipsoidGraphics({
         radii: new Cesium.Cartesian3(500, 500, 500), //单位 米
         material: this.createCustMaterialWall(
@@ -95,7 +95,7 @@ export default {
       })
     },
     // ellipsoid two
-    createEllipsoidTwo() {
+    createEllipsoidTwo () {
       var position = Cesium.Cartesian3.fromDegrees(
         104.06417395476578,
         30.636185094244944
@@ -124,7 +124,7 @@ export default {
       })
     },
     // ellipsoid three
-    createEllipsoidThree() {
+    createEllipsoidThree () {
       var ellipsoid = new Cesium.EllipsoidGraphics({
         radii: new Cesium.Cartesian3(500, 500, 500), //单位 米
         material: this.createCustMaterialWall(
@@ -147,7 +147,7 @@ export default {
       })
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null
     this.material = null
     this.graphics = null

@@ -9,11 +9,11 @@ import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const { viewer, material, graphics, math3d } = new initCesium(
         {
           cesiumGlobal: Cesium,
@@ -61,7 +61,7 @@ export default {
       this.createPolygonOne()
       this.createPolygonTwo()
     },
-    createCustMaterialWall(
+    createCustMaterialWall (
       imgUrl,
       colorVal,
       durationNum,
@@ -77,7 +77,7 @@ export default {
         duration: durationNum
       })
     },
-    createPolygonOne() {
+    createPolygonOne () {
       let three = this.c_viewer.entities.add({
         name: 'aaaaa',
         wall: {
@@ -108,39 +108,37 @@ export default {
         }
       })
     },
-    createPolygonTwo() {
-      let three2 = this.c_viewer.entities.add({
-        name: 'aaaaa',
-        wall: {
-          positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-            104.07263175401185,
-            30.647622150198725,
-            500.0,
-            104.06369117158526,
-            30.648834374000277,
-            500.0,
-            104.06437182811021,
-            30.62274533905387,
-            500.0,
-            104.07463538167119,
-            30.62285687644371,
-            500.0,
-            104.07263175401185,
-            30.647622150198725,
-            500.0
-          ]),
-          material: this.createCustMaterialWall(
-            'static/data/images/Textures/b2.png',
-            Cesium.Color.RED,
-            2000,
-            2,
-            'vertical'
-          )
-        }
+    createPolygonTwo () {
+
+      this.material.addMaterialWallGraphics({
+        positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+          104.07263175401185,
+          30.647622150198725,
+          500.0,
+          104.06369117158526,
+          30.648834374000277,
+          500.0,
+          104.06437182811021,
+          30.62274533905387,
+          500.0,
+          104.07463538167119,
+          30.62285687644371,
+          500.0,
+          104.07263175401185,
+          30.647622150198725,
+          500.0
+        ]),
+        image: 'static/data/images/Textures/b2.png',
+        freely: 'vertical',
+        direction: '+',
+        count: 2,
+        color: Cesium.Color.RED,
+        duration: 2000,
+        width: 1200,
       })
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null
     this.material = null
     this.graphics = null

@@ -1,4 +1,4 @@
-import { initCesium } from './indexOld'
+import { initCesium } from "./indexOld";
 import {
   Graphics,
   Material,
@@ -8,8 +8,14 @@ import {
   CustomCesiumPlugin,
   PassEffect,
   Plugin,
-  ThreeJs
-} from './singleImport/index'
+  ThreeJs,
+  Control,
+  Math2d,
+  Math3d,
+  AttackArrow,
+  StraightArrow,
+  PincerArrow,
+} from "./singleImport/index";
 
 export {
   initCesium,
@@ -21,5 +27,11 @@ export {
   CustomCesiumPlugin,
   PassEffect,
   Plugin,
-  ThreeJs
-}
+  ThreeJs,
+  Control,
+  Math2d,
+  Math3d,
+  AttackArrow,
+  StraightArrow,
+  PincerArrow,
+};
