@@ -1,6 +1,6 @@
-import SuperGif from "libgif";
-let Cesium = null;
-let dfSt = undefined;
+import SuperGif from 'libgif'
+let Cesium = null
+let dfSt = undefined
 /**
  * 图形模块
  * 用于向地图加载各种实体对象
@@ -14,10 +14,10 @@ let dfSt = undefined;
  */
 function Graphics(viewer, cesiumGlobal, defaultStatic) {
   if (viewer) {
-    Cesium = cesiumGlobal;
-    dfSt = defaultStatic;
-    this._graphicsLayer = new Cesium.CustomDataSource("graphicsLayer");
-    viewer && viewer.dataSources.add(this._graphicsLayer);
+    Cesium = cesiumGlobal
+    dfSt = defaultStatic
+    this._graphicsLayer = new Cesium.CustomDataSource('graphicsLayer')
+    viewer && viewer.dataSources.add(this._graphicsLayer)
   }
 }
 
@@ -45,14 +45,14 @@ Graphics.prototype = {
    * @returns  {PointGraphics}  返回PointGraphics实例
    */
   getPointGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options) {
       return new Cesium.PointGraphics({
         color: options.color || Cesium.Color.GREEN,
         pixelSize: options.pixelSize || 5,
         outlineColor: options.outlineColor || Cesium.Color.WHITE,
-        outlineWidth: options.outlineWidth || 1,
-      });
+        outlineWidth: options.outlineWidth || 1
+      })
     }
   },
   /**
@@ -89,15 +89,15 @@ Graphics.prototype = {
    * @returns {PolylineGraphics}   返回PolylineGraphics实例
    */
   getLineGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options && options.positions) {
       return new Cesium.PolylineGraphics({
         show: true,
         positions: options.positions,
         material: options.material || Cesium.Color.YELLOW,
         width: options.width || 1,
-        clampToGround: this._objHasOwnProperty(options, "clampToGround", false),
-      });
+        clampToGround: this._objHasOwnProperty(options, 'clampToGround', false)
+      })
     }
   },
   /**
@@ -132,15 +132,15 @@ Graphics.prototype = {
    * @returns  {PolygonGraphics}   返回PolygonGraphics实例
    */
   getPolygonGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options && options.positions) {
       return new Cesium.PolygonGraphics({
         hierarchy: {
-          positions: options.positions,
+          positions: options.positions
         },
         material: options.material || Cesium.Color.RED.withAlpha(0.2),
-        clampToGround: options.clampToGround || false,
-      });
+        clampToGround: options.clampToGround || false
+      })
     }
   },
   /**
@@ -176,21 +176,24 @@ Graphics.prototype = {
    * @returns  {LabelGraphics} 返回LabelGraphics实例
    */
   getLabelGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options && options.l_text) {
       return new Cesium.LabelGraphics({
         //文字标签
         text: options.l_text,
-        font: options.l_font || "14px sans-serif",
+        font: options.l_font || '14px sans-serif',
         fillColor: options.l_fillColor || Cesium.Color.GOLD,
         style: options.l_style || Cesium.LabelStyle.FILL_AND_OUTLINE,
         outlineWidth: options.l_outlineWidth || 2,
         showBackground: options.l_showBackground || false,
-        backgroundColor: options.l_backgroundColor || new Cesium.Color(0.165, 0.165, 0.165, 0.8),
-        verticalOrigin: options.l_verticalOrigin || Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: options.l_pixelOffset || new Cesium.Cartesian2(0, -30),
+        backgroundColor:
+          options.l_backgroundColor ||
+          new Cesium.Color(0.165, 0.165, 0.165, 0.8),
+        verticalOrigin:
+          options.l_verticalOrigin || Cesium.VerticalOrigin.BOTTOM,
+        pixelOffset: options.l_pixelOffset || new Cesium.Cartesian2(0, -30)
         //heightReference:Cesium.HeightReference.RELATIVE_TO_GROUND
-      });
+      })
     }
   },
   /**
@@ -222,7 +225,7 @@ Graphics.prototype = {
    * @returns {BillboardGraphics}   返回BillboardGraphics实例
    */
   getBillboardGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options && options.b_img) {
       return new Cesium.BillboardGraphics({
         image: options.b_img,
@@ -232,9 +235,9 @@ Graphics.prototype = {
         scale: options.b_scale || 1,
         // eyeOffset :new Cesium.Cartesian2(0, -20),
         pixelOffset: options.b_pixelOffset || new Cesium.Cartesian2(0, -20),
-        scaleByDistance: options.b_scaleByDistance || undefined,
+        scaleByDistance: options.b_scaleByDistance || undefined
         // heightReference:Cesium.HeightReference.RELATIVE_TO_GROUND
-      });
+      })
     }
   },
   /**
@@ -260,17 +263,17 @@ Graphics.prototype = {
    * @returns {PathGraphics}   返回PathGraphics实例
    */
   getPathGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options) {
       return new Cesium.PathGraphics({
         resolution: options.resolution || 1,
         //设置航线样式，线条颜色，内发光粗细，航线宽度等
         material: new Cesium.PolylineGlowMaterialProperty({
           glowPower: options.glowPower || 0.1,
-          color: options.color || Cesium.Color.YELLOW,
+          color: options.color || Cesium.Color.YELLOW
         }),
-        width: options.width || 30,
-      });
+        width: options.width || 30
+      })
     }
   },
   /**
@@ -294,13 +297,13 @@ Graphics.prototype = {
    * @returns {ModelGraphics}   返回ModelGraphics实例
    */
   getModelGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options) {
       return new Cesium.ModelGraphics({
         uri: options.m_url || options.url,
         scale: options.m_scale || options.scale || 10,
-        clampAnimations: true,
-      });
+        clampAnimations: true
+      })
     }
   },
   /**
@@ -326,14 +329,14 @@ Graphics.prototype = {
    * @returns {EllipseGraphics}   返回EllipseGraphics实例
    */
   getEllipseGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options) {
       return new Cesium.EllipseGraphics({
         semiMajorAxis: options.e_semiMajorAxis || 1000000.0,
         semiMinorAxis: options.e_semiMinorAxis || 1000000.0,
         metarial: options.e_metarial || Cesium.Color.RED.withAlpha(0.5),
-        outline: this._objHasOwnProperty(options, "e_outline", true),
-      });
+        outline: this._objHasOwnProperty(options, 'e_outline', true)
+      })
     }
   },
   /**
@@ -371,22 +374,26 @@ Graphics.prototype = {
    * @returns {EllipsoidGraphics}  返回EllipsoidGraphics实例
    */
   getEllipsoidGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options) {
-      var r = options.radii || 1000000.0; //默认100公里
+      var r = options.radii || 1000000.0 //默认100公里
       return new Cesium.EllipsoidGraphics({
         radii: new Cesium.Cartesian3(r, r, r), //单位 米
-        innerRadii: this._objHasOwnProperty(options, "innerRadii", new Cesium.Cartesian3(r / 1.5, r / 1.5, r / 1.5)),
+        innerRadii: this._objHasOwnProperty(
+          options,
+          'innerRadii',
+          new Cesium.Cartesian3(r / 1.5, r / 1.5, r / 1.5)
+        ),
         maximumCone: options.maximumCone || Cesium.Math.PI_OVER_TWO,
         stackPartitions: options.stackPartitions || 56,
         slicePartitions: options.slicePartitions || 56,
         outlineWidth: options.outlineWidth || 2.0,
         outlineColor: options.outlineColor || Cesium.Color.YELLOW,
-        outline: this._objHasOwnProperty(options, "outline", true),
-        fill: this._objHasOwnProperty(options, "fill", true),
-        material: options.material || Cesium.Color.RED.withAlpha(0.1),
+        outline: this._objHasOwnProperty(options, 'outline', true),
+        fill: this._objHasOwnProperty(options, 'fill', true),
+        material: options.material || Cesium.Color.RED.withAlpha(0.1)
         //heightReference:Cesium.HeightReference.NONE,
-      });
+      })
     }
   },
   /**
@@ -398,7 +405,7 @@ Graphics.prototype = {
    * @returns {string}
    */
   _objHasOwnProperty(obj, field, defVal) {
-    return obj.hasOwnProperty(field) ? obj.field : defVal;
+    return obj.hasOwnProperty(field) ? obj.field : defVal
   },
   /**
    * 获取盒子图形
@@ -429,17 +436,17 @@ Graphics.prototype = {
    * @returns {BoxGraphics} 返回BoxGraphics实例
    */
   getBoxGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options) {
       return new Cesium.BoxGraphics({
-        show: this._objHasOwnProperty(options, "show", true),
-        fill: this._objHasOwnProperty(options, "fill", true),
+        show: this._objHasOwnProperty(options, 'show', true),
+        fill: this._objHasOwnProperty(options, 'fill', true),
         dimensions: options.dimensions || new Cesium.Cartesian3(0, 0, 0),
         material: options.material,
-        outline: this._objHasOwnProperty(options, "outline", true),
+        outline: this._objHasOwnProperty(options, 'outline', true),
         outlineColor: options.outlineColor || Cesium.Color.BLACK,
-        distanceDisplayCondition: options.distanceDisplayCondition || undefined,
-      });
+        distanceDisplayCondition: options.distanceDisplayCondition || undefined
+      })
     }
   },
   /**
@@ -463,13 +470,13 @@ Graphics.prototype = {
    * @returns {PlaneGraphics} 返回PlaneGraphics实例
    */
   getPlaneGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options) {
       return new Cesium.PlaneGraphics({
         plane: options.plane || new Cesium.Plane(Cesium.Cartesian3.UNIT_Y, 0.0),
         dimensions: options.dimensions || new Cesium.Cartesian2(170.0, 130.0),
-        material: options.material || Cesium.Color.BLUE,
-      });
+        material: options.material || Cesium.Color.BLUE
+      })
     }
   },
   /**
@@ -497,7 +504,7 @@ Graphics.prototype = {
    * @returns {CylinderGraphics} 返回CylinderGraphics实例
    */
   getCylinderGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options) {
       return new Cesium.CylinderGraphics({
         HeightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
@@ -505,8 +512,8 @@ Graphics.prototype = {
         topRadius: options.topRadius || 0,
         bottomRadius: options.bottomRadius || 0,
         material: options.material || new Cesium.Color(0, 1, 1, 0.4),
-        slices: options.slices || 128,
-      });
+        slices: options.slices || 128
+      })
     }
   },
   /**
@@ -550,19 +557,20 @@ Graphics.prototype = {
    */
   createPointsGraphics: function (options) {
     if (options && options.positions) {
-      let points = [];
+      let points = []
       for (let i in options.positions) {
-        let position = options.positions[i];
-        let entity = this.createGraphics();
-        entity.name = options.name || "";
-        entity.oid = options.oid || "point";
-        entity.position = position;
-        if (options.point) entity.point = this.getPointGraphics();
-        if (options.billboard) entity.billboard = this.getBillboardGraphics(options.billboard);
-        if (options.label) entity.label = this.getLabelGraphics(options.label);
-        points.push(this._graphicsLayer.entities.add(entity));
+        let position = options.positions[i]
+        let entity = this.createGraphics()
+        entity.name = options.name || ''
+        entity.oid = options.oid || 'point'
+        entity.position = position
+        if (options.point) entity.point = this.getPointGraphics()
+        if (options.billboard)
+          entity.billboard = this.getBillboardGraphics(options.billboard)
+        if (options.label) entity.label = this.getLabelGraphics(options.label)
+        points.push(this._graphicsLayer.entities.add(entity))
       }
-      return points;
+      return points
     }
   },
   /**
@@ -607,13 +615,13 @@ Graphics.prototype = {
    */
   createLineGraphics: function (options) {
     if (options && options.positions) {
-      var entity = this.createGraphics();
-      entity.name = options.name || "";
-      entity.oid = options.oid || "line";
-      entity.position = options.positions;
-      entity.polyline = this.getLineGraphics(options);
+      var entity = this.createGraphics()
+      entity.name = options.name || ''
+      entity.oid = options.oid || 'line'
+      entity.position = options.positions
+      entity.polyline = this.getLineGraphics(options)
 
-      return this._graphicsLayer.entities.add(entity);
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -651,13 +659,13 @@ Graphics.prototype = {
    * @returns {PolygonGraphics} 返回PolygonGraphics实例
    */
   createPolygonGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options) {
-      var entity = this.createGraphics();
-      entity.polygon = this.getPolygonGraphics(options);
-      entity.clampToS3M = this._objHasOwnProperty(options, "clampToS3M", false);
+      var entity = this.createGraphics()
+      entity.polygon = this.getPolygonGraphics(options)
+      entity.clampToS3M = this._objHasOwnProperty(options, 'clampToS3M', false)
 
-      return this._graphicsLayer.entities.add(entity);
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -690,14 +698,14 @@ Graphics.prototype = {
    * @returns {BoxGraphics} 返回BoxGraphics实例
    */
   createBoxGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options) {
-      var entity = this.createGraphics();
+      var entity = this.createGraphics()
 
-      entity.position = options.position;
-      entity.name = options.name || "box_graphic";
-      entity.box = this.getBoxGraphics(options.box);
-      return this._graphicsLayer.entities.add(entity);
+      entity.position = options.position
+      entity.name = options.name || 'box_graphic'
+      entity.box = this.getBoxGraphics(options.box)
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -726,10 +734,10 @@ Graphics.prototype = {
   createModelGraphics: function (options) {
     if (options && options.position) {
       /** @inheritdoc */
-      var entity = this.createGraphics();
-      entity.model = this.getModelGraphics(options);
-      entity.position = options.position;
-      return this._graphicsLayer.entities.add(entity);
+      var entity = this.createGraphics()
+      entity.model = this.getModelGraphics(options)
+      entity.position = options.position
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -769,11 +777,11 @@ Graphics.prototype = {
    */
   craeteCorridorGraphics: function (options) {
     if (options && options.positions) {
-      let { positions, height, width, material, ...rest } = options;
+      let { positions, height, width, material, ...rest } = options
       /** @inheritdoc */
-      var entity = this.createGraphics();
-      height = height === undefined ? 6.0 : height;
-      width = width === undefined ? 15.0 : width;
+      var entity = this.createGraphics()
+      height = height === undefined ? 6.0 : height
+      width = width === undefined ? 15.0 : width
       entity.corridor = {
         positions: positions,
         height: height,
@@ -782,15 +790,15 @@ Graphics.prototype = {
         material:
           material ||
           new Cesium.Scene.WarnLinkMaterialProperty({
-            freely: "cross",
+            freely: 'cross',
             color: Cesium.Color.YELLOW,
             duration: 1000,
             count: 1.0,
-            direction: "+",
-          }),
-      };
+            direction: '+'
+          })
+      }
 
-      return this._graphicsLayer.entities.add(entity);
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -829,20 +837,20 @@ Graphics.prototype = {
   craeteDynamicPolyLineGraphics: function (options) {
     if (options && options.positions) {
       /** @inheritdoc */
-      var entity = this.createGraphics();
+      var entity = this.createGraphics()
       entity.polyline = {
         show: true,
         positions: [],
         material: options.material || Cesium.Color.CHARTREUSE,
         width: options.width || 5,
-        clampToGround: this._objHasOwnProperty(options, "clampToGround", false),
-      };
+        clampToGround: this._objHasOwnProperty(options, 'clampToGround', false)
+      }
 
       entity.polyline.positions = new Cesium.CallbackProperty(function () {
-        return options.positions;
-      }, false);
+        return options.positions
+      }, false)
 
-      return this._graphicsLayer.entities.add(entity);
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -873,28 +881,36 @@ Graphics.prototype = {
    * @returns {cylinder} 返回cylinder实例
    */
   craeteDynamicCylinderGraphics: function (options) {
-    var param = {};
+    var param = {}
     if (options && options.cylinder) {
       var entity = options.entity,
         cylinder = options.cylinder,
-        $this = this;
-      param.cylinder = this.getCylinderGraphics(cylinder);
+        $this = this
+      param.cylinder = this.getCylinderGraphics(cylinder)
       param.position = new Cesium.CallbackProperty(function () {
-        var positions = entity.position.getValue($this._viewer.clock.currentTime);
-        var cartographic = $this._viewer.scene.globe.ellipsoid.cartesianToCartographic(positions);
+        var positions = entity.position.getValue(
+          $this._viewer.clock.currentTime
+        )
+        var cartographic = $this._viewer.scene.globe.ellipsoid.cartesianToCartographic(
+          positions
+        )
         var lat = Cesium.Math.toDegrees(cartographic.latitude),
-          lng = Cesium.Math.toDegrees(cartographic.longitude);
+          lng = Cesium.Math.toDegrees(cartographic.longitude)
         // hei = parseFloat(cartographic.height / 4)
-        return Cesium.Cartesian3.fromDegrees(lng, lat, 0);
-      }, false);
+        return Cesium.Cartesian3.fromDegrees(lng, lat, 0)
+      }, false)
 
       param.cylinder.length = new Cesium.CallbackProperty(function () {
-        var positions = entity.position.getValue($this._viewer.clock.currentTime);
-        var cartographic = $this._viewer.scene.globe.ellipsoid.cartesianToCartographic(positions);
-        return cartographic.height * 2;
-      }, false);
+        var positions = entity.position.getValue(
+          $this._viewer.clock.currentTime
+        )
+        var cartographic = $this._viewer.scene.globe.ellipsoid.cartesianToCartographic(
+          positions
+        )
+        return cartographic.height * 2
+      }, false)
 
-      return param;
+      return param
     }
   },
   /**
@@ -928,17 +944,17 @@ Graphics.prototype = {
    * @returns {cylinder} 返回cylinder实例
    */
   createFadeCylinderGraphics: function (options) {
-    options = options || {};
+    options = options || {}
     if (options && options.position) {
-      let entity = this.createGraphics();
-      entity.position = options.position;
+      let entity = this.createGraphics()
+      entity.position = options.position
       options.material = new Cesium.Scene.CircleFadeMaterialProperty({
-        color: options.color || Cesium.Color.fromCssColorString("#02ff00"),
-        duration: options.duration || 2000,
-      });
-      entity.cylinder = this.getCylinderGraphics(options);
+        color: options.color || Cesium.Color.fromCssColorString('#02ff00'),
+        duration: options.duration || 2000
+      })
+      entity.cylinder = this.getCylinderGraphics(options)
 
-      return this._drawLayer.entities.add(entity);
+      return this._drawLayer.entities.add(entity)
     }
   },
   /**
@@ -975,7 +991,7 @@ Graphics.prototype = {
    */
   craeteRotateCylinderGraphics: function (options) {
     if (options && options.position) {
-      var cylinderEntity = this.createGraphics();
+      var cylinderEntity = this.createGraphics()
       cylinderEntity.cylinder = {
         HeightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
         length: options.length || 500,
@@ -985,23 +1001,25 @@ Graphics.prototype = {
           options.material ||
           new Cesium.ImageMaterialProperty({
             image:
-              options.img || this.getDfSt(["graphic", "craeteRotateCylinderGraphics"]) || "static/data/images/file/cc2.png",
+              options.img ||
+              this.getDfSt(['graphic', 'craeteRotateCylinderGraphics']) ||
+              'static/data/images/file/cc2.png',
             transparent: true,
             repeat: {
               x: 1,
-              y: -1,
-            },
+              y: -1
+            }
           }),
-        slices: options.slices || 128,
-      };
-      cylinderEntity.position = options.position;
+        slices: options.slices || 128
+      }
+      cylinderEntity.position = options.position
 
       this.setGraphicsRotate({
         entity: cylinderEntity,
         position: this.transformCartesianToWGS84(options.position),
-        rotateAmount: 4,
-      });
-      return this._graphicsLayer.entities.add(cylinderEntity);
+        rotateAmount: 4
+      })
+      return this._graphicsLayer.entities.add(cylinderEntity)
     }
   },
   /**
@@ -1034,8 +1052,8 @@ Graphics.prototype = {
     if (options && options.position) {
       var entity = this.createGraphics(),
         alp = options.alp || 1,
-        flog = this._objHasOwnProperty(options, "flog", true);
-      entity.position = options.position;
+        flog = this._objHasOwnProperty(options, 'flog', true)
+      entity.position = options.position
       entity.ellipse = {
         semiMinorAxis: options.semiMinorAxis || 2000.0,
         semiMajorAxis: options.semiMajorAxis || 2000.0,
@@ -1043,21 +1061,21 @@ Graphics.prototype = {
         material: new Cesium.ColorMaterialProperty(
           new Cesium.CallbackProperty(function () {
             if (flog) {
-              alp = alp - 0.05;
+              alp = alp - 0.05
               if (alp <= 0) {
-                flog = false; // hide
+                flog = false // hide
               }
             } else {
-              alp = alp + 0.05;
+              alp = alp + 0.05
               if (alp >= 1) {
-                flog = true; // show
+                flog = true // show
               }
             }
-            return Cesium.Color.RED.withAlpha(alp);
+            return Cesium.Color.RED.withAlpha(alp)
           }, false)
-        ),
-      };
-      return this._graphicsLayer.entities.add(entity);
+        )
+      }
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -1109,14 +1127,14 @@ Graphics.prototype = {
           new Cesium.ImageMaterialProperty({
             image:
               options.imge ||
-              this.getDfSt(["graphic", "craeteDynamicCricleGraphics"]) ||
-              "static/data/images/Textures/circle_bg.png",
-            transparent: true,
-          });
+              this.getDfSt(['graphic', 'craeteDynamicCricleGraphics']) ||
+              'static/data/images/Textures/circle_bg.png',
+            transparent: true
+          })
 
       entity.position = new Cesium.CallbackProperty(function () {
-        return $this.transformWGS84ToCartesian(_center);
-      }, false);
+        return $this.transformWGS84ToCartesian(_center)
+      }, false)
 
       entity.orientation = new Cesium.CallbackProperty(function () {
         return Cesium.Transforms.headingPitchRollQuaternion(
@@ -1126,41 +1144,41 @@ Graphics.prototype = {
             Cesium.Math.toRadians(pitch),
             Cesium.Math.toRadians(roll)
           )
-        );
-      }, false);
+        )
+      }, false)
       let bg_scale = _radius,
-        flag = false;
+        flag = false
       var updateScalerAxis = () => {
         if (_radius >= _scale || _radius <= bg_scale) {
-          flag = !flag;
+          flag = !flag
         }
-        flag ? (_radius += 2) : (_radius -= 2);
-      };
+        flag ? (_radius += 2) : (_radius -= 2)
+      }
       var updateScalerAxis2 = () => {
-        _scale2 >= _radius ? (_radius += 2) : (_radius = bg_scale);
-      };
+        _scale2 >= _radius ? (_radius += 2) : (_radius = bg_scale)
+      }
       entity.ellipse = {
         material: _material,
         height: _height,
         semiMajorAxis: new Cesium.CallbackProperty(function () {
-          return _radius;
+          return _radius
         }, false),
         semiMinorAxis: new Cesium.CallbackProperty(function () {
-          return _radius;
+          return _radius
         }, false),
         stRotation: new Cesium.CallbackProperty(function () {
           if (_rotateAmount > 0) {
-            _stRotation += _rotateAmount;
+            _stRotation += _rotateAmount
             if (_stRotation >= 360) {
-              _stRotation = 0;
+              _stRotation = 0
             }
           }
-          if (_scale) updateScalerAxis();
-          if (_scale2) updateScalerAxis2();
-          return _stRotation;
-        }, false),
-      };
-      return this._graphicsLayer.entities.add(entity);
+          if (_scale) updateScalerAxis()
+          if (_scale2) updateScalerAxis2()
+          return _stRotation
+        }, false)
+      }
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -1200,34 +1218,34 @@ Graphics.prototype = {
       var alp = options.alp || 1,
         num = options.num || 20,
         color = options.color || Cesium.Color.RED,
-        speed = options.speed || 0.003;
+        speed = options.speed || 0.003
 
-      var wallEntity = this.createGraphics();
+      var wallEntity = this.createGraphics()
       wallEntity.wall = {
         positions: options.positions,
         material: new Cesium.ImageMaterialProperty({
           image:
             options.img ||
-            this.getDfSt(["graphic", "craeteDynamicShadeWallGraphics"]) ||
-            "static/data/images/Textures/fence.png",
+            this.getDfSt(['graphic', 'craeteDynamicShadeWallGraphics']) ||
+            'static/data/images/Textures/fence.png',
           transparent: true,
           color: new Cesium.CallbackProperty(function () {
             if (num % 2 === 0) {
-              alp -= speed;
+              alp -= speed
             } else {
-              alp += speed;
+              alp += speed
             }
 
             if (alp <= 0.1) {
-              num++;
+              num++
             } else if (alp >= 1) {
-              num++;
+              num++
             }
-            return color.withAlpha(alp);
-          }, false),
-        }),
-      };
-      return this._graphicsLayer.entities.add(wallEntity);
+            return color.withAlpha(alp)
+          }, false)
+        })
+      }
+      return this._graphicsLayer.entities.add(wallEntity)
     }
   },
   /**
@@ -1262,36 +1280,37 @@ Graphics.prototype = {
   createCustomDefBillboardGraphics: function (options) {
     if (options && options.position) {
       var $this = this,
-        img = document.createElement("img");
+        img = document.createElement('img')
       img.src =
         options.image ||
-        this.getDfSt(["graphic", "createCustomDefBillboardGraphics"]) ||
-        "static/data/images/file/div1.png";
+        this.getDfSt(['graphic', 'createCustomDefBillboardGraphics']) ||
+        'static/data/images/file/div1.png'
 
       // 绘制canvas
       const drawCompanyTip = function (options) {
-        if (!options.image) return;
-        var canvas = document.createElement("canvas");
-        canvas.width = options.width || 150;
-        canvas.height = options.height || 80;
-        var context = canvas.getContext("2d");
-        context.drawImage(options.image, 0, 0);
-        var dom = options.text;
-        context.font = "15px bold 宋体";
-        context.fillStyle = "#f4fff0";
-        context.fillText(dom, 55, 36);
-        return canvas;
-      };
+        if (!options.image) return
+        var canvas = document.createElement('canvas')
+        canvas.width = options.width || 150
+        canvas.height = options.height || 80
+        var context = canvas.getContext('2d')
+        context.drawImage(options.image, 0, 0)
+        var dom = options.text
+        context.font = '15px bold 宋体'
+        context.fillStyle = '#f4fff0'
+        context.fillText(dom, 55, 36)
+        return canvas
+      }
 
       img.onload = function () {
-        options.image = img;
+        options.image = img
         var entity = $this._graphicsLayer.entities.add({
           position: options.position,
           billboard: {
             image: drawCompanyTip(options),
             scaleByDistance: new Cesium.NearFarScalar(1.5e2, 0.7, 1.5e7, 0.5),
             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            pixelOffset: options.b_pixelOffset || new Cesium.Cartesian2(80, -35),
+            pixelOffset:
+              options.b_pixelOffset || new Cesium.Cartesian2(80, -35),
             width: 140,
             height: 100,
             scale: options.b_scale || 1.5,
@@ -1300,14 +1319,14 @@ Graphics.prototype = {
               x: 0,
               y: 0,
               width: 200,
-              height: 150,
-            },
-          },
-        });
-        if (typeof options.callback === "function") {
-          options.callback(entity);
+              height: 150
+            }
+          }
+        })
+        if (typeof options.callback === 'function') {
+          options.callback(entity)
         }
-      };
+      }
     }
   },
   /**
@@ -1341,17 +1360,17 @@ Graphics.prototype = {
       var entity = this.createGraphics(),
         index = 0,
         positions = options.positions,
-        _position = positions[0];
+        _position = positions[0]
       entity.position = new Cesium.CallbackProperty(function () {
         if (index == 0) {
-          (_position = positions[0]), (index += 1);
+          ;(_position = positions[0]), (index += 1)
         } else if (index < positions.length - 1) {
-          (_position = positions[index]), (index += 1);
+          ;(_position = positions[index]), (index += 1)
         } else if (index == positions.length - 1) {
-          (_position = positions[index]), (index = 0);
+          ;(_position = positions[index]), (index = 0)
         }
-        return _position;
-      }, false);
+        return _position
+      }, false)
       entity.plane = {
         // plane: new Cesium.CallbackProperty(function () {
         //     var normaB = Cesium.Cartesian3.normalize(Cesium.Cartesian3.subtract(_center, _position, new Cesium.Cartesian3()), new Cesium.Cartesian3())
@@ -1363,11 +1382,11 @@ Graphics.prototype = {
         plane: new Cesium.Plane(Cesium.Cartesian3.UNIT_Y, 0.0),
         dimensions: options.dimensions || new Cesium.Cartesian2(200.0, 150.0),
         material: new Cesium.ImageMaterialProperty({
-          image: options.image,
-        }),
-      };
+          image: options.image
+        })
+      }
 
-      return this._graphicsLayer.entities.add(entity);
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -1393,16 +1412,19 @@ Graphics.prototype = {
    */
   createVideoPlaneGraphics: function (options) {
     if (options && options.position) {
-      var entity = this.createGraphics();
-      entity.position = options.position;
+      var entity = this.createGraphics()
+      entity.position = options.position
       entity.plane = {
-        plane: new Cesium.Plane(options.normal || Cesium.Cartesian3.UNIT_Y, 0.0),
+        plane: new Cesium.Plane(
+          options.normal || Cesium.Cartesian3.UNIT_Y,
+          0.0
+        ),
         dimensions: options.dimensions || new Cesium.Cartesian2(200.0, 150.0),
         material: new Cesium.ImageMaterialProperty({
-          image: options.videoElement,
-        }),
-      };
-      return this._graphicsLayer.entities.add(entity);
+          image: options.videoElement
+        })
+      }
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -1430,32 +1452,32 @@ Graphics.prototype = {
       var gif = [],
         url = options.url,
         i = 0,
-        speed = 6;
+        speed = 6
 
       // 遍历gif的每一帧
       const parseGifImages = function (url, imageArr) {
-        var img = document.createElement("img");
-        img.src = url;
-        img.setAttribute("rel:animated_src", url); // gif库需要img标签配置下面两个属性
-        img.setAttribute("rel:auto_play", "0");
-        document.body.appendChild(img);
+        var img = document.createElement('img')
+        img.src = url
+        img.setAttribute('rel:animated_src', url) // gif库需要img标签配置下面两个属性
+        img.setAttribute('rel:auto_play', '0')
+        document.body.appendChild(img)
         // 新建gif实例
         var rub = new SuperGif({
-          gif: img,
-        });
+          gif: img
+        })
         return new Promise((resolve) => {
           rub.load(() => {
             for (let i = 1; i <= rub.get_length(); i++) {
-              rub.move_to(i); // 遍历gif实例的每一帧
-              imageArr.push(rub.get_canvas().toDataURL());
+              rub.move_to(i) // 遍历gif实例的每一帧
+              imageArr.push(rub.get_canvas().toDataURL())
             }
-            resolve(imageArr);
+            resolve(imageArr)
             // document.body.removeChild(img)
-          });
-        });
-      };
+          })
+        })
+      }
 
-      parseGifImages(url, gif);
+      parseGifImages(url, gif)
       return this._graphicsLayer.entities.add({
         position: options.position,
         billboard: {
@@ -1464,18 +1486,18 @@ Graphics.prototype = {
             if (gif.length) {
               // 解析每一帧
               if (i < speed * (gif.length - 1)) {
-                i++;
+                i++
               } else {
-                i = 0;
+                i = 0
               }
-              return gif[Math.floor(i / speed)];
+              return gif[Math.floor(i / speed)]
             } else {
-              return url; //因为loadGif是异步的，在解析完成之前先使用原图
+              return url //因为loadGif是异步的，在解析完成之前先使用原图
             }
           }, false),
-          scale: 0.2,
-        },
-      });
+          scale: 0.2
+        }
+      })
     }
   },
   /**
@@ -1512,17 +1534,19 @@ Graphics.prototype = {
       var entity = options.entity,
         rotateAmount = options.rotateAmount,
         _position = options.position,
-        $this = this;
-      (_position.heading = 0), (_position.pitch = 0), (_position.roll = 0);
+        $this = this
+      _position.heading = 0
+      _position.pitch = 0
+      _position.roll = 0
       entity.position = new Cesium.CallbackProperty(function () {
-        return $this.transformWGS84ToCartesian(_position);
-      }, false);
+        return $this.transformWGS84ToCartesian(_position)
+      }, false)
 
       entity.orientation = new Cesium.CallbackProperty(function () {
         if (rotateAmount > 0) {
-          _position.heading += rotateAmount;
+          _position.heading += rotateAmount
           if (_position.heading === 360) {
-            _position.heading = 0;
+            _position.heading = 0
           }
         }
         return Cesium.Transforms.headingPitchRollQuaternion(
@@ -1532,8 +1556,8 @@ Graphics.prototype = {
             Cesium.Math.toRadians(_position.pitch),
             Cesium.Math.toRadians(_position.roll)
           )
-        );
-      }, false);
+        )
+      }, false)
     }
   },
   /**
@@ -1583,33 +1607,35 @@ Graphics.prototype = {
           speed = options.speed || 0.06,
           $this = this,
           bg_minHeiht = minHeiht,
-          flag = false;
+          flag = false
         if (cartesians.length) {
           entity.positions = new Cesium.CallbackProperty(function () {
-            var positions = $this.transformCartesianArrayToWGS84Array(cartesians);
+            var positions = $this.transformCartesianArrayToWGS84Array(
+              cartesians
+            )
             for (var i in positions) {
-              var position = positions[i];
+              var position = positions[i]
               if (minHeiht >= maxHeiht || minHeiht <= bg_minHeiht) {
-                flag = !flag;
+                flag = !flag
               }
-              flag ? (minHeiht += speed) : (minHeiht -= speed);
-              position.alt = minHeiht;
+              flag ? (minHeiht += speed) : (minHeiht -= speed)
+              position.alt = minHeiht
             }
-            return $this.transformWGS84ArrayToCartesianArray(positions);
-          }, false);
+            return $this.transformWGS84ArrayToCartesianArray(positions)
+          }, false)
         } else {
           entity.position = new Cesium.CallbackProperty(function () {
-            var position = $this.transformCartesianToWGS84(cartesians);
+            var position = $this.transformCartesianToWGS84(cartesians)
             if (minHeiht >= maxHeiht || minHeiht <= bg_minHeiht) {
-              flag = !flag;
+              flag = !flag
             }
-            flag ? (minHeiht += speed) : (minHeiht -= speed);
-            position.alt = minHeiht;
-            return $this.transformWGS84ToCartesian(position);
-          }, false);
+            flag ? (minHeiht += speed) : (minHeiht -= speed)
+            position.alt = minHeiht
+            return $this.transformWGS84ToCartesian(position)
+          }, false)
         }
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
     }
   },
@@ -1647,33 +1673,33 @@ Graphics.prototype = {
   createCanvasGraphics: function (options) {
     if (options && options.positions) {
       const drawCanvasImage = function () {
-        var i = 0;
-        var canvas = document.createElement("canvas");
-        var ctx = canvas.getContext("2d");
-        var img = new Image();
-        img.src = options.img || "../../images/ysCesium/logo.png";
-        ctx.clearRect(0, 0, options.cwidth, options.cheight);
+        var i = 0
+        var canvas = document.createElement('canvas')
+        var ctx = canvas.getContext('2d')
+        var img = new Image()
+        img.src = options.img || '../../images/ysCesium/logo.png'
+        ctx.clearRect(0, 0, options.cwidth, options.cheight)
         if (i <= options.cwidth) {
-          ctx.drawImage(img, i, 0);
+          ctx.drawImage(img, i, 0)
         } else {
-          i = 0;
-          i += 3;
-          return canvas;
+          i = 0
+          i += 3
+          return canvas
         }
-      };
+      }
 
       this._graphicsLayer.entities.add({
         rectangle: {
           coordinates: options.positions,
           material: new Cesium.ImageMaterialProperty({
             image: new Cesium.CallbackProperty(drawCanvasImage, false),
-            transparent: true,
-          }),
-        },
-      });
+            transparent: true
+          })
+        }
+      })
 
-      if (typeof options.callback === "function") {
-        options.callback();
+      if (typeof options.callback === 'function') {
+        options.callback()
       }
     }
   },
@@ -1706,27 +1732,40 @@ Graphics.prototype = {
    * @returns {wall} 返回wall实例
    * 
    */
-  createFanShape: function ({ viewer, longitude, latitude, alt, custMaterial, speed = 0, direction = "+" }) {
+  createFanShape: function ({
+    viewer,
+    longitude,
+    latitude,
+    alt,
+    custMaterial,
+    speed = 0,
+    direction = '+'
+  }) {
     if (viewer) {
-      var entity = this.createGraphics();
-      var heading = 0;
-      var positionArr = this._calcPoints(longitude, latitude, alt, heading);
+      var entity = this.createGraphics()
+      var heading = 0
+      var positionArr = this._calcPoints(longitude, latitude, alt, heading)
       entity.wall = {
         positions: new Cesium.CallbackProperty(() => {
-          return Cesium.Cartesian3.fromDegreesArrayHeights(positionArr);
+          return Cesium.Cartesian3.fromDegreesArrayHeights(positionArr)
         }, false),
-        material: custMaterial || Cesium.Color.AQUAMARINE.withAlpha(0.5),
-      };
+        material: custMaterial || Cesium.Color.AQUAMARINE.withAlpha(0.5)
+      }
 
       // 执行动画效果
       viewer.clock.onTick.addEventListener(() => {
         if (speed > 0) {
-          heading += speed;
-          positionArr = this._calcPoints(longitude, latitude, alt, direction + heading);
+          heading += speed
+          positionArr = this._calcPoints(
+            longitude,
+            latitude,
+            alt,
+            direction + heading
+          )
         }
-      });
+      })
 
-      return this._graphicsLayer.entities.add(entity);
+      return this._graphicsLayer.entities.add(entity)
     }
   },
   /**
@@ -1741,26 +1780,29 @@ Graphics.prototype = {
    * @returns {object} entity
    */
   _computeCirclularFlight(x1, y1, x2, y2, fx, angle) {
-    let positionArr = [];
-    positionArr.push(x1);
-    positionArr.push(y1);
-    positionArr.push(0);
+    let positionArr = []
+    positionArr.push(x1)
+    positionArr.push(y1)
+    positionArr.push(0)
 
-    var radius = Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(x1, y1), Cesium.Cartesian3.fromDegrees(x2, y2));
+    var radius = Cesium.Cartesian3.distance(
+      Cesium.Cartesian3.fromDegrees(x1, y1),
+      Cesium.Cartesian3.fromDegrees(x2, y2)
+    )
 
     for (let i = fx; i <= fx + angle; i++) {
-      let h = radius * Math.sin((i * Math.PI) / 180.0);
-      let r = Math.cos((i * Math.PI) / 180.0);
+      let h = radius * Math.sin((i * Math.PI) / 180.0)
+      let r = Math.cos((i * Math.PI) / 180.0)
 
-      let x = (x2 - x1) * r + x1;
-      let y = (y2 - y1) * r + y1;
+      let x = (x2 - x1) * r + x1
+      let y = (y2 - y1) * r + y1
 
-      positionArr.push(x);
-      positionArr.push(y);
-      positionArr.push(h);
+      positionArr.push(x)
+      positionArr.push(y)
+      positionArr.push(h)
     }
 
-    return positionArr;
+    return positionArr
   },
   /**
    * 根据第一个点 偏移距离 角度 求取第二个点的坐标
@@ -1772,21 +1814,27 @@ Graphics.prototype = {
    * @returns {object} entity
    */
   _calcPoints(x1, y1, radius, heading) {
-    var m = Cesium.Transforms.eastNorthUpToFixedFrame(Cesium.Cartesian3.fromDegrees(x1, y1));
+    var m = Cesium.Transforms.eastNorthUpToFixedFrame(
+      Cesium.Cartesian3.fromDegrees(x1, y1)
+    )
 
-    var rx = radius * Math.cos((heading * Math.PI) / 180.0);
-    var ry = radius * Math.sin((heading * Math.PI) / 180.0);
+    var rx = radius * Math.cos((heading * Math.PI) / 180.0)
+    var ry = radius * Math.sin((heading * Math.PI) / 180.0)
 
-    var translation = Cesium.Cartesian3.fromElements(rx, ry, 0);
+    var translation = Cesium.Cartesian3.fromElements(rx, ry, 0)
 
-    var d = Cesium.Matrix4.multiplyByPoint(m, translation, new Cesium.Cartesian3());
+    var d = Cesium.Matrix4.multiplyByPoint(
+      m,
+      translation,
+      new Cesium.Cartesian3()
+    )
 
-    var c = Cesium.Cartographic.fromCartesian(d);
+    var c = Cesium.Cartographic.fromCartesian(d)
 
-    var x2 = Cesium.Math.toDegrees(c.longitude);
-    var y2 = Cesium.Math.toDegrees(c.latitude);
+    var x2 = Cesium.Math.toDegrees(c.longitude)
+    var y2 = Cesium.Math.toDegrees(c.latitude)
 
-    return this._computeCirclularFlight(x1, y1, x2, y2, 0, 90);
-  },
-};
-export { Graphics };
+    return this._computeCirclularFlight(x1, y1, x2, y2, 0, 90)
+  }
+}
+export { Graphics }

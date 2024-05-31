@@ -415,7 +415,19 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "参数面板控制场景",
-        "icon": "ion:snow-outline",
+        "icon": "arcticons:smartcontrol",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "fire",
+      "path": "fire",
+      "component": "example/scene/fireParticleSystem",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "火焰粒子系统",
+        "icon": "fxemoji:fire",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true

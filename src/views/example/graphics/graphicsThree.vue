@@ -8,12 +8,12 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
 
-    initMap() {
+    initMap () {
       const tempData = [
         {
           id: 3,
@@ -102,7 +102,7 @@ export default {
       this.flyto()
 
     },
-    flyto() {
+    flyto () {
       this.material.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
@@ -112,14 +112,17 @@ export default {
         }
       })
     },
-    createModel() {
+    createModel () {
       this.graphics.craeteRotateCylinderGraphics({
         position: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 1),
-        length: 500 / 2
+        img: 'static/data/images/file/cc2m.png',
+        length: 500 / 2,
+        topRadius: 500,
+        bottomRadius: 450,
       })
     },
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;
