@@ -92,7 +92,7 @@ new cesium_dev_kit.initCesium({...})
 
 你是否使用并喜欢 cesium_dev_kit，但你没有找到一种方式来表达你的喜欢? 如果是，请考虑捐款来支持这个项目。或许不是也不用担心，不管有没有支持，我都会继续维护这个项目。不过，如果你请我喝杯咖啡，我会非常高兴 😄
 
-[![Support via PayPal](https://www.paypalobjects.com/images/shared/paypal-logo-129x32.svg)](https://www.paypal.com/paypalme/xiaoningdeng)
+[![Support via PayPal](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/paypal-logo-129x32.svg)](https://paypal.me/xiaoningdeng?country.x=C2&locale.x=en_US)
 
 ##
 

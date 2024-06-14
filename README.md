@@ -93,7 +93,7 @@ See [API documentation :bookmark_tabs: ](https://benpaodehenji.com/cesiumDevKitD
 
 Do you use and like cesium_dev_kit but you don’t find a way to show some love? If yes, please consider donating to support this project. Otherwise, no worries, regardless of whether there is support or not, I will keep maintaining this project. Still, if you buy me a cup of coffee I would be more than happy though😄
 
-[![Support via PayPal](https://www.paypalobjects.com/images/shared/paypal-logo-129x32.svg)](https://www.paypal.com/paypalme/xiaoningdeng)
+[![Support via PayPal](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/paypal-logo-129x32.svg)](https://paypal.me/xiaoningdeng?country.x=C2&locale.x=en_US)
 
 ##
 
