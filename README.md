@@ -16,22 +16,15 @@ Additionally it supports Post effects, visibility analysis tools for perspective
 
 ## Features
 
-- materials
-  ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)
-- analysis
-  ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)
-- plotting
-  ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)
-- dragging
-  ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)
-- radar scan
-  ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)
-- First-person roaming
-  ![roaming](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)
+|   ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)   |         ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)         |   ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)   |
+| :-------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
+|                                                    material                                                     |                                                          analysis                                                           |                                                  plot                                                   |
+| ![dynamicRiver](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/dnyRiver.gif) | ![cesiumAndThreeJS](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/cesiumAndThreeJS.gif) | ![effect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/effect.gif) |
+|                                                  dynamicRiver                                                   |                                                      cesiumAndThreeJS                                                       |                                                 effect                                                  |
+|      ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)      |         ![roaming](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)          |   ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)   |
+|                                                      radar                                                      |                                                           roaming                                                           |                                                  drag                                                   |
 
-## Preview
-
-[https://benpaodehenji.com/cesiumDevKit](https://benpaodehenji.com/cesiumDevKit)
+[More>>](https://benpaodehenji.com/cesiumDevKit)
 
 ## Install
 
@@ -95,6 +88,12 @@ See [API documentation :bookmark_tabs: ](https://benpaodehenji.com/cesiumDevKitD
   [https://github.com/dengxiaoning/react-cesium](https://github.com/dengxiaoning/react-cesium)
 - H5 Use case
   [https://github.com/dengxiaoning/cesium_kit_test_h5](https://github.com/dengxiaoning/cesium_kit_test_h5)
+
+## Donate
+
+Do you use and like cesium_dev_kit but you don’t find a way to show some love? If yes, please consider donating to support this project. Otherwise, no worries, regardless of whether there is support or not, I will keep maintaining this project. Still, if you buy me a cup of coffee I would be more than happy though😄
+
+[![Support via PayPal](https://www.paypalobjects.com/images/shared/paypal-logo-129x32.svg)](https://www.paypal.com/paypalme/xiaoningdeng)
 
 ##
 

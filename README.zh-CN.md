@@ -15,22 +15,15 @@
 
 ## 功能展示
 
-- 材质
-  ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)
-- 分析
-  ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)
-- 标绘
-  ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)
-- 拖拽
-  ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)
-- 雷达扫描
-  ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)
-- 第一人称漫游
-  ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)
+| ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif) |         ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)         |   ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)   |
+| :---------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
+|                                                    材质                                                     |                                                            分析                                                             |                                                  标绘                                                   |
+| ![dnyRiver](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/dnyRiver.gif) | ![cesiumAndThreeJS](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/cesiumAndThreeJS.gif) | ![effect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/effect.gif) |
+|                                                    河流                                                     |                                                        threeJs 案例                                                         |                                                  特效                                                   |
+|    ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)    |         ![roaming](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)          |   ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)   |
+|                                                  雷达案例                                                   |                                                        第一人称漫游                                                         |                                                  拖拽                                                   |
 
-## 在线预览
-
-[https://benpaodehenji.com/cesiumDevKit](https://benpaodehenji.com/cesiumDevKit)
+[更多>>](https://benpaodehenji.com/cesiumDevKit)
 
 ## 安装
 
@@ -95,6 +88,12 @@ new cesium_dev_kit.initCesium({...})
 - H5 使用案例
   [https://github.com/dengxiaoning/cesium_kit_test_h5](https://github.com/dengxiaoning/cesium_kit_test_h5)
 
+## 捐赠
+
+你是否使用并喜欢 cesium_dev_kit，但你没有找到一种方式来表达你的喜欢? 如果是，请考虑捐款来支持这个项目。或许不是也不用担心，不管有没有支持，我都会继续维护这个项目。不过，如果你请我喝杯咖啡，我会非常高兴 😄
+
+[![Support via PayPal](https://www.paypalobjects.com/images/shared/paypal-logo-129x32.svg)](https://www.paypal.com/paypalme/xiaoningdeng)
+
 ##
 
 ## 浏览器支持
@@ -124,7 +123,7 @@ new cesium_dev_kit.initCesium({...})
 
 你可以[提一个 issue](https://github.com/dengxiaoning/cesium_dev_kit/issues/new) 或者提交一个 Pull Request。
 
-更多捐赠详情见[CONTRIBUTING](./CONTRIBUTING.md)...
+更多贡献详情见[CONTRIBUTING](./CONTRIBUTING.md)...
 
 ---
 
