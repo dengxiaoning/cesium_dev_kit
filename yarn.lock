@@ -176,9 +176,9 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.15.4", "@babel/parser@^7.15.8", "@babel/parser@^7.24.4":
-  version "7.24.4"
-  resolved "https://registry.npmjs.org/@babel/parser/-/parser-7.24.4.tgz"
+"@babel/parser@^7.15.4", "@babel/parser@^7.15.8", "@babel/parser@^7.24.4", "@babel/parser@^7.24.7":
+  version "7.24.7"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.24.7.tgz#9a5226f92f0c5c8ead550b750f5608e766c8ce85"
 
 "@babel/plugin-proposal-optional-chaining@^7.14.5":
   version "7.14.5"
@@ -1534,6 +1534,16 @@
     estree-walker "^2.0.2"
     source-map-js "^1.2.0"
 
+"@vue/compiler-core@3.4.29":
+  version "3.4.29"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.4.29.tgz#6c0878e98716b1cb64e7d44ed07feda96ab7f639"
+  dependencies:
+    "@babel/parser" "^7.24.7"
+    "@vue/shared" "3.4.29"
+    entities "^4.5.0"
+    estree-walker "^2.0.2"
+    source-map-js "^1.2.0"
+
 "@vue/compiler-dom@3.4.25":
   version "3.4.25"
   resolved "https://registry.npmjs.org/@vue/compiler-dom/-/compiler-dom-3.4.25.tgz"
@@ -1541,7 +1551,14 @@
     "@vue/compiler-core" "3.4.25"
     "@vue/shared" "3.4.25"
 
-"@vue/compiler-sfc@3.4.25", "@vue/compiler-sfc@^3.0.5":
+"@vue/compiler-dom@3.4.29":
+  version "3.4.29"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-dom/-/compiler-dom-3.4.29.tgz#c8f55528c8d8c8c36687d56a19e53b268c7d6c56"
+  dependencies:
+    "@vue/compiler-core" "3.4.29"
+    "@vue/shared" "3.4.29"
+
+"@vue/compiler-sfc@3.4.25":
   version "3.4.25"
   resolved "https://registry.npmjs.org/@vue/compiler-sfc/-/compiler-sfc-3.4.25.tgz"
   dependencies:
@@ -1555,12 +1572,33 @@
     postcss "^8.4.38"
     source-map-js "^1.2.0"
 
+"@vue/compiler-sfc@^3.4.29":
+  version "3.4.29"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-sfc/-/compiler-sfc-3.4.29.tgz#da7927c5c736048995fe9c6604288633e0ac161a"
+  dependencies:
+    "@babel/parser" "^7.24.7"
+    "@vue/compiler-core" "3.4.29"
+    "@vue/compiler-dom" "3.4.29"
+    "@vue/compiler-ssr" "3.4.29"
+    "@vue/shared" "3.4.29"
+    estree-walker "^2.0.2"
+    magic-string "^0.30.10"
+    postcss "^8.4.38"
+    source-map-js "^1.2.0"
+
 "@vue/compiler-ssr@3.4.25":
   version "3.4.25"
   resolved "https://registry.npmjs.org/@vue/compiler-ssr/-/compiler-ssr-3.4.25.tgz"
   dependencies:
     "@vue/compiler-dom" "3.4.25"
     "@vue/shared" "3.4.25"
+
+"@vue/compiler-ssr@3.4.29":
+  version "3.4.29"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-ssr/-/compiler-ssr-3.4.29.tgz#210b0267667fe1e5ec69ca4e3c473f94da6ac37f"
+  dependencies:
+    "@vue/compiler-dom" "3.4.29"
+    "@vue/shared" "3.4.29"
 
 "@vue/devtools-api@^6.0.0-beta.11":
   version "6.6.1"
@@ -1597,6 +1635,10 @@
 "@vue/shared@3.4.25":
   version "3.4.25"
   resolved "https://registry.npmjs.org/@vue/shared/-/shared-3.4.25.tgz"
+
+"@vue/shared@3.4.29":
+  version "3.4.29"
+  resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.4.29.tgz#84908c284e88a269f8bceee59707b14eb4b2d284"
 
 "@vueup/vue-quill@^1.0.0-beta.7":
   version "1.0.0-beta.7"
@@ -1850,9 +1892,9 @@ cesium@^1.105.0, cesium@^1.88:
     "@cesium/engine" "2.3.0"
     "@cesium/widgets" "2.2.0"
 
-cesium_dev_kit@^1.0.51:
-  version "1.0.51"
-  resolved "https://registry.npmjs.org/cesium_dev_kit/-/cesium_dev_kit-1.0.51.tgz"
+cesium_dev_kit@^1.0.76:
+  version "1.0.82"
+  resolved "https://registry.yarnpkg.com/cesium_dev_kit/-/cesium_dev_kit-1.0.82.tgz#79eed36ca641838c37d0c5f5d09ddef269e9434c"
   dependencies:
     "@turf/turf" "^6.5.0"
     concaveman "^1.1.1"
