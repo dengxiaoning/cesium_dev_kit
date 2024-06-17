@@ -89,6 +89,9 @@ const defaultStatic = {
     TetrahedronPrimitive: 'static/data/images/Textures/fence.png', //光锥图元
     WaterPrimitive: 'static/data/images/Textures/river.png' //水面效果
   },
+  passEffect: {
+    satellite: 'static/data/images/file/satellite.svg' //卫星图标
+  },
   amalysis: {
     createClipPlanAnalysis_wallImg:
       'static/data/images/file/excavate_side_min.jpg', //地形开挖分析

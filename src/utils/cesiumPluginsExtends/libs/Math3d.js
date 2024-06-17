@@ -28,7 +28,7 @@ Math3d.prototype = {
    *  [104.1120972824757,30.65330300319938],
    * [104.10758419863926, 30.64592470850288],
    * [104.09351691196979, 30.652434826507452]])
-   * @returns {Array } 返回Cartesian3 类型的数组
+   * @returns {Array<Cartesian3> } 返回Cartesian3 类型的数组
    */
   splitCartesians3: function (cartesianArr) {
     var positions = [];
@@ -287,12 +287,28 @@ Math3d.prototype = {
     }
     return distance.toFixed(3);
   },
-  /*
+  /**
    * 获取相交对象
-   * @param {*} startPos
-   * @param {*} endPos
-   * @param {*} excludeArr
-   * @param {*} bDrillPick
+   * @param {Cartesian3} startPos - 起始点坐标
+   * @param {Cartesian3} endPos - 终点坐标
+   * @param {Array} excludeArr - 排除对象数组, see {@link  module:Graphics#createPointsGraphics|createPointsGraphics}
+   * @param {boolean} bDrillPick - 只pick首个物体
+   * @example
+   * import {initCesium, Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   * const {viewer,graphics,base} = new initCesium({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   *  const  position1 = base.transformWGS84ToCartesian({lng:110.16018735617934, lat:31.036076859828338, alt:0 });
+   *  const position2 = base.transformWGS84ToCartesian({lng:110.17845812703679, lat:31.033686527335444, alt:0 });
+   *   const  points =  graphics.createPointsGraphics({
+   *         point: true,
+   *        positions: [position1, position2],
+   *   });
+   *
+   *   var results = math3d.getIntersectObj(position1, position2, points, true); //碰撞检测
+   * @returns {object}
    */
   getIntersectObj: function (startPos, endPos, excludeArr = [], bDrillPick = false) {
     if (this._viewer) {
@@ -411,15 +427,25 @@ Math3d.prototype = {
       return finalPositions;
     }
   },
-
   /**
-   * options.semiMinorAxis：短半轴
-   * options.semiMajorAxis：长半轴
-   * options.rotation：旋转角度 弧度
-   * options.center：中心点 笛卡尔坐标
-   * options.granularity：粒度 弧度
-   * Returns an array of positions that make up the ellipse.
-   * @private
+   * 计算范围当前椭圆位置的数组
+   * @param {object} options
+   * @param {number} options.semiMinorAxis - 短半轴
+   * @param {number} options.semiMajorAxis - 长半轴
+   * @param {number} options.rotation - 旋转角度 弧度
+   * @param {Cartesian3} options.center - 中心点 笛卡尔坐标
+   * @param {number} options.granularity  - 粒度 弧度
+   * @example
+   * import {Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   *
+   *const ellipse = math3d.computeEllipseEdgePositions({
+   *   semiMinorAxis:50,
+   *   semiMajorAxis:50,
+   *   rotation :0,
+   *   center:Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338)
+   *   granularity : Math.PI / 45.0});
+   * @returns  {Array} Returns  an array of positions that make up the ellipse.
    */
   computeEllipseEdgePositions: function (options) {
     if (this._viewer) {
@@ -473,14 +499,30 @@ Math3d.prototype = {
   },
 
   /**
-   * options.semiMinorAxis：短半轴
-   * options.semiMajorAxis：长半轴
-   * options.rotation：旋转角度 弧度
-   * options.center：中心点 笛卡尔坐标
-   * options.granularity：粒度 弧度
-   * options.angle：角度 弧度
-   * Returns an array of positions that make up the ellipse.
-   * @private
+   * 计算某角度下椭圆位置坐标
+   * @param {object} options
+   * @param {number} options.semiMinorAxis - 短半轴
+   * @param {number} options.semiMajorAxis - 长半轴
+   * @param {number} options.rotation - 旋转角度 弧度
+   * @param {number} options.center - 中心点 笛卡尔坐标
+   * @param {number} options.granularity  - 粒度 弧度
+   * @param {number} options.angle - 角度 弧度
+   * @example
+   * import {Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   * @example
+   * import {Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   *
+   *const ellipse = math3d.computeEllipseEdgePositions({
+   *   semiMinorAxis:50,
+   *   semiMajorAxis:50,
+   *   rotation :0,
+   *   center:Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338)
+   *   granularity : Math.PI / 45.0,
+   *    angle: Math.PI / 45.0
+   * });
+   * @returns  {Array} Returns  an array of positions that make up the ellipse.
    */
   computeSectorEdgePositions: function (options) {
     if (this._viewer) {

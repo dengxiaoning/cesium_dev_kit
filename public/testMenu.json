@@ -807,6 +807,18 @@
         "isKeepAlive": true
       }
     },{
+      "name": "satelliteScan",
+      "path": "satelliteScan",
+      "component": "example/radar/satelliteScan",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "卫星扫描",
+        "icon": "fluent:radar-20-regular",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
       "name": "circleScan",
       "path": "circleScan",
       "component": "example/radar/circleScan",

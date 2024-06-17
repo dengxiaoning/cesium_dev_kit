@@ -660,7 +660,7 @@ Base.prototype = {
 
   /**
    *笛卡尔转坐标WGS84
-   * @param {cartesian} cartesian -  笛卡尔积坐标数组
+   * @param {Cartesian3} cartesian -  笛卡尔积坐标数组
    * @example
    * import { Base } from 'cesium_dev_kit'
    * const baseObj = new Base({
@@ -685,7 +685,7 @@ Base.prototype = {
   /**
    * 坐标数组转换 笛卡尔转84
    * @function
-   * @param {Array} WSG84Arr  -WSG84Arr坐标数组
+   * @param {Array<WGS84Type>} WSG84Arr  -WSG84Arr坐标数组
    * @param {number} alt - z轴高层
    * @see {@link module:Base#transformWGS84ToCartesian|transformWGS84ToCartesian}
    * @example
@@ -695,7 +695,7 @@ Base.prototype = {
    *     containerId: 'cesiumContainer'
    * })
    * baseObj.base.transformWGS84ArrayToCartesianArray([{lng:110.16018735617934, lat:31.036076859828338, alt:0 }])
-   * @returns {Cartesian3|Array} 转换后的笛卡尔积数组
+   * @returns {Array<Cartesian3>} 转换后的笛卡尔积数组
    */
   transformWGS84ArrayToCartesianArray: function (WSG84Arr, alt) {
     if (this._viewer && WSG84Arr) {
@@ -710,7 +710,7 @@ Base.prototype = {
   /**
    * 坐标转换 84转笛卡尔
    * @function
-   * @param {object} position  坐标数组
+   * @param {WGS84Type} position  坐标数组
    * @param {number} position.lng  - 经度
    * @param {number} position.lon  - 纬度
    * @param {number} position.lat  - z轴
@@ -738,7 +738,7 @@ Base.prototype = {
   },
   /**
    * 笛卡尔积坐标数组转换 84地理坐标
-   * @param {Array} cartesianArr
+   * @param {Array<Cartesian3>} cartesianArr
    * @see {@link module:Base#transformCartesianToWGS84|transformCartesianToWGS84}
    * @example
    * import { Base } from 'cesium_dev_kit'
@@ -747,7 +747,7 @@ Base.prototype = {
    *     containerId: 'cesiumContainer'
    * })
    * baseObj.base.transformCartesianArrayToWGS84Array(Cesium.Cartesian3.fromDegreesArray( 110.16018735617934, 31.036076859828338, 110.17845812703679,31.033686527335444))
-   * @returns {Cartesian3} 转换后的笛卡尔积数组
+   * @returns {Array<WGS84Type>} 转换后的笛卡尔积数组
    */
   transformCartesianArrayToWGS84Array: function (cartesianArr) {
     if (this._viewer) {
@@ -817,7 +817,7 @@ Base.prototype = {
   },
   /**
    * wgs84坐标转地图坐标
-   * @param {object} position
+   * @param {object<WGS84Type>} position
    * @param {number} position.lng  - 经度
    * @param {number} position.lon  - 经度
    * @param {number} position.lat  - 纬度
@@ -833,7 +833,7 @@ Base.prototype = {
    * const cartographic = baseObj.base.transformWGS84ToCartographic(wgs84)
    * // or
    * const cartographic2 = baseObj.base.transformWGS84ToCartographic({lng:110.16018735617934, lat:31.036076859828338, alt:0 });
-   * @returns {Cartographic} 地理坐标
+   * @returns {CartographicType} 地理坐标
    *
    */
   transformWGS84ToCartographic: function (position) {

@@ -1,4 +1,5 @@
 let Cesium = null
+import { Graphics } from './Graphics'
 /**
  * 后期效果模块
  * @class
@@ -9,6 +10,7 @@ let Cesium = null
 function PassEffect(viewer, cesiumGlobal) {
   if (viewer) {
     this._viewer = viewer
+    this.$graphics = new Graphics(viewer, cesiumGlobal)
     Cesium = cesiumGlobal
   }
 }
@@ -297,6 +299,139 @@ PassEffect.prototype = {
       this._viewer.scene.postProcessStages.add(_delegate)
 
       return _delegate
+    }
+  },
+  /**
+   * 卫星扫描
+   * @function
+   * @param {object} options
+   * @param {Cartesian3} options.position - 坐标
+   * @param {number} options.repeat - 重复比例10~60
+   * @param {Color} options.color - 颜色
+   * @param {number} options.length - 雷达高度
+   * @param {number} options.thickness - 雷达边厚度0.1~0.9
+   * @example
+   * import { PassEffect } from 'cesium_dev_kit'
+   * const passEffectObj = new PassEffect({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   * passEffectObj.passEffect.satelliteScan({
+   *      position: [116.39, 39.9],
+   *      length: 40000.0,
+   *      color: Cesium.Color.LIGHTGREEN.withAlpha(0.8),
+   *      repeat: 40,
+   *      thickness: 0.1
+   *   })
+   * @returns {Primitive}
+   */
+  satelliteScan: function (options) {
+    if (options && options.position) {
+      var Cartesian3 = Cesium.Cartesian3,
+        GeometryInstance = Cesium.GeometryInstance,
+        Primitive = Cesium.Primitive,
+        MaterialAppearance = Cesium.MaterialAppearance,
+        Material = Cesium.Material,
+        Color = Cesium.Color,
+        Matrix4 = Cesium.Matrix4,
+        Transforms = Cesium.Transforms,
+        MaterialAppearance = Cesium.MaterialAppearance,
+        CylinderGeometry = Cesium.CylinderGeometry
+
+      const position = options.position || [116.39, 39.9]
+      //雷达的高度
+      const length = options.length || 40000.0
+      //   地面位置
+      var positionOnEllipsoid = Cartesian3.fromDegrees(position[0], position[1])
+      //  矩阵计算
+      var modelMatrix = Matrix4.multiplyByTranslation(
+        Transforms.eastNorthUpToFixedFrame(positionOnEllipsoid),
+        new Cartesian3(0.0, 0.0, length * 0.5),
+        new Matrix4()
+      )
+      var cylinderGeometry = new CylinderGeometry({
+        length: length,
+        topRadius: 0.0,
+        bottomRadius: length * 0.5,
+        vertexFormat: MaterialAppearance.MaterialSupport.TEXTURED.vertexFormat
+      })
+      //创建GeometryInstance
+      var redCone = new GeometryInstance({
+        geometry: cylinderGeometry,
+        modelMatrix: modelMatrix
+      })
+      //  创建Primitive
+      var radar = this._viewer.scene.primitives.add(
+        new Primitive({
+          geometryInstances: redCone,
+          appearance: new MaterialAppearance({
+            // 自定义纹理
+            material: new Material({
+              fabric: {
+                uniforms: {
+                  color: options.color || new Color(0.2, 1.0, 0.0, 1.0),
+                  repeat: options.repeat || 30.0,
+                  offset: 0.0,
+                  thickness: options.thickness || 0.2
+                },
+                source: `
+                  uniform vec4 color;
+                  uniform float repeat;
+                  uniform float offset;
+                  uniform float thickness;
+                  czm_material czm_getMaterial(czm_materialInput materialInput)
+                  {
+                    czm_material material = czm_getDefaultMaterial(materialInput);
+                    float sp = 1.0/repeat;
+                    vec2 st = materialInput.st;
+                    float dis = distance(st, vec2(0.5));
+                    float m = mod(dis + offset, sp);
+                    float a = step(sp*(1.0-thickness), m);
+                    material.diffuse = color.rgb;
+                    material.alpha = a * color.a;
+                    vec3 normalMC = material.normal;
+                    if(normalMC.y < 0.0 && normalMC.z < 0.0)
+                    { 
+                      discard;
+                    }
+                    return material;
+                  }`
+              },
+              translucent: true
+            }),
+            faceForward: false,
+            closed: true,
+            vertexShaderSource: `
+              in vec3 position3DHigh;
+              in vec3 position3DLow;
+              in vec3 normal;
+              in vec2 st;
+              in float batchId;
+              out vec3 v_positionEC;
+              out vec3 v_normalEC;
+              out vec2 v_st;
+              void main()
+              {
+                vec4 p = czm_computePosition();
+                v_positionEC = (czm_modelViewRelativeToEye * p).xyz;      // position in eye coordinates
+                v_normalEC =  normal;                         // normal in world coordinates
+                v_st = st;
+                gl_Position = czm_modelViewProjectionRelativeToEye * p;
+              }`
+          })
+        })
+      )
+
+      // 5 动态修改雷达材质中的offset变量，从而实现动态效果。
+      this._viewer.scene.preUpdate.addEventListener(function () {
+        var offset = radar.appearance.material.uniforms.offset
+        offset -= 0.001
+        if (offset > 1.0) {
+          offset = 0.0
+        }
+        radar.appearance.material.uniforms.offset = offset
+      })
+      return radar
     }
   },
   /**

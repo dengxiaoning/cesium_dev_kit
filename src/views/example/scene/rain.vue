@@ -11,16 +11,16 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 let skyObj = null;
 let flag = true;
 export default {
-  data() {
+  data () {
     return {
       activeId: 'light'
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const tempData = [
         {
           id: 3,
@@ -80,7 +80,7 @@ export default {
       this.material.setRainEffect();
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
   }
