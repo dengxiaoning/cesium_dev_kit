@@ -32,27 +32,17 @@ import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const tempData = [
         {
-          id: 3,
-          name: '高德地图02',
           type: 'UrlTemplateImageryProvider',
-          classConfig: {
+          option: {
             url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
-          },
-          interfaceConfig: {},
-          offset: '0,0',
-          invertswitch: 0,
-          filterRGB: '#ffffff',
-          showswitch: 1,
-          weigh: 13,
-          createtime: 1624346908,
-          updatetime: 1647395260,
+          }
         }]
       const {
         viewer,
@@ -81,7 +71,7 @@ export default {
       this.analysis = analysis;
       this.flyTo();
     },
-    flyTo() {
+    flyTo () {
       this.analysis.setView({
         position: new Cesium.Cartesian3(-1337035.7496454942, 5285202.940044943, 3305373.990594733),
         orientation: {
@@ -92,19 +82,19 @@ export default {
         },
       })
     },
-    VisibilityAnalysis() {
+    VisibilityAnalysis () {
       this.analysis.createVisibilityAnalysis();
     },
-    lookAroundAnalysis() {
+    lookAroundAnalysis () {
       this.analysis.createLookAroundAnalysis();
     },
-    visualFieldAnalysis() { this.analysis.createVisualFieldAnalysis(); },
-    clipPlanAnalysis() { this.analysis.createClipPlanAnalysis(); },
-    submergedAnalysis() { this.analysis.createSubmergedAnalysis(); },
-    slopeAnalysis() { this.analysis.createSlopeAnalysis(); },
-    cutVolumeAnalysis() { this.analysis.createCutVolumeAnalysis(); }
+    visualFieldAnalysis () { this.analysis.createVisualFieldAnalysis(); },
+    clipPlanAnalysis () { this.analysis.createClipPlanAnalysis(); },
+    submergedAnalysis () { this.analysis.createSubmergedAnalysis(); },
+    slopeAnalysis () { this.analysis.createSlopeAnalysis(); },
+    cutVolumeAnalysis () { this.analysis.createCutVolumeAnalysis(); }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

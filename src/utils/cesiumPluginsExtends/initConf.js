@@ -1,6 +1,6 @@
-import { colorRgb } from './ColorDeal'
-import { evil } from './common'
-
+const providerKeys = ['imageryProvider', 'terrainProvider']
+const defaultToken =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
 let Cesium = null
 class Controller {
   // 初始化 controller 类
@@ -11,14 +11,14 @@ class Controller {
   init_data() {
     this.viewer = null
   }
-  init({ containerId, viewerConfig, extraConfig, MapImageryList }) {
+  init({
+    containerId,
+    viewerConfig,
+    extraConfig,
+    MapImageryList,
+    imageryProvider
+  }) {
     const mapID = containerId
-    let imageryProviderConfig = new Cesium.SingleTileImageryProvider({
-      url:
-        'https://mapv-data.oss-cn-hangzhou.aliyuncs.com/Cesium-1.82-hawk/background.png',
-      tileWidth: 256,
-      tileHeight: 256
-    })
     let vConfig = {
       contextOptions: {
         webgl: {
@@ -43,20 +43,11 @@ class Controller {
       navigation: false,
       showRenderLoopErrors: true // 是否显示render异常信息
     }
+    let providerConf = this.findCesiumProvider(imageryProvider)
     // configure the access_token
-    Cesium.Ion.defaultAccessToken =
-      extraConfig['AccessToken'] ||
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
+    Cesium.Ion.defaultAccessToken = extraConfig['AccessToken'] || defaultToken
     vConfig = Object.assign(vConfig, viewerConfig) // 后台接口配置 融合替换 默认配置
-    const viewer = new Cesium.Viewer(mapID, vConfig)
-    if (MapImageryList.length !== 0) {
-      const imgProviderObj = this.setOneimageryProvider(MapImageryList[0])
-      // 加载单张影像 第一层最小最透明的
-      this.addImageLayerToScene(viewer, imgProviderObj)
-    } else {
-      // 加载默认底图
-      this.addImageLayerToScene(viewer, imageryProviderConfig)
-    }
+    const viewer = new Cesium.Viewer(mapID, { ...vConfig, ...providerConf })
     if (!extraConfig['logo']) {
       const cC = viewer.cesiumWidget.creditContainer
       cC.style.display = 'none' // 影藏logo
@@ -69,141 +60,51 @@ class Controller {
     }
 
     // 增加配置图层
-    this.setConfigMapList(viewer, MapImageryList)
-    // 消除锯齿
-    this.removeJagged(viewer)
-    this.viewer = viewer
-    return viewer
-  }
-
-  setOneimageryProvider(MapImagery) {
-    if (MapImagery.classConfig.customTags) {
-      MapImagery.classConfig.customTags = evil(
-        '(' + MapImagery.classConfig.customTags + ')'
-      )
-    }
-    return new Cesium[MapImagery.type](MapImagery.classConfig)
-  }
-  /**
-   * 构建imageLayer
-   * @param {*} viewer
-   * @param {*} elem
-   */
-  addImageLayerToScene(viewer, imgProviderObj) {
-    const imageryLayers = viewer.imageryLayers
-    // 2、利用ImageryProvider创建ImageryLayer实例
-    const imageryLayer = new Cesium.ImageryLayer(imgProviderObj)
-
-    // 3、利用imageryLayer创建Viewer实例
-    imageryLayers.add(imageryLayer)
-  }
-  setConfigMapList(viewer, MapImageryList) {
-    const imageryLayers = viewer.imageryLayers
-    MapImageryList.some((elem, index) => {
-      if (index === 0) {
-        return false
-      }
-      // 1、获取ImageryProvider实例
-      const imgProviderObj = this.setOneimageryProvider(elem)
-      this.addImageLayerToScene(viewer, imgProviderObj)
-      // imageryLayers.addImageryProvider(this.setOneimageryProvider(elem))
-    })
-    // 设置具体的 ImageryLayer 参数
-    MapImageryList.some((elem, index) => {
-      const baseLayer = viewer.imageryLayers.get(index)
-      if (elem.interfaceConfig) {
-        Object.getOwnPropertyNames(elem.interfaceConfig).forEach(function (
-          key
-        ) {
-          baseLayer[key] = elem.interfaceConfig[key]
-        })
-      }
-      // 设置 滤镜效果
-      baseLayer.invertColor = elem.invertswitch
-      baseLayer.filterRGB = [255.0, 255.0, 255.0]
-      if (elem.filterRGB !== '#000000' && elem.filterRGB !== '#ffffff') {
-        baseLayer.filterRGB = colorRgb(elem.filterRGB)
-      }
-
-      // 设置 offset 偏移量
-      const offset = elem.offset.split(',')
-      if (offset.length === 2) {
-        try {
-          const oxy = [parseFloat(offset[0]), parseFloat(offset[1])]
-          if (baseLayer._imageryProvider) {
-            baseLayer._imageryProvider._tilingScheme._rectangleNortheastInMeters.x +=
-              oxy[0]
-            baseLayer._imageryProvider._tilingScheme._rectangleNortheastInMeters.y +=
-              oxy[1]
-          }
-        } catch (error) {
-          console.log(error)
-        }
-      }
-
-      // 更改cesium的着色器代码 关于滤镜和反色的 [在不更改cesium源文件的情况下]
-      this.changeImageryProviderColors(viewer, baseLayer)
-    })
-  }
-  // 消除锯齿
-  removeJagged(viewer) {
-    viewer.scene.postProcessStages.fxaa.enabled = false
-    viewer.scene.fxaa = false
-    const supportsImageRenderingPixelated =
-      viewer.cesiumWidget._supportsImageRenderingPixelated
-    if (supportsImageRenderingPixelated) {
-      let vtxf_dpr = window.devicePixelRatio
-      while (vtxf_dpr >= 2.0) {
-        vtxf_dpr /= 2.0
-      }
-      viewer.resolutionScale = vtxf_dpr
-    }
-  }
-  // 更改 cesium 着色的方法
-  changeImageryProviderColors(viewer, baseLayer) {
-    // 更改底图的着色器 代码
-    const baseFragmentShaderSource =
-      viewer.scene.globe._surfaceShaderSet.baseFragmentShaderSource.sources
-    for (let i = 0; i < baseFragmentShaderSource.length; i++) {
-      const oneSource = baseFragmentShaderSource[i]
-      // 格式必须一致 不能多有空格 且保持版本一致性
-      const strS = 'color = czm_saturation(color, textureSaturation);\n#endif\n'
-      let strT = 'color = czm_saturation(color, textureSaturation);\n#endif\n'
-      if (baseLayer.invertColor) {
-        strT += `
-          color.r = 1.0 - color.r;
-          color.g = 1.0 - color.g;
-          color.b = 1.0 - color.b;
-        `
-        strT += `
-        color.r = color.r * ${baseLayer.filterRGB[0]}.0/255.0;
-        color.g = color.g * ${baseLayer.filterRGB[1]}.0/255.0;
-        color.b = color.b * ${baseLayer.filterRGB[2]}.0/255.0;
-        `
-      }
-
-      if (oneSource.indexOf(strS) !== -1) {
-        baseFragmentShaderSource[i] = baseFragmentShaderSource[i].replace(
-          strS,
-          strT
+    if (MapImageryList && MapImageryList.length > 0) {
+      for (let i = 0; i < MapImageryList.length; i++) {
+        this.addImageryProvider(
+          viewer,
+          MapImageryList[i].type,
+          MapImageryList[i].option
         )
       }
     }
+    this.viewer = viewer
+    return viewer
   }
-  // 获取当前视图的中心经纬度
-  getCurCenterlonLat(viewer) {
-    let result = viewer.camera.pickEllipsoid(
-      new Cesium.Cartesian2(
-        viewer.canvas.clientWidth / 2,
-        viewer.canvas.clientHeight / 2
-      )
+  addImageryProvider(viewer, type, option) {
+    viewer.imageryLayers.addImageryProvider(
+      this.createCesiumProvider({
+        type,
+        option
+      })
     )
-    let curPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(result)
-    let lon = (curPosition.longitude * 180) / Math.PI
-    let lat = (curPosition.latitude * 180) / Math.PI
-    return {
-      lon: lon,
-      lat: lat
+  }
+  // 获取cesium provider
+  findCesiumProvider(options) {
+    const object = {}
+    for (const key in options) {
+      if (providerKeys.includes(key) && options[key] && options[key].type) {
+        object[key] = this.createCesiumProvider(options[key])
+        continue
+      }
+      object[key] = options[key]
+    }
+
+    return object
+  }
+  // 创建provider
+  createCesiumProvider(config) {
+    switch (config.type) {
+      case 'WebMapTileServiceImageryProvider':
+        return new Cesium[config.type](config.option)
+        break
+      case 'UrlTemplateImageryProvider':
+        return new Cesium[config.type](config.option)
+        break
+      case 'TileMapServiceImageryProvider':
+        return new Cesium[config.type](config.option)
+        break
     }
   }
 }

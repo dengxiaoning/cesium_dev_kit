@@ -56,7 +56,7 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 let cHander = null;
 
 export default {
-  data() {
+  data () {
     return {
       posHeading: 0,
       posPitch: 0,
@@ -72,49 +72,25 @@ export default {
       cartesinaR: 0
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const tempData = [
         {
-          id: 3,
-          name: '高德地图02',
           type: 'UrlTemplateImageryProvider',
-          classConfig: {
-            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
-          },
-          interfaceConfig: {},
-          offset: '0,0',
-          invertswitch: 0,
-          filterRGB: '#ffffff',
-          showswitch: 1,
-          weigh: 13,
-          createtime: 1624346908,
-          updatetime: 1647395260,
-        }, {
-          id: 14,
-          name: '高德地图01',
+          option: {
+            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+          }
+        },
+        {
           type: 'UrlTemplateImageryProvider',
-          classConfig: {
-            url: 'http://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
-          },
-          interfaceConfig: {
-            saturation: 0,
-            brightness: 0.6,
-            contrast: 1.8,
-            hue: 1,
-            gamma: 0.3,
-          },
-          offset: '0,0',
-          invertswitch: 1,
-          filterRGB: '#4e70a6',
-          showswitch: 1,
-          weigh: 0,
-          createtime: 1624326728,
-          updatetime: 1646979297,
-        },]
+          option: {
+            url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
+          }
+        }
+      ]
       const { viewer,
         base
       } = new initCesium(
@@ -157,7 +133,7 @@ export default {
       this.initCameraPos();
       this.cameraModify();
     },
-    initCameraPos() {
+    initCameraPos () {
       let position = this.base.getCameraPosition();
       if (position) {
         const { lon,
@@ -188,7 +164,7 @@ export default {
         console.log('can not get postion.')
       }
     },
-    cameraModify() {
+    cameraModify () {
       this.c_viewer.scene.camera.moveEnd.addEventListener((move) => {
         let position = this.base.getCameraPosition()
         if (position) {
@@ -222,7 +198,7 @@ export default {
       });
     },
     // 绑定事件到场景中
-    bindEventToScene(callbackFn) {
+    bindEventToScene (callbackFn) {
       cHander && cHander.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
       this.base.bindHandelEvent({
         leftClick: (clickEvent, hander) => {
@@ -237,7 +213,7 @@ export default {
      *  base.getCatesian3FromPX(e.position);
      * @param {*} type 
      */
-    btnGroupOpera(type) {
+    btnGroupOpera (type) {
       const scene = this.c_viewer.scene;
       const _self = this;
       if (type === 'scenePickBuild') {
@@ -332,7 +308,7 @@ export default {
       }
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.base = null;
   }

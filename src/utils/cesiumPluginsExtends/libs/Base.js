@@ -1,19 +1,19 @@
-let Cesium = {};
-let dfSt = undefined;
+let Cesium = {}
+let dfSt = undefined
 /**
  * @typedef {Object} cameraPosType - 相机位置信息
  * @property {number} lon -  经度
  * @property {number} lat - 纬度
  * @property {number} height - 高度
- * @property {number} heading - 朝向
- * @property {number} pitch - 倾斜度
- * @property {number} roll - 翻滚角
- * @property {Array} position - 位置坐标
+ * @property {number} heading - 朝向，角度<degrees>数据,使用时需要Cesium.Math.toRadians转换为弧度
+ * @property {number} pitch - 倾斜度，角度<degrees>数据,使用时需要Cesium.Math.toRadians转换为弧度
+ * @property {number} roll - 翻滚角，角度<degrees>数据,使用时需要Cesium.Math.toRadians转换为弧度
+ * @property {Cartesian3} position - 相机笛卡尔积位置
  * @property {number} cameraHeading - 相机朝向
  * @property {number} cameraPitch - 相机倾斜度
  * @property {number} cameraRoll - 相机翻滚角
- * @property {object} center - 中心坐标
- * @property {object} direction - 方向
+ * @property {object} center - 中心坐标，{x:102.736485445,y:29.87345}
+ * @property {Cartesian3} direction - 方向
  */
 /**
  * @typedef {Object}  CartographicType - WGS84地理坐标
@@ -28,6 +28,13 @@ let dfSt = undefined;
  * @property {number} alt - 高度
  */
 /**
+ * @typedef {Object}  clickPositionType - 点击后返回位置信息
+ * @property {WGS84Type} wgs84Coor - 点击位置
+ * @property {CartographicType} graphicCoor - 实体真实位置
+ * @property {cameraPosType} cameraPosition - 相机位置
+ */
+
+/**
  * 基本构造方法base
  * @class
  * @param {object} params
@@ -39,27 +46,27 @@ let dfSt = undefined;
 function Base(viewer, cesiumGlobal, defaultStatic) {
   if (viewer) {
     /** @access private */
-    this._viewer = viewer;
+    this._viewer = viewer
     /** @access private */
-    Cesium = cesiumGlobal;
+    Cesium = cesiumGlobal
     /** @access private */
-    dfSt = defaultStatic;
+    dfSt = defaultStatic
     /** @private */
-    this._drawLayer = new Cesium.CustomDataSource("drawLayer");
-    viewer && viewer.dataSources.add(this._drawLayer);
-    this.myname = "BASE";
+    this._drawLayer = new Cesium.CustomDataSource('drawLayer')
+    viewer && viewer.dataSources.add(this._drawLayer)
+    this.myname = 'BASE'
     /** @private */
-    this._installBaiduImageryProvider();
+    this._installBaiduImageryProvider()
     /** @private */
-    this._installGooGleImageryProvider();
+    this._installGooGleImageryProvider()
     /** @private */
-    this._installAmapImageryProvider();
+    this._installAmapImageryProvider()
     /** @private */
-    this._installTencentImageryProvider();
+    this._installTencentImageryProvider()
     /** @private */
-    this._installTdtImageryProvider();
+    this._installTdtImageryProvider()
     /** @private */
-    this._installGroundSkyBox();
+    this._installGroundSkyBox()
   }
 }
 
@@ -77,20 +84,20 @@ Base.prototype = {
    *  const entity = baseObj.base.createGraphics()
    */
   createGraphics: function () {
-    return new Cesium.Entity();
+    return new Cesium.Entity()
   },
   getDfSt(attrArr) {
     if (dfSt) {
       const res = attrArr.reduce((pre, curr) => {
         if (pre) {
-          return pre[curr];
+          return pre[curr]
         } else {
-          return dfSt[curr];
+          return dfSt[curr]
         }
-      }, undefined);
-      return dfSt.baseService + res;
+      }, undefined)
+      return dfSt.baseService + res
     }
-    return undefined;
+    return undefined
   },
 
   /**
@@ -108,14 +115,26 @@ Base.prototype = {
   setOneSkyBox: function () {
     return new Cesium.SkyBox({
       sources: {
-        positiveX: this.getDfSt(["skyBox", "one", "positiveX"]) || "static/data/images/SkyBox/00h+00.jpg",
-        negativeX: this.getDfSt(["skyBox", "one", "negativeX"]) || "static/data/images/SkyBox/12h+00.jpg",
-        positiveY: this.getDfSt(["skyBox", "one", "positiveY"]) || "static/data/images/SkyBox/06h+00.jpg",
-        negativeY: this.getDfSt(["skyBox", "one", "negativeY"]) || "static/data/images/SkyBox/18h+00.jpg",
-        positiveZ: this.getDfSt(["skyBox", "one", "positiveZ"]) || "static/data/images/SkyBox/06h+90.jpg",
-        negativeZ: this.getDfSt(["skyBox", "one", "negativeZ"]) || "static/data/images/SkyBox/06h-90.jpg",
-      },
-    });
+        positiveX:
+          this.getDfSt(['skyBox', 'one', 'positiveX']) ||
+          'static/data/images/SkyBox/00h+00.jpg',
+        negativeX:
+          this.getDfSt(['skyBox', 'one', 'negativeX']) ||
+          'static/data/images/SkyBox/12h+00.jpg',
+        positiveY:
+          this.getDfSt(['skyBox', 'one', 'positiveY']) ||
+          'static/data/images/SkyBox/06h+00.jpg',
+        negativeY:
+          this.getDfSt(['skyBox', 'one', 'negativeY']) ||
+          'static/data/images/SkyBox/18h+00.jpg',
+        positiveZ:
+          this.getDfSt(['skyBox', 'one', 'positiveZ']) ||
+          'static/data/images/SkyBox/06h+90.jpg',
+        negativeZ:
+          this.getDfSt(['skyBox', 'one', 'negativeZ']) ||
+          'static/data/images/SkyBox/06h-90.jpg'
+      }
+    })
   },
 
   /**
@@ -133,14 +152,26 @@ Base.prototype = {
   setTwoSkyBox: function () {
     return new Cesium.SkyBox({
       sources: {
-        positiveX: this.getDfSt(["skyBox", "two", "negativeZ"]) || "static/data/images/SkyBox/Version2_dark_px.jpg",
-        negativeX: this.getDfSt(["skyBox", "two", "negativeX"]) || "static/data/images/SkyBox/Version2_dark_mx.jpg",
-        positiveY: this.getDfSt(["skyBox", "two", "positiveY"]) || "static/data/images/SkyBox/Version2_dark_py.jpg",
-        negativeY: this.getDfSt(["skyBox", "two", "negativeY"]) || "static/data/images/SkyBox/Version2_dark_my.jpg",
-        positiveZ: this.getDfSt(["skyBox", "two", "positiveZ"]) || "static/data/images/SkyBox/Version2_dark_pz.jpg",
-        negativeZ: this.getDfSt(["skyBox", "two", "negativeZ"]) || "static/data/images/SkyBox/Version2_dark_mz.jpg",
-      },
-    });
+        positiveX:
+          this.getDfSt(['skyBox', 'two', 'negativeZ']) ||
+          'static/data/images/SkyBox/Version2_dark_px.jpg',
+        negativeX:
+          this.getDfSt(['skyBox', 'two', 'negativeX']) ||
+          'static/data/images/SkyBox/Version2_dark_mx.jpg',
+        positiveY:
+          this.getDfSt(['skyBox', 'two', 'positiveY']) ||
+          'static/data/images/SkyBox/Version2_dark_py.jpg',
+        negativeY:
+          this.getDfSt(['skyBox', 'two', 'negativeY']) ||
+          'static/data/images/SkyBox/Version2_dark_my.jpg',
+        positiveZ:
+          this.getDfSt(['skyBox', 'two', 'positiveZ']) ||
+          'static/data/images/SkyBox/Version2_dark_pz.jpg',
+        negativeZ:
+          this.getDfSt(['skyBox', 'two', 'negativeZ']) ||
+          'static/data/images/SkyBox/Version2_dark_mz.jpg'
+      }
+    })
   },
   /**
    * 天空盒3
@@ -157,14 +188,26 @@ Base.prototype = {
   setThreeSkyBox: function () {
     return new Cesium.SkyBox({
       sources: {
-        positiveX: this.getDfSt(["skyBox", "three", "negativeZ"]) || "static/data/images/SkyBox/tycho2t3_80_pxs.jpg",
-        negativeX: this.getDfSt(["skyBox", "three", "negativeX"]) || "static/data/images/SkyBox/tycho2t3_80_mxs.jpg",
-        positiveY: this.getDfSt(["skyBox", "three", "positiveY"]) || "static/data/images/SkyBox/tycho2t3_80_pys.jpg",
-        negativeY: this.getDfSt(["skyBox", "three", "negativeY"]) || "static/data/images/SkyBox/tycho2t3_80_mys.jpg",
-        positiveZ: this.getDfSt(["skyBox", "three", "positiveZ"]) || "static/data/images/SkyBox/tycho2t3_80_pzs.jpg",
-        negativeZ: this.getDfSt(["skyBox", "three", "negativeZ"]) || "static/data/images/SkyBox/tycho2t3_80_mzs.jpg",
-      },
-    });
+        positiveX:
+          this.getDfSt(['skyBox', 'three', 'negativeZ']) ||
+          'static/data/images/SkyBox/tycho2t3_80_pxs.jpg',
+        negativeX:
+          this.getDfSt(['skyBox', 'three', 'negativeX']) ||
+          'static/data/images/SkyBox/tycho2t3_80_mxs.jpg',
+        positiveY:
+          this.getDfSt(['skyBox', 'three', 'positiveY']) ||
+          'static/data/images/SkyBox/tycho2t3_80_pys.jpg',
+        negativeY:
+          this.getDfSt(['skyBox', 'three', 'negativeY']) ||
+          'static/data/images/SkyBox/tycho2t3_80_mys.jpg',
+        positiveZ:
+          this.getDfSt(['skyBox', 'three', 'positiveZ']) ||
+          'static/data/images/SkyBox/tycho2t3_80_pzs.jpg',
+        negativeZ:
+          this.getDfSt(['skyBox', 'three', 'negativeZ']) ||
+          'static/data/images/SkyBox/tycho2t3_80_mzs.jpg'
+      }
+    })
   },
   /**
    * 近景天空盒
@@ -182,14 +225,26 @@ Base.prototype = {
   setOneGroundSkyBox: function () {
     return new Cesium.Scene.GroundSkyBox({
       sources: {
-        positiveX: this.getDfSt(["skyBox", "nearOne", "positiveX"]) || "static/data/images/SkyBox/rightav9.jpg",
-        negativeX: this.getDfSt(["skyBox", "nearOne", "negativeX"]) || "static/data/images/SkyBox/leftav9.jpg",
-        positiveY: this.getDfSt(["skyBox", "nearOne", "positiveY"]) || "static/data/images/SkyBox/frontav9.jpg",
-        negativeY: this.getDfSt(["skyBox", "nearOne", "negativeY"]) || "static/data/images/SkyBox/backav9.jpg",
-        positiveZ: this.getDfSt(["skyBox", "nearOne", "positiveZ"]) || "static/data/images/SkyBox/topav9.jpg",
-        negativeZ: this.getDfSt(["skyBox", "nearOne", "negativeZ"]) || "static/data/images/SkyBox/bottomav9.jpg",
-      },
-    });
+        positiveX:
+          this.getDfSt(['skyBox', 'nearOne', 'positiveX']) ||
+          'static/data/images/SkyBox/rightav9.jpg',
+        negativeX:
+          this.getDfSt(['skyBox', 'nearOne', 'negativeX']) ||
+          'static/data/images/SkyBox/leftav9.jpg',
+        positiveY:
+          this.getDfSt(['skyBox', 'nearOne', 'positiveY']) ||
+          'static/data/images/SkyBox/frontav9.jpg',
+        negativeY:
+          this.getDfSt(['skyBox', 'nearOne', 'negativeY']) ||
+          'static/data/images/SkyBox/backav9.jpg',
+        positiveZ:
+          this.getDfSt(['skyBox', 'nearOne', 'positiveZ']) ||
+          'static/data/images/SkyBox/topav9.jpg',
+        negativeZ:
+          this.getDfSt(['skyBox', 'nearOne', 'negativeZ']) ||
+          'static/data/images/SkyBox/bottomav9.jpg'
+      }
+    })
   },
   /**
    * 近景天空盒2
@@ -207,14 +262,26 @@ Base.prototype = {
   setTwoGroundSkyBox: function () {
     return new Cesium.Scene.GroundSkyBox({
       sources: {
-        positiveX: this.getDfSt(["skyBox", "nearTwo", "positiveX"]) || "static/data/images/SkyBox/SunSetRight.png",
-        negativeX: this.getDfSt(["skyBox", "nearTwo", "negativeX"]) || "static/data/images/SkyBox/SunSetLeft.png",
-        positiveY: this.getDfSt(["skyBox", "nearTwo", "positiveY"]) || "static/data/images/SkyBox/SunSetFront.png",
-        negativeY: this.getDfSt(["skyBox", "nearTwo", "negativeY"]) || "static/data/images/SkyBox/SunSetBack.png",
-        positiveZ: this.getDfSt(["skyBox", "nearTwo", "positiveZ"]) || "static/data/images/SkyBox/SunSetUp.png",
-        negativeZ: this.getDfSt(["skyBox", "nearTwo", "negativeZ"]) || "static/data/images/SkyBox/SunSetDown.png",
-      },
-    });
+        positiveX:
+          this.getDfSt(['skyBox', 'nearTwo', 'positiveX']) ||
+          'static/data/images/SkyBox/SunSetRight.png',
+        negativeX:
+          this.getDfSt(['skyBox', 'nearTwo', 'negativeX']) ||
+          'static/data/images/SkyBox/SunSetLeft.png',
+        positiveY:
+          this.getDfSt(['skyBox', 'nearTwo', 'positiveY']) ||
+          'static/data/images/SkyBox/SunSetFront.png',
+        negativeY:
+          this.getDfSt(['skyBox', 'nearTwo', 'negativeY']) ||
+          'static/data/images/SkyBox/SunSetBack.png',
+        positiveZ:
+          this.getDfSt(['skyBox', 'nearTwo', 'positiveZ']) ||
+          'static/data/images/SkyBox/SunSetUp.png',
+        negativeZ:
+          this.getDfSt(['skyBox', 'nearTwo', 'negativeZ']) ||
+          'static/data/images/SkyBox/SunSetDown.png'
+      }
+    })
   },
   /**
    * 近景天空盒3
@@ -232,14 +299,26 @@ Base.prototype = {
   setThreeGroundSkyBox: function () {
     return new Cesium.Scene.GroundSkyBox({
       sources: {
-        positiveX: this.getDfSt(["skyBox", "nearThree", "positiveX"]) || "static/data/images/SkyBox/Right.jpg",
-        negativeX: this.getDfSt(["skyBox", "nearThree", "negativeX"]) || "static/data/images/SkyBox/Left.jpg",
-        positiveY: this.getDfSt(["skyBox", "nearThree", "positiveY"]) || "static/data/images/SkyBox/Front.jpg",
-        negativeY: this.getDfSt(["skyBox", "nearThree", "negativeY"]) || "static/data/images/SkyBox/Back.jpg",
-        positiveZ: this.getDfSt(["skyBox", "nearThree", "positiveZ"]) || "static/data/images/SkyBox/Up.jpg",
-        negativeZ: this.getDfSt(["skyBox", "nearThree", "negativeZ"]) || "static/data/images/SkyBox/Down.jpg",
-      },
-    });
+        positiveX:
+          this.getDfSt(['skyBox', 'nearThree', 'positiveX']) ||
+          'static/data/images/SkyBox/Right.jpg',
+        negativeX:
+          this.getDfSt(['skyBox', 'nearThree', 'negativeX']) ||
+          'static/data/images/SkyBox/Left.jpg',
+        positiveY:
+          this.getDfSt(['skyBox', 'nearThree', 'positiveY']) ||
+          'static/data/images/SkyBox/Front.jpg',
+        negativeY:
+          this.getDfSt(['skyBox', 'nearThree', 'negativeY']) ||
+          'static/data/images/SkyBox/Back.jpg',
+        positiveZ:
+          this.getDfSt(['skyBox', 'nearThree', 'positiveZ']) ||
+          'static/data/images/SkyBox/Up.jpg',
+        negativeZ:
+          this.getDfSt(['skyBox', 'nearThree', 'negativeZ']) ||
+          'static/data/images/SkyBox/Down.jpg'
+      }
+    })
   },
   /**
    * 黑夜特效
@@ -256,28 +335,28 @@ Base.prototype = {
    * @returns {postProcessStages} postProcessStages 实例
    */
   setDarkEffect: function (options) {
-    options = options || {};
+    options = options || {}
     var fs =
-      "uniform sampler2D colorTexture;\n" +
-      "in vec2 v_textureCoordinates;\n" +
-      "uniform float scale;\n" +
-      "uniform vec3 offset;\n" +
-      "void main() {\n" +
-      " vec4 color = texture(colorTexture, v_textureCoordinates);\n" +
-      " out_FragColor = vec4(color.r*0.2,color.g * 0.4,color.b*0.6, 1.0);\n" +
-      "}\n";
+      'uniform sampler2D colorTexture;\n' +
+      'in vec2 v_textureCoordinates;\n' +
+      'uniform float scale;\n' +
+      'uniform vec3 offset;\n' +
+      'void main() {\n' +
+      ' vec4 color = texture(colorTexture, v_textureCoordinates);\n' +
+      ' out_FragColor = vec4(color.r*0.2,color.g * 0.4,color.b*0.6, 1.0);\n' +
+      '}\n'
     return this._viewer.scene.postProcessStages.add(
       new Cesium.PostProcessStage({
-        name: "darkEffect",
+        name: 'darkEffect',
         fragmentShader: fs,
         uniforms: {
           scale: 1.0,
           offset: function () {
-            return options.offset || new Cesium.Cartesian3(0.1, 0.2, 0.3);
-          },
-        },
+            return options.offset || new Cesium.Cartesian3(0.1, 0.2, 0.3)
+          }
+        }
       })
-    );
+    )
   },
   /**
    * 场景蓝光
@@ -297,41 +376,41 @@ Base.prototype = {
   setBlurBloom: function (options) {
     if (this._viewer && options) {
       var fs =
-        "uniform float height;\n" +
-        "uniform float width;\n" +
-        "uniform sampler2D colorTexture1;\n" +
-        "\n" +
-        "in vec2 v_textureCoordinates;\n" +
-        "\n" +
-        "const int SAMPLES = 9;\n" +
-        "void main()\n" +
-        "{\n" +
-        "vec2 st = v_textureCoordinates;\n" +
-        "float wr = float(1.0 / width);\n" +
-        "float hr = float(1.0 / height);\n" +
-        "vec4 result = vec4(0.0);\n" +
-        "int count = 0;\n" +
-        "for(int i = -SAMPLES; i <= SAMPLES; ++i){\n" +
-        "for(int j = -SAMPLES; j <= SAMPLES; ++j){\n" +
-        "vec2 offset = vec2(float(i) * wr, float(j) * hr);\n" +
-        "result += texture(colorTexture1, st + offset);\n" +
-        "}\n" +
-        "}\n" +
-        "result = result / float(count);\n" +
-        "out_FragColor = result;\n" +
-        "}\n";
+        'uniform float height;\n' +
+        'uniform float width;\n' +
+        'uniform sampler2D colorTexture1;\n' +
+        '\n' +
+        'in vec2 v_textureCoordinates;\n' +
+        '\n' +
+        'const int SAMPLES = 9;\n' +
+        'void main()\n' +
+        '{\n' +
+        'vec2 st = v_textureCoordinates;\n' +
+        'float wr = float(1.0 / width);\n' +
+        'float hr = float(1.0 / height);\n' +
+        'vec4 result = vec4(0.0);\n' +
+        'int count = 0;\n' +
+        'for(int i = -SAMPLES; i <= SAMPLES; ++i){\n' +
+        'for(int j = -SAMPLES; j <= SAMPLES; ++j){\n' +
+        'vec2 offset = vec2(float(i) * wr, float(j) * hr);\n' +
+        'result += texture(colorTexture1, st + offset);\n' +
+        '}\n' +
+        '}\n' +
+        'result = result / float(count);\n' +
+        'out_FragColor = result;\n' +
+        '}\n'
 
       return this._viewer.scene.postProcessStages.add(
         new Cesium.PostProcessStage({
-          name: "blur_x_direction",
+          name: 'blur_x_direction',
           fragmentShader: fs,
           uniforms: {
             width: options.width,
             height: options.height,
-            colorTexture1: "Bright",
-          },
+            colorTexture1: 'Bright'
+          }
         })
-      );
+      )
     }
   },
 
@@ -350,7 +429,7 @@ Base.prototype = {
   setRainEffect: function () {
     if (this._viewer) {
       var fs =
-        "uniform sampler2D colorTexture;\n\
+        'uniform sampler2D colorTexture;\n\
                   in vec2 v_textureCoordinates;\n\
                   \n\
                   float hash(float x){\n\
@@ -371,13 +450,13 @@ Base.prototype = {
                       c*=v*b;\n\
                       out_FragColor = mix(texture(colorTexture, v_textureCoordinates), vec4(c, 1), 0.2);\n\
                   }\n\
-                  ";
+                  '
       return this._viewer.scene.postProcessStages.add(
         new Cesium.PostProcessStage({
-          name: "rainEffect",
-          fragmentShader: fs,
+          name: 'rainEffect',
+          fragmentShader: fs
         })
-      );
+      )
     }
   },
   /**
@@ -395,7 +474,7 @@ Base.prototype = {
   setSnowEffect: function () {
     if (this._viewer) {
       var fs =
-        "uniform sampler2D colorTexture;\n\
+        'uniform sampler2D colorTexture;\n\
                       in vec2 v_textureCoordinates;\n\
                       float snow(vec2 uv,float scale){\n\
                           float time = czm_frameNumber / 60.0;\n\
@@ -430,13 +509,13 @@ Base.prototype = {
                           out_FragColor = mix(texture(colorTexture, v_textureCoordinates), vec4(finalColor,1), 0.3);\n\
                           \n\
                       }\n\
-                      ";
+                      '
       return this._viewer.scene.postProcessStages.add(
         new Cesium.PostProcessStage({
-          name: "snowEffect",
-          fragmentShader: fs,
+          name: 'snowEffect',
+          fragmentShader: fs
         })
-      );
+      )
     }
   },
   /**
@@ -454,51 +533,51 @@ Base.prototype = {
   setFogEffect: function () {
     if (this._viewer) {
       var fs =
-        "float getDistance(sampler2D depthTexture, vec2 texCoords) \n" +
-        "{ \n" +
-        "    float depth = czm_unpackDepth(texture(depthTexture, texCoords)); \n" +
-        "    if (depth == 0.0) { \n" +
-        "        return czm_infinity; \n" +
-        "    } \n" +
-        "    vec4 eyeCoordinate = czm_windowToEyeCoordinates(gl_FragCoord.xy, depth); \n" +
-        "    return -eyeCoordinate.z / eyeCoordinate.w; \n" +
-        "} \n" +
-        "float interpolateByDistance(vec4 nearFarScalar, float distance) \n" +
-        "{ \n" +
-        "    float startDistance = nearFarScalar.x; \n" +
-        "    float startValue = nearFarScalar.y; \n" +
-        "    float endDistance = nearFarScalar.z; \n" +
-        "    float endValue = nearFarScalar.w; \n" +
-        "    float t = clamp((distance - startDistance) / (endDistance - startDistance), 0.0, 1.0); \n" +
-        "    return mix(startValue, endValue, t); \n" +
-        "} \n" +
-        "vec4 alphaBlend(vec4 sourceColor, vec4 destinationColor) \n" +
-        "{ \n" +
-        "    return sourceColor * vec4(sourceColor.aaa, 1.0) + destinationColor * (1.0 - sourceColor.a); \n" +
-        "} \n" +
-        "uniform sampler2D colorTexture; \n" +
-        "uniform sampler2D depthTexture; \n" +
-        "uniform vec4 fogByDistance; \n" +
-        "uniform vec4 fogColor; \n" +
-        "in vec2 v_textureCoordinates; \n" +
-        "void main(void) \n" +
-        "{ \n" +
-        "    float distance = getDistance(depthTexture, v_textureCoordinates); \n" +
-        "    vec4 sceneColor = texture(colorTexture, v_textureCoordinates); \n" +
-        "    float blendAmount = interpolateByDistance(fogByDistance, distance); \n" +
-        "    vec4 finalFogColor = vec4(fogColor.rgb, fogColor.a * blendAmount); \n" +
-        "    out_FragColor = alphaBlend(finalFogColor, sceneColor); \n" +
-        "} \n";
+        'float getDistance(sampler2D depthTexture, vec2 texCoords) \n' +
+        '{ \n' +
+        '    float depth = czm_unpackDepth(texture(depthTexture, texCoords)); \n' +
+        '    if (depth == 0.0) { \n' +
+        '        return czm_infinity; \n' +
+        '    } \n' +
+        '    vec4 eyeCoordinate = czm_windowToEyeCoordinates(gl_FragCoord.xy, depth); \n' +
+        '    return -eyeCoordinate.z / eyeCoordinate.w; \n' +
+        '} \n' +
+        'float interpolateByDistance(vec4 nearFarScalar, float distance) \n' +
+        '{ \n' +
+        '    float startDistance = nearFarScalar.x; \n' +
+        '    float startValue = nearFarScalar.y; \n' +
+        '    float endDistance = nearFarScalar.z; \n' +
+        '    float endValue = nearFarScalar.w; \n' +
+        '    float t = clamp((distance - startDistance) / (endDistance - startDistance), 0.0, 1.0); \n' +
+        '    return mix(startValue, endValue, t); \n' +
+        '} \n' +
+        'vec4 alphaBlend(vec4 sourceColor, vec4 destinationColor) \n' +
+        '{ \n' +
+        '    return sourceColor * vec4(sourceColor.aaa, 1.0) + destinationColor * (1.0 - sourceColor.a); \n' +
+        '} \n' +
+        'uniform sampler2D colorTexture; \n' +
+        'uniform sampler2D depthTexture; \n' +
+        'uniform vec4 fogByDistance; \n' +
+        'uniform vec4 fogColor; \n' +
+        'in vec2 v_textureCoordinates; \n' +
+        'void main(void) \n' +
+        '{ \n' +
+        '    float distance = getDistance(depthTexture, v_textureCoordinates); \n' +
+        '    vec4 sceneColor = texture(colorTexture, v_textureCoordinates); \n' +
+        '    float blendAmount = interpolateByDistance(fogByDistance, distance); \n' +
+        '    vec4 finalFogColor = vec4(fogColor.rgb, fogColor.a * blendAmount); \n' +
+        '    out_FragColor = alphaBlend(finalFogColor, sceneColor); \n' +
+        '} \n'
 
       return this._viewer.scene.postProcessStages.add(
         new Cesium.PostProcessStage({
           fragmentShader: fs,
           uniforms: {
             fogByDistance: new Cesium.Cartesian4(10, 0.0, 200, 0.3),
-            fogColor: Cesium.Color.AZURE,
-          },
+            fogColor: Cesium.Color.AZURE
+          }
         })
-      );
+      )
     }
   },
   /**
@@ -514,17 +593,17 @@ Base.prototype = {
    */
   setDefSceneConfig: function () {
     if (this._viewer) {
-      this._viewer.scene.sun.show = false;
-      this._viewer.scene.moon.show = false;
-      this._viewer.scene.fxaa = true;
-      this._viewer.scene.globe.depthTestAgainstTerrain = true;
-      this._viewer.scene.undergroundMode = false;
-      this._viewer.scene.terrainProvider.isCreateSkirt = false;
-      this._viewer.scene.skyAtmosphere.show = false;
-      this._viewer.scene.globe.showGroundAtmosphere = false;
-      this._viewer.scene.globe.enableLighting = true;
-      this._viewer.scene.fog.enabled = false;
-      this._viewer.cesiumWidget.creditContainer.style.display = "none";
+      this._viewer.scene.sun.show = false
+      this._viewer.scene.moon.show = false
+      this._viewer.scene.fxaa = true
+      this._viewer.scene.globe.depthTestAgainstTerrain = true
+      this._viewer.scene.undergroundMode = false
+      this._viewer.scene.terrainProvider.isCreateSkirt = false
+      this._viewer.scene.skyAtmosphere.show = false
+      this._viewer.scene.globe.showGroundAtmosphere = false
+      this._viewer.scene.globe.enableLighting = true
+      this._viewer.scene.fog.enabled = false
+      this._viewer.cesiumWidget.creditContainer.style.display = 'none'
     }
   },
   /**
@@ -540,14 +619,14 @@ Base.prototype = {
    */
   setBloomLightScene: function () {
     if (this._viewer) {
-      this._viewer.scene.postProcessStages.bloom.enabled = true;
-      this._viewer.scene.postProcessStages.bloom.uniforms.contrast = 119;
-      this._viewer.scene.postProcessStages.bloom.uniforms.brightness = -0.4;
-      this._viewer.scene.postProcessStages.bloom.uniforms.glowOnly = false;
-      this._viewer.scene.postProcessStages.bloom.uniforms.delta = 0.9;
-      this._viewer.scene.postProcessStages.bloom.uniforms.sigma = 3.78;
-      this._viewer.scene.postProcessStages.bloom.uniforms.stepSize = 5;
-      this._viewer.scene.postProcessStages.bloom.uniforms.isSelected = false;
+      this._viewer.scene.postProcessStages.bloom.enabled = true
+      this._viewer.scene.postProcessStages.bloom.uniforms.contrast = 119
+      this._viewer.scene.postProcessStages.bloom.uniforms.brightness = -0.4
+      this._viewer.scene.postProcessStages.bloom.uniforms.glowOnly = false
+      this._viewer.scene.postProcessStages.bloom.uniforms.delta = 0.9
+      this._viewer.scene.postProcessStages.bloom.uniforms.sigma = 3.78
+      this._viewer.scene.postProcessStages.bloom.uniforms.stepSize = 5
+      this._viewer.scene.postProcessStages.bloom.uniforms.isSelected = false
     }
   },
   /**
@@ -560,12 +639,12 @@ Base.prototype = {
       if (Array.isArray(stage)) {
         stage.forEach((e) => {
           if (this._viewer.scene.postProcessStages.contains(e)) {
-            this._viewer.scene.postProcessStages.remove(e);
+            this._viewer.scene.postProcessStages.remove(e)
           }
-        });
+        })
       } else {
         if (this._viewer.scene.postProcessStages.contains(stage)) {
-          this._viewer.scene.postProcessStages.remove(stage);
+          this._viewer.scene.postProcessStages.remove(stage)
         }
       }
     }
@@ -597,17 +676,25 @@ Base.prototype = {
       if (options.distance) {
         //距离
 
-        var pos1 = new Cesium.Cartesian3(0, options.distance, window.opt.distance);
-        options.position = Cesium.Cartesian3.add(options.position, pos1, new Cesium.Cartesian3());
+        var pos1 = new Cesium.Cartesian3(
+          0,
+          options.distance,
+          window.opt.distance
+        )
+        options.position = Cesium.Cartesian3.add(
+          options.position,
+          pos1,
+          new Cesium.Cartesian3()
+        )
       }
       this._viewer.scene.camera.setView({
         destination: options.position,
         orientation: options.orientation || {
           heading: Cesium.Math.toRadians(90.0),
           pitch: Cesium.Math.toRadians(90.0),
-          roll: Cesium.Math.toRadians(0.0),
-        },
-      });
+          roll: Cesium.Math.toRadians(0.0)
+        }
+      })
     }
   },
   /**
@@ -640,21 +727,26 @@ Base.prototype = {
     if (this._viewer && options && options.position) {
       if (options.distance) {
         //距离
-        var pos1 = new Cesium.Cartesian3(0, options.distance, options.distance);
-        options.position = Cesium.Cartesian3.add(options.position, pos1, new Cesium.Cartesian3());
+        var pos1 = new Cesium.Cartesian3(0, options.distance, 0)
+        options.position = Cesium.Cartesian3.add(
+          options.position,
+          pos1,
+          new Cesium.Cartesian3()
+        )
       }
       this._viewer.scene.camera.flyTo({
         destination: options.position,
         orientation: options.orientation || {
           heading: Cesium.Math.toRadians(90.0),
           pitch: Cesium.Math.toRadians(90.0),
-          roll: Cesium.Math.toRadians(0.0),
+          roll: Cesium.Math.toRadians(0.0)
         },
         // pitchAdjustHeight: 500,
-        easingFunction: options.easingFunction || Cesium.EasingFunction.LINEAR_NONE,
+        easingFunction:
+          options.easingFunction || Cesium.EasingFunction.LINEAR_NONE,
         duration: options.duration || 3,
-        complete: options.callback,
-      });
+        complete: options.callback
+      })
     }
   },
 
@@ -673,13 +765,13 @@ Base.prototype = {
    */
   transformCartesianToWGS84: function (cartesian) {
     if (this._viewer && cartesian) {
-      var ellipsoid = Cesium.Ellipsoid.WGS84;
-      var cartographic = ellipsoid.cartesianToCartographic(cartesian);
+      var ellipsoid = Cesium.Ellipsoid.WGS84
+      var cartographic = ellipsoid.cartesianToCartographic(cartesian)
       return {
         lng: Cesium.Math.toDegrees(cartographic.longitude),
         lat: Cesium.Math.toDegrees(cartographic.latitude),
-        alt: cartographic.height,
-      };
+        alt: cartographic.height
+      }
     }
   },
   /**
@@ -699,12 +791,12 @@ Base.prototype = {
    */
   transformWGS84ArrayToCartesianArray: function (WSG84Arr, alt) {
     if (this._viewer && WSG84Arr) {
-      var $this = this;
+      var $this = this
       return WSG84Arr
         ? WSG84Arr.map(function (item) {
-            return $this.transformWGS84ToCartesian(item, alt);
+            return $this.transformWGS84ToCartesian(item, alt)
           })
-        : [];
+        : []
     }
   },
   /**
@@ -733,7 +825,7 @@ Base.prototype = {
             (position.alt = alt || position.alt),
             Cesium.Ellipsoid.WGS84
           )
-        : Cesium.Cartesian3.ZERO;
+        : Cesium.Cartesian3.ZERO
     }
   },
   /**
@@ -751,12 +843,12 @@ Base.prototype = {
    */
   transformCartesianArrayToWGS84Array: function (cartesianArr) {
     if (this._viewer) {
-      var $this = this;
+      var $this = this
       return cartesianArr
         ? cartesianArr.map(function (item) {
-            return $this.transformCartesianToWGS84(item);
+            return $this.transformCartesianToWGS84(item)
           })
-        : [];
+        : []
     }
   },
   /**
@@ -780,39 +872,51 @@ Base.prototype = {
    */
   setCameraEotateHeading(options) {
     if (options) {
-      let viewer = this._viewer;
-      let position = Cesium.Cartesian3.fromDegrees(options.lng, options.lat, options.height);
+      let viewer = this._viewer
+      let position = Cesium.Cartesian3.fromDegrees(
+        options.lng,
+        options.lat,
+        options.height
+      )
       // 相机看点的角度，如果大于0那么则是从地底往上看，所以要为负值，这里取-30度
-      let pitch = Cesium.Math.toRadians(-30);
+      let pitch = Cesium.Math.toRadians(-30)
       // 给定飞行一周所需时间，比如10s, 那么每秒转动度数
-      let angle = 360 / 30;
+      let angle = 360 / 30
       // 给定相机距离点多少距离飞行，这里取值为5000m
-      let distance = 5000;
-      let startTime = Cesium.JulianDate.fromDate(new Date());
-      viewer.clock.startTime = startTime.clone(); // 开始时间
-      viewer.clock.currentTime = startTime.clone(); // 当前时间
-      viewer.clock.clockRange = Cesium.ClockRange.CLAMPED; // 行为方式
-      viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK; // 时钟设置为当前系统时间; 忽略所有其他设置。
+      let distance = 5000
+      let startTime = Cesium.JulianDate.fromDate(new Date())
+      viewer.clock.startTime = startTime.clone() // 开始时间
+      viewer.clock.currentTime = startTime.clone() // 当前时间
+      viewer.clock.clockRange = Cesium.ClockRange.CLAMPED // 行为方式
+      viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK // 时钟设置为当前系统时间; 忽略所有其他设置。
       //相机的当前heading
-      let initialHeading = viewer.camera.heading;
+      let initialHeading = viewer.camera.heading
       let Exection = function TimeExecution() {
         // 当前已经过去的时间，单位s
-        let delTime = Cesium.JulianDate.secondsDifference(viewer.clock.currentTime, viewer.clock.startTime);
-        let heading = Cesium.Math.toRadians(delTime * angle) + initialHeading;
+        let delTime = Cesium.JulianDate.secondsDifference(
+          viewer.clock.currentTime,
+          viewer.clock.startTime
+        )
+        let heading = Cesium.Math.toRadians(delTime * angle) + initialHeading
         viewer.scene.camera.setView({
           destination: position, // 点的坐标
           orientation: {
             heading: heading,
-            pitch: pitch,
-          },
-        });
-        viewer.scene.camera.moveBackward(distance);
+            pitch: pitch
+          }
+        })
+        viewer.scene.camera.moveBackward(distance)
 
-        if (Cesium.JulianDate.compare(viewer.clock.currentTime, viewer.clock.stopTime) >= 0) {
-          viewer.clock.onTick.removeEventListener(Exection);
+        if (
+          Cesium.JulianDate.compare(
+            viewer.clock.currentTime,
+            viewer.clock.stopTime
+          ) >= 0
+        ) {
+          viewer.clock.onTick.removeEventListener(Exection)
         }
-      };
-      viewer.clock.onTick.addEventListener(Exection);
+      }
+      viewer.clock.onTick.addEventListener(Exection)
     }
   },
   /**
@@ -838,8 +942,12 @@ Base.prototype = {
    */
   transformWGS84ToCartographic: function (position) {
     return position
-      ? Cesium.Cartographic.fromDegrees(position.lng || position.lon, position.lat, position.alt)
-      : Cesium.Cartographic.ZERO;
+      ? Cesium.Cartographic.fromDegrees(
+          position.lng || position.lon,
+          position.lat,
+          position.alt
+        )
+      : Cesium.Cartographic.ZERO
   },
   /**
    * 拾取位置点
@@ -861,49 +969,52 @@ Base.prototype = {
    */
   getCatesian3FromPX: function (px) {
     if (this._viewer && px) {
-      var picks = this._viewer.scene.pick(px);
-      var cartesian = null;
+      var picks = this._viewer.scene.pick(px)
+      var cartesian = null
       var isOn3dtiles = false,
-        isOnTerrain = false;
+        isOnTerrain = false
       if (picks instanceof Cesium.Cesium3DTileFeature) {
         //模型上拾取
-        isOn3dtiles = true;
+        isOn3dtiles = true
       }
       // 3dtilset
       if (isOn3dtiles) {
-        cartesian = this._viewer.scene.pickPosition(px);
+        cartesian = this._viewer.scene.pickPosition(px)
         if (cartesian) {
-          let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-          if (cartographic.height < 0) cartographic.height = 0;
+          let cartographic = Cesium.Cartographic.fromCartesian(cartesian)
+          if (cartographic.height < 0) cartographic.height = 0
           let lon = Cesium.Math.toDegrees(cartographic.longitude),
             lat = Cesium.Math.toDegrees(cartographic.latitude),
-            height = cartographic.height; //模型高度
+            height = cartographic.height //模型高度
           cartesian = this.transformWGS84ToCartesian({
             lng: lon,
             lat: lat,
-            alt: height,
-          });
+            alt: height
+          })
         }
       }
       // 地形
       if (!picks) {
-        var ray = this._viewer.scene.camera.getPickRay(px);
-        if (!ray) return null;
-        cartesian = this._viewer.scene.globe.pick(ray, this._viewer.scene);
-        isOnTerrain = true;
+        var ray = this._viewer.scene.camera.getPickRay(px)
+        if (!ray) return null
+        cartesian = this._viewer.scene.globe.pick(ray, this._viewer.scene)
+        isOnTerrain = true
       }
       // 地球
       if (!isOn3dtiles && !isOnTerrain) {
-        cartesian = this._viewer.scene.camera.pickEllipsoid(px, this._viewer.scene.globe.ellipsoid);
+        cartesian = this._viewer.scene.camera.pickEllipsoid(
+          px,
+          this._viewer.scene.globe.ellipsoid
+        )
       }
       if (cartesian) {
-        let position = this.transformCartesianToWGS84(cartesian);
+        let position = this.transformCartesianToWGS84(cartesian)
         if (position.alt < 0) {
-          cartesian = this.transformWGS84ToCartesian(position, 0.1);
+          cartesian = this.transformWGS84ToCartesian(position, 0.1)
         }
-        return cartesian;
+        return cartesian
       }
-      return false;
+      return false
     }
   },
 
@@ -917,17 +1028,28 @@ Base.prototype = {
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * const cameraPos = base.getCameraPosition();
+   *
+   *   base.bindHandelEvent({
+   *      leftClick: function click (event, _handlers) {
+   *        const pos = base.getCameraPosition();
+   *        console.log(pos);
+   *      }
+   *     })
    */
   getCameraPosition: function () {
     if (this._viewer) {
       var result = this._viewer.scene.camera.pickEllipsoid(
-        new Cesium.Cartesian2(this._viewer.canvas.clientWidth / 2, this._viewer.canvas.clientHeight / 2)
-      );
+        new Cesium.Cartesian2(
+          this._viewer.canvas.clientWidth / 2,
+          this._viewer.canvas.clientHeight / 2
+        )
+      )
       if (result) {
-        var curPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(result),
+        var curPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(
+            result
+          ),
           lon = (curPosition.longitude * 180) / Math.PI,
-          lat = (curPosition.latitude * 180) / Math.PI;
+          lat = (curPosition.latitude * 180) / Math.PI
 
         var direction = this._viewer.camera._direction,
           x = Cesium.Math.toDegrees(direction.x),
@@ -936,7 +1058,7 @@ Base.prototype = {
           height = this._viewer.camera.positionCartographic.height,
           heading = Cesium.Math.toDegrees(this._viewer.camera.heading),
           pitch = Cesium.Math.toDegrees(this._viewer.camera.pitch),
-          roll = Cesium.Math.toDegrees(this._viewer.camera.roll);
+          roll = Cesium.Math.toDegrees(this._viewer.camera.roll)
 
         var rectangle = this._viewer.camera.computeViewRectangle(),
           west = (rectangle.west / Math.PI) * 180,
@@ -944,7 +1066,7 @@ Base.prototype = {
           east = (rectangle.east / Math.PI) * 180,
           south = (rectangle.south / Math.PI) * 180,
           centerx = (west + east) / 2,
-          cnetery = (north + south) / 2;
+          cnetery = (north + south) / 2
 
         return {
           lon: lon,
@@ -959,20 +1081,75 @@ Base.prototype = {
           cameraRoll: this._viewer.camera.roll,
           center: {
             x: centerx,
-            y: cnetery,
+            y: cnetery
           },
-          direction: new Cesium.Cartesian3(x, y, z),
-        };
+          direction: new Cesium.Cartesian3(x, y, z)
+        }
       }
+    }
+  },
+  /**
+   * 获取鼠标点击后的位置信息
+   * @function
+   * @param {Cesium.Event} e - 监听的事件对象
+   * @example
+   * import { Base } from 'cesium_dev_kit'
+   * const {base} = new Base({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   *
+   *   base.bindHandelEvent({
+   *      leftClick: function click (event, _handlers) {
+   *        const { wgs84Coor, graphicCoor } = base.getHandlerClickPosition(event);
+   *        console.log(wgs84Coor, graphicCoor);
+   *      }
+   *     })
+   * @returns {clickPositionType}
+   */
+  getHandlerClickPosition(e) {
+    if (this._viewer) {
+      let scene = this._viewer.scene
+      let viewer = this._viewer
+      let pickPositionElliposid = scene.camera.pickEllipsoid(
+        e.position,
+        scene.globe.elliposid
+      )
+      let cameraPosition = {
+        heading: Cesium.Math.toDegrees(viewer.camera.heading),
+        pitch: Cesium.Math.toDegrees(viewer.camera.pitch),
+        roll: Cesium.Math.toDegrees(viewer.camera.roll),
+        position: viewer.camera.position
+      }
+      // 将迪卡转换为地理坐标
+      let cartographic = Cesium.Cartographic.fromCartesian(
+        pickPositionElliposid
+      )
+      if (cartographic.height < 0) cartographic.height = 0
+      let wgs84Coor = {
+        alt: cartographic.height,
+        lat: Cesium.Math.toDegrees(cartographic.latitude),
+        lon: Cesium.Math.toDegrees(cartographic.longitude)
+      }
+
+      let pickPosition = scene.pickPosition(e.position)
+      //从笛卡尔坐标获取经纬度
+      let cartographicEntity = Cesium.Cartographic.fromCartesian(pickPosition)
+      let graphicCoor = {
+        height: cartographicEntity.height,
+        latitude: Cesium.Math.toDegrees(cartographicEntity.latitude),
+        longitude: Cesium.Math.toDegrees(cartographicEntity.longitude)
+      }
+      return { wgs84Coor, graphicCoor, cameraPosition }
     }
   },
   //修改相机状态
   updateCameraState: function (flag) {
-    this._viewer.scene._screenSpaceCameraController.enableRotate = flag;
-    this._viewer.scene._screenSpaceCameraController.enableTranslate = flag;
-    this._viewer.scene._screenSpaceCameraController.enableZoom = flag;
-    this._viewer.scene._screenSpaceCameraController.enableTilt = flag;
-    this._viewer.scene._screenSpaceCameraController.enableLook = flag;
+    this._viewer.scene._screenSpaceCameraController.enableRotate = flag
+    this._viewer.scene._screenSpaceCameraController.enableTranslate = flag
+    this._viewer.scene._screenSpaceCameraController.enableZoom = flag
+    this._viewer.scene._screenSpaceCameraController.enableTilt = flag
+    this._viewer.scene._screenSpaceCameraController.enableLook = flag
   },
 
   /**
@@ -1006,39 +1183,39 @@ Base.prototype = {
     doubleClick: _mouseDbClickHandler,
     leftDown: _mouseLeftDownHandler,
     mouseWheel: _mouseWheelHandler,
-    leftUp: _mouseLeftUpHandler,
+    leftUp: _mouseLeftUpHandler
   }) {
     if (this._viewer) {
-      var _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.canvas);
+      var _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.canvas)
       _mouseLeftClickHandler &&
         _handlers.setInputAction(function (movement) {
-          _mouseLeftClickHandler(movement, _handlers);
-        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+          _mouseLeftClickHandler(movement, _handlers)
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
       _mouseMoveHandler &&
         _handlers.setInputAction(function (movement) {
-          _mouseMoveHandler(movement, _handlers);
-        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+          _mouseMoveHandler(movement, _handlers)
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
 
       _mouseDbClickHandler &&
         _handlers.setInputAction(function (movement) {
-          _mouseDbClickHandler(movement, _handlers);
-        }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+          _mouseDbClickHandler(movement, _handlers)
+        }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK)
 
       _mouseLeftDownHandler &&
         _handlers.setInputAction(function (movement) {
-          _mouseLeftDownHandler(movement, _handlers);
-        }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+          _mouseLeftDownHandler(movement, _handlers)
+        }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
 
       _mouseWheelHandler &&
         _handlers.setInputAction(function (movement) {
-          _mouseWheelHandler(movement, _handlers);
-        }, Cesium.ScreenSpaceEventType.WHEEL);
+          _mouseWheelHandler(movement, _handlers)
+        }, Cesium.ScreenSpaceEventType.WHEEL)
 
       _mouseLeftUpHandler &&
         _handlers.setInputAction(function (movement) {
-          _mouseLeftUpHandler(movement, _handlers);
-        }, Cesium.ScreenSpaceEventType.LEFT_UP);
+          _mouseLeftUpHandler(movement, _handlers)
+        }, Cesium.ScreenSpaceEventType.LEFT_UP)
     }
   },
   /**
@@ -1054,15 +1231,20 @@ Base.prototype = {
    */
   getHandelPosition: function (callback) {
     if (this._viewer) {
-      var _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas),
-        $this = this;
+      var _handler = new Cesium.ScreenSpaceEventHandler(
+          this._viewer.scene.canvas
+        ),
+        $this = this
       _handler.setInputAction(function (movement) {
-        var cartesian = $this._viewer.scene.camera.pickEllipsoid(movement.endPosition, $this._viewer.scene.globe.ellipsoid);
+        var cartesian = $this._viewer.scene.camera.pickEllipsoid(
+          movement.endPosition,
+          $this._viewer.scene.globe.ellipsoid
+        )
 
-        if (typeof callback === "function") {
-          callback($this.transformCartesianToWGS84(cartesian), _handler);
+        if (typeof callback === 'function') {
+          callback($this.transformCartesianToWGS84(cartesian), _handler)
         }
-      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
     }
   },
   /**
@@ -1078,28 +1260,30 @@ Base.prototype = {
   saveSceneImages: function () {
     if (this._viewer) {
       const dataURLtoBlob = function (dataurl) {
-        var arr = dataurl.split(","),
+        var arr = dataurl.split(','),
           mime = arr[0].match(/:(.*?);/)[1],
           bstr = atob(arr[1]),
           n = bstr.length,
-          u8arr = new Uint8Array(n);
+          u8arr = new Uint8Array(n)
         while (n--) {
-          u8arr[n] = bstr.charCodeAt(n);
+          u8arr[n] = bstr.charCodeAt(n)
         }
         return new Blob([u8arr], {
-          type: mime,
-        });
-      };
+          type: mime
+        })
+      }
 
-      var canvas = this._viewer.scene.canvas;
-      var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-      var link = document.createElement("a");
+      var canvas = this._viewer.scene.canvas
+      var image = canvas
+        .toDataURL('image/png')
+        .replace('image/png', 'image/octet-stream')
+      var link = document.createElement('a')
       // var strDataURI = image.substr(22, image.length)
-      var blob = dataURLtoBlob(image);
-      var objurl = URL.createObjectURL(blob);
-      link.download = "scene.png";
-      link.href = objurl;
-      link.click();
+      var blob = dataURLtoBlob(image)
+      var objurl = URL.createObjectURL(blob)
+      link.download = 'scene.png'
+      link.href = objurl
+      link.click()
     }
   },
   /**
@@ -1108,8 +1292,10 @@ Base.prototype = {
    *
    */
   _installAmapImageryProvider: function () {
-    const IMG_URL = "https://webst{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}";
-    const ELEC_URL = "http://webrd{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}";
+    const IMG_URL =
+      'https://webst{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+    const ELEC_URL =
+      'http://webrd{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}'
     /**
      * 高度地图扩展
      * @global
@@ -1124,14 +1310,14 @@ Base.prototype = {
       }));
      */
     function AmapImageryProvider(options) {
-      options["url"] = options.style === "img" ? IMG_URL : ELEC_URL;
+      options['url'] = options.style === 'img' ? IMG_URL : ELEC_URL
       if (!options.subdomains) {
-        options["subdomains"] = ["01", "02", "03", "04"];
+        options['subdomains'] = ['01', '02', '03', '04']
       }
-      return new Cesium.UrlTemplateImageryProvider(options);
+      return new Cesium.UrlTemplateImageryProvider(options)
     }
 
-    Cesium.Scene.AmapImageryProvider = AmapImageryProvider;
+    Cesium.Scene.AmapImageryProvider = AmapImageryProvider
   },
   /**
    * 天地图
@@ -1139,7 +1325,7 @@ Base.prototype = {
    */
   _installTdtImageryProvider: function () {
     const MAP_URL =
-      "https://{s}.tianditu.gov.cn/{layer}_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER={layer}&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk={key}";
+      'https://{s}.tianditu.gov.cn/{layer}_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER={layer}&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk={key}'
     /**
      * 天地图加载方法
      * @global
@@ -1155,26 +1341,31 @@ Base.prototype = {
      */
     function TdtImageryProvider(options) {
       return new Cesium.WebMapTileServiceImageryProvider({
-        url: MAP_URL.replace(/\{layer\}/g, options.style || "vec").replace(/\{key\}/g, options.key || ""),
-        layer: options.style + "_w",
-        style: "default", // WMTS请求的样式名称
-        format: "tiles", // MIME类型，用于从服务器检索图像
-        tileMatrixSetID: "GoogleMapsCompatible", //	用于WMTS请求的TileMatrixSet的标识符
-        subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"], // 天地图8个服务器
+        url: MAP_URL.replace(/\{layer\}/g, options.style || 'vec').replace(
+          /\{key\}/g,
+          options.key || ''
+        ),
+        layer: options.style + '_w',
+        style: 'default', // WMTS请求的样式名称
+        format: 'tiles', // MIME类型，用于从服务器检索图像
+        tileMatrixSetID: 'GoogleMapsCompatible', //	用于WMTS请求的TileMatrixSet的标识符
+        subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'], // 天地图8个服务器
         minimumLevel: 0, // 最小层级
-        maximumLevel: 18, // 最大层级
-      });
+        maximumLevel: 18 // 最大层级
+      })
     }
 
-    Cesium.Scene.TdtImageryProvider = TdtImageryProvider;
+    Cesium.Scene.TdtImageryProvider = TdtImageryProvider
   },
   /**
    * 腾讯
    * @private
    */
   _installTencentImageryProvider: function () {
-    const IMG_URL = "https://p2.map.gtimg.com/sateTiles/{z}/{sx}/{sy}/{x}_{reverseY}.jpg?version=229";
-    const ELEC_URL = "https://rt3.map.gtimg.com/tile?z={z}&x={x}&y={reverseY}&type=vector&styleid=1";
+    const IMG_URL =
+      'https://p2.map.gtimg.com/sateTiles/{z}/{sx}/{sy}/{x}_{reverseY}.jpg?version=229'
+    const ELEC_URL =
+      'https://rt3.map.gtimg.com/tile?z={z}&x={x}&y={reverseY}&type=vector&styleid=1'
     /**
      * 腾讯底图加载方法
      * @global
@@ -1191,29 +1382,29 @@ Base.prototype = {
         }));
      */
     function TencentImageryProvider(options) {
-      if (options.layer === "img") {
-        if (!options["url"]) {
-          options["url"] = IMG_URL;
+      if (options.layer === 'img') {
+        if (!options['url']) {
+          options['url'] = IMG_URL
         }
         if (!options.subdomains) {
-          options["subdomains"] = ["0", "1", "2"];
+          options['subdomains'] = ['0', '1', '2']
         }
-        options["customTags"] = {
+        options['customTags'] = {
           sx: function (imageryProvider, x, y, level) {
-            return x >> 4;
+            return x >> 4
           },
           sy: function (imageryProvider, x, y, level) {
-            return ((1 << level) - y) >> 4;
-          },
-        };
+            return ((1 << level) - y) >> 4
+          }
+        }
       } else {
-        if (!options["url"]) {
-          options["url"] = ELEC_URL;
+        if (!options['url']) {
+          options['url'] = ELEC_URL
         }
       }
-      return new Cesium.UrlTemplateImageryProvider(options);
+      return new Cesium.UrlTemplateImageryProvider(options)
     }
-    Cesium.Scene.TencentImageryProvider = TencentImageryProvider;
+    Cesium.Scene.TencentImageryProvider = TencentImageryProvider
   },
   /**
    * google
@@ -1221,9 +1412,12 @@ Base.prototype = {
    */
   _installGooGleImageryProvider: function () {
     //标注 影像 地形三种
-    const ELEC_URL = "http://mt{s}.google.cn/vt/lyrs=m@207000000&hl=zh-CN&gl=CN&src=app&x={x}&y={y}&z={z}&s=Galile";
-    const IMG_URL = "http://mt{s}.google.cn/vt/lyrs=s&hl=zh-CN&x={x}&y={y}&z={z}&s=Gali";
-    const TER_URL = "http://mt{s}.google.cn/vt/lyrs=t@131,r@227000000&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}&s=Galile";
+    const ELEC_URL =
+      'http://mt{s}.google.cn/vt/lyrs=m@207000000&hl=zh-CN&gl=CN&src=app&x={x}&y={y}&z={z}&s=Galile'
+    const IMG_URL =
+      'http://mt{s}.google.cn/vt/lyrs=s&hl=zh-CN&x={x}&y={y}&z={z}&s=Gali'
+    const TER_URL =
+      'http://mt{s}.google.cn/vt/lyrs=t@131,r@227000000&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}&s=Galile'
     /**
      * 谷歌地图加载方法
      * @global
@@ -1237,21 +1431,27 @@ Base.prototype = {
       }));
      */
     function GoogleImageryProvider(options) {
-      options["url"] = options.style === "img" ? IMG_URL : options.style === "ter" ? TER_URL : ELEC_URL;
+      options['url'] =
+        options.style === 'img'
+          ? IMG_URL
+          : options.style === 'ter'
+          ? TER_URL
+          : ELEC_URL
       if (!options.subdomains) {
-        options["subdomains"] = ["1", "2", "3", "4", "5"];
+        options['subdomains'] = ['1', '2', '3', '4', '5']
       }
-      return new Cesium.UrlTemplateImageryProvider(options);
+      return new Cesium.UrlTemplateImageryProvider(options)
     }
 
-    Cesium.Scene.GoogleImageryProvider = GoogleImageryProvider;
+    Cesium.Scene.GoogleImageryProvider = GoogleImageryProvider
   },
   /**
    * 百度影像拓展
    * @private
    */
   _installBaiduImageryProvider: function () {
-    var TEMP_MAP_URL = "http://api{s}.map.bdimg.com/customimage/tile?&x={x}&y={y}&z={z}&scale=1&customid={style}";
+    var TEMP_MAP_URL =
+      'http://api{s}.map.bdimg.com/customimage/tile?&x={x}&y={y}&z={z}&scale=1&customid={style}'
     /**
      * 百度影像拓展
      * @global
@@ -1266,142 +1466,156 @@ Base.prototype = {
      *viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider(commonOption));
      */
     function BaiduImageryProvider(options) {
-      TEMP_MAP_URL = options.url || TEMP_MAP_URL;
+      TEMP_MAP_URL = options.url || TEMP_MAP_URL
 
-      this._url = TEMP_MAP_URL;
-      this._tileWidth = 256;
-      this._tileHeight = 256;
-      this._maximumLevel = 18;
-      this._minimumLevel = 1;
+      this._url = TEMP_MAP_URL
+      this._tileWidth = 256
+      this._tileHeight = 256
+      this._maximumLevel = 18
+      this._minimumLevel = 1
       this._tilingScheme = new Cesium.WebMercatorTilingScheme({
         rectangleSouthwestInMeters: new Cesium.Cartesian2(-33554054, -33746824),
-        rectangleNortheastInMeters: new Cesium.Cartesian2(33554054, 33746824),
-      });
-      this._rectangle = this._tilingScheme.rectangle;
-      this._credit = undefined;
-      this._style = options.style || "normal";
-      this._ready = true;
+        rectangleNortheastInMeters: new Cesium.Cartesian2(33554054, 33746824)
+      })
+      this._rectangle = this._tilingScheme.rectangle
+      this._credit = undefined
+      this._style = options.style || 'normal'
+      this._ready = true
     }
 
     Object.defineProperties(BaiduImageryProvider.prototype, {
       url: {
         get: function () {
-          return this._url;
-        },
+          return this._url
+        }
       },
       token: {
         get: function () {
-          return this._token;
-        },
+          return this._token
+        }
       },
       tileWidth: {
         get: function () {
           if (!this.ready) {
-            throw new Cesium.DeveloperError("tileWidth must not be called before the imagery provider is ready.");
+            throw new Cesium.DeveloperError(
+              'tileWidth must not be called before the imagery provider is ready.'
+            )
           }
-          return this._tileWidth;
-        },
+          return this._tileWidth
+        }
       },
       tileHeight: {
         get: function () {
           if (!this.ready) {
-            throw new Cesium.DeveloperError("tileHeight must not be called before the imagery provider is ready.");
+            throw new Cesium.DeveloperError(
+              'tileHeight must not be called before the imagery provider is ready.'
+            )
           }
-          return this._tileHeight;
-        },
+          return this._tileHeight
+        }
       },
       maximumLevel: {
         get: function () {
           if (!this.ready) {
-            throw new Cesium.DeveloperError("tileHeight must not be called before the imagery provider is ready.");
+            throw new Cesium.DeveloperError(
+              'tileHeight must not be called before the imagery provider is ready.'
+            )
           }
-          return this._tileHeight;
-        },
+          return this._tileHeight
+        }
       },
       minimumLevel: {
         get: function () {
           if (!this.ready) {
-            throw new Cesium.DeveloperError("minimumLevel must not be called before the imagery provider is ready.");
+            throw new Cesium.DeveloperError(
+              'minimumLevel must not be called before the imagery provider is ready.'
+            )
           }
-          return 0;
-        },
+          return 0
+        }
       },
       tilingScheme: {
         get: function () {
           if (!this.ready) {
-            throw new Cesium.DeveloperError("tilingScheme must not be called before the imagery provider is ready.");
+            throw new Cesium.DeveloperError(
+              'tilingScheme must not be called before the imagery provider is ready.'
+            )
           }
-          return this._tilingScheme;
-        },
+          return this._tilingScheme
+        }
       },
 
       rectangle: {
         get: function () {
           if (!this.ready) {
-            throw new Cesium.DeveloperError("rectangle must not be called before the imagery provider is ready.");
+            throw new Cesium.DeveloperError(
+              'rectangle must not be called before the imagery provider is ready.'
+            )
           }
-          return this._rectangle;
-        },
+          return this._rectangle
+        }
       },
 
       ready: {
         get: function () {
-          return !!this._url;
-        },
+          return !!this._url
+        }
       },
 
       credit: {
         get: function () {
-          return this._credit;
-        },
+          return this._credit
+        }
       },
       readyPromise: {
         get: function () {
-          return this._readyPromise.promise;
-        },
+          return this._readyPromise.promise
+        }
       },
       usingPrecachedTiles: {
         get: function () {
-          return this._useTiles;
-        },
+          return this._useTiles
+        }
       },
       hasAlphaChannel: {
         get: function () {
-          return true;
-        },
+          return true
+        }
       },
       layers: {
         get: function () {
-          return this._layers;
-        },
-      },
-    });
+          return this._layers
+        }
+      }
+    })
     function buildImageUrl(imageryProvider, x, y, level, _style) {
-      var url = imageryProvider._url + "&x={x}&y={y}&z={z}&customid={style}";
-      var tileW = imageryProvider._tilingScheme.getNumberOfXTilesAtLevel(level);
-      var tileH = imageryProvider._tilingScheme.getNumberOfYTilesAtLevel(level);
+      var url = imageryProvider._url + '&x={x}&y={y}&z={z}&customid={style}'
+      var tileW = imageryProvider._tilingScheme.getNumberOfXTilesAtLevel(level)
+      var tileH = imageryProvider._tilingScheme.getNumberOfYTilesAtLevel(level)
 
       url = url
-        .replace("{x}", x - tileW / 2)
-        .replace("{y}", tileH / 2 - y - 1)
-        .replace("{z}", level)
-        .replace("{style}", _style);
-      return url;
+        .replace('{x}', x - tileW / 2)
+        .replace('{y}', tileH / 2 - y - 1)
+        .replace('{z}', level)
+        .replace('{style}', _style)
+      return url
     }
     BaiduImageryProvider.prototype.getTileCredits = function (x, y, level) {
-      return undefined;
-    };
+      return undefined
+    }
 
     BaiduImageryProvider.prototype.requestImage = function (x, y, level) {
       if (!this.ready) {
-        throw new Cesium.DeveloperError("requestImage must not be called before the imagery provider is ready.");
+        throw new Cesium.DeveloperError(
+          'requestImage must not be called before the imagery provider is ready.'
+        )
       }
-      var url = buildImageUrl(this, x, y, level, this._style);
+      var url = buildImageUrl(this, x, y, level, this._style)
 
-      return Cesium.ImageryProvider.loadImage(this, url);
-    };
+      return Cesium.ImageryProvider.loadImage(this, url)
+    }
 
-    Cesium.Scene.BaiduImageryProvider = BaiduImageryProvider;
+    Cesium.Scene.BaiduImageryProvider = BaiduImageryProvider
   },
   // 拓展近景天空盒
   _installGroundSkyBox: function () {
@@ -1425,21 +1639,21 @@ Base.prototype = {
       BlendingState = Cesium.BlendingState,
       SceneMode = Cesium.SceneMode,
       ShaderProgram = Cesium.ShaderProgram,
-      ShaderSource = Cesium.ShaderSource;
+      ShaderSource = Cesium.ShaderSource
     //片元着色器，直接从源码复制
     var SkyBoxFS =
-      "uniform samplerCube u_cubeMap;\n\
+      'uniform samplerCube u_cubeMap;\n\
                     in vec3 v_texCoord;\n\
                     void main()\n\
                     {\n\
                     vec4 color = texture(u_cubeMap, normalize(v_texCoord));\n\
                     out_FragColor = vec4(czm_gammaCorrect(color).rgb, czm_morphTime);\n\
                     }\n\
-                    ";
+                    '
 
     //顶点着色器有修改，主要是乘了一个旋转矩阵
     var SkyBoxVS =
-      "in vec3 position;\n\
+      'in vec3 position;\n\
                     out vec3 v_texCoord;\n\
                     uniform mat3 u_rotateMatrix;\n\
                     void main()\n\
@@ -1448,12 +1662,12 @@ Base.prototype = {
                     gl_Position = czm_projection * vec4(p, 1.0);\n\
                     v_texCoord = position.xyz;\n\
                     }\n\
-                    ";
+                    '
     /*
      * 为了兼容高版本的Cesium，因为新版cesium中getRotation被移除
      */
     if (!defined(Matrix4.getRotation)) {
-      Matrix4.getRotation = Matrix4.getMatrix3;
+      Matrix4.getRotation = Matrix4.getMatrix3
     }
     /**
      * 拓展近景天空盒
@@ -1474,47 +1688,50 @@ Base.prototype = {
           })
      */
     function SkyBoxOnGround(options) {
-      this.sources = options.sources;
-      this._sources = undefined;
+      this.sources = options.sources
+      this._sources = undefined
       /**
        * Determines if the sky box will be shown.
        *
        * @type {Boolean}
        * @default true
        */
-      this.show = defaultValue(options.show, true);
+      this.show = defaultValue(options.show, true)
 
       this._command = new DrawCommand({
         modelMatrix: Matrix4.clone(Matrix4.IDENTITY),
-        owner: this,
-      });
-      this._cubeMap = undefined;
+        owner: this
+      })
+      this._cubeMap = undefined
 
-      this._attributeLocations = undefined;
-      this._useHdr = undefined;
+      this._attributeLocations = undefined
+      this._useHdr = undefined
     }
 
-    var skyboxMatrix3 = new Matrix3();
+    var skyboxMatrix3 = new Matrix3()
     SkyBoxOnGround.prototype.update = function (frameState, useHdr) {
-      var that = this;
+      var that = this
 
       if (!this.show) {
-        return undefined;
+        return undefined
       }
 
-      if (frameState.mode !== SceneMode.SCENE3D && frameState.mode !== SceneMode.MORPHING) {
-        return undefined;
+      if (
+        frameState.mode !== SceneMode.SCENE3D &&
+        frameState.mode !== SceneMode.MORPHING
+      ) {
+        return undefined
       }
 
       if (!frameState.passes.render) {
-        return undefined;
+        return undefined
       }
 
-      var context = frameState.context;
+      var context = frameState.context
 
       if (this._sources !== this.sources) {
-        this._sources = this.sources;
-        var sources = this.sources;
+        this._sources = this.sources
+        var sources = this.sources
 
         if (
           !defined(sources.positiveX) ||
@@ -1525,8 +1742,8 @@ Base.prototype = {
           !defined(sources.negativeZ)
         ) {
           throw new DeveloperError(
-            "this.sources is required and must have positiveX, negativeX, positiveY, negativeY, positiveZ, and negativeZ properties."
-          );
+            'this.sources is required and must have positiveX, negativeX, positiveY, negativeY, positiveZ, and negativeZ properties.'
+          )
         }
 
         if (
@@ -1536,89 +1753,96 @@ Base.prototype = {
           typeof sources.positiveX !== typeof sources.positiveZ ||
           typeof sources.positiveX !== typeof sources.negativeZ
         ) {
-          throw new DeveloperError("this.sources properties must all be the same type.");
+          throw new DeveloperError(
+            'this.sources properties must all be the same type.'
+          )
         }
 
-        if (typeof sources.positiveX === "string") {
+        if (typeof sources.positiveX === 'string') {
           // Given urls for cube-map images.  Load them.
           loadCubeMap(context, this._sources).then(function (cubeMap) {
-            that._cubeMap = that._cubeMap && that._cubeMap.destroy();
-            that._cubeMap = cubeMap;
-          });
+            that._cubeMap = that._cubeMap && that._cubeMap.destroy()
+            that._cubeMap = cubeMap
+          })
         } else {
-          this._cubeMap = this._cubeMap && this._cubeMap.destroy();
+          this._cubeMap = this._cubeMap && this._cubeMap.destroy()
           this._cubeMap = new CubeMap({
             context: context,
-            source: sources,
-          });
+            source: sources
+          })
         }
       }
 
-      var command = this._command;
+      var command = this._command
 
-      command.modelMatrix = Transforms.eastNorthUpToFixedFrame(frameState.camera._positionWC);
+      command.modelMatrix = Transforms.eastNorthUpToFixedFrame(
+        frameState.camera._positionWC
+      )
       if (!defined(command.vertexArray)) {
         command.uniformMap = {
           u_cubeMap: function () {
-            return that._cubeMap;
+            return that._cubeMap
           },
           u_rotateMatrix: function () {
-            return Matrix4.getRotation(command.modelMatrix, skyboxMatrix3);
-          },
-        };
+            return Matrix4.getRotation(command.modelMatrix, skyboxMatrix3)
+          }
+        }
 
         var geometry = BoxGeometry.createGeometry(
           BoxGeometry.fromDimensions({
             dimensions: new Cartesian3(2.0, 2.0, 2.0),
-            vertexFormat: VertexFormat.POSITION_ONLY,
+            vertexFormat: VertexFormat.POSITION_ONLY
           })
-        );
-        var attributeLocations = (this._attributeLocations = GeometryPipeline.createAttributeLocations(geometry));
+        )
+        var attributeLocations = (this._attributeLocations = GeometryPipeline.createAttributeLocations(
+          geometry
+        ))
 
         command.vertexArray = VertexArray.fromGeometry({
           context: context,
           geometry: geometry,
           attributeLocations: attributeLocations,
-          bufferUsage: BufferUsage._DRAW,
-        });
+          bufferUsage: BufferUsage._DRAW
+        })
 
         command.renderState = RenderState.fromCache({
-          blending: BlendingState.ALPHA_BLEND,
-        });
+          blending: BlendingState.ALPHA_BLEND
+        })
       }
 
       if (!defined(command.shaderProgram) || this._useHdr !== useHdr) {
         var fs = new ShaderSource({
-          defines: [useHdr ? "HDR" : ""],
-          sources: [SkyBoxFS],
-        });
+          defines: [useHdr ? 'HDR' : ''],
+          sources: [SkyBoxFS]
+        })
         command.shaderProgram = ShaderProgram.fromCache({
           context: context,
           vertexShaderSource: SkyBoxVS,
           fragmentShaderSource: fs,
-          attributeLocations: this._attributeLocations,
-        });
-        this._useHdr = useHdr;
+          attributeLocations: this._attributeLocations
+        })
+        this._useHdr = useHdr
       }
 
       if (!defined(this._cubeMap)) {
-        return undefined;
+        return undefined
       }
 
-      return command;
-    };
+      return command
+    }
     SkyBoxOnGround.prototype.isDestroyed = function () {
-      return false;
-    };
+      return false
+    }
     SkyBoxOnGround.prototype.destroy = function () {
-      var command = this._command;
-      command.vertexArray = command.vertexArray && command.vertexArray.destroy();
-      command.shaderProgram = command.shaderProgram && command.shaderProgram.destroy();
-      this._cubeMap = this._cubeMap && this._cubeMap.destroy();
-      return destroyObject(this);
-    };
+      var command = this._command
+      command.vertexArray = command.vertexArray && command.vertexArray.destroy()
+      command.shaderProgram =
+        command.shaderProgram && command.shaderProgram.destroy()
+      this._cubeMap = this._cubeMap && this._cubeMap.destroy()
+      return destroyObject(this)
+    }
 
-    Cesium.Scene.GroundSkyBox = SkyBoxOnGround;
+    Cesium.Scene.GroundSkyBox = SkyBoxOnGround
   },
   /**
    * 移除绑定的handler事件
@@ -1627,9 +1851,11 @@ Base.prototype = {
    */
   removeHandlerByName(eventNameArr = []) {
     eventNameArr.forEach((eHandler) => {
-      this._viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType[eHandler]);
-    });
-  },
-};
+      this._viewer.screenSpaceEventHandler.removeInputAction(
+        Cesium.ScreenSpaceEventType[eHandler]
+      )
+    })
+  }
+}
 
-export { Base };
+export { Base }

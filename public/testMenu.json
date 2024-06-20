@@ -882,12 +882,48 @@
       "isKeepAlive": true
     },
     "children": [{
-      "name": "cesiumAndThree",
-      "path": "cesiumAndThree",
-      "component": "example/cesiumAndThree/index",
+      "name": "rayCast",
+      "path": "rayCast",
+      "component": "example/cesiumAndThree/rayCast",
       "meta": {
         "auth": ["admin", "test"],
-        "title": "cesiumAndThreeJs",
+        "title": "光线投射",
+        "icon": "fluent:radar-20-regular",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "extrude",
+      "path": "extrude",
+      "component": "example/cesiumAndThree/extrude",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "图形挤压",
+        "icon": "fluent:radar-20-regular",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "fireworksEffect",
+      "path": "fireworksEffect",
+      "component": "example/cesiumAndThree/fireworksEffect",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "烟花效果",
+        "icon": "fluent:radar-20-regular",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+      "name": "aniSoldier",
+      "path": "aniSoldier",
+      "component": "example/cesiumAndThree/ani-soldier",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "奔跑的士兵",
         "icon": "fluent:radar-20-regular",
         "isAffix": false,
         "isHide": false,

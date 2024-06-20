@@ -14,32 +14,22 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 let skyObj = null;
 let flag = true;
 export default {
-  data() {
+  data () {
     return {
       activeId: 'light'
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const tempData = [
         {
-          id: 3,
-          name: '高德地图02',
           type: 'UrlTemplateImageryProvider',
-          classConfig: {
+          option: {
             url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
-          },
-          interfaceConfig: {},
-          offset: '0,0',
-          invertswitch: 0,
-          filterRGB: '#ffffff',
-          showswitch: 1,
-          weigh: 13,
-          createtime: 1624346908,
-          updatetime: 1647395260,
+          }
         }]
       const {
         viewer,
@@ -84,7 +74,7 @@ export default {
       this.control.showSceneBloomPanel({ elementId: 'cust-gui-box' });
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.control = null;
   }

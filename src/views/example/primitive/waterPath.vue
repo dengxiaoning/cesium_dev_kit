@@ -57,24 +57,14 @@ export default {
             depthTest: true,
             AccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
           },
-          MapImageryList: [{ // 配置地形图片
-            id: 12,
-            name: '地形底图',
+          MapImageryList: [{
             type: 'UrlTemplateImageryProvider',
-            classConfig: {
+            option: {
               url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            },
-            interfaceConfig: {
               subdomains: ['0', '1', '2', '3'],
               tilingScheme: new Cesium.WebMercatorTilingScheme()
-            },
-            offset: '0,0',
-            invertswitch: 0,
-            filterRGB: '#ffffff',
-            showswitch: 1,
-            weigh: 13,
-            createtime: 1624346908,
-            updatetime: 1647395260,
+            }
+
           }],
           defaultStatic
         })
