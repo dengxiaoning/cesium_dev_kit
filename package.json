@@ -15,7 +15,7 @@
     "cesium": "^1.105.0",
     "cesium_dev_kit": "^1.0.76",
     "cesium-navigation-es6": "^3.0.9",
-    "concaveman": "^1.1.1",
+    "concaveman": "^1.2.1",
     "dat.gui": "^0.7.9",
     "echarts": "4.2.1",
     "element-plus": "^1.0.2-beta.41",
