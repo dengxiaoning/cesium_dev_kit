@@ -23,7 +23,7 @@ function ThreeJs(viewer, cesiumGlobal, defaultStatic, threeConf) {
     this._viewer = viewer
     this._containerId = containerId
     this._threeContainerId = threeContainerId
-    this._Scene = new initThreeScene({ THREE, Cesium, viewer })
+    this._Scene = initThreeScene({ THREE, Cesium, viewer })
     this._initContainer()
   }
 }
@@ -160,7 +160,7 @@ ThreeJs.prototype = {
    * @returns {string}
    */
   _objHasOwnProperty(obj, field, defVal) {
-    return obj.hasOwnProperty(field) ? obj.field : defVal
+    return obj.hasOwnProperty(field) ? obj[field] : defVal
   },
   /**
    * three对象销毁

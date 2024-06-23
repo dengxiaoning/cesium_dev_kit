@@ -397,17 +397,6 @@ Graphics.prototype = {
     }
   },
   /**
-   * 判断对象是否有某个属性
-   * @private
-   * @param {object} obj 对象
-   * @param {string} field  属性字段
-   * @param {string} defVal  默认返回
-   * @returns {string}
-   */
-  _objHasOwnProperty(obj, field, defVal) {
-    return obj.hasOwnProperty(field) ? obj.field : defVal
-  },
-  /**
    * 获取盒子图形
    * @function
    * @param {object} options

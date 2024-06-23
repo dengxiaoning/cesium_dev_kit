@@ -145,12 +145,12 @@ function initThreeScene({ THREE, Cesium, viewer }) {
       super.add(sphere)
       this.sphere = sphere
       //模拟球地下
-      /*const sphere2 = sphere.clone();
-          sphere2.material = new THREE.MeshBasicMaterial({
-              color: '#000',
-              side: THREE.BackSide
-          });
-          super.add(sphere2);*/
+      // const sphere2 = sphere.clone()
+      // sphere2.material = new THREE.MeshBasicMaterial({
+      //   color: '#000',
+      //   side: THREE.BackSide
+      // })
+      // super.add(sphere2)
 
       const syncGroup = new THREE.Group()
       super.add(syncGroup)
@@ -206,6 +206,7 @@ function initThreeScene({ THREE, Cesium, viewer }) {
       this.sun.target = this.childrenGroup
       this.sunUp.add(this.sun)
 
+      // syncGroup.add(sphere2)
       syncGroup.add(sphere3)
       syncGroup.add(threeGroup)
       syncGroup.add(this.sunUp)
@@ -344,7 +345,7 @@ function initThreeScene({ THREE, Cesium, viewer }) {
 
       this.cameraOffset.copy(center)
 
-      this.sphere.position.set(0 - center.x, 0 - center.y, 0 - center.z)
+      // this.sphere.position.set(0 - center.x, 0 - center.y, 0 - center.z)
       this.syncGroup.up.set(0, 0, -1)
       this.up.set(0, 0, -1)
 

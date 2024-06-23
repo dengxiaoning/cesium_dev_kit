@@ -78,7 +78,7 @@ export default {
       })
     },
     initThree (ThreeJs) {
-      const { scene, camera, renderer } = ThreeJs.initThree({ center, axesHelper: true, fov: 60 });
+      const { scene, camera, renderer } = ThreeJs.initThree({ center, fov: 60 });
       // camera.position.z = 4;
       // camera.position.set(0, 0, 500);
       this.initMeshes(scene, renderer);

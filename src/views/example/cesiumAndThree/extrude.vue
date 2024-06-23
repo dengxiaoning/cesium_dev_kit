@@ -68,7 +68,7 @@ export default {
     },
 
     initThree (ThreeJs) {
-      const { scene, camera } = ThreeJs.initThree({ center, axesHelper: true, threeHabit: false });
+      const { scene, camera } = ThreeJs.initThree({ center, threeHabit: false });
       this.initLight(scene, camera)
       this.initMeshes(scene);
       this.flyto(scene);

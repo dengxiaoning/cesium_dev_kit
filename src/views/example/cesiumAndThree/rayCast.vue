@@ -24,7 +24,7 @@ export default {
   mounted () {
     this.initMap()
     document.addEventListener("mousemove", function (event) {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1; //-1~1
+      mouse.x = (event.clientX / (window.innerWidth + 100)) * 2 - 1; //-1~1
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1; // -1~1
     });
   },
@@ -75,7 +75,7 @@ export default {
 
     initThree (ThreeJs) {
       const _this = this;
-      const { scene, camera } = ThreeJs.initThree({ center, axesHelper: true });
+      const { scene, camera, renderer } = ThreeJs.initThree({ center, axesHelper: true });
       this.initMeshes(scene);
       this.initLight(scene)
       this.flyto(scene);
@@ -83,6 +83,13 @@ export default {
         _this.modifyColor(camera);
         scene.update();
       })
+      // linstener window resize
+      window.addEventListener("resize", function () {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth + 100, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+      });
     },
     initMeshes (scene) {
       const geometry = new THREE.IcosahedronGeometry(0.5, 3); //正二十面体
@@ -102,6 +109,7 @@ export default {
         }
       }
       scene.add(meshes);
+      // scene.add(new THREE.AxesHelper(8000000))
     },
     initLight (scene) {
       const light = new THREE.HemisphereLight(0xffffff, 0x888888);

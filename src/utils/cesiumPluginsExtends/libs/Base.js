@@ -86,6 +86,17 @@ Base.prototype = {
   createGraphics: function () {
     return new Cesium.Entity()
   },
+  /**
+   * 判断对象是否有某个属性
+   * @private
+   * @param {object} obj 对象
+   * @param {string} field  属性字段
+   * @param {string} defVal  默认返回
+   * @returns {string}
+   */
+  _objHasOwnProperty(obj, field, defVal) {
+    return obj.hasOwnProperty(field) ? obj[field] : defVal
+  },
   getDfSt(attrArr) {
     if (dfSt) {
       const res = attrArr.reduce((pre, curr) => {
