@@ -60,27 +60,18 @@ export default {
     initMap () {
       const tempData = [
         {
-          id: 14,
-          name: '高德地图01',
           type: 'UrlTemplateImageryProvider',
-          classConfig: {
+          option: {
+            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+          }
+        },
+        {
+          type: 'UrlTemplateImageryProvider',
+          option: {
             url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
-          },
-          interfaceConfig: {
-            saturation: 0,
-            brightness: 0.6,
-            contrast: 1.8,
-            hue: 1,
-            gamma: 0.3,
-          },
-          offset: '0,0',
-          invertswitch: 1,
-          filterRGB: '#4e70a6',
-          showswitch: 1,
-          weigh: 0,
-          createtime: 1624326728,
-          updatetime: 1646979297,
-        }]
+          }
+        }
+      ]
       const pluginObj = new initCesium(
         {
           cesiumGlobal: Cesium,
