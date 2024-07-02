@@ -83,6 +83,11 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       // }
     },
     build: {
+      rollupOptions: {
+        external: [
+          "element-plus",
+        ],
+      },
       outDir: 'cesiumDevKit'
     }
   })

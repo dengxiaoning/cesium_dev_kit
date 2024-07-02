@@ -8,51 +8,11 @@ import * as Cesium from 'cesium'
 import { initCesium } from 'cesium_dev_kit'
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
-      const tempData = [
-        {
-          id: 3,
-          name: '高德地图02',
-          type: 'UrlTemplateImageryProvider',
-          classConfig: {
-            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
-          },
-          interfaceConfig: {},
-          offset: '0,0',
-          invertswitch: 0,
-          filterRGB: '#ffffff',
-          showswitch: 1,
-          weigh: 13,
-          createtime: 1624346908,
-          updatetime: 1647395260,
-        },
-        {
-          id: 14,
-          name: '高德地图01',
-          type: 'UrlTemplateImageryProvider',
-          classConfig: {
-            url: 'http://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
-          },
-          interfaceConfig: {
-            saturation: 0,
-            brightness: 0.6,
-            contrast: 1.8,
-            hue: 1,
-            gamma: 0.3,
-          },
-          offset: '0,0',
-          invertswitch: 1,
-          filterRGB: '#4e70a6',
-          showswitch: 1,
-          weigh: 0,
-          createtime: 1624326728,
-          updatetime: 1646979297,
-        },
-      ]
+    initMap () {
       const { viewer,
         material,
         graphics,
@@ -102,7 +62,7 @@ export default {
         this.flyto()
       })
     },
-    flyto() {
+    flyto () {
       this.material.flyTo({
         position: {
           x: -1337132.0092982147,
@@ -116,7 +76,7 @@ export default {
         },
       })
     },
-    createModel() {
+    createModel () {
       const model = this.graphics.createModelGraphics({
         position: Cesium.Cartesian3.fromDegrees(
           104.081701757991,
@@ -151,7 +111,7 @@ export default {
       })
     },
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

@@ -27,33 +27,30 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 let skyObj = null;
 let flag = true;
 export default {
-  data() {
+  data () {
     return {
       activeId: 'light'
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const tempData = [
         {
-          id: 3,
-          name: '高德地图02',
           type: 'UrlTemplateImageryProvider',
-          classConfig: {
-            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
-          },
-          interfaceConfig: {},
-          offset: '0,0',
-          invertswitch: 0,
-          filterRGB: '#ffffff',
-          showswitch: 1,
-          weigh: 13,
-          createtime: 1624346908,
-          updatetime: 1647395260,
-        }]
+          option: {
+            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+          }
+        },
+        {
+          type: 'UrlTemplateImageryProvider',
+          option: {
+            url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
+          }
+        }
+      ]
       const {
         viewer,
         material,
@@ -85,7 +82,7 @@ export default {
       this.sky1('light');
       this.addListenerToScene();
     },
-    flyto() {
+    flyto () {
       this.material.setView({
         position: Cesium.Cartesian3.fromDegrees(120.380788, 31.066719, 12136),
         orientation: {
@@ -95,25 +92,25 @@ export default {
         },
       })
     },
-    sky1(clicktype) {
+    sky1 (clicktype) {
       this.activeId = clicktype;
       skyObj = this.material.setOneGroundSkyBox();
       this.c_viewer.scene.skyBox = skyObj
       this.c_viewer.scene.skyAtmosphere.show = false
     },
-    sky2(clicktype) {
+    sky2 (clicktype) {
       this.activeId = clicktype;
       skyObj = this.material.setTwoGroundSkyBox()
       this.c_viewer.scene.skyBox = skyObj
       this.c_viewer.scene.skyAtmosphere.show = false
     },
-    sky3(clicktype) {
+    sky3 (clicktype) {
       this.activeId = clicktype;
       skyObj = this.material.setThreeGroundSkyBox();
       this.c_viewer.scene.skyBox = skyObj
       this.c_viewer.scene.skyAtmosphere.show = false
     },
-    addListenerToScene() {
+    addListenerToScene () {
 
       this.c_viewer.scene.camera.moveEnd.addEventListener((move) => {
         let position = this.material.getCameraPosition()
@@ -135,7 +132,7 @@ export default {
       });
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

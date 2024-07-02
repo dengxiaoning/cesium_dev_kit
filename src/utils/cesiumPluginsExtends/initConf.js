@@ -1,4 +1,3 @@
-const providerKeys = ['imageryProvider', 'terrainProvider']
 const defaultToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
 let Cesium = null
@@ -65,7 +64,7 @@ class Controller {
         this.addImageryProvider(
           viewer,
           MapImageryList[i].type,
-          MapImageryList[i].option
+          MapImageryList[i].option || MapImageryList[i].classConfig
         )
       }
     }
@@ -84,7 +83,7 @@ class Controller {
   findCesiumProvider(options) {
     const object = {}
     for (const key in options) {
-      if (providerKeys.includes(key) && options[key] && options[key].type) {
+      if (options[key] && options[key].type) {
         object[key] = this.createCesiumProvider(options[key])
         continue
       }

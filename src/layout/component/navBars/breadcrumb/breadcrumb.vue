@@ -52,7 +52,7 @@
                 :src="avatar"
                 fit="cover">
       </el-image>
-      <el-dropdown>
+      <el-dropdown size="large">
         <span class="el-dropdown-link"
               style="cursor: pointer"><i class="el-icon-arrow-down el-icon--right"></i>
         </span>

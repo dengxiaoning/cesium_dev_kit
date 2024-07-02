@@ -37,7 +37,7 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 import { defaultStatic } from '../defaultStaticConf'
 
 export default {
-  data() {
+  data () {
     return {
       posHeading: 0,
       posPitch: 0,
@@ -53,11 +53,11 @@ export default {
       cartesinaR: 0
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const tempData = [
         {
           id: 3,
@@ -139,7 +139,7 @@ export default {
       this.initCameraPos();
       this.cameraModify();
     },
-    initCameraPos() {
+    initCameraPos () {
       let position = this.base.getCameraPosition();
       if (position) {
         const { lon,
@@ -170,7 +170,7 @@ export default {
         console.log('can not get postion.')
       }
     },
-    cameraModify() {
+    cameraModify () {
       this.c_viewer.scene.camera.moveEnd.addEventListener((move) => {
         let position = this.base.getCameraPosition()
         if (position) {
@@ -204,7 +204,7 @@ export default {
       });
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.base = null;
   }
