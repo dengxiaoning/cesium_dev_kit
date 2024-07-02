@@ -11,7 +11,7 @@
   "dependencies": {
     "@turf/turf": "^6.5.0",
     "@vueup/vue-quill": "^1.2.0",
-    "axios": "^0.21.1",
+    "axios": "^0.28.0",
     "cesium": "^1.105.0",
     "cesium_dev_kit": "^1.0.76",
     "cesium-navigation-es6": "^3.0.9",
@@ -44,7 +44,7 @@
     "prettier": "^2.2.1",
     "sass": "1.55.0",
     "typescript": "^5.4.5",
-    "vite": "^2.6.10",
+    "vite": "^2.9.18",
     "vite-plugin-cesium": "^1.2.9",
     "vite-plugin-compression": "^0.2.5",
     "vite-plugin-html": "^2.0.7",
