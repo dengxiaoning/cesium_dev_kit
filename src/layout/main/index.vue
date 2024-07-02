@@ -13,33 +13,36 @@
 </template>
 
 <script lang="ts">
-  import { computed, getCurrentInstance, watch } from 'vue'
-  import { useRoute } from 'vue-router'
-  import { useStore } from 'store/index'
-  import Aside from '../component/aside.vue'
-  import Header from '../component/header.vue'
-  import MainView from '../component/mainView.vue'
-  
-  export default {
-    name: 'layoutDefaults',
-    components: { Aside, Header, MainView },
-    setup() {
-      const { proxy } = getCurrentInstance() as any
-      const store = useStore()
-      const route = useRoute()
-  		const isFixedHeader = computed(() => {
-        return store.state.themeConfig.isFixedHeader;
-      });
-      // 监听路由的变化
-      watch(
-        () => route.path,
-        () => {
-          proxy.$refs.layoutDefaultsScrollbarRef.wrap.scrollTop = 0
-        }
-      )
-      return {
-        isFixedHeader
+import { ref, computed, getCurrentInstance, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from 'store/index'
+import Aside from '../component/aside.vue'
+import Header from '../component/header.vue'
+import MainView from '../component/mainView.vue'
+import { ElScrollbar } from 'element-plus'
+
+export default {
+  name: 'layoutDefaults',
+  components: { Aside, Header, MainView },
+  setup() {
+    const { proxy } = getCurrentInstance() as any
+    const store = useStore()
+    const route = useRoute()
+    const layoutDefaultsScrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
+    const isFixedHeader = computed(() => {
+      return store.state.themeConfig.isFixedHeader
+    })
+    // 监听路由的变化
+    watch(
+      () => route.path,
+      () => {
+        layoutDefaultsScrollbarRef.value!.setScrollTop(0)
       }
+    )
+    return {
+      isFixedHeader,
+      layoutDefaultsScrollbarRef
     }
   }
+}
 </script>

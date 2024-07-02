@@ -61,7 +61,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       }
     },
     optimizeDeps: {
-      include: ['element-plus/lib/locale/lang/zh-cn']
+      include: ['element-plus/es/locale/lang/zh-cn']
     },
     server: {
       //服务器主机名

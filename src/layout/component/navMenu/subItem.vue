@@ -1,16 +1,16 @@
 <template>
   <template v-for="(val,index) in chils"
             :key="index">
-    <el-submenu :index="resolvePath(val.path)"
-                :key="val.path"
-                v-if="val.children && val.children.length > 0">
+    <el-sub-menu :index="resolvePath(val.path)"
+                 :key="val.path"
+                 v-if="val.children && val.children.length > 0">
       <template #title>
         <CIcon :icon-class="val.meta.icon" />
         <span>{{ val.meta.title }}</span>
       </template>
       <sub-item :chil="val.children"
                 :parent-path="resolvePath(val.path)" />
-    </el-submenu>
+    </el-sub-menu>
     <el-menu-item :index="resolvePath(val.path)"
                   :key="val.path"
                   v-else>

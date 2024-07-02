@@ -63,6 +63,8 @@ import type { Menu } from 'store/interface/index'
 import { useStore } from 'store/index'
 import { setSession, removeSession } from '@/utils/localCache'
 
+import { ElScrollbar } from 'element-plus'
+
 interface State {
   routePath: string
   tagsRefsIndex: number
@@ -76,7 +78,7 @@ export default {
   setup() {
     const { proxy } = getCurrentInstance() as any
     const tagsRefs = ref<ElRef[]>([])
-    const scrollbarRef = ref<ElRef>(null)
+    const scrollbarRef = ref<InstanceType<typeof ElScrollbar>>()
     const tagsUlRef = ref<ElRef>(null)
     const store = useStore()
     const route = useRoute()
@@ -121,7 +123,7 @@ export default {
     const addTagsView = (routeAgr: any) => {
       if (state.tagsViewList.some((v) => v.path === routeAgr.path)) return false
 
-         /**
+      /**
        * 【notice】
        * The following notation will throw an "Avoid app logic that relies on enumerating keys on a component instance.
        * The keys will be empty in production mode to avoid performance overhead." exception.
@@ -171,11 +173,14 @@ export default {
     }
     // 更新滚动条显示
     const updateScrollbar = () => {
-      proxy.$refs.scrollbarRef.update()
+      scrollbarRef.value!.update()
     }
     // 鼠标滚轮滚动
     const onHandleScroll = (e: any) => {
-      proxy.$refs.scrollbarRef.$refs.wrap.scrollLeft += e.wheelDelta / 4
+      // proxy.$refs.scrollbarRef.$refs.wrap.scrollLeft += e.wheelDelta / 4
+      let scrollRefs = scrollbarRef.value!.wrapRef
+      let scrollL = scrollRefs.scrollLeft
+      scrollbarRef.value!.setScrollLeft(scrollL + e.wheelDelta / 4)
     }
     // tagsView 横向滚动
     const tagsViewmoveToCurrentTag = () => {
@@ -192,7 +197,7 @@ export default {
         // 最后 li
         let liLast: any = tagsRefs.value[tagsRefs.value.length - 1]
         // 当前滚动条的值
-        let scrollRefs = proxy.$refs.scrollbarRef.$refs.wrap
+        let scrollRefs = scrollbarRef.value!.wrapRef
         // 当前滚动条滚动宽度
         let scrollS = scrollRefs.scrollWidth
         // 当前滚动条偏移宽度

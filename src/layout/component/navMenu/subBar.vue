@@ -1,22 +1,25 @@
 <template>
   <el-menu router
-           background-color="transparent"
+           class="el-menu-vertical-demo"
+           active-text-color="#ffd04b"
+           text-color="#fff"
            :collapse="setIsCollapse"
            :default-active="defaultActive"
            :unique-opened="getThemeConfig.isUniqueOpened"
-           :collapse-transition="false">
+           :collapse-transition="false"
+           background-color="transparent">
     <template v-for="(val,index) in menuLists"
               :key="index">
-      <el-submenu :index="val.path"
-                  v-if="val.children && val.children.length > 0"
-                  :key="val.path">
+      <el-sub-menu :index="val.path"
+                   v-if="val.children && val.children.length > 0"
+                   :key="val.path">
         <template #title>
           <CIcon :icon-class="val.meta.icon ? val.meta.icon : ''" />
           <span>{{ val.meta.title}}</span>
         </template>
         <SubItem :chil="val.children"
                  :parent-path="val.path" />
-      </el-submenu>
+      </el-sub-menu>
 
       <el-menu-item :index="val.path"
                     :key="val.path"
