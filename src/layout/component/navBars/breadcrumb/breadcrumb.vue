@@ -2,9 +2,11 @@
   <div class="layout-navbars-breadcrumb"
        v-show="getThemeConfig.isBreadcrumb">
     <div style="flex:6;display: flex;align-items: center;height:100%;">
-      <i class="layout-navbars-breadcrumb-icon"
-         :class="getThemeConfig.isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
-         @click="onThemeConfigChange"></i>
+      <el-icon class="layout-navbars-breadcrumb-icon"
+               @click="onThemeConfigChange">
+        <Expand v-show="getThemeConfig.isCollapse" />
+        <Fold v-show="!getThemeConfig.isCollapse" />
+      </el-icon>
       <el-breadcrumb class="layout-navbars-breadcrumb-hide">
         <transition-group name="breadcrumb"
                           mode="out-in">
@@ -79,6 +81,7 @@ import {
   onBeforeRouteLeave
 } from 'vue-router'
 import { useStore } from 'store/index'
+import { Expand, Fold } from '@element-plus/icons-vue'
 import type { AppRouteRecordRaw } from 'store/interface/index'
 import avatar from '@/assets/image/profile.jpg'
 interface State {
@@ -89,6 +92,7 @@ interface State {
 }
 export default {
   name: 'layoutBreadcrumb',
+  components: { Expand, Fold },
   setup() {
     // const { proxy } = getCurrentInstance() as any;
     const store = useStore()

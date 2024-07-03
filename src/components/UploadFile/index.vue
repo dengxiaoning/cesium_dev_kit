@@ -25,7 +25,7 @@
 </template>
 <script >
 import { defineComponent, ref } from 'vue'
-import { ElMessage } from 'element-plus'
+// import { ElMessage } from 'element-plus'
 export default defineComponent({
   props: {
     fileDataList: {
@@ -38,7 +38,7 @@ export default defineComponent({
     }
   },
   emits: ['uploadFileCtrl'],
-  setup(props, { emit }) {
+  setup (props, { emit }) {
     const fileListCache = ref(props.fileDataList)
     const submitUpload = () => {
       if (fileListCache.value.length > 0) {

@@ -16,7 +16,8 @@
       "dom"
     ],
     "types": [
-      "vite/client"
+      "vite/client",
+      "element-plus/global"
     ],
     "baseUrl": ".",
     "paths": {
@@ -51,5 +52,6 @@
     "types/**/*.d.ts",
     "types/**/*.ts", 
     "src/permission.ts", 
+    "auto-imports.d.ts"
    ]
 }

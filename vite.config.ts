@@ -2,12 +2,14 @@ import { defineConfig, UserConfigExport, ConfigEnv, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import path from 'path'
-
 import { configSvgIconsPlugin } from './src/plugins/configSvgIconsPlugin'
 import { configMockPlugin } from './src/plugins/configMockPlugin'
 import { configStyleImportPlugin } from './src/plugins/configStyleImportPlugin'
 import { configHtmlPlugin } from './src/plugins/configHtmlPlugin'
 import { configCompressPlugin } from './src/plugins/configCompressPlugin'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import cesium from 'vite-plugin-cesium'
 
 import { wrapperEnv } from './src/utils/env'
@@ -46,7 +48,13 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       configCompressPlugin(
         VITE_BUILD_COMPRESS,
         VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE
-      ) // gzip 或者 brotli 来压缩资源
+      ), // gzip 或者 brotli 来压缩资源
+      AutoImport({
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
+      }),
     ],
     resolve: {
       alias: {
@@ -83,11 +91,6 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       // }
     },
     build: {
-      rollupOptions: {
-        external: [
-          "element-plus",
-        ],
-      },
       outDir: 'cesiumDevKit'
     }
   })
