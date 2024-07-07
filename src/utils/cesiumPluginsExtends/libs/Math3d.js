@@ -114,6 +114,13 @@ Math3d.prototype = {
   /**
    * 计算两点的角度
    * @param {object} option
+   * @param {Cartesian3} options.position1 - 第一个点坐标
+   * @param {Cartesian3} options.position2 - 第二个点坐标
+ * @example
+   * import { Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   * const angle =  math3d.getPositionsAngle(Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338),Cesium.Cartesian3.fromDegrees(110.20775152895165,31.02475678594998))
+   * @returns {number} 角度
    */
   getPositionsAngle: function (option) {
     if (option) {
@@ -332,18 +339,18 @@ Math3d.prototype = {
       return results;
     }
   },
-  /*
+  /**
    * 椭圆计算
-   * @param {*} theta
-   * @param {*} rotation
-   * @param {*} northVec
-   * @param {*} eastVec
-   * @param {*} aSqr
-   * @param {*} ab
-   * @param {*} bSqr
-   * @param {*} mag
-   * @param {*} unitPos
-   * @param {*} result
+   * @param {number} theta - 角度θ
+   * @param {number} rotation - 旋转角度
+   * @param {Matrix3} northVec - 东北角
+   * @param {Matrix3} eastVec - 西南角
+   * @param {number} aSqr - 短半轴平方根
+   * @param {number} ab - 长半轴与短半轴乘积
+   * @param {number} bSqr - 长半轴平方根
+   * @param {number} mag - 中心坐标最大长度
+   * @param {Cartesian3} unitPos - 中心坐标归一化
+   * @param {Cartesian3} result  椭圆坐标
    */
   getPointOnEllipsoid: function (theta, rotation, northVec, eastVec, aSqr, ab, bSqr, mag, unitPos, result) {
     if (this._viewer) {
@@ -378,9 +385,24 @@ Math3d.prototype = {
     }
   },
   /**
-   * 计算点的插值高度
-   * Returns the positions raised to the given heights
-   * @private
+   * 计算坐标数组插值高度
+   * @function
+   * @param {Array} positions - 插值数组[x,y,z,x,y,z,...]
+   * @param {object} options
+   * @param {Ellipsoid} options.ellipsoid - 椭球对象
+   * @param {object} options.height - 缩放比例
+   * @param {object} options.extrudedHeight - 拉伸高度
+   * @param {boolean} extrude - 是否拉伸
+   * @example
+   * import { Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   * const res = math3d.raisePositionsToHeight([
+   * 110.16018735617934,31.036076859828338, 0,
+   * 110.17845812703679,31.033686527335444, 0,
+   * 110.19261040403379,31.02892781958261, 0],
+   *  { ellipsoid: Cesium.Ellipsoid.WGS84, height: 6, extrudedHeight: 5 }, true);
+   *
+   * @returns {Float64Array} Returns the positions raised to the given heights
    */
   raisePositionsToHeight: function (positions, options, extrude) {
     if (this._viewer) {
@@ -507,9 +529,6 @@ Math3d.prototype = {
    * @param {number} options.center - 中心点 笛卡尔坐标
    * @param {number} options.granularity  - 粒度 弧度
    * @param {number} options.angle - 角度 弧度
-   * @example
-   * import {Math3d } from 'cesium_dev_kit'
-   * const math3d = new Math3d(viewer,Cesium);
    * @example
    * import {Math3d } from 'cesium_dev_kit'
    * const math3d = new Math3d(viewer,Cesium);
