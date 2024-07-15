@@ -1,5 +1,9 @@
 let Cesium = {};
-
+/**
+ * @typedef {Object}  lonlatType - 坐标系对象
+ * @property {number} lon - 经度
+ * @property {number} lat - 纬度
+ */
 /**
  * 数学3d计算模块
  * @class
@@ -51,9 +55,9 @@ Math3d.prototype = {
    * import { Math3d } from 'cesium_dev_kit'
    * const math3d = new Math3d(viewer,Cesium);
    * var startPoint = Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988)
-     var endPoint = Cesium.Cartesian3.fromDegrees((Math.random() / 100) + 104.081701757991, (Math.random() / 100) + 30.627042558105988);
-
-     var positions = math3d.getLinkedPointList(startPoint, endPoint, 100000, 50);
+   *  var endPoint = Cesium.Cartesian3.fromDegrees((Math.random() / 100) + 104.081701757991, (Math.random() / 100) + 30.627042558105988);
+   *
+   * var positions = math3d.getLinkedPointList(startPoint, endPoint, 100000, 50);
    * @returns {Array}
    */
   getLinkedPointList: function (startPoint, endPoint, angularityFactor, numOfSingleLine) {
@@ -116,7 +120,7 @@ Math3d.prototype = {
    * @param {object} option
    * @param {Cartesian3} options.position1 - 第一个点坐标
    * @param {Cartesian3} options.position2 - 第二个点坐标
- * @example
+   * @example
    * import { Math3d } from 'cesium_dev_kit'
    * const math3d = new Math3d(viewer,Cesium);
    * const angle =  math3d.getPositionsAngle(Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338),Cesium.Cartesian3.fromDegrees(110.20775152895165,31.02475678594998))
@@ -597,8 +601,13 @@ Math3d.prototype = {
   /**
    * 获取3DTiles高度
    * 传入lonlat数组 角度制的lon lat
-   * @param {*} lonlats
-   * @param {*} callback
+   * @param {lonlatType} lonlats - 坐标数组
+   * @param {Function} callback - 回调
+   * @example
+   * import { Math3d } from 'cesium_dev_kit'
+   * const math3d = new Math3d(viewer,Cesium);
+   * const coors = [{lon:110.16018735617934, lat:31.036076859828338}, {lon:110.17845812703679,lat:31.033686527335444}];
+   * math3d.computeLonlatPointsTerrainData(coors,res=>{console.log(res)});
    */
   computeLonlatPointsTerrainData: function (lonlats, callback) {
     if (this._viewer) {
