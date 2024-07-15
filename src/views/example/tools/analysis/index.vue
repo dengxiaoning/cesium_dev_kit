@@ -36,14 +36,16 @@ export default {
     this.initMap()
   },
   methods: {
+    // 添加地形数据
+    async addWorldTerrainAsync (viewer) {
+      try {
+        const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+        viewer.terrainProvider = terrainProvider;
+      } catch (error) {
+        console.log(`Failed to add world imagery: ${error}`);
+      }
+    },
     initMap () {
-      const tempData = [
-        {
-          type: 'UrlTemplateImageryProvider',
-          option: {
-            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
-          }
-        }]
       const {
         viewer,
         analysis
@@ -53,20 +55,23 @@ export default {
           containerId: 'cesiumContainer',
           viewerConfig: {
             infoBox: false,
-            shouldAnimate: true,
-            imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-              url: "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer?f=jsapi"
-            }),
-            terrainProvider: new Cesium.ArcGISTiledElevationTerrainProvider({
-              url: 'https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer'
-            })
+            shouldAnimate: true
           },
           extraConfig: {
-            depthTest: true, // 深度测试
+            depthTest: true,
+            AccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
           },
-          MapImageryList: []
+          MapImageryList: [
+            {
+              type: 'UrlTemplateImageryProvider',
+              option: {
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                subdomains: ['0', '1', '2', '3'],
+                tilingScheme: new Cesium.WebMercatorTilingScheme()
+              }
+            }]
         })
-
+      this.addWorldTerrainAsync(viewer);
       this.c_viewer = viewer;
       this.analysis = analysis;
       this.flyTo();

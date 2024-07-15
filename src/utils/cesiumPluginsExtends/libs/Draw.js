@@ -481,10 +481,8 @@ Draw.prototype = {
         let geodesic = new Cesium.EllipsoidGeodesic();
         geodesic.setEndPoints(srcCartographic, destCartographic);
         let s = geodesic.surfaceDistance;
-        _radius = Math.sqrt(
-          //开平方
-          Math.pow(s, 2) + Math.pow(destCartographic.height - srcCartographic.height, 2)
-        );
+           //开平方
+        _radius = Math.sqrt(Math.pow(s, 2) + Math.pow(destCartographic.height - srcCartographic.height, 2));
       };
 
       //
@@ -526,8 +524,7 @@ Draw.prototype = {
             _handler.destroy();
 
             if (typeof options.callback === "function") {
-              options.callback(
-                {
+              options.callback({
                   center: _center,
                   radius: _radius,
                 },
@@ -539,7 +536,7 @@ Draw.prototype = {
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
       // mouse
       _handler.setInputAction(function (movement) {
-        var cartesian = $this._viewer.scene.camera.pickEllipsoid(movement.endPosition, $this._viewer.scene.globe.ellipsoid);
+        var cartesian =$this._viewer.scene.camera.pickEllipsoid(movement.endPosition, $this._viewer.scene.globe.ellipsoid);
         if (_center && cartesian && cartesian.x) {
           computeRadius(_center, cartesian);
         }

@@ -128,11 +128,6 @@ export default {
         viewerConfig: {
           infoBox: false,
           shouldAnimate: true,
-          // imageryProvider: new Cesium.UrlTemplateImageryProvider({
-          //   url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-          //   subdomains: ['0', '1', '2', '3'],
-          //   tilingScheme: new Cesium.WebMercatorTilingScheme()
-          // }),
         },
         extraConfig: {
           depthTest: true,

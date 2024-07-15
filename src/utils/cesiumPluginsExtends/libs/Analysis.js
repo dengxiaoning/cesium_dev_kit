@@ -550,7 +550,7 @@ function LookAroundAnalysis(params) {
         ellipse.outerPositions[i + 2]
       );
       let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-      let deltaRadian = (0.00005 * Math.PI) / 180.0; //Cesium.Math.RADIANS_PER_DEGREE
+      let deltaRadian = (0.0005 * Math.PI) / 180.0; //Cesium.Math.RADIANS_PER_DEGREE
       let cartographicArr = that.computeInterpolateLineCartographic(cartographicCenter, cartographic, deltaRadian);
       that.computeCartographicPointsTerrainData(cartographicArr, function (terrainData) {
         if (terrainData.length > 0) {
@@ -820,7 +820,7 @@ function CutVolumeAnalysis(params) {
       _debugShowSubTriangles = true,
       $this = this;
 
-    computeCutVolume();
+    computeCutVolume(positions);
   }
   /**
    * 计算多边形的重心点
@@ -889,7 +889,7 @@ function CutVolumeAnalysis(params) {
   /**
    * 计算方量
    */
-  function computeCutVolume() {
+  function computeCutVolume(positions) {
     var tileAvailability = that._viewer.terrainProvider.availability;
     if (!tileAvailability) {
       alert("未获取到地形");
@@ -898,16 +898,16 @@ function CutVolumeAnalysis(params) {
     var maxLevel = 0;
     var minHeight = 15000;
     // 计算差值点
-    for (var i = 0; i < positions.length; i++) {
-      var cartographic = Cesium.Cartographic.fromCartesian(positions[i]);
-      var height = that._viewer.scene.globe.getHeight(cartographic);
+    // for (let i = 0; i < positions.length; i++) {
+    //   var cartographic = Cesium.Cartographic.fromCartesian(positions[i]);
+    //   var height = that._viewer.scene.globe.getHeight(cartographic);
 
-      if (minHeight > height) minHeight = height;
+    //   if (minHeight > height) minHeight = height;
 
-      var level = tileAvailability.computeMaximumLevelAtPosition(cartographic);
+    //   var level = tileAvailability.computeMaximumLevelAtPosition(cartographic);
 
-      if (maxLevel < level) maxLevel = level;
-    }
+    //   if (maxLevel < level) maxLevel = level;
+    // }
 
     var granularity = Math.PI / Math.pow(2, 11);
     granularity = granularity / 64;
@@ -933,7 +933,7 @@ function CutVolumeAnalysis(params) {
     var bottomArea;
     var subTrianglePositions;
 
-    for (i = 0; i < geom.indices.length; i += 3) {
+    for (let i = 0; i < geom.indices.length; i += 3) {
       i0 = geom.indices[i];
       i1 = geom.indices[i + 1];
       i2 = geom.indices[i + 2];

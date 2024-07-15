@@ -180,8 +180,7 @@ Plugin.prototype = {
       if (this.viewer.terrainProvider._layers) {
         var t = this;
         this._createBottomSurface(e.bottom_pos);
-        var i = Cesium.sampleTerrainMostDetailed(this.viewer.terrainProvider, e.lerp_pos);
-        Cesium.when(i, function (i) {
+        Cesium.sampleTerrainMostDetailed(this.viewer.terrainProvider, e.lerp_pos).then(function (i) {
           for (var a = i.length, n = [], r = 0; r < a; r++) {
             var s = Cesium.Cartesian3.fromRadians(i[r].longitude, i[r].latitude, i[r].height);
             n.push(s);
