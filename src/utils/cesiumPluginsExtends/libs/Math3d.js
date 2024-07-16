@@ -460,7 +460,7 @@ Math3d.prototype = {
    * @param {number} options.semiMajorAxis - 长半轴
    * @param {number} options.rotation - 旋转角度 弧度
    * @param {Cartesian3} options.center - 中心点 笛卡尔坐标
-   * @param {number} options.granularity  - 粒度 弧度
+   * @param {number} options.granularity  - 粒度(圆内切数量)
    * @example
    * import {Math3d } from 'cesium_dev_kit'
    * const math3d = new Math3d(viewer,Cesium);

@@ -35,7 +35,7 @@
                   effect="dark"
                   placement="bottom"
                   class="right-menu-item hover-effect">
-        <div>
+        <div class="icon-box">
           <svg-icon icon-class="secondDimension"
                     @click="to2dVisual" />
         </div>
@@ -45,19 +45,17 @@
                   effect="dark"
                   placement="bottom"
                   class="right-menu-item hover-effect">
-        <div>
+        <div class="icon-box">
           <svg-icon icon-class="threeDimesion"
                     @click="to3dVisual" />
         </div>
       </el-tooltip>
-      <el-image style="width: 35px; height: 35px;border-radius: 50%;cursor: pointer"
-                :src="avatar"
-                fit="cover">
-      </el-image>
       <el-dropdown size="large">
-        <span class="el-dropdown-link"
-              style="cursor: pointer"><i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
+        <el-image class="el-dropdown-link"
+                  style="width: 35px; height: 35px;border-radius: 50%;cursor: pointer"
+                  :src="avatar"
+                  fit="cover">
+        </el-image>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item>个人信息</el-dropdown-item>
@@ -227,6 +225,9 @@ export default {
     align-items: center;
     justify-content: flex-end;
     padding-right: 6px;
+  }
+  .icon-box {
+    margin-right: 8px;
   }
   .right-menu-item {
     display: inline-block;

@@ -540,7 +540,7 @@ function LookAroundAnalysis(params) {
     eopt.semiMajorAxis = ab;
     eopt.rotation = 0;
     eopt.center = params.center;
-    eopt.granularity = Math.PI / 45.0; //间隔
+    eopt.granularity = Math.PI / 30.0; //间隔
     let ellipse = that.computeEllipseEdgePositions(eopt); //范围当前椭圆位置的数组
     for (let i = 0; i < ellipse.outerPositions.length; i += 3) {
       //逐条计算可视域
