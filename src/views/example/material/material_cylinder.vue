@@ -6,14 +6,14 @@
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const _self = this;
-      const { viewer,
-        sceneMang,
+      const {
+        viewer,
         graphics,
         material } = new initCesium({
           cesiumGlobal: Cesium,
@@ -26,15 +26,8 @@ export default {
           MapImageryList: []
         })
       this.c_viewer = viewer;
-      this.sceneMang = sceneMang;
-
       this.material = material;
       this.graphics = graphics;
-
-      // this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
-      //   style: 'dark',
-      //   temp_url: 'http://api.map.baidu.com/customimage/tile?x=788&y=293&z=12&customid=dark'
-      // }));
 
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
@@ -67,7 +60,7 @@ export default {
       });
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

@@ -31,9 +31,7 @@ export default {
       this.material = material
       this.graphics = graphics
       this.math3d = math3d
-      // let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
-      //   style: 'dark'
-      // }));
+
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
       let tileset = this.c_viewer.scene.primitives.add(

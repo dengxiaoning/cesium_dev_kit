@@ -4,7 +4,6 @@
 </template>
 <script >
 import * as Cesium from 'cesium'
-// import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 import { Graphics } from '@/utils/cesiumPluginsExtends/singleImport/Graphics'
 
 
@@ -23,31 +22,10 @@ export default {
         },
         MapImageryList: []
       })
-
-
-      // const { viewer,
-      //   material,
-      //   graphics,
-      //   math3d } = new initCesium(
-      //     {
-      //       cesiumGlobal: Cesium,
-      //       containerId: 'cesiumContainer',
-      //       viewerConfig: {
-      //         infoBox: false,
-      //         shouldAnimate: true,
-      //       },
-      //       MapImageryList: []
-      //     })
-
-
       this.c_viewer = graphicsObj.viewer;
 
-      // this.material = material;
       this.graphics = graphicsObj.graphics;
-      // this.math3d = math3d;
-      // let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
-      //   style: 'dark'
-      // }));
+
       this.graphics.setDefSceneConfig()
       this.graphics.setBloomLightScene()
       let tileset = this.c_viewer.scene.primitives.add(

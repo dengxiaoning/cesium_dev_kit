@@ -73,11 +73,6 @@ export default {
       this.material = material;
       this.graphics = graphics;
       this.math3d = math3d;
-
-      // let layer = viewer.imageryLayers.addImageryProvider(new Cesium.Scene.GoogleImageryProvider({
-      //   style: 'img'
-      // }));
-
       this.flyto();
       this.sky1('light');
       this.addListenerToScene();

@@ -15,20 +15,20 @@ export default {
     initMap () {
       const { viewer,
         material,
-        graphics,
-        sceneMang } = new initCesium(
-          {
-            cesiumGlobal: Cesium,
-            containerId: 'cesiumContainer',
-            viewerConfig: {
-              infoBox: false,
-              shouldAnimate: true,
-            },
-            extraConfig: {
-              depthTest: true
-            },
-            MapImageryList: []
-          })
+        graphics
+      } = new initCesium(
+        {
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {
+            depthTest: true
+          },
+          MapImageryList: []
+        })
 
 
       this.c_viewer = viewer;

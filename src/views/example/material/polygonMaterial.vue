@@ -9,11 +9,11 @@ import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const { viewer, material, graphics, math3d } = new initCesium(
         {
           cesiumGlobal: Cesium,
@@ -31,9 +31,7 @@ export default {
       this.material = material
       this.graphics = graphics
       this.math3d = math3d
-      // let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
-      //   style: 'dark'
-      // }));
+
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
       let tileset = this.c_viewer.scene.primitives.add(
@@ -61,7 +59,7 @@ export default {
       this.createPolygonOne()
       this.createPolygonTwo()
     },
-    createCustMaterialWall(imgUrl, colorVal, durationNum) {
+    createCustMaterialWall (imgUrl, colorVal, durationNum) {
       return this.material.getCustomMaterialWall({
         image: imgUrl,
         freely: 'vertical',
@@ -71,7 +69,7 @@ export default {
         duration: durationNum
       })
     },
-    createPolygonOne() {
+    createPolygonOne () {
       var polygon = this.graphics.createPolygonGraphics({
         positions: Cesium.Cartesian3.fromDegreesArray([
           104.09816110606057,
@@ -93,7 +91,7 @@ export default {
       })
       polygon.polygon.extrudedHeight = 500
     },
-    createPolygonTwo() {
+    createPolygonTwo () {
       var polygon2 = this.graphics.createPolygonGraphics({
         positions: Cesium.Cartesian3.fromDegreesArray([
           104.07263175401185,
@@ -116,7 +114,7 @@ export default {
       polygon2.polygon.extrudedHeight = 500
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null
     this.material = null
     this.graphics = null

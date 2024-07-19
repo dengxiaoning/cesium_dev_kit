@@ -8,12 +8,13 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
-      const { viewer,
+    initMap () {
+      const {
+        viewer,
         material,
         graphics,
         math3d } = new initCesium({
@@ -32,9 +33,7 @@ export default {
       this.material = material;
       this.graphics = graphics;
       this.math3d = math3d;
-      // let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
-      //   style: 'dark'
-      // }));
+
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
       let tileset = this.c_viewer.scene.primitives.add(
@@ -61,7 +60,7 @@ export default {
 
       this.createModel();
     },
-    flyto() {
+    flyto () {
       this.material.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
@@ -71,7 +70,7 @@ export default {
         }
       })
     },
-    createModel() {
+    createModel () {
       var ellipse = this.math3d.computeEllipseEdgePositions({
         semiMinorAxis: 500,
         semiMajorAxis: 500,
@@ -94,7 +93,7 @@ export default {
       })
 
     },
-    intevalRotatePlane(positions) {
+    intevalRotatePlane (positions) {
       setTimeout(() => {
         this.graphics.craeteRotatePlaneGraphics({
           positions: positions,
@@ -123,7 +122,7 @@ export default {
       }, 1500)
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

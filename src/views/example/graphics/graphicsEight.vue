@@ -10,15 +10,13 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 import { defaultStatic } from '../defaultStaticConf'
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
-      const { viewer,
-        material,
-        graphics,
-        math3d } = new initCesium({
+    initMap () {
+      const { viewer, material, graphics, math3d }
+        = new initCesium({
           cesiumGlobal: Cesium,
           containerId: 'cesiumContainer',
           viewerConfig: {
@@ -38,9 +36,7 @@ export default {
       this.material = material;
       this.graphics = graphics;
       this.math3d = math3d;
-      // let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
-      //   style: 'dark'
-      // }));
+
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
       let tileset = this.c_viewer.scene.primitives.add(
@@ -67,7 +63,7 @@ export default {
 
       this.createModel();
     },
-    flyto() {
+    flyto () {
       this.material.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
@@ -77,7 +73,7 @@ export default {
         }
       })
     },
-    createModel() {
+    createModel () {
       var model = this.graphics.createModelGraphics({
         position: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 200),
         m_url: 'static/data/model/zhui.glb',
@@ -96,7 +92,7 @@ export default {
       })
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

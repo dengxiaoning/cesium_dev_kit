@@ -11,8 +11,7 @@
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
-let skyObj = null;
-let flag = true;
+
 export default {
   data () {
     return {

@@ -607,7 +607,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "相机位置",
-        "icon": "iconoir:position-align",
+        "icon": "gis:position-man",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true

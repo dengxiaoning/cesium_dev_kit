@@ -52,7 +52,7 @@
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 export default {
-  data() {
+  data () {
     return {
       currPosition: Cesium.Cartesian3.fromDegrees(117.224, 31.819, 100000),
       roll: 0,
@@ -86,11 +86,11 @@ export default {
       }
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const { viewer, customCesiumPlugin } = new initCesium(
         {
           cesiumGlobal: Cesium,
@@ -98,10 +98,6 @@ export default {
           viewerConfig: {
             infoBox: false,
             shouldAnimate: true,
-            // 指定上下文
-            contextOptions: {
-              requestWebgl1: true,
-            },
           },
           extraConfig: {},
           MapImageryList: []
@@ -114,7 +110,7 @@ export default {
       this.flyToPos()
       this.initPhaseControl()
     },
-    flyToPos() {
+    flyToPos () {
       this.customCesiumPlugin.flyTo({
         position: {
           x: -1577100.7186109242,
@@ -128,7 +124,7 @@ export default {
         }
       })
     },
-    initPhaseControl() {
+    initPhaseControl () {
       const _this = this
       this.sensorEntity = this.customCesiumPlugin.createSatelliteCoverageSimulationGraphics(
         {
@@ -139,28 +135,28 @@ export default {
         }
       )
     },
-    xHalfAngleChange(e) {
+    xHalfAngleChange (e) {
       this.sensorEntity.angle1 = e.target.value
     },
-    yHalfAngleChange(e) {
+    yHalfAngleChange (e) {
       this.sensorEntity.angle1 = e.target.value
     },
-    HeadingChange(e) {
+    HeadingChange (e) {
       this.heading = e.target.value
       this.sensorEntity._rotation.heading = Cesium.Math.toRadians(
         this.heading
       )
     },
-    PitchChange(e) {
+    PitchChange (e) {
       this.pitch = e.target.value
       this.sensorEntity._rotation.pitch = Cesium.Math.toRadians(this.pitch)
     },
-    RollChange(e) {
+    RollChange (e) {
       this.roll = e.target.value
       this.sensorEntity._rotation.roll = Cesium.Math.toRadians(this.roll)
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null
     this.customCesiumPlugin = null
   }

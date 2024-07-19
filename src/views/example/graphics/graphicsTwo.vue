@@ -8,25 +8,25 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const { viewer,
         material,
-        graphics,
-        sceneMang } = new initCesium(
-          {
-            cesiumGlobal: Cesium,
-            containerId: 'cesiumContainer',
-            viewerConfig: {
-              infoBox: false,
-              shouldAnimate: true,
-            },
-            extraConfig: {},
-            MapImageryList: []
-          })
+        graphics
+      } = new initCesium(
+        {
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
 
 
       this.c_viewer = viewer;
@@ -60,7 +60,7 @@ export default {
       this.createModel()
       this.flyto()
     },
-    flyto() {
+    flyto () {
       this.material.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
@@ -70,7 +70,7 @@ export default {
         }
       })
     },
-    createModel() {
+    createModel () {
       this.graphics.craeteDynamicBlinkCircleGraphics({
         position: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 1),
         semiMinorAxis: 500.0,
@@ -78,7 +78,7 @@ export default {
       })
     },
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

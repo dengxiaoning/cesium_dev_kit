@@ -10,11 +10,11 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const { viewer,
         material,
         graphics,
@@ -36,9 +36,7 @@ export default {
       this.material = material;
       this.graphics = graphics;
       this.math3d = math3d;
-      // let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
-      //   style: 'dark'
-      // }));
+
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
       let tileset = this.c_viewer.scene.primitives.add(
@@ -65,7 +63,7 @@ export default {
 
       this.createModel();
     },
-    flyto() {
+    flyto () {
       this.material.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
@@ -75,7 +73,7 @@ export default {
         }
       })
     },
-    createModel() {
+    createModel () {
       let colors = [
         new Cesium.Color(77 / 255, 201 / 255, 255 / 255, 1),
         new Cesium.Color(255 / 255, 201 / 255, 38 / 255, 1),
@@ -100,7 +98,7 @@ export default {
       }
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

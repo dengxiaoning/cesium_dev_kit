@@ -11,19 +11,17 @@
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
-let skyObj = null;
-let flag = true;
 export default {
-  data() {
+  data () {
     return {
       activeId: 'light'
     }
   },
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const {
         viewer,
         control,
@@ -68,7 +66,7 @@ export default {
       this.control.showLayerParamPanel(layer, { elementId: 'cust-gui-box' });
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.control = null;
   }

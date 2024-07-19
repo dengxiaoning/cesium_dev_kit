@@ -20,25 +20,26 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    initMap () {
       const { viewer,
         material,
         graphics,
-        math3d } = new initCesium(
-          {
-            cesiumGlobal: Cesium,
-            containerId: 'cesiumContainer',
-            viewerConfig: {
-              infoBox: false,
-              shouldAnimate: true,
-            },
-            extraConfig: {},
-            MapImageryList: []
-          })
+        math3d
+      } = new initCesium(
+        {
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
 
 
       this.c_viewer = viewer;
@@ -46,9 +47,7 @@ export default {
       this.material = material;
       this.graphics = graphics;
       this.math3d = math3d;
-      // let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.BaiduImageryProvider({
-      //   style: 'dark'
-      // }));
+
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
       let tileset = this.c_viewer.scene.primitives.add(
@@ -75,7 +74,7 @@ export default {
 
       this.createModel();
     },
-    flyto() {
+    flyto () {
       this.material.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
@@ -85,7 +84,7 @@ export default {
         }
       })
     },
-    createModel() {
+    createModel () {
       var videoDom = this.$refs['videoBox'];
       this.graphics.createVideoPlaneGraphics({
         position: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 200),
@@ -95,7 +94,7 @@ export default {
       videoDom.play();
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;

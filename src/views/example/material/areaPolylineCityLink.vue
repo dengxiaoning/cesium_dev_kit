@@ -6,7 +6,6 @@
 </template>
 <script >
 import * as Cesium from 'cesium'
-// import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 import { Material } from '@/utils/cesiumPluginsExtends/singleImport/Material'
 import { raod, raod2, raod3, raod4, raod5, raod6, raod7 } from './extraData'
 
@@ -26,21 +25,6 @@ export default {
         extraConfig: {},
         MapImageryList: []
       })
-      // const { viewer,
-      //   material,
-      //   graphics,
-      //   math3d } = new initCesium(
-      //     {
-      //       cesiumGlobal: Cesium,
-      //       containerId: 'cesiumContainer',
-      //       viewerConfig: {
-      //         infoBox: false,
-      //         shouldAnimate: true,
-      //       },
-      //       extraConfig: {},
-      //       MapImageryList: []
-      //     })
-
 
       this.c_viewer = materialObj.viewer;
       this.material = materialObj.material;

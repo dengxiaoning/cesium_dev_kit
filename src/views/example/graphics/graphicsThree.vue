@@ -14,34 +14,21 @@ export default {
   methods: {
 
     initMap () {
-      const tempData = [
-        {
-          type: 'UrlTemplateImageryProvider',
-          option: {
-            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
-          }
-        },
-        {
-          type: 'UrlTemplateImageryProvider',
-          option: {
-            url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
-          }
-        }
-      ]
-      const { viewer,
+      const {
+        viewer,
         material,
-        graphics,
-        sceneMang } = new initCesium(
-          {
-            cesiumGlobal: Cesium,
-            containerId: 'cesiumContainer',
-            viewerConfig: {
-              infoBox: false,
-              shouldAnimate: true,
-            },
-            extraConfig: {},
-            MapImageryList: tempData
-          })
+        graphics
+      } = new initCesium(
+        {
+          cesiumGlobal: Cesium,
+          containerId: 'cesiumContainer',
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
 
 
       this.c_viewer = viewer;
