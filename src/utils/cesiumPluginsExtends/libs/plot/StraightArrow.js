@@ -97,6 +97,8 @@ StraightArrow.prototype = {
           $this.positions.push(cartesian);
           $this.arrowEntity = $this.showArrowOnMap($this.positions);
           cb && cb($this.objId);
+            //修改id,用于下次绘制
+            $this.objId = Number(new Date().getTime() + "" + Number(Math.random() * 1000).toFixed(0)); //用于区分多个相同箭头时
         } else {
           $this.positions.pop();
           $this.positions.push(cartesian);
