@@ -102,6 +102,10 @@ export default {
           value: 'PincerArrow'
         },
         {
+          label: '钳击箭头-修改',
+          value: 'PincerArrowModify'
+        },
+        {
           label: '清除',
           value: 'clean'
         }
@@ -186,7 +190,9 @@ export default {
     },
     caldDistain (item) {
       this.activeId = item.value
-      this.drawAgain();
+      if (item.label !== '钳击箭头-修改' && item.label !== '钳击箭头') {
+        this.drawAgain();
+      }
       switch (item.label) {
         case '坐标点':
           this.draw.drawPointGraphics()
@@ -260,6 +266,11 @@ export default {
           this.PincerArrowObj.startDraw(entiteId => {
             this.plotEntitiesId.push(entiteId)
           })
+          break
+        case '钳击箭头-修改':
+          // this.StraightArrowObj.disable()
+          // this.AttackArrowObj.disable()
+          this.PincerArrowObj.startModify()
           break
         case '清除':
           this.draw._drawLayer.entities.removeAll()
