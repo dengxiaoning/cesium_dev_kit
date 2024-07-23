@@ -83,15 +83,16 @@ PincerArrow.prototype = {
         for (var i = 0; i < $this.pointArr.length; i++) {
           $this.pointArr[i].show = false;
         }
+
         if ($this.floatPoint) {
           //移除动态点
           $this.floatPoint.show = false;
           $this.viewer.entities.remove($this.floatPoint);
           $this.floatPoint = null;
         }
-        $this.positions = [];
-        $this.pointArr = [];
-        $this.arrowEntity = null;
+        // $this.positions = [];
+        // $this.pointArr = [];
+        // $this.arrowEntity = null;
       } else {
         $this.positions.push(cartesian);
         var point = $this.creatPoint(cartesian);
@@ -110,8 +111,7 @@ PincerArrow.prototype = {
       // var ray = viewer.camera.getPickRay(evt.endPosition);
       // if (!ray) return;
       // var cartesian = viewer.scene.globe.pick(ray, $this.viewer.scene);
-      var cartesian;
-      cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
+      var cartesian= getCatesian3FromPX(evt.endPosition, $this.viewer);
       if (!cartesian) return;
       $this.floatPoint.position.setValue(cartesian);
       if ($this.positions.length >= 2) {
@@ -143,12 +143,25 @@ PincerArrow.prototype = {
         point.show = false;
         point.wz = $this.positions.length;
         $this.pointArr.push(point);
-        $this.positions = [];
-        $this.pointArr = [];
-        $this.arrowEntity = null;
+        // $this.positions = [];
+        // $this.pointArr = [];
+        // $this.arrowEntity = null;
       }
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
   },
+    /**
+   * 通过数据 绘制钳击箭头
+   * @function
+   * @param {Array} data  - 绘制箭头的数据
+   * @example
+   * import { PincerArrow } from 'cesium_dev_kit'
+   * const pincerArrowObj = new PincerArrow(viewer, Cesium)
+   * pincerArrowObj.createByData([
+   * [110.16018735617934, 31.036076859828338],
+   * [ 104.10758419863926,30.64592470850288],
+   * [ 104.09351691196979, 30.652434826507452],
+   * [104.09816110606057,30.659821965447698]])
+   */
   createByData: function (data) {
     //根据传入的数据构建箭头
     this.positions = []; //控制点
@@ -174,12 +187,20 @@ PincerArrow.prototype = {
     this.arrowEntity = this.showArrowOnMap(this.positions);
     this.arrowEntity.objId = this.objId;
   },
+  /**
+   * 钳击箭头 - 编辑
+   * @function
+   * @example
+   * import { PincerArrow } from 'cesium_dev_kit'
+   * const pincerArrowObj = new PincerArrow(viewer, Cesium)
+   * pincerArrowObj.startModify()
+   */
   startModify: function () {
     //修改箭头
     this.state = 2;
     var $this = this;
-    for (var i = 0; i < $this.pointArr.length; i++) {
-      $this.pointArr[i].show = true;
+    for (let j = 0; j < $this.pointArr.length; j++) {
+      $this.pointArr[j].show = true;
     }
     if (!this.modifyHandler) this.modifyHandler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
     this.modifyHandler.setInputAction(function (evt) {
@@ -189,7 +210,7 @@ PincerArrow.prototype = {
         $this.clickStep++;
         if (!pick.id.objId) $this.selectPoint = pick.id;
       } else {
-        for (var i = 0; i < $this.pointArr.length; i++) {
+        for (let i = 0; i < $this.pointArr.length; i++) {
           $this.pointArr[i].show = false;
         }
         $this.state = -1;
@@ -201,8 +222,7 @@ PincerArrow.prototype = {
         // var ray = $this.viewer.camera.getPickRay(evt.position);
         // if (!ray) return;
         // var cartesian = $this.viewer.scene.globe.pick(ray, $this.viewer.scene);
-        var cartesian;
-        cartesian = getCatesian3FromPX(evt.position, $this.viewer);
+        var cartesian = getCatesian3FromPX(evt.position, $this.viewer);
         if (!cartesian) return;
         if ($this.selectPoint) {
           $this.selectPoint.position.setValue(cartesian);
@@ -215,8 +235,7 @@ PincerArrow.prototype = {
       // var ray = $this.viewer.camera.getPickRay(evt.endPosition);
       // if (!ray) return;
       // var cartesian = $this.viewer.scene.globe.pick(ray, $this.viewer.scene);
-      var cartesian;
-      cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
+      var cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
       if (!cartesian) return;
       if ($this.selectPoint) {
         $this.selectPoint.position.setValue(cartesian);
@@ -226,6 +245,15 @@ PincerArrow.prototype = {
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
   },
+ /**
+   *获取直角箭头中的关键点 经纬度 钳击箭头
+   * @function
+   * @example
+   * import { PincerArrow } from 'cesium_dev_kit'
+   * const pincerArrowObj = new PincerArrow(viewer, Cesium)
+   *  const res = pincerArrowObj.getLnglats()
+   * @returns {Array}
+   */
   getLnglats: function () {
     //获取直角箭头中的关键点 经纬度
     var arr = [];
@@ -235,6 +263,15 @@ PincerArrow.prototype = {
     }
     return arr;
   },
+   /**
+   * 获取直角箭头中的关键点 世界坐标
+   * @function
+   * @example
+   * import { PincerArrow } from 'cesium_dev_kit'
+   * const pincerArrowObj = new PincerArrow(viewer, Cesium)
+   *  const res = pincerArrowObj.getPositions()
+   * @returns {Array}
+   */
   getPositions: function () {
     //获取直角箭头中的关键点 世界坐标
     return this.positions;
@@ -244,8 +281,9 @@ PincerArrow.prototype = {
       position: cartesian,
       point: {
         pixelSize: 10,
-        color: Cesium.Color.YELLOW,
+        color: Cesium.Color.RED,
       },
+      show:true
     });
   },
   showArrowOnMap: function (positions) {
