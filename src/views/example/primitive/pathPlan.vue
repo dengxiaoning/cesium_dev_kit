@@ -98,7 +98,7 @@ export default {
             imageryProvider: {
               type: "WebMapTileServiceImageryProvider",
               option: {
-                url: "http://t0.tianditu.gov.cn/img_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973",
+                url: "https://t0.tianditu.gov.cn/img_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973",
                 layer: "img",
                 style: "default",
                 tileMatrixSetID: "w",
@@ -109,7 +109,7 @@ export default {
             MapImageryList: [{
               type: "WebMapTileServiceImageryProvider",
               option: {
-                url: "http://t0.tianditu.gov.cn/cia_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973",
+                url: "https://t0.tianditu.gov.cn/cia_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973",
                 layer: "cia",
                 style: "default",
                 tileMatrixSetID: "w",
