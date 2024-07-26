@@ -862,6 +862,59 @@ Base.prototype = {
         : []
     }
   },
+    /**
+   * wgs84坐标转地图坐标
+   * @param {object<WGS84Type>} position
+   * @param {number} position.lng  - 经度
+   * @param {number} position.lon  - 经度
+   * @param {number} position.lat  - 纬度
+   * @param {number} position.alt  - z轴
+   * @see {@link module:Base#transformCartesianToWGS84|transformCartesianToWGS84}
+   * @example
+   * import { Base } from 'cesium_dev_kit'
+   * const baseObj = new Base({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   * const wgs84 =  baseObj.base.transformCartesianToWGS84(Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338));
+   * const cartographic = baseObj.base.transformWGS84ToCartographic(wgs84)
+   * // or
+   * const cartographic2 = baseObj.base.transformWGS84ToCartographic({lng:110.16018735617934, lat:31.036076859828338, alt:0 });
+   * @returns {CartographicType} 地理坐标
+   *
+   */
+    transformWGS84ToCartographic: function (position) {
+      return position
+        ? Cesium.Cartographic.fromDegrees(
+            position.lng || position.lon,
+            position.lat,
+            position.alt
+          )
+        : Cesium.Cartographic.ZERO
+    },
+    /**
+   * 经纬度坐标数组转笛卡尔积世界坐标数组
+   * @param {Array[]} lnglats - 经纬度坐标数组
+   * @example
+   * import { Base } from 'cesium_dev_kit'
+   * const baseObj = new Base({
+    *     cesiumGlobal: Cesium,
+    *     containerId: 'cesiumContainer'
+    * })
+    * baseObj.base.lnglatArrayToCartesians([[117,40],[118.41]])
+   * @returns {Cartesian3[]} cartesians -  笛卡尔积世界坐标数组
+   */
+  lnglatArrayToCartesians: function (lnglats) {
+    if (!lnglats || lnglats.length < 1) return [];
+    let cartArr = [];
+  
+    for (let i = 0; i < lnglats.length; i++) {
+      let cartesian3Obj = Cesium.Cartesian3.fromDegrees(Number(lnglats[i][0]), Number(lnglats[i][1]), Number(lnglats[i][2] || 0));
+      cartArr.push(cartesian3Obj);
+    }
+  
+    return cartArr;
+  },
   /**
    * 相机绕点旋转
    * @function
@@ -929,36 +982,6 @@ Base.prototype = {
       }
       viewer.clock.onTick.addEventListener(Exection)
     }
-  },
-  /**
-   * wgs84坐标转地图坐标
-   * @param {object<WGS84Type>} position
-   * @param {number} position.lng  - 经度
-   * @param {number} position.lon  - 经度
-   * @param {number} position.lat  - 纬度
-   * @param {number} position.alt  - z轴
-   * @see {@link module:Base#transformCartesianToWGS84|transformCartesianToWGS84}
-   * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
-   *     containerId: 'cesiumContainer'
-   * })
-   * const wgs84 =  baseObj.base.transformCartesianToWGS84(Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338));
-   * const cartographic = baseObj.base.transformWGS84ToCartographic(wgs84)
-   * // or
-   * const cartographic2 = baseObj.base.transformWGS84ToCartographic({lng:110.16018735617934, lat:31.036076859828338, alt:0 });
-   * @returns {CartographicType} 地理坐标
-   *
-   */
-  transformWGS84ToCartographic: function (position) {
-    return position
-      ? Cesium.Cartographic.fromDegrees(
-          position.lng || position.lon,
-          position.lat,
-          position.alt
-        )
-      : Cesium.Cartographic.ZERO
   },
   /**
    * 拾取位置点

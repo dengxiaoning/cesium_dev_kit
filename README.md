@@ -25,6 +25,8 @@ Additionally it supports Post effects, visibility analysis tools for perspective
 |                                                      radar                                                      |                                                          roaming                                                          |                                                      drag                                                       |
 |    ![rayCast](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rayCast.gif)    | ![fireworksEffect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/fireworksEffect.gif) | ![aniSoldier](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/aniSoldier.gif) |
 |                                                     rayCast                                                     |                                                      fireworksEffect                                                      |                                                   aniSoldier                                                    |
+|   ![pathPlan](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |
+|                                                    pathPlan                                                     |
 
 [More>>](https://benpaodehenji.com/cesiumDevKit)
 

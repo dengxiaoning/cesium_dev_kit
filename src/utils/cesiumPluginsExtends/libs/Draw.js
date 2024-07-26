@@ -50,8 +50,8 @@ Draw.prototype = {
           clampToGround: true,
            scale: 1,
           pixelOffset: new Cesium.Cartesian2(0, -20),
-        }
-        callback=(res)=>{console.log(res)}
+        },
+        callback=(position,entityObj)=>{console.log(position,entityObj)}
    })
    */
   drawPointGraphics: function (options) {
@@ -77,7 +77,7 @@ Draw.prototype = {
       drawHandler = _handlers;
       // left
       _handlers.setInputAction(function (movement) {
-        var cartesian = $this._viewer.scene.camera.pickEllipsoid(movement.position, $this._viewer.scene.globe.ellipsoid);
+        var cartesian = $this.getCatesian3FromPX(movement.position);
         if (cartesian && cartesian.x) {
           position = cartesian;
 
@@ -86,6 +86,13 @@ Draw.prototype = {
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
       // right
       _handlers.setInputAction(function (movement) {
+        var cartesian = $this.getCatesian3FromPX(movement.position);
+        if (cartesian && cartesian.x) {
+          positions = []
+          position = cartesian;
+
+          positions.push(cartesian);
+        }
         _handlers.destroy();
         _handlers = null;
 

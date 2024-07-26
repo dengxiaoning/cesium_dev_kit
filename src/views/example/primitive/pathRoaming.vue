@@ -110,6 +110,7 @@ export default {
         }),
         callback: function (res, entitesObj) {
           _self.paths = res;
+          console.log('漫游==>', res);
           _self.entitesObj = entitesObj;
         }
       })

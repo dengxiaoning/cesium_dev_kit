@@ -180,7 +180,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "动态泛光线(随机颜色)",
-        "icon": "carbon:rule-test",
+        "icon": "tabler:arrows-random",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -280,6 +280,19 @@
         "auth": ["admin", "test"],
         "title": "第一人称漫游",
         "icon": "emojione-monotone:railway-track",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+ 
+      "name": "pathPlan",
+      "path":"pathPlan",
+      "component": "example/primitive/pathPlan",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "路线规划",
+        "icon": "lucide:route",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true

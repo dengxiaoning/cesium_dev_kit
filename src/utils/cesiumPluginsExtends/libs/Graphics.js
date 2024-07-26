@@ -96,6 +96,7 @@ Graphics.prototype = {
         positions: options.positions,
         material: options.material || Cesium.Color.YELLOW,
         width: options.width || 1,
+        arcType :Cesium.ArcType.GEODESIC,
         clampToGround: this._objHasOwnProperty(options, 'clampToGround', false)
       })
     }

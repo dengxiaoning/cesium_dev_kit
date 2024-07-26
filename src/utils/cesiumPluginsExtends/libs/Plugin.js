@@ -1,5 +1,17 @@
 let Cesium = null;
 let dfSt = undefined;
+var PI = 3.1415926535897932384626;
+var a$1 = 6378245.0;
+var ee = 0.00669342162296594323;
+/**
+ * @typedef {Object}  queryOptionsType - 路线查询参数类型
+ * @property {string} url  - 服务地址(可选)
+ * @property {string} key  - 查询服务的key(可选)
+ * @property {Array<number>} origin  - 起点坐标
+ * @property {Array<number>} destination - 终点坐标 [102.223,92.843]
+ * @property {Array<Arra<number>>} avoidpolygons - 避让区域(可选)
+ */
+
 /**
  * 外部插件模块
  * @class
@@ -12,6 +24,7 @@ function Plugin(viewer, cesiumGlobal, defaultStatic) {
     this._viewer = viewer;
     Cesium = cesiumGlobal;
     dfSt = defaultStatic;
+    this._queryRouteKey = '8dc49b1fa65a79d306ef12dae4229842';
     this._pluginLayer = new Cesium.CustomDataSource("pluginLayer");
 
     viewer && viewer.dataSources.add(this._pluginLayer);
@@ -19,7 +32,19 @@ function Plugin(viewer, cesiumGlobal, defaultStatic) {
     this._installPlugin();
   }
 }
-
+/**
+* @readonly
+* @enum {Object}
+*@memberof routeQueryType -路线查询类型
+*@property {Enum} DRIVE - 驾车
+*@property {Enum} WALK - 步行
+*@property {Enum} CYCLE - 骑行
+*/
+Plugin.routeQueryType = {
+  DRIVE: 'drive',
+  WALK: 'walk',
+  CYCLE: 'cycle'
+}
 Plugin.prototype = {
   // 安装插件
   _installPlugin: function () {
@@ -861,6 +886,298 @@ Plugin.prototype = {
       Cesium.Scene.Css3Renderer = Css3Renderer;
     }
   },
+  transformJD(lng, lat) {
+    var ret = 300.0 + lng + 2.0 * lat + 0.1 * lng * lng + 0.1 * lng * lat + 0.1 * Math.sqrt(Math.abs(lng));
+    ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
+    ret += (20.0 * Math.sin(lng * PI) + 40.0 * Math.sin(lng / 3.0 * PI)) * 2.0 / 3.0;
+    ret += (150.0 * Math.sin(lng / 12.0 * PI) + 300.0 * Math.sin(lng / 30.0 * PI)) * 2.0 / 3.0;
+    return ret;
+  },
+  transformWD(lng, lat) {
+    var ret = -100.0 + 2.0 * lng + 3.0 * lat + 0.2 * lat * lat + 0.1 * lng * lat + 0.2 * Math.sqrt(Math.abs(lng));
+    ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
+    ret += (20.0 * Math.sin(lat * PI) + 40.0 * Math.sin(lat / 3.0 * PI)) * 2.0 / 3.0;
+    ret += (160.0 * Math.sin(lat / 12.0 * PI) + 320 * Math.sin(lat * PI / 30.0)) * 2.0 / 3.0;
+    return ret;
+  },
+  gcj2wgs(arrdata) {
+    var lng = Number(arrdata[0]);
+    var lat = Number(arrdata[1]);
+    var dlat = this.transformWD(lng - 105.0, lat - 35.0);
+    var dlng = this.transformJD(lng - 105.0, lat - 35.0);
+    var radlat = lat / 180.0 * PI;
+    var magic = Math.sin(radlat);
+    magic = 1 - ee * magic * magic;
+    var sqrtmagic = Math.sqrt(magic);
+    dlat = dlat * 180.0 / (a$1 * (1 - ee) / (magic * sqrtmagic) * PI);
+    dlng = dlng * 180.0 / (a$1 / sqrtmagic * Math.cos(radlat) * PI);
+    var mglat = lat + dlat;
+    var mglng = lng + dlng;
+    var jd = lng * 2 - mglng;
+    var wd = lat * 2 - mglat;
+    jd = Number(jd.toFixed(6));
+    wd = Number(wd.toFixed(6));
+    return [jd, wd];
+  },
+   wgs2gcj (arrdata) {
+    var lng = Number(arrdata[0]);
+    var lat = Number(arrdata[1]);
+    var dlat = this.transformWD(lng - 105.0, lat - 35.0);
+    var dlng = this.transformJD(lng - 105.0, lat - 35.0);
+    var radlat = lat / 180.0 * PI;
+    var magic = Math.sin(radlat);
+    magic = 1 - ee * magic * magic;
+    var sqrtmagic = Math.sqrt(magic);
+    dlat = dlat * 180.0 / (a$1 * (1 - ee) / (magic * sqrtmagic) * PI);
+    dlng = dlng * 180.0 / (a$1 / sqrtmagic * Math.cos(radlat) * PI);
+    var mglat = lat + dlat;
+    var mglng = lng + dlng;
+    mglng = Number(mglng.toFixed(6));
+    mglat = Number(mglat.toFixed(6));
+    return [mglng, mglat];
+   },
+   transformData(start, end, route) {
+    var _this = this;
+    var paths = route.paths; // 所有路径
+    var allroute = [];
+  
+    var _loop = function _loop(i) {
+      var path = paths[i];
+      var lnglats = [];
+      var instructions = [];
+      var distance = path.distance;
+  
+      for (var j = 0; j < path.steps.length; j++) {
+        // 单个路径的坐标数组
+        var item = path.steps[j];
+        var instruction = path.steps[j].instruction;
+        var polyline = item.polyline;
+        polyline = polyline.split(";");
+        polyline.forEach(function (element) {
+          element = element.split(",");
+          element = _this.gcj2wgs(element);
+          lnglats.push([element[0], element[1]]);
+        });
+        instructions.push(instruction);
+      } // 加上起点和终点
+      lnglats.unshift(start);
+      lnglats.push(end);
+      allroute.push({
+        lnglats: lnglats,
+        instructions: instructions,
+        distance: distance
+      });
+    };
+  
+    for (var i = 0; i < paths.length; i++) {
+      _loop(i);
+    }
+  
+    return allroute;
+  },
+  /**
+   * 驾车路线查询
+   * @private  
+   * @param {queryOptionsType} options 
+   * @param {Function} successCB - 成功回调
+   * @param {Function} errorCB - 失败回调
+   */
+ _queryDrivingRoute (url,options, successCB, errorCB) {
+    options = options || {};
+  
+    if (!options.origin) {
+      alert("缺少起点坐标！");
+      return;
+    }
+  
+    if (!options.destination) {
+      alert("缺少终点坐标！");
+      return;
+   }
+   var queryKey = options.key || this._queryRouteKey;
+   delete options.key;
+    var origin = options.origin;
+    var gcj_origin = this.wgs2gcj(origin);
+    gcj_origin = gcj_origin[0] + "," + gcj_origin[1];
+    delete options.origin;
+    
+    var destination = options.destination;
+    var gcj_destination = this.wgs2gcj(destination);
+    gcj_destination = gcj_destination[0] + "," + gcj_destination[1];
+    delete options.destination;
+    var avoidpolygons = ''; // 避让区域
+  
+    if (options.avoidpolygons) {
+      for (var i = 0; i < options.avoidpolygons.length; i++) {
+        var avoidpolygon = options.avoidpolygons[i];
+        var firstLnglat = '';
+        var polygonstr = '';
+  
+        for (var j = 0; j < avoidpolygon.length; j++) {
+          var lnglat = avoidpolygon[j];
+          lnglat = this.wgs2gcj(lnglat);
+          polygonstr += lnglat[0] + ',' + lnglat[1] + ',';
+          if (j == 0) firstLnglat = lnglat[0] + ',' + lnglat[1];
+        }
+  
+        polygonstr = polygonstr + firstLnglat;
+  
+        if (i == options.avoidpolygons.length - 1) {
+          avoidpolygons += polygonstr;
+        } else {
+          avoidpolygons += polygonstr + '|';
+        }
+      }
+    }
+  
+    delete options.avoidpolygons;
+   
+    var params = {
+      key: queryKey,
+      origin: gcj_origin,
+      destination: gcj_destination,
+      strategy: 0,
+      avoidpolygons: avoidpolygons,
+      show_fields: "polyline"
+    };
+    params = Object.assign(params, options || {});
+    var that = this;
+   let reqParams=''
+      // 参数拼接
+   Object.keys(params).map(k => {
+     if (!reqParams) {
+      reqParams+=`?${k}=${params[k]}`
+     } else {
+      reqParams+=`&${k}=${params[k]}`
+     }
+      })
+   fetch(url+reqParams)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(res) {
+      if (res.status != '1' || res.infocode != '10000') {
+        console.log("查询失败！");
+        errorCB&& errorCB(res);
+        return;
+      }
+  
+      var allroute = that.transformData(origin, destination, res.route);
+      successCB&&successCB(allroute);
+    });
+  },
+   /**
+   * 驾车/步行/骑行路线查询
+   * @param { Enum} type  - 类型[drive:驾车，walk:步行，cycle:骑行] {@link module:Plugin#routeQueryType|routeQueryType}
+   * @param {queryOptionsType} options 
+   * @param {Function} successCB - 成功回调
+   * @param {Function} errorCB - 失败回调
+   * @example
+   *  import { initCesium } from 'cesium_dev_kit'
+   * const {plugin,material} = new initCesium({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   * 
+   * const queryParams = {
+   *    url: "https://restapi.amap.com/v5/direction/driving",
+   *    key: '8dc49b1fa65a79d306ef12dae4229842',
+   *     origin: [102.736485445,29.87345],
+    *    destination:[110.160187, 31.036076],
+    *  }
+   * plugin.queryPathPlan('drive', queryParams, restArr => {
+   *     // 拿到结果转换后调用绘制路线
+    *    this.createPath(restArr)
+    *  }, err => { console.error(err) })
+   */
+  queryPathPlan (type, options, successCB, errorCB) {
+    let queryUrl;
+    if (type === Plugin.routeQueryType.DRIVE) {
+      queryUrl = options.url || "https://restapi.amap.com/v5/direction/driving";
+      delete options.url;
+      this._queryDrivingRoute(queryUrl, options, successCB, errorCB);
+    } else if (type === Plugin.routeQueryType.WALK) {
+      queryUrl = options.url || "https://restapi.amap.com/v3/direction/walking";
+      delete options.url;
+      this._queryWalkCycleRoute(queryUrl, options, successCB, errorCB);
+    } else if (type === Plugin.routeQueryType.CYCLE) {
+      queryUrl = options.url || 'https://restapi.amap.com/v5/direction/bicycling';
+      delete options.url;
+      this._queryWalkCycleRoute(queryUrl, options, successCB, errorCB);
+    } else {
+      alert("查询参数type 错误（walk:步行，cycle:骑行）！");
+    }
+  },
+ _queryWalkCycleRoute(url, options, successCB, errorCB) {
+  options = options || {};
+
+  if (!options.origin) {
+    alert("缺少起点坐标！");
+    return;
+  }
+
+  if (!options.destination) {
+    alert("缺少终点坐标！");
+    return;
+  }
+   var queryKey = options.key || this._queryRouteKey;
+   delete options.key;
+  var origin = options.origin;
+  var gcj_origin = this.wgs2gcj(origin);
+  gcj_origin = origin[0] + "," + origin[1];
+  delete options.origin;
+ 
+  var destination = options.destination;
+  var gcj_destination = this.wgs2gcj(destination);
+  gcj_destination = destination[0] + "," + destination[1];
+  delete options.destination;
+  var params = {
+    key: queryKey,
+    origin: gcj_origin,
+    destination: gcj_destination,
+    show_fields: "polyline"
+  };
+  params = Object.assign(params, options || {});
+  var that = this;
+   let reqParams = '';
+   var allroute;
+   // 参数拼接
+    Object.keys(params).map(k => {
+    if (!reqParams) {
+      reqParams+=`?${k}=${params[k]}`
+    } else {
+      reqParams+=`&${k}=${params[k]}`
+    }
+      })
+    fetch(url+reqParams)
+    .then(function(response) {
+      return response.json();
+    })
+      .then(function (res) {
+      // 兼容v3与v4版本
+        if (res.hasOwnProperty('errcode')) {
+          if (res.errcode != 0 || res.errmsg != 'OK') {
+            console.log("查询失败！",res.errdetail);
+            errorCB&& errorCB(res);
+            return;
+          }
+           allroute = that.transformData(origin, destination, res.data);
+          successCB&& successCB(allroute);
+        } else if (res.hasOwnProperty('status')) {
+          if (res.status != '1' || res.infocode != '10000') {
+            console.log("查询失败！",res.info);
+            errorCB&& errorCB(res);
+            return;
+          }
+         allroute = that.transformData(origin, destination, res.route);
+          successCB&& successCB(allroute);
+        } else {
+          console.log("查询失败,未知错误！");
+          errorCB&& errorCB(res);
+          return;
+        }
+    });
+} 
 };
 
 export { Plugin };
