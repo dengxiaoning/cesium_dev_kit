@@ -419,10 +419,12 @@ Control.prototype = {
       });
   },
   /**
-   * 矩阵调整面板
+   * 模型，3ditiles等实体位置调整面板，
+   * 获取调整后的模型矩阵与平移矩阵
    * @param {object} param
    * @param {Primitive} param.primitives - 操作的目标图元
    * @param {string} param.elementId - gui对象绑定的dom id
+   * @param {function} param.cb - 回调函数，返回{modelTransformMatrix: [1,0,0,0,1],modelMatrix:[ -1.1639525282088383,-0.2919152481050832,0]}
    * @example
    * import { Control } from 'cesium_dev_kit'
    * const {control,viewer} = new Control({
@@ -661,8 +663,8 @@ Control.prototype = {
               primitive.readyPromise.then((data) => {
                 let modelTransformMatrix = data.root.transform;
                 param.cb({
-                  modelTransformMatrix,
-                  modelMatrix: primitives.modelMatrix,
+                  modelTransformMatrix: Cesium.Matrix4.toArray(modelTransformMatrix),
+                  modelMatrix: Cesium.Matrix4.toArray(primitives.modelMatrix),
                 });
               });
             },

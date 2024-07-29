@@ -40,6 +40,15 @@ export default {
     this.initMap()
   },
   methods: {
+    // 添加地形数据
+    async addWorldTerrainAsync (viewer) {
+      try {
+        const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+        viewer.terrainProvider = terrainProvider;
+      } catch (error) {
+        console.log(`Failed to add world imagery: ${error}`);
+      }
+    },
     initMap () {
       const tempData = [
         {
@@ -65,7 +74,7 @@ export default {
 
 
       this.c_viewer = viewer;
-
+      this.addWorldTerrainAsync(viewer);
       this.control = control;
       this.control.setDefSceneConfig()
       this.control.setBloomLightScene()
@@ -88,15 +97,20 @@ export default {
           ],
         },
       })
+
       this.c_viewer.flyTo(tileset);
+      // 调整后获取到模型矩阵（modelMatrix）和平移矩阵（modelTransformMatrix）
       this.control.showPrimitiveMatrixPanel({
         elementId: 'cust-gui-box', primitives: tileset, cb: resModelMatrix => {
-          console.log(resModelMatrix)
-          this.modelTransformMatrix = JSON.stringify(resModelMatrix.modelTransformMatrix);
+          this.modelTransformMatrix = resModelMatrix.modelTransformMatrix;
           this.modelMatrix = resModelMatrix.modelMatrix;
           this.dialogDirectiveVisible = true;
         }
       });
+      // 将获取到的modelMatrix 设置到3dtiles 上面，
+      const modelMatrixOrg = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 540, 0, 1]
+      //可以注释下面这行 掉看看效果
+      tileset.modelMatrix = Cesium.Matrix4.fromArray(modelMatrixOrg);
     }
   },
   beforeUnmount () {

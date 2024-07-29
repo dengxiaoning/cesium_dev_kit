@@ -152,6 +152,7 @@ Graphics.prototype = {
    * @param {string} options.l_font - 字体
    * @param {string} options.l_fillColor - 颜色
    * @param {string} options.l_style - 风格
+   * @param {number} options.l_outlineColor - 外边线颜色
    * @param {number} options.l_outlineWidth - 外边线宽度
    * @param {boolean} options.l_showBackground - 是否显示背景颜色
    * @param {object} options.l_backgroundColor - 背景颜色
@@ -185,6 +186,7 @@ Graphics.prototype = {
         font: options.l_font || '14px sans-serif',
         fillColor: options.l_fillColor || Cesium.Color.GOLD,
         style: options.l_style || Cesium.LabelStyle.FILL_AND_OUTLINE,
+        outlineColor: options.l_outlineColor || Cesium.Color.GOLD,
         outlineWidth: options.l_outlineWidth || 2,
         showBackground: options.l_showBackground || false,
         backgroundColor:

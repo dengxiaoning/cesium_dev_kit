@@ -1,6 +1,5 @@
-import {
-  xp
-} from './algorithm'
+import { xp} from './algorithm'
+import {TooltipUtil} from '../TooltipUtil'
 let Cesium = null;
 
 function BasePlot(viewer, cesiumGlobal) {
@@ -18,6 +17,8 @@ function BasePlot(viewer, cesiumGlobal) {
   this.clickStep = 0; //用于控制点的移动结束
   this.modifyHandler = null;
   this.xp = xp;
+  this.tooltip = new TooltipUtil(viewer, cesiumGlobal);
+  this.tooltip.initTool();
 }
 BasePlot.prototype.clear = function () { //清除绘制箭头
   this.state = 0;

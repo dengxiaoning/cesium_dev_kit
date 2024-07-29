@@ -1,4 +1,6 @@
+import { Base } from "./Base";
 import { Graphics } from "./Graphics";
+import {TooltipUtil} from './TooltipUtil'
 let dfSt = undefined;
 let Cesium = null;
 let drawHandler = null;
@@ -22,9 +24,14 @@ function Draw(viewer, cesiumGlobal, defaultStatic) {
     dfSt = defaultStatic;
     /** @access private */
     this._drawLayer = new Cesium.CustomDataSource("drawLayer");
+    // 继承base，避免公共方法无法使用
+    Graphics.prototype = Object.create(Object.assign({}, Graphics.prototype, Base.prototype));
+    Graphics.prototype.constructor = Graphics;
     /** @access private */
     this.$graphics = new Graphics(viewer, cesiumGlobal);
     viewer && viewer.dataSources.add(this._drawLayer);
+    this.tooltip = new TooltipUtil(viewer, cesiumGlobal);
+    this.tooltip.initTool();
   }
 }
 
@@ -78,6 +85,7 @@ Draw.prototype = {
       // left
       _handlers.setInputAction(function (movement) {
         var cartesian = $this.getCatesian3FromPX(movement.position);
+        $this.tooltip.showAtCartesian(cartesian,'右键单击结束!')
         if (cartesian && cartesian.x) {
           position = cartesian;
 
@@ -86,7 +94,7 @@ Draw.prototype = {
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
       // right
       _handlers.setInputAction(function (movement) {
-        var cartesian = $this.getCatesian3FromPX(movement.position);
+        var cartesian = $this.getCatesian3FromPX(movement.endPosition);
         if (cartesian && cartesian.x) {
           positions = []
           position = cartesian;
@@ -95,7 +103,7 @@ Draw.prototype = {
         }
         _handlers.destroy();
         _handlers = null;
-
+        $this.tooltip.setVisible(false);
         if (typeof options.callback === "function") {
           options.callback($this.transformCartesianArrayToWGS84Array(positions), poiObj);
         }
