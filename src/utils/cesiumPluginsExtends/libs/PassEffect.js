@@ -1,4 +1,5 @@
 let Cesium = null
+import { Base } from "./Base";
 import { Graphics } from './Graphics'
 /**
  * 后期效果模块

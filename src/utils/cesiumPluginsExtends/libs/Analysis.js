@@ -1,4 +1,5 @@
 import echarts from "echarts";
+import { Base } from "./Base";
 import { Math3d } from "./Math3d";
 import { Graphics } from "./Graphics";
 let Cesium = null;
