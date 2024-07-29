@@ -25,8 +25,7 @@ function Draw(viewer, cesiumGlobal, defaultStatic) {
     /** @access private */
     this._drawLayer = new Cesium.CustomDataSource("drawLayer");
     // 继承base，避免公共方法无法使用
-    Graphics.prototype = Object.create(Object.assign({}, Graphics.prototype, Base.prototype));
-    Graphics.prototype.constructor = Graphics;
+    Graphics.prototype = { ...Graphics.prototype, ...Base.prototype}
     /** @access private */
     this.$graphics = new Graphics(viewer, cesiumGlobal);
     viewer && viewer.dataSources.add(this._drawLayer);

@@ -21,10 +21,8 @@ function Analysis(viewer, cesiumGlobal, defaultStatic) {
     dfSt = defaultStatic;
     this._analysisLayer = new Cesium.CustomDataSource("analysisLayer");
     // 继承base，避免公共方法无法使用
-    Math3d.prototype = Object.create(Object.assign({}, Math3d.prototype, Base.prototype));
-    Math3d.prototype.constructor = Math3d;
-    Graphics.prototype = Object.create(Object.assign({}, Graphics.prototype, Base.prototype));
-    Graphics.prototype.constructor = Graphics;
+    Math3d.prototype = { ...Math3d.prototype, ...Base.prototype}
+    Graphics.prototype = { ...Graphics.prototype, ...Base.prototype}
     this.$math3d = new Math3d(viewer, cesiumGlobal);
     this.$graphics = new Graphics(viewer, cesiumGlobal);
     viewer && viewer.dataSources.add(this._analysisLayer);

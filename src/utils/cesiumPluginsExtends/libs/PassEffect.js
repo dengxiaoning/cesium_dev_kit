@@ -12,8 +12,7 @@ function PassEffect(viewer, cesiumGlobal) {
   if (viewer) {
     this._viewer = viewer
     // 继承base，避免公共方法无法使用
-    Graphics.prototype = Object.create(Object.assign({}, Graphics.prototype, Base.prototype));
-    Graphics.prototype.constructor = Graphics;
+    Graphics.prototype = { ...Graphics.prototype, ...Base.prototype}
     this.$graphics = new Graphics(viewer, cesiumGlobal)
     Cesium = cesiumGlobal
   }
