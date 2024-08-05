@@ -7,7 +7,7 @@ export function removePrimitive(entity, hash, primitives) {
     if (defined(data)) {
         var primitive = data.primitive;
         primitives.remove(primitive);
-        if (!primitive.isDestroyed()) {
+        if (primitive&&!primitive.isDestroyed()) {
             primitive.destroy();
         }
         delete hash[entity.id];

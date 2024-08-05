@@ -99,7 +99,7 @@ export default {
       this.fireParticle = fireParticle;
     },
     initThree (ThreeJs) {
-      const { scene, renderer } = ThreeJs.initThree({ center, threeHabit: false });
+      const { scene, renderer } = ThreeJs.initThree({ center, threeHabit: false, });
       this.initLight(scene)
 
       this.initMeshes(scene, () => {
