@@ -47,7 +47,7 @@
     "unplugin-vue-components": "^0.27.2",
     "vite": "^2.6.10",
     "sass": "^1.77.6",
-    "vite-plugin-cesium": "^1.2.9",
+    "vite-plugin-cesium": "^1.2.23",
     "vite-plugin-compression": "^0.2.5",
     "vite-plugin-html": "^2.0.7",
     "vite-plugin-mock": "^2.5.0",
