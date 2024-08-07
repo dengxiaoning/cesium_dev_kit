@@ -5119,10 +5119,10 @@ vary@^1:
   resolved "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
 
-vite-plugin-cesium@^1.2.9:
-  version "1.2.10"
-  resolved "https://registry.npmjs.org/vite-plugin-cesium/-/vite-plugin-cesium-1.2.10.tgz"
-  integrity sha512-6AS63smcST4G+yPaj9iGxPlWJ/DFR7MW2R61famOZpnECCx1WpBlU3pAcAxiVPWSfoJLXAnKgO2T16tbAIEjeQ==
+vite-plugin-cesium@^1.2.23:
+  version "1.2.23"
+  resolved "https://registry.yarnpkg.com/vite-plugin-cesium/-/vite-plugin-cesium-1.2.23.tgz#fa6ef37c045fe7863901b383a23e7f72e59e7539"
+  integrity sha512-x9A8ZCEoegceXg/E+LnxKr0XBsI9CR4cgYWQ2Dd3cUEYwKcTnHQ3kBfpol7BUcGtgQnQos/mtVrRmuVQBXFjHw==
   dependencies:
     fs-extra "^9.1.0"
     rollup-plugin-external-globals "^0.6.1"
