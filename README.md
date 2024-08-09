@@ -44,7 +44,28 @@ The initialization of 'initCesium' allows for the acquisition of all extension m
 
 ```javaScript
  import { initCesium } from 'cesium_dev_kit'
-  const {  viewer,  material, ... } = new initCesium({  cesiumGlobal: Cesium,containerId: 'cesiumContainer',...})
+ // custom viewer
+var myViewer = new Cesium.Viewer('cesiumContainer', {
+  animation: false, //Whether to display animation controls
+  homeButton: false, //Whether to display the home button
+  geocoder: false, //Whether to display the place name lookup control If set to true, it cannot be queried
+  baseLayerPicker: false, //Whether to display layer selection controls
+  timeline: false, //Whether to display the timeline control
+  fullscreenButton: true, //Whether to display the button in full screen
+  scene3DOnly: false, //If set to true, all geometry is drawn in 3D mode to save GPU resources
+  infoBox: false, //Whether to display the information displayed after clicking the element
+  sceneModePicker: false, //Whether to display projection mode controls 3D / 2D
+  navigationInstructionsInitiallyVisible: false,
+  navigationHelpButton: false, //Whether to display the help control
+  selectionIndicator: false //Whether to display indicator components
+});
+
+ //Allowing an existing Viewer to be passed in, cesium_dev_kit will use the passed Viewer directly without re-instantiating it with "new Cesium.Viewer()".
+ const {  viewer,  material, ... } = new initCesium({
+  cesiumGlobal: Cesium,
+  containerId: 'cesiumContainer',
+  viewer: myViewer,
+  ...})
 ```
 
 ### 2、Import on demand
@@ -53,9 +74,27 @@ The import of a single extension class can be tailored to meet specific function
 
 ```javaScript
 import {Graphics} from 'cesium_dev_kit'
+ // custom viewer
+var myViewer = new Cesium.Viewer('cesiumContainer', {
+  animation: false, //Whether to display animation controls
+  homeButton: false, //Whether to display the home button
+  geocoder: false, //Whether to display the place name lookup control If set to true, it cannot be queried
+  baseLayerPicker: false, //Whether to display layer selection controls
+  timeline: false, //Whether to display the timeline control
+  fullscreenButton: true, //Whether to display the button in full screen
+  scene3DOnly: false, //If set to true, all geometry is drawn in 3D mode to save GPU resources
+  infoBox: false, //Whether to display the information displayed after clicking the element
+  sceneModePicker: false, //Whether to display projection mode controls 3D / 2D
+  navigationInstructionsInitiallyVisible: false,
+  navigationHelpButton: false, //Whether to display the help control
+  selectionIndicator: false //Whether to display indicator components
+});
+
+ //Allowing an existing Viewer to be passed in, cesium_dev_kit will use the passed Viewer directly without re-instantiating it with "new Cesium.Viewer()".
 const {viewer,graphics} = new Graphics({
       cesiumGlobal: Cesium,
-      containerId: 'cesiumContainer'
+    //containerId: 'cesiumContainer',
+      viewer: myViewer
   })
   graphics.getPointGraphics({
       color:Cesium.Color.GREEN,

@@ -13,19 +13,34 @@ export default {
   },
   methods: {
     initMap () {
+      // 自定义viewer
+      var myViewer = new Cesium.Viewer('cesiumContainer', {
+        animation: false, //是否显示动画控件
+        homeButton: false, //是否显示home键
+        geocoder: false, //是否显示地名查找控件        如果设置为true，则无法查询
+        baseLayerPicker: false, //是否显示图层选择控件
+        timeline: false, //是否显示时间线控件
+        fullscreenButton: true, //是否全屏显示
+        scene3DOnly: false, //如果设置为true，则所有几何图形以3D模式绘制以节约GPU资源
+        infoBox: false, //是否显示点击要素之后显示的信息
+        sceneModePicker: false, //是否显示投影方式控件  三维/二维
+        navigationInstructionsInitiallyVisible: false,
+        navigationHelpButton: false, //是否显示帮助信息控件
+        selectionIndicator: false //是否显示指示器组件
+      });
       const { viewer,
         material,
         graphics
       } = new initCesium(
         {
           cesiumGlobal: Cesium,
-          containerId: 'cesiumContainer',
           viewerConfig: {
             infoBox: false,
             shouldAnimate: true,
           },
           extraConfig: {},
-          MapImageryList: []
+          MapImageryList: [],
+          viewer: myViewer
         })
 
 

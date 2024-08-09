@@ -15,7 +15,8 @@ class Controller {
     viewerConfig,
     extraConfig,
     MapImageryList,
-    imageryProvider
+    imageryProvider,
+    viewer
   }) {
     const mapID = containerId
     let vConfig = {
@@ -46,30 +47,32 @@ class Controller {
     // configure the access_token
     Cesium.Ion.defaultAccessToken = extraConfig['AccessToken'] || defaultToken
     vConfig = Object.assign(vConfig, viewerConfig) // 后台接口配置 融合替换 默认配置
-    const viewer = new Cesium.Viewer(mapID, { ...vConfig, ...providerConf })
+    // 如果外部传入viewer 将不再重新实例化viewer
+
+    const _viewer = viewer || new Cesium.Viewer(mapID, { ...vConfig, ...providerConf });
     if (!extraConfig['logo']) {
-      const cC = viewer.cesiumWidget.creditContainer
+      const cC = _viewer.cesiumWidget.creditContainer
       cC.style.display = 'none' // 影藏logo
     }
 
     // 是否开启深度参数
     if (extraConfig['depthTest']) {
       // 设置开启深度检测
-      viewer.scene.globe.depthTestAgainstTerrain = true
+      _viewer.scene.globe.depthTestAgainstTerrain = true
     }
 
     // 增加配置图层
     if (MapImageryList && MapImageryList.length > 0) {
       for (let i = 0; i < MapImageryList.length; i++) {
         this.addImageryProvider(
-          viewer,
+          _viewer,
           MapImageryList[i].type,
           MapImageryList[i].option || MapImageryList[i].classConfig
         )
       }
     }
-    this.viewer = viewer
-    return viewer
+    this.viewer = _viewer
+    return _viewer
   }
   addImageryProvider(viewer, type, option) {
     viewer.imageryLayers.addImageryProvider(

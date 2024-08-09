@@ -130,9 +130,13 @@ export default {
       }
     },
     initMap () {
+      // 自定义viewer
+      var viewer = new Cesium.Viewer('cesiumContainer');
+      // 导入 cesium_dev_kit Draw 模块 
       const drawObj = new Draw({
         cesiumGlobal: Cesium,
-        containerId: 'cesiumContainer',
+        viewer: viewer,
+        // containerId: 'cesiumContainer',
         viewerConfig: {
           infoBox: false,
           shouldAnimate: true,

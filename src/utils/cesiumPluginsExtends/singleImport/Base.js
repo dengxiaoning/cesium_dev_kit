@@ -14,12 +14,13 @@ export default class BaseExtends {
     defaultStatic,
     baseExtendsCom = [],
     extendsCom,
-    extendsComName
+    extendsComName,
+    viewer
   }) {
     if (!cesiumGlobal) {
       throw 'Missing cesiumGlobal parameter, please check the calling function initCesium.'
     }
-    if (!containerId) {
+    if (!containerId&&!viewer) {
       throw 'Missing containerId parameter, please check the calling function initCesium.'
     }
     const initCom = new Controller(cesiumGlobal)
@@ -27,7 +28,8 @@ export default class BaseExtends {
       containerId,
       viewerConfig,
       extraConfig,
-      MapImageryList
+      MapImageryList,
+      viewer
     })
     // three 容器绑定优化
     const threeConf = threeGlobal
