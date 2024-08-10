@@ -93,7 +93,7 @@ const prototypeExtends = function (viewer, cesiumGlobal, defaultStatic) {
    * @param {Array<providerConfOptions>}  params.MapImageryList - 配置imageLayer加载对象,默认[]
    * @param {Cesium.Viewer.ConstructorOptions} params.viewerConfig - 同cesium viewer 配置参数,默认{}
    * @param {string}  params.defaultStatic - 静态数据配置
-   * @param {Viewer} viewer - 外部传入已经实例化的cesium对象viewer(注：如该参数不为空，插件将直接使用viewer，而不会重新执行 new Cesium.Viewer操作)
+   * @param {Viewer} params.viewer - 外部传入已经实例化的cesium对象viewer(注：如该参数不为空，插件将直接使用viewer，而不会重新执行 new Cesium.Viewer操作)
   * @example
   * import { initCesium } from 'cesium_dev_kit'
    * const {
