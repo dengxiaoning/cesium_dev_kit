@@ -50,7 +50,7 @@ AttackArrow.prototype = {
    /**
    * 开始绘制攻击箭头
    * @function
-  * @param {object} options 
+  * @param {object|function} options - 兼容老版本(可以是回调函数callback(),也可以为参数对象{fillMaterial:object(),callback:function()})
   * @param {function} options.callback - 回调函数
   * @param {Material} options.fillMaterial - 填充材质
   * @example

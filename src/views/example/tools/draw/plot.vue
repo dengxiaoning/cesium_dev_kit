@@ -90,8 +90,12 @@ export default {
           value: 'fivePoint'
         },
         {
-          label: '直角箭头',
+          label: '直线箭头',
           value: 'StraightArrow'
+        },
+        {
+          label: '直线箭头-修改',
+          value: 'StraightArrowModify'
         },
         {
           label: '攻击箭头',
@@ -131,12 +135,12 @@ export default {
     },
     initMap () {
       // 自定义viewer
-      var viewer = new Cesium.Viewer('cesiumContainer');
+      // var viewer = new Cesium.Viewer('cesiumContainer');
       // 导入 cesium_dev_kit Draw 模块 
       const drawObj = new Draw({
         cesiumGlobal: Cesium,
-        viewer: viewer,
-        // containerId: 'cesiumContainer',
+        // viewer: viewer,
+        containerId: 'cesiumContainer',
         viewerConfig: {
           infoBox: false,
           shouldAnimate: true,
@@ -204,7 +208,8 @@ export default {
     caldDistain (item) {
       this.activeId = item.value
       if (item.label !== '钳击箭头-修改' && item.label !== '钳击箭头' &&
-        item.label !== '攻击箭头-修改' && item.label !== '攻击箭头') {
+        item.label !== '攻击箭头-修改' && item.label !== '攻击箭头' &&
+        item.label !== '直线箭头-修改' && item.label !== '直线箭头') {
         this.drawAgain();
       }
       switch (item.label) {
@@ -260,12 +265,15 @@ export default {
             rInner: 50
           })
           break;
-        case '直角箭头':
+        case '直线箭头':
           this.AttackArrowObj.disable()
           this.PincerArrowObj.disable()
           this.StraightArrowObj.startDraw(entiteId => {
             this.plotEntitiesId.push(entiteId)
           })
+          break
+        case '直线箭头-修改':
+          this.StraightArrowObj.startModify();
           break
         case '攻击箭头':
           this.PincerArrowObj.disable()

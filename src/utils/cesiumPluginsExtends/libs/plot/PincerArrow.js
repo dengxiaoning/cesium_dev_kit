@@ -51,7 +51,7 @@ PincerArrow.prototype = {
    /**
    * 开始绘制钳击箭头
    * @function
-  * @param {object} options 
+  * @param {object|function} options - 兼容老版本(可以是回调函数callback(),也可以为参数对象{fillMaterial:object(),callback:function()})
   * @param {function} options.callback - 回调函数
   * @param {Material} options.fillMaterial - 填充材质
   * @example
@@ -72,7 +72,9 @@ PincerArrow.prototype = {
     this.objId = Number(new Date().getTime() + "" + Number(Math.random() * 1000).toFixed(0));
     var $this = this;
     this.state = 1;
-
+    if (!this.handler) {
+      this.handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
+    }
     this.handler.setInputAction(function (evt) {
       //单机开始绘制
       var cartesian= getCatesian3FromPX(evt.position, $this.viewer);
@@ -149,6 +151,8 @@ PincerArrow.prototype = {
         point.show = false;
         point.wz = $this.positions.length;
         $this.pointArr.push(point);
+        $this.handler.destroy();
+        $this.handler = null;
         $this.tooltip.setVisible(false);
         // $this.positions = [];
         // $this.pointArr = [];

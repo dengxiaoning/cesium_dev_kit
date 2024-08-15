@@ -50,20 +50,32 @@ StraightArrow.prototype = {
   /**
    * 开始绘制直线箭头
    * @function
-   * @param {function} cb  - 回调函数
+  * @param {object|function} options - 兼容老版本(可以是回调函数callback(),也可以为参数对象{fillMaterial:object(),callback:function()})
+  * @param {function} options.callback - 回调函数
+  * @param {Material} options.fillMaterial - 填充材质
    * @example
    * import { StraightArrow } from 'cesium_dev_kit'
-   * const straightArrowObj = new AttackArrow(viewer, Cesium)
-   * straightArrowObj.startDraw((res)=>{console.log(res))
+  * const straightArrow = new StraightArrow(viewer, Cesium)
+  * straightArrow.startDraw({fillMaterial: Cesium.Color.DARKKHAKI.withAlpha(0.8),callback:(res)=>{console.log(res)})
    */
-  startDraw: function (cb) {
+  startDraw: function (options) {
+    let cb=null;
+    if (typeof (options) === "object") {
+      this.fillMaterial = options.fillMaterial;
+      cb = options.callback;
+    } else {
+      cb = options;
+    }
+    // 创建唯一id
     this.objId = Number(new Date().getTime() + "" + Number(Math.random() * 1000).toFixed(0)); //用于区分多个相同箭头时
     var $this = this;
     this.state = 1;
+    if (!this.handler) {
+      this.handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
+    }
     this.handler.setInputAction(function (evt) {
       //单机开始绘制
-      var cartesian;
-      cartesian = getCatesian3FromPX(evt.position, $this.viewer);
+      var cartesian = getCatesian3FromPX(evt.position, $this.viewer);
       if (!cartesian) return;
 
       if ($this.positions.length == 0) {
@@ -72,50 +84,56 @@ StraightArrow.prototype = {
         $this.floatPoint = $this.creatPoint(cartesian);
         $this.floatPoint.type = "floatPoint";
         $this.positions.push(cartesian);
+        $this.firstPoint.position.setValue(cartesian);
+        $this.firstPoint.show = true;
       }
-      $this.firstPoint.position.setValue(cartesian);
-      $this.firstPoint.show = true;
+      
+  
+    
       if ($this.positions && $this.positions.length == 3) {
         $this.firstPoint.show = false;
-        $this.positions = [];
-        $this.pointArr = [];
+        $this.floatPoint.show = false;
+        // 结束绘制
+        $this.handler.destroy();
+        $this.handler = null;
+        $this.tooltip.setVisible(false);
+        // $this.positions = [];
+        // $this.pointArr = [];
         $this.arrowEntity = null;
       }
-      // 增加最后一个光标点
-      $this.positions.push(cartesian.clone());
+        // 增加最后一个光标点
+        $this.positions.push(cartesian.clone());
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     this.handler.setInputAction(function (evt) {
       //移动时绘制面
       if ($this.positions.length < 1) return;
-      var cartesian;
-      cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
+      var cartesian  = getCatesian3FromPX(evt.endPosition, $this.viewer);
       if (!cartesian) return;
+      $this.tooltip.showAtCartesian(cartesian,'左键单击结束!')
       // 修改浮动光标位置
       $this.floatPoint.position.setValue(cartesian);
       if ($this.positions.length >= 2) {
         if (!Cesium.defined($this.arrowEntity)) {
+           // 删除最后一个点，确保最后一个点是最后的位置
+          // $this.positions.pop();
           $this.positions.push(cartesian);
           $this.arrowEntity = $this.showArrowOnMap($this.positions);
           cb && cb($this.objId);
-            //修改id,用于下次绘制
-            $this.objId = Number(new Date().getTime() + "" + Number(Math.random() * 1000).toFixed(0)); //用于区分多个相同箭头时
         } else {
           $this.positions.pop();
           $this.positions.push(cartesian);
         }
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-    this.handler.setInputAction(function (evt) {
-      var cartesian;
-      cartesian = getCatesian3FromPX(evt.position, $this.viewer);
-      if (!cartesian) return;
-      $this.firstPoint.show = false;
-      $this.positions = [];
-      $this.pointArr = [];
-      $this.arrowEntity = null;
-      $this.positions.push(cartesian.clone());
-    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
   },
+    /**
+   * 直线箭头 - 编辑
+   * @function
+   * @example
+   * import { StraightArrow } from 'cesium_dev_kit'
+   * const straightArrow = new StraightArrow(viewer, Cesium)
+   * straightArrow.startModify()
+   */
   startModify: function () {
     //修改箭头
     this.state = 2;
@@ -137,25 +155,25 @@ StraightArrow.prototype = {
         $this.firstPoint.show = false;
         $this.floatPoint.show = false;
         $this.state = -1;
+        $this.tooltip.setVisible(false);
       }
 
       //选中点后 第二次点击 则重新定位该点
       if ($this.clickStep == 2) {
         $this.clickStep = 0;
-        var cartesian;
-        cartesian = getCatesian3FromPX(evt.position, $this.viewer);
+        var cartesian = getCatesian3FromPX(evt.position, $this.viewer);
         if (!cartesian) return;
-        if ($this.selectPoint) {
+        if ($this.selectPoint&&$this.selectPoint.position) {
           $this.selectPoint.position.setValue(cartesian);
           $this.selectPoint = null;
         }
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     this.modifyHandler.setInputAction(function (evt) {
-      if ($this.selectPoint) {
-        var cartesian;
-        cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
-        if (!cartesian) return;
+      var cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
+      if (!cartesian) return;
+      $this.tooltip.showAtCartesian(cartesian,'左键选取圆点开始修改，单击停止修改，点击图形之外结束!')
+      if ($this.selectPoint&&$this.selectPoint.position) {
         $this.selectPoint.position.setValue(cartesian);
         if ($this.selectPoint.type == "firstPoint") {
           $this.positions[1] = cartesian;
@@ -168,6 +186,19 @@ StraightArrow.prototype = {
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
   },
+  /**
+   * 通过数据 绘制直线箭头
+   * @function
+   * @param {Array} data  - 绘制箭头的数据
+   * @example
+   * import { StraightArrow } from 'cesium_dev_kit'
+   * const straightArrow = new StraightArrow(viewer, Cesium)
+   * straightArrow.createByData([
+   * [110.16018735617934, 31.036076859828338],
+   * [ 104.10758419863926,30.64592470850288],
+   * [ 104.09351691196979, 30.652434826507452],
+   * [104.09816110606057,30.659821965447698]])
+   */
   createByData: function (data) {
     //通过传入的经纬度数组 构建箭头
     this.state = -1;
@@ -187,6 +218,15 @@ StraightArrow.prototype = {
     this.floatPoint.show = false;
     this.arrowEntity.objId = this.objId;
   },
+   /**
+   *获取直线箭头中的关键点 经纬度 
+   * @function
+   * @example
+   * import { StraightArrow } from 'cesium_dev_kit'
+   * const straightArrow = new StraightArrow(viewer, Cesium)
+   *  const res = straightArrow.getLnglats()
+   * @returns {Array}
+   */
   getLnglats: function () {
     var arr = [];
     for (var i = 0; i < this.positions.length; i++) {
@@ -195,6 +235,15 @@ StraightArrow.prototype = {
     }
     return arr;
   },
+  /**
+   * 获取直线箭头中的关键点 世界坐标
+   * @function
+   * @example
+   * import { StraightArrow } from 'cesium_dev_kit'
+   * const straightArrow = new StraightArrow(viewer, Cesium)
+   *  const res = straightArrow.getPositions()
+   * @returns {Array}
+   */
   getPositions: function () {
     //获取直角箭头中的关键点
     return this.positions;
@@ -204,7 +253,7 @@ StraightArrow.prototype = {
       position: cartesian,
       point: {
         pixelSize: 10,
-        color: Cesium.Color.YELLOW,
+        color: Cesium.Color.RED,
       },
     });
     point.attr = "editPoint";
