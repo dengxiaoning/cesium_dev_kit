@@ -1796,6 +1796,17 @@ Graphics.prototype = {
 
     return positionArr
   },
+   /**
+   * 判断对象是否有某个属性
+   * @private
+   * @param {object} obj 对象
+   * @param {string} field  属性字段
+   * @param {string} defVal  默认返回
+   * @returns {string}
+   */
+   _objHasOwnProperty(obj, field, defVal) {
+    return obj.hasOwnProperty(field) ? obj[field] : defVal
+  },
   /**
    * 根据第一个点 偏移距离 角度 求取第二个点的坐标
    * @private

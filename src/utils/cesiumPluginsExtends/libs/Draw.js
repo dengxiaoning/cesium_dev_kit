@@ -177,6 +177,7 @@ Draw.prototype = {
 
       _handlers.setInputAction(function (movement) {
         var cartesian = $this.getCatesian3FromPX(movement.endPosition);
+        $this.tooltip.showAtCartesian(cartesian,'右键单击结束!')
         if (positions.length >= 2) {
           if (cartesian && cartesian.x) {
             positions.pop();
@@ -186,6 +187,7 @@ Draw.prototype = {
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
       // right
       _handlers.setInputAction(function (movement) {
+        $this.tooltip.setVisible(false);
         _handlers.destroy();
         _handlers = null;
 
@@ -265,11 +267,18 @@ Draw.prototype = {
    */
   drawPolygonGraphics: function (options) {
     options = options || {};
-    options.style = options.style || {
+    const orgStyle={
       width: 3,
       material: Cesium.Color.BLUE.withAlpha(0.8),
       clampToGround: true,
     };
+    if (options.style) {
+      options.style=Object.assign({},orgStyle,options.style)
+    } else {
+      options.style=orgStyle
+    }
+
+
     if (this._viewer && options) {
       var positions = [],
         polygon = new Cesium.PolygonHierarchy(),
@@ -292,7 +301,7 @@ Draw.prototype = {
           }, false),
 
           material: Cesium.Color.WHITE.withAlpha(0.1),
-          clampToGround: options.clampToGround || false,
+          clampToGround:$this._objHasOwnProperty(options, 'clampToGround', false),
         };
         _polygonEntity.clampToS3M = true;
 
@@ -338,6 +347,7 @@ Draw.prototype = {
       // mouse
       _handler.setInputAction(function (movement) {
         var cartesian = $this.getCatesian3FromPX(movement.endPosition);
+        $this.tooltip.showAtCartesian(cartesian,'右键单击结束!')
         if (positions.length >= 2) {
           if (cartesian && cartesian.x) {
             positions.pop();
@@ -351,7 +361,7 @@ Draw.prototype = {
       // right
       _handler.setInputAction(function () {
         _handler.destroy();
-
+        $this.tooltip.setVisible(false);
         positions.push(positions[0]);
 
         if (options.height) {
@@ -526,7 +536,7 @@ Draw.prototype = {
       // left
       _handler.setInputAction(function (movement) {
         var cartesian = $this.getCatesian3FromPX(movement.position);
-
+        $this.tooltip.showAtCartesian(cartesian,'左键单击结束!')
         if (cartesian && cartesian.x) {
           if (!_center) {
             _center = cartesian;
@@ -534,7 +544,7 @@ Draw.prototype = {
             drawGraphics();
           } else {
             computeRadius(_center, cartesian);
-
+            $this.tooltip.setVisible(false)
             _handler.destroy();
 
             if (typeof options.callback === "function") {
@@ -550,7 +560,7 @@ Draw.prototype = {
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
       // mouse
       _handler.setInputAction(function (movement) {
-        var cartesian =$this._viewer.scene.camera.pickEllipsoid(movement.endPosition, $this._viewer.scene.globe.ellipsoid);
+        var cartesian = $this._viewer.scene.camera.pickEllipsoid(movement.endPosition, $this._viewer.scene.globe.ellipsoid);
         if (_center && cartesian && cartesian.x) {
           computeRadius(_center, cartesian);
         }
@@ -744,7 +754,13 @@ Draw.prototype = {
    * 画围栏
    * @function
    * @param {object} options
-   * @param {boolean} options.style - 图形风格配置
+   * @param {object} options.style - 图形风格配置
+   * @param {Material} options.style.material - 图形材质
+   * @param {boolean} options.style.outline - 是否显示外边线
+   * @param {Color} options.style.outlineColor - 外边线颜色
+   * @param {boolean} options.style.clampToGround - 图形是否贴地
+   * @param {Array} options.style.maximumHeights - 设定每个点的最大高度
+   * @param {Array} options.style.minimumHeights - 设定每个点的最小高度
    * @param {function} options.callback - 回调函数
    * @see {@link module:Base#transformWGS84ArrayToCartesianArray|transformWGS84ArrayToCartesianArray}
    * @example
@@ -755,27 +771,59 @@ Draw.prototype = {
       })
    * drawObj.draw.drawWallGraphics({
         style:{
-             material: Cesium.Color.BLUE.withAlpha(0.5),
+            material: Cesium.Color.BLUE.withAlpha(0.5),
             outline: true,
             outlineColor: Cesium.Color.WHITE,
+            maximumHeights: [600,600],
+            minimumHeights: [0,0],
+            clampToGround:true
         }
         callback=(res)=>{console.log(res)}
    })
    */
   drawWallGraphics: function (options) {
     options = options || {};
-    options.style = options.style || {
+    const orgStyle={
       material: Cesium.Color.BLUE.withAlpha(0.5),
       outline: true,
       outlineColor: Cesium.Color.WHITE,
-    };
+    }
+    if (options.style) {
+      options.style=Object.assign({},orgStyle,options.style)
+    } else {
+      options.style=orgStyle
+    }
+
     if (this._viewer && options) {
       var $this = this;
       this.drawPolygonGraphics({
+        clampToGround: $this._objHasOwnProperty (options.style,'clampToGround',true),
+        style: {
+          material:  options.style.material
+        },
         callback: function (polygon, polygonObj) {
+          const drawPos = $this.transformWGS84ArrayToCartesianArray(polygon)
+          const maximumHeights = [];
+          const minimumHeights=[]
+          if (options.style.maximumHeights) {
+            let numPos = 0
+            while (numPos < drawPos.length) {
+              maximumHeights.push(options.style.maximumHeights[numPos%2])
+              numPos++;
+            }
+            options.style.maximumHeights = maximumHeights 
+          }
+          if (options.style.minimumHeights) {
+            let numPos2 = 0;
+            while (numPos2 < drawPos.length) {
+              minimumHeights.push(options.style.minimumHeights[numPos2%2])
+              numPos2++;
+            }
+            options.style.minimumHeights = minimumHeights
+          }
           var wallEntity = $this._drawLayer.entities.add({
             wall: {
-              positions: $this.transformWGS84ArrayToCartesianArray(polygon),
+              positions: drawPos,
               ...options.style,
             },
           });
@@ -835,7 +883,17 @@ Draw.prototype = {
       });
     }
   },
-
+ /**
+   * 判断对象是否有某个属性
+   * @private
+   * @param {object} obj 对象
+   * @param {string} field  属性字段
+   * @param {string} defVal  默认返回
+   * @returns {string}
+   */
+ _objHasOwnProperty(obj, field, defVal) {
+  return obj.hasOwnProperty(field) ? obj[field] : defVal
+},
   /**
    * 绘制圆柱体 or 圆锥
    * @function

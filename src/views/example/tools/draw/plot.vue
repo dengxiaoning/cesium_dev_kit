@@ -230,16 +230,22 @@ export default {
           break
 
         case '多边立方体':
-          this.draw.drawPolygonGraphics({ height: 1200 })
+          this.draw.drawPolygonGraphics({ height: 600 })
           break
         case '四方体':
-          this.draw.drawRectangleGraphics({ height: 1200 })
+          this.draw.drawRectangleGraphics({ height: 600 })
           break
         case '圆柱体':
-          this.draw.drawCircleGraphics({ height: 1200 })
+          this.draw.drawCircleGraphics({ height: 600 })
           break
         case '围栏':
-          this.draw.drawWallGraphics()
+          this.draw.drawWallGraphics({
+            style: {
+              material: Cesium.Color.GOLD.withAlpha(0.5),
+              maximumHeights: [600, 600],
+              minimumHeights: [0, 0],
+            }
+          })
           break
         case '球体':
           this.draw.drawEllipsoidGraphics()
@@ -251,7 +257,7 @@ export default {
           this.draw.drawCylinderGraphics()
           break
         case '走廊':
-          this.draw.drawCorridorGraphics({ width: 100, height: 1200, extrudedHeight: 20 })
+          this.draw.drawCorridorGraphics({ width: 50, height: 600, extrudedHeight: 20 })
           break
         case '管道':
           this.draw.drawPolylineVolumeGraphics()
