@@ -713,7 +713,7 @@ Base.prototype = {
    * @param {object} options
    * @param {Cartesian3} options.position - 目标位置数组
    * @param {number} options.distance - 距离
-   * @param {number} options.duration - 过度时长
+   * @param {number} options.duration - 过度时长(秒为单位)
    * @param {object} options.orientation - 方位，包含[朝向|倾斜角|翻滚角]
    * @param {object} options.easingFunction - 飞行中在duration时间内插值方式
    * @param {Function} options.callback - 操作完成后的回调
