@@ -48,7 +48,6 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue", 
-    "mock/**/*.ts",
     "types/**/*.d.ts",
     "types/**/*.ts", 
     "src/permission.ts", 

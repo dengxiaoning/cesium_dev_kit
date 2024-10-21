@@ -3,7 +3,6 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import path from 'path'
 import { configSvgIconsPlugin } from './src/plugins/configSvgIconsPlugin'
-import { configMockPlugin } from './src/plugins/configMockPlugin'
 import { configStyleImportPlugin } from './src/plugins/configStyleImportPlugin'
 import { configHtmlPlugin } from './src/plugins/configHtmlPlugin'
 import { configCompressPlugin } from './src/plugins/configCompressPlugin'
@@ -29,9 +28,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 
   const {
     VITE_PORT,
-    VITE_USE_MOCK,
     VITE_BUILD_COMPRESS,
-    VITE_GLOB_API_URL,
     VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE
   } = viteEnv
 
@@ -44,7 +41,6 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       configSvgIconsPlugin(isBuild), // svg 处理
       configStyleImportPlugin(isBuild), // element-plus 按需引入
       configHtmlPlugin(viteEnv, isBuild), //  EJS 标签处理
-      configMockPlugin(VITE_USE_MOCK, isBuild), // mock 模拟请求
       configCompressPlugin(
         VITE_BUILD_COMPRESS,
         VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE
@@ -92,6 +88,6 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
     },
     build: {
       outDir: 'cesiumDevKit'
-    }
+    },
   })
 }
