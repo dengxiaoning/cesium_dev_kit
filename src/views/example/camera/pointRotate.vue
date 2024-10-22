@@ -8,11 +8,11 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 import { defaultStatic } from '../defaultStaticConf'
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    async initMap () {
       const { viewer,
         base
       } = new initCesium(
@@ -33,12 +33,8 @@ export default {
 
       this.c_viewer = viewer;
       this.base = base;
-
-      let tileset = this.c_viewer.scene.primitives.add(
-        new Cesium.Cesium3DTileset({
-          url: 'static/data/3DTiles/building/tileset.json',
-        }),
-      )
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
       tileset.style = new Cesium.Cesium3DTileStyle({
         color: {
           conditions: [
@@ -64,7 +60,7 @@ export default {
       })
     },
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.base = null;
   }
