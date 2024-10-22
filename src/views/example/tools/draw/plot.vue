@@ -147,7 +147,7 @@ export default {
         },
         extraConfig: {
           depthTest: true,
-          AccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
+          // AccessToken: 'your token'
         },
         MapImageryList: [
           {
@@ -170,40 +170,34 @@ export default {
       this.AttackArrowObj = drawObj.attackArrowObj
       this.PincerArrowObj = drawObj.pincerArrowObj
     },
-    load3dTiles (viewer) {
-      var _self = this
+    async load3dTiles (viewer) {
       viewer.scene.sun.show = false
       viewer.scene.moon.show = false
       viewer.scene.skyAtmosphere.show = false
 
-      var tilesets = viewer.scene.primitives.add(
-        new Cesium.Cesium3DTileset({
-          url: 'static/data/3DTiles/building/tileset.json'
-        })
-      )
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
 
-      tilesets.readyPromise.then(function (tileset) {
-        tileset.style = new Cesium.Cesium3DTileStyle({
-          color: {
-            conditions: [
-              ['${height} >= 300', 'rgba(0, 149, 251, 0.3)'],
-              ['${height} >= 200', 'rgb(0, 149, 251, 0.3)'],
-              ['${height} >= 100', 'rgb(0, 149, 251, 0.3)'],
-              ['${height} >= 50', 'rgb(0, 149, 251, 0.3)'],
-              ['${height} >= 25', 'rgb(0, 149, 251, 0.3)'],
-              ['${height} >= 10', 'rgb(0, 149, 251, 0.3)'],
-              ['${height} >= 5', 'rgb(0, 149, 251, 0.3)'],
-              ['true', 'rgb(0, 149, 251, 0.3)']
-            ]
-          }
-        })
-
-        // 将获取到的modelMatrix 设置到3dtiles 上面，
-        const modelMatrixOrg = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 540, 0, 1]
-        //可以注释下面这行 掉看看效果
-        tileset.modelMatrix = Cesium.Matrix4.fromArray(modelMatrixOrg);
-        viewer.flyTo(tileset)
+      tileset.style = new Cesium.Cesium3DTileStyle({
+        color: {
+          conditions: [
+            ['${height} >= 300', 'rgba(0, 149, 251, 0.3)'],
+            ['${height} >= 200', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 100', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 50', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 25', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 10', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 5', 'rgb(0, 149, 251, 0.3)'],
+            ['true', 'rgb(0, 149, 251, 0.3)']
+          ]
+        }
       })
+
+      // 将获取到的modelMatrix 设置到3dtiles 上面，
+      const modelMatrixOrg = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 540, 0, 1]
+      //可以注释下面这行，再看看效果
+      tileset.modelMatrix = Cesium.Matrix4.fromArray(modelMatrixOrg);
+      viewer.flyTo(tileset)
     },
     caldDistain (item) {
       this.activeId = item.value
