@@ -57,45 +57,21 @@ export default {
     this.initMap()
   },
   methods: {
-    initMap () {
+    async initMap () {
       const tempData = [
         {
-          id: 3,
-          name: '高德地图02',
           type: 'UrlTemplateImageryProvider',
-          classConfig: {
-            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
-          },
-          interfaceConfig: {},
-          offset: '0,0',
-          invertswitch: 0,
-          filterRGB: '#ffffff',
-          showswitch: 1,
-          weigh: 13,
-          createtime: 1624346908,
-          updatetime: 1647395260,
-        }, {
-          id: 14,
-          name: '高德地图01',
+          option: {
+            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+          }
+        },
+        {
           type: 'UrlTemplateImageryProvider',
-          classConfig: {
-            url: 'http://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
-          },
-          interfaceConfig: {
-            saturation: 0,
-            brightness: 0.6,
-            contrast: 1.8,
-            hue: 1,
-            gamma: 0.3,
-          },
-          offset: '0,0',
-          invertswitch: 1,
-          filterRGB: '#4e70a6',
-          showswitch: 1,
-          weigh: 0,
-          createtime: 1624326728,
-          updatetime: 1646979297,
-        },]
+          option: {
+            url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
+          }
+        }
+      ]
       const { viewer,
         base
       } = new initCesium(
@@ -116,11 +92,8 @@ export default {
       this.c_viewer = viewer;
       this.base = base;
 
-      let tileset = this.c_viewer.scene.primitives.add(
-        new Cesium.Cesium3DTileset({
-          url: 'static/data/3DTiles/building/tileset.json',
-        }),
-      )
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
       tileset.style = new Cesium.Cesium3DTileStyle({
         color: {
           conditions: [
