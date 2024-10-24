@@ -13,9 +13,9 @@
     },
     "children": [
       {
-      "name": "graphicsOne",
-      "path": "graphicsOne",
-      "component": "example/graphics/graphicsOne",
+      "name": "floatingCone",
+      "path": "floatingCone",
+      "component": "example/graphics/floatingCone",
       "meta": {
         "auth": ["admin", "test"],
         "title": "旋转漂浮圆浮动锥体",
@@ -100,9 +100,9 @@
         "isKeepAlive": true
       }
     },{
-      "name": "graphicsEight",
-      "path": "graphicsEight",
-      "component": "example/graphics/graphicsEight",
+      "name": "rotatingCone",
+      "path": "rotatingCone",
+      "component": "example/graphics/rotatingCone",
       "meta": {
         "auth": ["admin", "test"],
         "title": "旋转锥体",

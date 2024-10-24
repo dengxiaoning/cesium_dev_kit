@@ -12,55 +12,50 @@ export default {
     this.initMap()
   },
   methods: {
-    initMap () {
+    async initMap () {
       const { viewer,
         material,
         graphics
-      } = new initCesium(
-        {
-          cesiumGlobal: Cesium,
-          containerId: 'cesiumContainer',
-          viewerConfig: {
-            infoBox: false,
-            shouldAnimate: true,
-          },
-          extraConfig: {
-            depthTest: true
-          },
-          MapImageryList: []
-        })
+      } = new initCesium({
+        cesiumGlobal: Cesium,
+        containerId: 'cesiumContainer',
+        viewerConfig: {
+          infoBox: false,
+          shouldAnimate: true,
+        },
+        extraConfig: {
+          depthTest: true
+        },
+        MapImageryList: []
+      })
 
 
       this.c_viewer = viewer;
 
       this.material = material;
       this.graphics = graphics;
-      console.log(this.material.myname)
-      this.$nextTick(() => {
-        this.material.setDefSceneConfig()
-        this.material.setBloomLightScene()
-        let tileset = this.c_viewer.scene.primitives.add(
-          new Cesium.Cesium3DTileset({
-            url: 'static/data/3DTiles/building/tileset.json',
-          }),
-        )
-        tileset.style = new Cesium.Cesium3DTileStyle({
-          color: {
-            conditions: [
-              ['${height} >= 300', 'rgba(0, 149, 251, 0.3)'],
-              ['${height} >= 200', 'rgb(0, 149, 251, 0.3)'],
-              ['${height} >= 100', 'rgb(0, 149, 251, 0.3)'],
-              ['${height} >= 50', 'rgb(0, 149, 251, 0.3)'],
-              ['${height} >= 25', 'rgb(0, 149, 251, 0.3)'],
-              ['${height} >= 10', 'rgb(0, 149, 251, 0.3)'],
-              ['${height} >= 5', 'rgb(0, 149, 251, 0.3)'],
-              ['true', 'rgb(0, 149, 251, 0.3)'],
-            ],
-          },
-        })
-        this.createModel()
-        this.flyto()
+
+      this.material.setDefSceneConfig()
+      this.material.setBloomLightScene()
+
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
+      tileset.style = new Cesium.Cesium3DTileStyle({
+        color: {
+          conditions: [
+            ['${height} >= 300', 'rgba(0, 149, 251, 0.3)'],
+            ['${height} >= 200', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 100', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 50', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 25', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 10', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 5', 'rgb(0, 149, 251, 0.3)'],
+            ['true', 'rgb(0, 149, 251, 0.3)'],
+          ],
+        },
       })
+      this.createModel()
+      this.flyto()
     },
     flyto () {
       this.material.flyTo({
