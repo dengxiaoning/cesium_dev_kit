@@ -18,7 +18,7 @@
       "component": "example/graphics/floatingCone",
       "meta": {
         "auth": ["admin", "test"],
-        "title": "旋转漂浮圆浮动锥体",
+        "title": "浮动锥体glb",
         "icon": "game-icons:floating-tentacles",
         "isAffix": false,
         "isHide": false,
@@ -26,9 +26,9 @@
       }
     },
     {
-      "name": "graphicsTwo",
-      "path": "graphicsTwo",
-      "component": "example/graphics/graphicsTwo",
+      "name": "flickerCircle",
+      "path": "flickerCircle",
+      "component": "example/graphics/flickerCircle",
       "meta": {
         "auth": ["admin", "test"],
         "title": "闪烁的圆",

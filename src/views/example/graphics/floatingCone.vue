@@ -12,7 +12,7 @@ export default {
     this.initMap()
   },
   methods: {
-    async initMap () {
+    initMap () {
       const { viewer,
         material,
         graphics
@@ -29,31 +29,12 @@ export default {
         MapImageryList: []
       })
 
-
       this.c_viewer = viewer;
-
       this.material = material;
       this.graphics = graphics;
 
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
-
-      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
-      let tileset = this.c_viewer.scene.primitives.add(tiles)
-      tileset.style = new Cesium.Cesium3DTileStyle({
-        color: {
-          conditions: [
-            ['${height} >= 300', 'rgba(0, 149, 251, 0.3)'],
-            ['${height} >= 200', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 100', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 50', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 25', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 10', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 5', 'rgb(0, 149, 251, 0.3)'],
-            ['true', 'rgb(0, 149, 251, 0.3)'],
-          ],
-        },
-      })
       this.createModel()
       this.flyto()
     },
