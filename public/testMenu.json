@@ -39,9 +39,9 @@
       }
     },
     {
-      "name": "graphicsThree",
-      "path": "graphicsThree",
-      "component": "example/graphics/graphicsThree",
+      "name": "rotatingDisk",
+      "path": "rotatingDisk",
+      "component": "example/graphics/rotatingDisk",
       "meta": {
         "auth": ["admin", "test"],
         "title": "旋转的圆盘",
