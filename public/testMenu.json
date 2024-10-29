@@ -52,9 +52,9 @@
       }
     },
     {
-      "name": "graphicsFour",
-      "path": "graphicsFour",
-      "component": "example/graphics/graphicsFour",
+      "name": "rotatingPanel",
+      "path": "rotatingPanel",
+      "component": "example/graphics/rotatingPanel",
       "meta": {
         "auth": ["admin", "test"],
         "title": "旋转的平面",
