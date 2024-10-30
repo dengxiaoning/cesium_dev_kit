@@ -64,9 +64,9 @@
         "isKeepAlive": true
       }
     },{
-      "name": "graphicsFive",
-      "path": "graphicsFive",
-      "component": "example/graphics/graphicsFive",
+      "name": "dynamicGradientWall",
+      "path": "dynamicGradientWall",
+      "component": "example/graphics/dynamicGradientWall",
       "meta": {
         "auth": ["admin", "test"],
         "title": "动态渐变墙",
