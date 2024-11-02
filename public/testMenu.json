@@ -76,9 +76,9 @@
         "isKeepAlive": true
       }
     },{
-      "name": "graphicsSix",
-      "path": "graphicsSix",
-      "component": "example/graphics/graphicsSix",
+      "name": "videoPlacement",
+      "path": "videoPlacement",
+      "component": "example/graphics/videoPlacement",
       "meta": {
         "auth": ["admin", "test"],
         "title": "视频投放",

@@ -195,7 +195,7 @@ I am grateful to the generous individuals who awarded me these little stars, tha
 [npm-url]: https://www.npmjs.com/package/cesium_dev_kit
 [build-size]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit/1.0.70?logo=travis
 [build-size-url]: https://img.shields.io/bundlephobia/minzip/cesium_dev_kit
-[npm-download]: https://img.shields.io/npm/dt/cesium_dev_kit?logo=npm
+[npm-download]: https://img.shields.io/npm/dy/cesium_dev_kit?logo=npm
 [npmtrends-url]: https://www.npmtrends.com/cesium_dev_kit
 [license-uri]: https://img.shields.io/npm/l/cesium_dev_kit.svg
 [license-link]: https://npm.im/cesium_dev_kit
