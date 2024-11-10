@@ -112,9 +112,9 @@
         "isKeepAlive": true
       }
     },{
-      "name": "graphicsNine",
-      "path": "graphicsNine",
-      "component": "example/graphics/graphicsNine",
+      "name": "billboard",
+      "path": "billboard",
+      "component": "example/graphics/billboard",
       "meta": {
         "auth": ["admin", "test"],
         "title": "广告牌",
