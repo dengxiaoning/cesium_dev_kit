@@ -310,6 +310,19 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+ 
+      "name": "custPrimitive",
+      "path":"custPrimitive",
+      "component": "example/primitive/custPrimitive/index",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "自定义图元",
+        "icon": "emojione-monotone:railway-track",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {

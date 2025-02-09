@@ -1,7 +1,6 @@
 <template>
   <div class="inner-page">
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
