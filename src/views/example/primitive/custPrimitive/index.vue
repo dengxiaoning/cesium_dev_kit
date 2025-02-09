@@ -12,7 +12,8 @@ export default {
   methods: {
     async initMap () {
       const { viewer,
-        primitive
+        primitive,
+        base
       } = new initCesium(
         {
           cesiumGlobal: Cesium,
@@ -46,7 +47,6 @@ export default {
           ],
         },
       })
-      viewer.flyTo(tileset)
       let custPrim = this.primitiveObj.customPrimivive({
         center: [104.0737048186066, 30.634227553819127],
         height1: 0,
@@ -55,6 +55,20 @@ export default {
         img: 'static/data/images/Textures/beautiful.jpg'
       })
       this.c_viewer.scene.primitives.add(custPrim)
+
+      base.flyTo({
+        position: {
+          x: -1335718.3738141463,
+          y: 5327996.272508891,
+          z: 3230971.826570713,
+        },
+        orientation: {
+          heading: 6.153234780255776,
+          pitch: -0.2083363211445124,
+          roll: 0.0000016515446423781555
+        },
+        duration: 3
+      })
     },
   },
   beforeUnmount () {
