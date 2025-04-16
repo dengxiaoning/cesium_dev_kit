@@ -1,6 +1,5 @@
 <template>
-  <div id="cesiumContainer"
-       class="map3d-contaner"></div>
+  <div id="cesiumContainer" class="map3d-contaner"></div>
 </template>
 <script>
 import * as Cesium from 'cesium'
@@ -10,7 +9,7 @@ export default {
     this.initMap()
   },
   methods: {
-    initMap () {
+    async initMap () {
       const _self = this;
       const {
         viewer,
@@ -31,33 +30,29 @@ export default {
 
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
-      var tilesets = this.c_viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-        url: 'static/data/3DTiles/building/tileset.json'
-      }));
 
-      tilesets.readyPromise.then(function (tileset) {
-
-        tileset.style = new Cesium.Cesium3DTileStyle({
-          color: {
-            conditions: [
-              ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
-              ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
-              ["true", "rgb(0, 149, 251, 0.3)"]
-            ]
-          }
-        });
-        _self.c_viewer.flyTo(tileset);
-        _self.graphics.createFadeCylinderGraphics({
-          position: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988),
-          length: 700,
-          bottomRadius: 500
-        })
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
+      tileset.style = new Cesium.Cesium3DTileStyle({
+        color: {
+          conditions: [
+            ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+            ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+            ["true", "rgb(0, 149, 251, 0.3)"]
+          ]
+        }
       });
+      _self.c_viewer.flyTo(tileset);
+      _self.graphics.createFadeCylinderGraphics({
+        position: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988),
+        length: 700,
+        bottomRadius: 500
+      })
     }
   },
   beforeUnmount () {
