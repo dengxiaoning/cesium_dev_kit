@@ -7,7 +7,7 @@ function Shaders() {}
 Shaders.prototype = {
   // 流动线
   _getFlowLineShader: function () {
-    return "uniform vec4 color;\n\
+    return 'uniform vec4 color;\n\
               uniform float duration;\n\
               \n\
               czm_material czm_getMaterial(czm_materialInput materialInput){\n\
@@ -25,12 +25,12 @@ Shaders.prototype = {
                   material.emission = fragColor.rgb;\n\
                   return material;\n\
               }\n\
-              ";
+              '
   },
   // 动态线
   _getDynamicLineShader: function (options) {
     if (options && options.get) {
-      return "czm_material czm_getMaterial(czm_materialInput materialInput)\n\
+      return 'czm_material czm_getMaterial(czm_materialInput materialInput)\n\
               {\n\
                   czm_material material = czm_getDefaultMaterial(materialInput);\n\
                   vec2 st = materialInput.st;\n\
@@ -45,13 +45,13 @@ Shaders.prototype = {
                   \n\
                   return material;\n\
               }\n\
-              ";
+              '
     }
   },
   // 动态泛光线
   _getDynamicLightLineShader: function (options) {
     if (options && options.get) {
-      return "czm_material czm_getMaterial(czm_materialInput materialInput)\n\
+      return 'czm_material czm_getMaterial(czm_materialInput materialInput)\n\
               {\n\
                   czm_material material = czm_getDefaultMaterial(materialInput);\n\
                   vec2 st = materialInput.st;\n\
@@ -67,7 +67,7 @@ Shaders.prototype = {
                   \n\
                   return material;\n\
               }\n\
-              ";
+              '
       // material.diffuse = max(color.rgb * material.alpha * 3.0, color.rgb);\n\
       // material.alpha = texture2D(image, vec2(1.0 - fract(time - st.s), st.t)).a * color.a;\n\
     }
@@ -76,44 +76,50 @@ Shaders.prototype = {
   _getDirectionWallShader: function (options) {
     if (options && options.get) {
       var materail =
-        "czm_material czm_getMaterial(czm_materialInput materialInput)\n\
+        'czm_material czm_getMaterial(czm_materialInput materialInput)\n\
                   {\n\
                   czm_material material = czm_getDefaultMaterial(materialInput);\n\
                   vec2 st = materialInput.st;\n\
-                  \n ";
-      if (options.freely == "vertical") {
+                  \n '
+      if (options.freely == 'vertical') {
         //（由下到上）
         materail +=
-          "vec4 colorImage = texture(image, vec2(fract(float(" +
+          'vec4 colorImage = texture(image, vec2(fract(float(' +
           options.count +
-          ")*st.t " +
+          ')*st.t ' +
           options.direction +
-          " time), fract(st.s)));\n ";
-      } else {
+          ' time), fract(st.s)));\n '
+      } else if (options.freely == 'cross') {
         //（direction顺[-]/逆[+]时针）
         materail +=
-          "vec4 colorImage = texture(image, vec2(fract(float(" +
+          'vec4 colorImage = texture(image, vec2(fract(float(' +
           options.count +
-          ")*st.s " +
+          ')*st.s ' +
           options.direction +
-          " time), fract(st.t)));\n ";
+          ' time), fract(st.t)));\n '
+      } else {
+        materail +=
+          'vec4 colorImage = texture(image, vec2(fract(float(' +
+          options.count +
+          ')*st.s ' +
+          '), fract(st.t)));\n '
       }
       //泛光
       materail +=
-        "vec4 fragColor;\n\
+        'vec4 fragColor;\n\
                   fragColor.rgb = (colorImage.rgb+color.rgb) / 1.0;\n\
-                  fragColor = czm_gammaCorrect(fragColor);\n ";
+                  fragColor = czm_gammaCorrect(fragColor);\n '
 
       materail +=
-        " material.diffuse = colorImage.rgb;\n\
+        ' material.diffuse = colorImage.rgb;\n\
                   material.alpha = colorImage.a;\n\
                   material.emission = fragColor.rgb;\n\
                   \n\
                   return material;\n\
                   }\n\
-                  ";
+                  '
 
-      return materail;
+      return materail
     }
   },
   _getCircleFadeShader: function (options) {
@@ -132,13 +138,13 @@ Shaders.prototype = {
                           material.alpha = color.a  * dis / per / 2.0;\n                    
                       }\n                    
                       return material;\n                
-                  }`;
+                  }`
     }
   },
   // 波动圆
   _getDynamicCircleShader: function (options) {
     if (options && options.get) {
-      return "uniform vec4 color;\n\
+      return 'uniform vec4 color;\n\
               uniform float duration;\n\
               uniform float count;\n\
               uniform float gradient;\n\
@@ -176,14 +182,14 @@ Shaders.prototype = {
                   }\n\
                   return material;\n\
               }\n\
-              ";
+              '
     }
   },
   // 雷达扫描
   _getRadarScanShader: function (options) {
     if (options && options.get) {
       return (
-        "uniform sampler2D colorTexture;\n\
+        'uniform sampler2D colorTexture;\n\
               uniform sampler2D depthTexture;\n\
               in vec2 v_textureCoordinates;\n\
               uniform vec4 u_scanCenterEC;\n\
@@ -241,28 +247,28 @@ Shaders.prototype = {
                   if(isPointOnLineRight(u_scanCenterEC.xyz, u_scanLineNormalEC.xyz, prjOnPlane.xyz)){\n\
                       float dis1= length(prjOnPlane.xyz - lineEndPt);\n\
                       f = abs(twou_radius -dis1) / twou_radius;\n\
-                      f = pow(f, float(" +
+                      f = pow(f, float(' +
         options.width +
-        "));\n\
+        '));\n\
                   }\n\
-                  if(float(" +
+                  if(float(' +
         options.border +
-        ") > 0.0){\n\
+        ') > 0.0){\n\
                     out_FragColor = mix(out_FragColor, u_scanColor, f + f0);\n\
                   } else {\n\
                     out_FragColor = mix(out_FragColor, u_scanColor, f);\n\
                   }\n\
                   }\n\
               }\n\
-              "
-      );
+              '
+      )
     }
   },
   // 圆形扫描
   _getCircleScanShader: function (options) {
     if (options && options.get) {
       return (
-        "uniform sampler2D colorTexture;\n\
+        'uniform sampler2D colorTexture;\n\
               uniform sampler2D depthTexture;\n\
               in vec2 v_textureCoordinates;\n\
               uniform vec4 u_scanCenterEC;\n\
@@ -299,16 +305,16 @@ Shaders.prototype = {
                   float dis = length(prjOnPlane.xyz - u_scanCenterEC.xyz);\n\
                   if(dis < u_radius){\n\
                     float f = 1.0 - abs(u_radius - dis) / u_radius;\n\
-                    f = pow(f, float(" +
+                    f = pow(f, float(' +
         options.border +
-        "));\n\
+        '));\n\
                  out_FragColor = mix(out_FragColor, u_scanColor, f);\n\
                   }\n\
                 }\n\
-                "
-      );
+                '
+      )
     }
-  },
-};
+  }
+}
 
-export { Shaders };
+export { Shaders }

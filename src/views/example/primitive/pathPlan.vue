@@ -1,7 +1,6 @@
 <template>
   <div class="path-content">
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
     <div class="plane-box">
       <div class="title">
         <h3>路线规划:</h3>
@@ -11,38 +10,23 @@
         <p>1、左键点击获取位置信息</p>
         <p>2、右键点击结束选点</p>
       </div>
-      <el-input v-model="startPos"
-                style="max-width: 300px"
-                placeholder="Please select point">
+      <el-input v-model="startPos" style="max-width: 300px" placeholder="Please select point">
         <template #append><el-button @click="drawStartPoint">起点</el-button></template>
       </el-input>
-      <el-input v-model="destinationPos"
-                style="max-width: 300px;margin-top:5px;"
-                placeholder="Please select point">
+      <el-input v-model="destinationPos" style="max-width: 300px;margin-top:5px;" placeholder="Please select point">
         <template #append><el-button @click="drawDestinationPoint">终点</el-button></template>
       </el-input>
       <div style="margin-top:5px;">
-        <el-button plain
-                   @click="computeDriverPath">驾车路线</el-button>
-        <el-button plain
-                   @click="computeWalkPath">步行路线</el-button>
-        <el-button plain
-                   @click="computeCyclePath">骑行路线</el-button>
-        <el-button plain
-                   @click="resetOpera">重置</el-button>
+        <el-button plain @click="computeDriverPath">驾车路线</el-button>
+        <el-button plain @click="computeWalkPath">步行路线</el-button>
+        <el-button plain @click="computeCyclePath">骑行路线</el-button>
+        <el-button plain @click="resetOpera">重置</el-button>
       </div>
       <div class="table-context">
-        <el-table :data="pathPlanList"
-                  :border="true"
-                  style="width: 100%"
-                  max-height="300">
-          <el-table-column property="id"
-                           align="center"
-                           label="序号"
-                           width="60">
+        <el-table :data="pathPlanList" :border="true" style="width: 100%" max-height="300">
+          <el-table-column property="id" align="center" label="序号" width="60">
           </el-table-column>
-          <el-table-column property="content"
-                           label="路线详情">
+          <el-table-column property="content" label="路线详情">
             <template #scope="scope">
               <div class="pathPlan-detail">
                 <span>{{ scope.row.content }}</span>
@@ -58,7 +42,7 @@
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 let startMarkerObj, destinationMarkerObj;
-
+import { directionDrawObj } from "./lineSegment";
 let routes = [];
 let colors = [
   Cesium.Color.fromCssColorString('#01C37C'),
@@ -223,29 +207,68 @@ export default {
       }, err => { console.error(err) })
     },
     /**
+     * 计算间隔点位
+     */
+    computeArrowPositions (positions) {
+      console.log(positions);
+      var arrowPositions = [];
+      for (var i = 0; i < positions.length - 1; i += 2) {
+        var start = positions[i];
+        var end = positions[i + 1];
+        console.log(start, end);
+        var direction = Cesium.Cartesian3.subtract(end, start, new Cesium.Cartesian3());
+        console.log('direction=33==>'.direction);
+        Cesium.Cartesian3.normalize(direction, direction);
+        console.log('direction===>'.direction);
+        var offset = Cesium.Cartesian3.multiplyByScalar(direction, 10.0, new Cesium.Cartesian3()); // 10 meters for example
+        arrowPositions.push(Cesium.Cartesian3.add(end, offset, new Cesium.Cartesian3())); // Arrow position at the end of segment
+      }
+      return arrowPositions;
+    },
+    drawArrowLine (pons, imgs) {
+      var arrowPositions = this.computeArrowPositions(pons); // Adjust based on actual polyline positions access method
+      arrowPositions.forEach(function (position) {
+        this.c_viewer.entities.add({
+          position: position,
+          billboard: {
+            image: imgs, // Replace with your arrow image path
+            width: 24, // Adjust size as needed
+            height: 24 // Adjust size as needed
+          }
+        });
+      })
+    },
+    /**
      * 创建路线
      */
     createPath (restArr) {
+      const dataSource = new Cesium.CustomDataSource('myData009028399');
+
+
+
       for (let index = 0; index < restArr.length; index++) {
         const item = restArr[index];
         const positions = this.graphics.lnglatArrayToCartesians(item.lnglats);
+        // this.drawArrowLine(positions, 'static/data/images/Textures/arrow-small.png')
         const length = item.distance
-        const countArrow = length / 350
-        let route = this.graphics.createLineGraphics({
-          positions: positions,
-          oid: index,
-          name: `方案${index + 1}`,
-          width: 8,
-          material: this.material.getCustomMaterialWall({
-            image: 'static/data/images/Textures/ArrowTransparent.png',
-            freely: 'cross',
-            direction: '-',  // 顺时针
-            count: countArrow,
-            color: colors[index],
-            duration: 5000,
-          }),
-          clampToGround: true,
-        })
+        const countArrow = length / 150
+        let route;
+        // let route = this.graphics.createLineGraphics({
+        //   positions: positions,
+        //   oid: index,
+        //   name: `方案${index + 1}`,
+        //   width: 8,
+        //   // material: Cesium.Color.YELLOW,
+        //   material: this.material.getCustomMaterialWall({
+        //     image: 'static/data/images/Textures/arrow-small.png',
+        //     freely: '',
+        //     direction: '-',  // 顺时针
+        //     count: countArrow,
+        //     color: colors[index],
+        //     duration: 5000,
+        //   }),
+        //   clampToGround: true,
+        // })
 
         let route1 = this.graphics.createLineGraphics({
           positions: positions,
@@ -256,10 +279,16 @@ export default {
           clampToGround: true,
         })
         if (route1) {
+          const entArr = directionDrawObj.createDirection(route1, "middle", true, Cesium, this.c_viewer, true, 60);
+          entArr.forEach(e => {
+            dataSource.entities.add(e)
+          })
+          console.log('99------------->', entArr);
           routes.push(route1);
         }
-        route.tooltip = `方案${index + 1}`
+
         if (route) {
+          route.tooltip = `方案${index + 1}`
           routes.push(route);
         }
         const inslength = item.instructions.length;
@@ -271,6 +300,9 @@ export default {
         }
 
       }
+
+
+      this.c_viewer.dataSources.add(dataSource);
     },
     resetOpera () {
       this.draw.removeAll();
