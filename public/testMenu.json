@@ -179,7 +179,7 @@
       "component": "example/material/areaPolylineCityLink",
       "meta": {
         "auth": ["admin", "test"],
-        "title": "动态泛光线(随机颜色)",
+        "title": "动态泛光线",
         "icon": "tabler:arrows-random",
         "isAffix": false,
         "isHide": false,

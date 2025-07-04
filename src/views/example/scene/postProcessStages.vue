@@ -1,10 +1,8 @@
 <template>
   <div class="sky-box">
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
 
-    <div class="cust-gui-box"
-         id="cust-gui-box"></div>
+    <div class="cust-gui-box" id="cust-gui-box"></div>
   </div>
 </template>
 <script >
@@ -21,7 +19,7 @@ export default {
     this.initMap()
   },
   methods: {
-    initMap () {
+    async initMap () {
       const tempData = [
         {
           type: 'UrlTemplateImageryProvider',
@@ -50,11 +48,13 @@ export default {
       this.control = control;
       this.control.setDefSceneConfig()
       this.control.setBloomLightScene()
-      let tileset = this.c_viewer.scene.primitives.add(
-        new Cesium.Cesium3DTileset({
-          url: 'static/data/3DTiles/building/tileset.json',
-        }),
-      )
+      // let tileset = this.c_viewer.scene.primitives.add(
+      //   new Cesium.Cesium3DTileset({
+      //     url: 'static/data/3DTiles/building/tileset.json',
+      //   }),
+      // )
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
       tileset.style = new Cesium.Cesium3DTileStyle({
         color: {
           conditions: [

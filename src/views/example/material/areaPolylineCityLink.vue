@@ -1,7 +1,6 @@
 <template>
   <div>
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
   </div>
 </template>
 <script >
@@ -33,36 +32,53 @@ export default {
       this.material.setBloomLightScene()
       this.load3dTiles(materialObj.viewer);
     },
-    load3dTiles (viewer) {
+    async load3dTiles (viewer) {
       var _self = this;
       viewer.scene.sun.show = false;
       viewer.scene.moon.show = false;
       viewer.scene.skyAtmosphere.show = false;
 
 
-      var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-        url: 'static/data/3DTiles/building/tileset.json'
-      }));
+      // var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+      //   url: 'static/data/3DTiles/building/tileset.json'
+      // }));
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tilesets = this.c_viewer.scene.primitives.add(tiles)
+      tilesets.style = new Cesium.Cesium3DTileStyle({
+        color: {
+          conditions: [
+            ['${height} >= 300', 'rgba(0, 149, 251, 0.3)'],
+            ['${height} >= 200', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 100', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 50', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 25', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 10', 'rgb(0, 149, 251, 0.3)'],
+            ['${height} >= 5', 'rgb(0, 149, 251, 0.3)'],
+            ['true', 'rgb(0, 149, 251, 0.3)']
+          ]
+        }
+      })
+      viewer.flyTo(tilesets)
+      _self.addEntityToScene(viewer);
 
-      tilesets.readyPromise.then(function (tileset) {
-
-        tileset.style = new Cesium.Cesium3DTileStyle({
-          color: {
-            conditions: [
-              ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
-              ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
-              ["true", "rgb(0, 149, 251, 0.3)"]
-            ]
-          }
-        });
-        viewer.flyTo(tileset)
-        _self.addEntityToScene(viewer);
-      });
+      // tilesets.readyPromise.then(function (tileset) {
+      //   tileset.style = new Cesium.Cesium3DTileStyle({
+      //     color: {
+      //       conditions: [
+      //         ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+      //         ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+      //         ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+      //         ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+      //         ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+      //         ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+      //         ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+      //         ["true", "rgb(0, 149, 251, 0.3)"]
+      //       ]
+      //     }
+      //   });
+      //   viewer.flyTo(tileset)
+      //   _self.addEntityToScene(viewer);
+      // });
     },
     addEntityToScene (viewer) {
 
