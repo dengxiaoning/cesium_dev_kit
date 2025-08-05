@@ -437,6 +437,9 @@ RadarPlugin.prototype = {
     n.prototype.updateGroundCircleRadius = function () {
       this._ground_radius = this._radius * Math.cos(Cesium.Math.toRadians(this._angle));
     };
+    n.prototype.isDestroyed = function () {
+      return false
+    }
     n.prototype.addGroundAreaEntity = function (t) {
       if (t && !this.groundAreaEntity) {
         var e = this;

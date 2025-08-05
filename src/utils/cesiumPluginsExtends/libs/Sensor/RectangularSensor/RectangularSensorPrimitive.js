@@ -489,7 +489,9 @@ function InitRectangularSensorPrimitive(cesiumGlobal) {
       }
     }
   }
-
+  RectangularSensorPrimitive.prototype.isDestroyed = function () {
+    return false
+  }
   var matrix3Scratch = new Matrix3()
   var nScratch = new Cartesian3()
 

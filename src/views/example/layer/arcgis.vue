@@ -1,10 +1,8 @@
 <template>
   <div class="sky-box">
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
 
-    <div class="cust-gui-box"
-         id="cust-gui-box"></div>
+    <div class="cust-gui-box" id="cust-gui-box"></div>
   </div>
 </template>
 <script >
@@ -21,7 +19,7 @@ export default {
     this.initMap()
   },
   methods: {
-    initMap () {
+    async initMap () {
       const {
         viewer,
         control,
@@ -40,26 +38,25 @@ export default {
 
       this.control = control;
 
-
-      let layer = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
-        url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
-      }));
+      const esriLayer = await Cesium.ArcGisMapServerImageryProvider.fromUrl(
+        'https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer');
+      let layer = this.c_viewer.imageryLayers.addImageryProvider(esriLayer);
       layer.name = '电子'; layer.id = 'layer1'; layer.show = true;
 
-      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
-        url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
-      }));
+      const esriLayer2 = await Cesium.ArcGisMapServerImageryProvider.fromUrl(
+        'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer');
+      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(esriLayer2);
       layer2.name = '影像'; layer2.id = 'layer2'; layer2.show = false;
 
 
-      let layer3 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
-        url: 'https://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer'
-      }));
+      const esriLayer3 = await Cesium.ArcGisMapServerImageryProvider.fromUrl(
+        'https://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer');
+      let layer3 = this.c_viewer.imageryLayers.addImageryProvider(esriLayer3);
       layer3.name = '地形'; layer3.id = 'layer3'; layer3.show = false;
 
-      let layer4 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
-        url: 'https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer'
-      }));
+      const esriLayer4 = await Cesium.ArcGisMapServerImageryProvider.fromUrl(
+        'https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer');
+      let layer4 = this.c_viewer.imageryLayers.addImageryProvider(esriLayer4);
       layer4.name = '地形2'; layer4.id = 'layer4'; layer4.show = false;
 
       this.control.showLayerSwitchPanel([layer, layer2, layer3, layer4], { elementId: 'cust-gui-box' })

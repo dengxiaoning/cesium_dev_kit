@@ -1,7 +1,6 @@
 <template>
   <div>
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
   </div>
 </template>
 <script>
@@ -9,11 +8,11 @@ import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 export default {
-  mounted() {
+  mounted () {
     this.initMap()
   },
   methods: {
-    initMap() {
+    async initMap () {
       const { viewer, passEffect } = new initCesium(
         {
           cesiumGlobal: Cesium,
@@ -31,22 +30,19 @@ export default {
 
       this.passEffect.setDefSceneConfig()
       this.passEffect.setBloomLightScene()
-      let tileset = this.c_viewer.scene.primitives.add(
-        new Cesium.Cesium3DTileset({
-          url: 'static/data/3DTiles/building/tileset.json'
-        })
-      )
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
       tileset.style = new Cesium.Cesium3DTileStyle({
         color: {
           conditions: [
-            ['${height} >= 300', 'rgba(0, 149, 251, 0.3)'],
-            ['${height} >= 200', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 100', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 50', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 25', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 10', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 5', 'rgb(0, 149, 251, 0.3)'],
-            ['true', 'rgb(0, 149, 251, 0.3)']
+            ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+            ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+            ["true", "rgb(0, 149, 251, 0.3)"]
           ]
         }
       })
@@ -55,7 +51,7 @@ export default {
       this.createRadarScan();
       this.createCircleScan();
     },
-    createRadarScan() {
+    createRadarScan () {
       this.passEffect.setRadarScanEffect({
         id: 'radarScanA',
         position: Cesium.Cartesian3.fromDegrees(104.08985268964015, 30.635443158056148, 10.0),
@@ -66,7 +62,7 @@ export default {
         width: 5.0
       })
     },
-    createCircleScan() {
+    createCircleScan () {
       this.passEffect.setCircleScanEffect({
         id: 'CircleScan',
         position: Cesium.Cartesian3.fromDegrees(104.08985268964015, 30.635443158056148, 10.0),
@@ -77,7 +73,7 @@ export default {
       })
     }
   },
-  beforeUnmount() {
+  beforeUnmount () {
     this.c_viewer = null;
     this.passEffect = null;
   }
