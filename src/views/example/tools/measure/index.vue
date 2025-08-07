@@ -1,25 +1,16 @@
 <template>
   <div class="sky-box">
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
           <span>测量面板</span>
         </div>
       </template>
-      <div class="text item"
-           :class="activeId==='distain'?'active':''"
-           @click="caldDistain('distain')">空间距离</div>
-      <div class="text item"
-           :class="activeId==='area'?'active':''"
-           @click="calArea('area')">空间面积</div>
-      <div class="text item"
-           :class="activeId==='trangle'?'active':''"
-           @click="calTrangle('trangle')">三角量测</div>
-      <div class="text item"
-           :class="activeId==='clen'?'active':''"
-           @click="calClen('clen')">清除量测</div>
+      <div class="text item" :class="activeId==='distain'?'active':''" @click="caldDistain('distain')">空间距离</div>
+      <div class="text item" :class="activeId==='area'?'active':''" @click="calArea('area')">空间面积</div>
+      <div class="text item" :class="activeId==='trangle'?'active':''" @click="calTrangle('trangle')">三角量测</div>
+      <div class="text item" :class="activeId==='clen'?'active':''" @click="calClen('clen')">清除量测</div>
     </el-card>
   </div>
 </template>
@@ -37,7 +28,7 @@ export default {
     this.initMap()
   },
   methods: {
-    initMap () {
+    async initMap () {
       const tempData = [
         {
           type: 'UrlTemplateImageryProvider',
@@ -75,29 +66,24 @@ export default {
       this.graphics = graphics;
       this.draw = draw;
 
-      var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-        url: 'static/data/3DTiles/building/tileset.json'
-      }));
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
+      tileset.style = new Cesium.Cesium3DTileStyle({
+        color: {
+          conditions: [
+            ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+            ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+            ["true", "rgb(0, 149, 251, 0.3)"]
+          ]
+        }
+      });
+      viewer.flyTo(tileset)
 
-      tilesets.readyPromise.then(function (tileset) {
-
-        tileset.style = new Cesium.Cesium3DTileStyle({
-          color: {
-            conditions: [
-              ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
-              ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
-              ["true", "rgb(0, 149, 251, 0.3)"]
-            ]
-          }
-        });
-
-        viewer.flyTo(tileset)
-      })
     },
     caldDistain (clicktype) {
       this.activeId = clicktype;

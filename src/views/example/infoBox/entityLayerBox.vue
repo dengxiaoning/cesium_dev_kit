@@ -40,32 +40,26 @@ export default {
       this.material.setBloomLightScene()
       this.load3dTiles(viewer);
     },
-    load3dTiles(viewer) {
+   async load3dTiles(viewer) {
       var _self = this;
-
-      var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-        url: 'static/data/3DTiles/building/tileset.json'
-      }));
-
-      tilesets.readyPromise.then(function (tileset) {
-
-        tileset.style = new Cesium.Cesium3DTileStyle({
-          color: {
-            conditions: [
-              ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
-              ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
-              ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
-              ["true", "rgb(0, 149, 251, 0.3)"]
-            ]
-          }
-        });
-        viewer.flyTo(tileset)
-        _self.addEntityToScene(viewer);
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
+      tileset.style = new Cesium.Cesium3DTileStyle({
+        color: {
+          conditions: [
+            ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+            ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+            ["true", "rgb(0, 149, 251, 0.3)"]
+          ]
+        }
       });
+      viewer.flyTo(tileset)
+    _self.addEntityToScene(viewer);
     },
     addEntityToScene(viewer) {
       let css3Renderer = new Cesium.Scene.Css3Renderer([], true);

@@ -1,7 +1,6 @@
 <template>
   <div class="sky-box">
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
 
     <div class="position-panel">
       <el-card class="box-card">
@@ -33,18 +32,12 @@
       <el-card class="box-card">
         <div class="clearfix"><span>左键点击，不同的坐标拾取</span></div>
         <div class="group-btn">
-          <el-button size="mini"
-                     @click="btnGroupOpera('PickElliposid')">与球面求交</el-button>
-          <el-button size="mini"
-                     @click="btnGroupOpera('scenePickPos')">scenePick拾取场景坐标</el-button>
-          <el-button size="mini"
-                     @click="btnGroupOpera('scenePickBuild')">拾取三维物体</el-button>
-          <el-button size="mini"
-                     @click="btnGroupOpera('drillPick')">drillPick拾取多个物体</el-button>
-          <el-button size="mini"
-                     @click="btnGroupOpera('globePick')">globePick拾取坐标位置</el-button>
-          <el-button size="mini"
-                     @click="btnGroupOpera('getImg')">拾取img</el-button>
+          <el-button size="mini" @click="btnGroupOpera('PickElliposid')">与球面求交</el-button>
+          <el-button size="mini" @click="btnGroupOpera('scenePickPos')">scenePick拾取场景坐标</el-button>
+          <el-button size="mini" @click="btnGroupOpera('scenePickBuild')">拾取三维物体</el-button>
+          <el-button size="mini" @click="btnGroupOpera('drillPick')">drillPick拾取多个物体</el-button>
+          <el-button size="mini" @click="btnGroupOpera('globePick')">globePick拾取坐标位置</el-button>
+          <el-button size="mini" @click="btnGroupOpera('getImg')">拾取img</el-button>
         </div>
       </el-card>
     </div>
@@ -76,7 +69,7 @@ export default {
     this.initMap()
   },
   methods: {
-    initMap () {
+    async initMap () {
       const tempData = [
         {
           type: 'UrlTemplateImageryProvider',
@@ -110,25 +103,23 @@ export default {
       this.c_viewer = viewer;
       this.base = base;
 
-      let tileset = this.c_viewer.scene.primitives.add(
-        new Cesium.Cesium3DTileset({
-          url: 'static/data/3DTiles/building/tileset.json',
-        }),
-      )
+      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
       tileset.style = new Cesium.Cesium3DTileStyle({
         color: {
           conditions: [
-            ['${height} >= 300', 'rgba(0, 149, 251, 0.3)'],
-            ['${height} >= 200', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 100', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 50', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 25', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 10', 'rgb(0, 149, 251, 0.3)'],
-            ['${height} >= 5', 'rgb(0, 149, 251, 0.3)'],
-            ['true', 'rgb(0, 149, 251, 0.3)'],
-          ],
-        },
-      })
+            ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+            ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+            ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+            ["true", "rgb(0, 149, 251, 0.3)"]
+          ]
+        }
+      });
+
       viewer.flyTo(tileset)
       this.initCameraPos();
       this.cameraModify();
