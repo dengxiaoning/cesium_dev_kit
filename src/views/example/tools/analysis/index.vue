@@ -1,7 +1,6 @@
 <template>
   <div class="analysis-plane">
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
@@ -9,20 +8,13 @@
         </div>
       </template>
       <div class="group-btn">
-        <el-button size="mini"
-                   @click="VisibilityAnalysis">通视分析</el-button>
-        <el-button size="mini"
-                   @click="lookAroundAnalysis">环视分析</el-button>
-        <el-button size="mini"
-                   @click="visualFieldAnalysis">可视域分析</el-button>
-        <el-button size="mini"
-                   @click="clipPlanAnalysis">地形开挖分析</el-button>
-        <el-button size="mini"
-                   @click="submergedAnalysis">淹没分析</el-button>
-        <el-button size="mini"
-                   @click="slopeAnalysis">坡度分析</el-button>
-        <el-button size="mini"
-                   @click="cutVolumeAnalysis"> 方量分析</el-button>
+        <el-button size="mini" @click="VisibilityAnalysis">通视分析</el-button>
+        <el-button size="mini" @click="lookAroundAnalysis">环视分析</el-button>
+        <el-button size="mini" @click="visualFieldAnalysis">可视域分析</el-button>
+        <el-button size="mini" @click="clipPlanAnalysis">地形开挖分析</el-button>
+        <el-button size="mini" @click="submergedAnalysis">淹没分析</el-button>
+        <el-button size="mini" @click="slopeAnalysis">坡度分析</el-button>
+        <el-button size="mini" @click="cutVolumeAnalysis"> 方量分析</el-button>
       </div>
     </el-card>
   </div>
@@ -39,7 +31,8 @@ export default {
     // 添加地形数据
     async addWorldTerrainAsync (viewer) {
       try {
-        const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+        // const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+        const terrainProvider = await Cesium.CesiumTerrainProvider.fromUrl("http://127.0.0.1:9801/static/terrain");
         viewer.terrainProvider = terrainProvider;
       } catch (error) {
         console.log(`Failed to add world imagery: ${error}`);
@@ -65,9 +58,11 @@ export default {
             {
               type: 'UrlTemplateImageryProvider',
               option: {
-                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                // url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                url: "http://127.0.0.1:9801/static/map/{z}/{y}/{x}.jpg",
                 subdomains: ['0', '1', '2', '3'],
                 tilingScheme: new Cesium.WebMercatorTilingScheme()
+                // tilingScheme: new Cesium.GeographicTilingScheme()
               }
             }]
         })

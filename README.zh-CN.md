@@ -13,6 +13,13 @@
 
 这是一个 Cesium 开发工具包，包含图层加载、坐标转换、坐标拾取、相机控制、测量、标绘、模型加载、模型平移旋转缩放、模型/3Dtiles 视角位置调整、模型拖拽、天气（雨，雪，雾）场景、雷达扫描、信息框、流动线、发光线、动态墙等各种发光材质、后置场景效果、通视分析、透视分析、坡度分析、淹没分析、方量分析、地形开挖等各种分析案例。
 
+
+
+## API 文档
+
+API文档详情 [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaodehenji.com/cesiumDevKitDoc)
+
+
 ## 功能展示
 
 | ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif) |        ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)        |       ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)       |
@@ -105,7 +112,7 @@ const {viewer,graphics} = new Graphics({
   })
 ```
 
-更多详情见[ API 文档 :bookmark_tabs: ](https://benpaodehenji.com/cesiumDevKitDoc)(廉价服务器，请耐心等待)...
+
 
 ---
 

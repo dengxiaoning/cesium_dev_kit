@@ -14,6 +14,14 @@
 &emsp;This is a Cesium development kit that includes functionalities such as layer loading, coordinate conversion, coordinate picking, camera control, measurement, plotting, model loading and manipulation (translation, rotation scaling), 3Dtiles view position adjustment, weather effects (rain, snow, fog), scene rendering with radar scan and information box display capabilities. It also provides features for flow line visualization, lighting effects including dynamic wall and other luminous materials rendering.
 Additionally it supports Post effects, visibility analysis tools for perspective analysis and slope analysis. Furthermore it offers Inundation analysis as well as volume analysis capabilities and terrain excavation functionality.
 
+
+
+## API documentation
+
+See [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaodehenji.com/cesiumDevKitDoc)
+
+
+
 ## Features
 
 |   ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)   |        ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)        |       ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)       |
@@ -35,6 +43,7 @@ Additionally it supports Post effects, visibility analysis tools for perspective
 ```shell
 npm install cesium_dev_kit
 ```
+
 
 ## Use
 
@@ -118,7 +127,7 @@ const {viewer,graphics} = new Graphics({
 new cesium_dev_kit.initCesium({...})
 ```
 
-See [API documentation :bookmark_tabs: ](https://benpaodehenji.com/cesiumDevKitDoc) (Cheap server, please be patient) for more details...
+
 
 ---
 
