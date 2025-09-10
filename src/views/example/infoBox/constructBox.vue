@@ -69,6 +69,9 @@ export default {
         element: `<div class="ys-css3-box ex-box" id="box4"><div class="close__box__btn">X</div>xxx 信息点</div>`,
         offset: [10, 10]
       }], true);
+      setTimeout(() => {
+        css3Renderer.removeChild();
+      }, 9000);
     }
   },
   beforeUnmount () {
