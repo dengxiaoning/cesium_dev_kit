@@ -754,7 +754,7 @@ Plugin.prototype = {
        * @param {string}[elements.parentEleId=info-warp] - 挂载信息框容器的ID
        * @param {Array} elements.position - 坐标
        * @param {string} elements.element - 字符串html 标签
-       * @param {Array} elements.offset - 偏移
+       * @param {Array}[elements.offset=[0,0]] - 偏移
        * @param {boolean} isBackHide - 是否超出视野隐藏
        * @example
        *  new Cesium.Scene.Css3Renderer([{
@@ -774,7 +774,9 @@ Plugin.prototype = {
         this._container = null
         this._elements = elements
         this._isBackHide = isBackHide
-        this._parentEleId =elements[0].parentEleId||'info-warp'
+        
+        this._parentEleId =
+        elements.length>0?elements[0]['parentEleId']||'info-warp' : 'info-warp'
 
         this.init()
       }
@@ -786,26 +788,28 @@ Plugin.prototype = {
         const parentNode = document.getElementById(_parentEleId)
           parentNode.appendChild(container)
         this._container = container
-
+        
+        // 如果elements中缺少position就把他抛弃了
+        this._elements = this._elements.filter(e=>e.position)
         this._elements.forEach(function (e) {
           container.insertAdjacentHTML('beforeend', e.element)
         })
        function getElementsByClass(className, parentElement = document) {
             return parentElement.querySelectorAll(`.${className}`);
         }
-      var boxElements = getElementsByClass('close__box__btn');
-            // 遍历所有元素并绑定点击事件
-         boxElements.forEach(function(element) {
-            element.addEventListener('click', function () {
-                if (parentNode.contains(container)) {
-                  parentNode.removeChild(container)
-                }
-              });
-          });
 
 
         var $this = this
         this._scene.preRender.addEventListener(function () {
+          var boxElements = getElementsByClass('close__box__btn');
+          // 遍历所有元素并绑定点击事件
+          boxElements.forEach(function(element) {
+              element.addEventListener('click', function () {
+                  if (parentNode.contains(container)) {
+                    parentNode.removeChild(container)
+                  }
+                });
+            });
           //
           for (var i = 0; i < container.children.length; i++) {
             var p = Cesium.Cartesian3.fromDegrees(
@@ -817,14 +821,16 @@ Plugin.prototype = {
               p,
               $this._scratch
             )
+            const offsetX = $this._elements[i].offset ? $this._elements[i].offset[0] : 0;
+            const offsety = $this._elements[i].offset ? $this._elements[i].offset[1] : 0;
             if (Cesium.defined(canvasPosition)) {
               container.children[i].style.left =
                 parseFloat(canvasPosition.x) +
-                parseFloat($this._elements[i].offset[0]) +
+                parseFloat(offsetX) +
                 'px'
               container.children[i].style.top =
                 parseFloat(canvasPosition.y) +
-                parseFloat($this._elements[i].offset[1]) +
+                parseFloat(offsety) +
                 'px'
               if ($this._isBackHide) {
                 var j = $this._camera.position,
@@ -894,6 +900,7 @@ Plugin.prototype = {
             boxShow: false,
             circleShow: false,
           })
+          @description 注意：如果想指定挂载dom 需要 在new Cesium.Scene.Css3Renderer(),指定parentEleId，如 new Cesium.Scene.Css3Renderer([{ parentEleId: 'entityLayer-BOX', }], true);
        */
       Css3Renderer.prototype.addEntityLayer = function (object) {
         var lon = object.position[0],

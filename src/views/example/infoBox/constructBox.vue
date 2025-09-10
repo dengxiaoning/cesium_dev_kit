@@ -67,11 +67,11 @@ export default {
         parentEleId: 'info-warp',
         position: [104.08985268964015, 30.635443158056148, 50.0],
         element: `<div class="ys-css3-box ex-box" id="box4"><div class="close__box__btn">X</div>xxx 信息点</div>`,
-        offset: [10, 10]
+        // offset: [10, 10]
       }], true);
-      // setTimeout(() => {
-      //   css3Renderer.removeChild();
-      // }, 9000);
+      setTimeout(() => {
+        css3Renderer.removeChild();
+      }, 9000);
     }
   },
   beforeUnmount () {
