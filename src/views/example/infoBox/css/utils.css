@@ -1,7 +1,5 @@
 .ysc-dynamic-layer{
-    /*重要*/
-    user-select: none; /*禁止选中*/
-    pointer-events: none; /*鼠标穿透*/
+
     /*重要*/
     position: fixed;
     top:0;
@@ -9,6 +7,13 @@
     width: 320px;
     height:250px;
     z-index: 99999;
+}
+.close__box__btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  color: #fff;
 }
 .ysc-dynamic-layer .line{
     position: absolute;
@@ -53,9 +58,7 @@
   padding: 8px 20px;
 }
 
-.ys-css3-box {
-  pointer-events: none;
-}
+
 #box4{
   font-size: 20px;
   color: orange;

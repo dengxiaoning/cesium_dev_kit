@@ -771,19 +771,34 @@ Plugin.prototype = {
         this._container = null
         this._elements = elements
         this._isBackHide = isBackHide
+        this._parentEleId =elements[0].parentEleId
 
         this.init()
       }
       Css3Renderer.prototype.init = function () {
         var container = document.createElement('div')
         container.className = `ys-css3-container`
+        const _parentEleId = this._parentEleId
         // document.body.appendChild(container)
-        document.getElementById('info-warp').appendChild(container)
+        document.getElementById(_parentEleId).appendChild(container)
         this._container = container
 
         this._elements.forEach(function (e) {
           container.insertAdjacentHTML('beforeend', e.element)
         })
+       function getElementsByClass(className, parentElement = document) {
+            return parentElement.querySelectorAll(`.${className}`);
+        }
+      var boxElements = getElementsByClass('close__box__btn');
+            // 遍历所有元素并绑定点击事件
+         boxElements.forEach(function(element) {
+                element.addEventListener('click', function() {
+                  document.getElementById(_parentEleId).removeChild(container)
+                });
+            });
+
+
+
         var $this = this
         this._scene.preRender.addEventListener(function () {
           //
@@ -831,7 +846,9 @@ Plugin.prototype = {
         })
         this._container.removeChild(document.getElementById(id))
       }
-
+      Css3Renderer.prototype.removeChild = function () {
+      document.getElementById(this._parentEleId).removeChild(this._container)
+     }
       Css3Renderer.prototype.append = function (object) {
         this._elements.push(object)
         this._container.insertAdjacentHTML('beforeend', object.element)
