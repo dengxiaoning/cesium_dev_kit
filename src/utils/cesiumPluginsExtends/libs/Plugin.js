@@ -750,7 +750,8 @@ Plugin.prototype = {
        * 通过html标签构建信息框
        * @class
        * @param {Array} elements
-       * @param {string} elements.id
+       * @param {string} elements.id - dom ID
+       * @param {string}[elements.parentEleId=info-warp] - 挂载信息框容器的ID
        * @param {Array} elements.position - 坐标
        * @param {string} elements.element - 字符串html 标签
        * @param {Array} elements.offset - 偏移
@@ -758,20 +759,22 @@ Plugin.prototype = {
        * @example
        *  new Cesium.Scene.Css3Renderer([{
               id: 'box4',
+              parentEleId: 'info-warp',
               position: [104.08985268964015, 30.635443158056148, 50.0],
-              element: `<div class="ys-css3-box ex-box" id="box4">xxx 信息点</div>`,
+              element: `<div class="ys-css3-box ex-box" id="box4"><div class="close__box__btn">X</div>xxx 信息点</div>`,
               offset: [10, 10]
             }], true);
        */
       function Css3Renderer(elements, isBackHide) {
         this._scratch = new Cesium.Cartesian2()
-        this._viewer = viewer
-        ;(this._scene = viewer.scene), (this._camera = viewer.camera)
+        this._viewer = viewer;
+        this._scene = viewer.scene;
+        this._camera = viewer.camera;
 
         this._container = null
         this._elements = elements
         this._isBackHide = isBackHide
-        this._parentEleId =elements[0].parentEleId
+        this._parentEleId =elements[0].parentEleId||'info-warp'
 
         this.init()
       }
@@ -871,6 +874,7 @@ Plugin.prototype = {
        * @param {object} object
        * @param {string} object.id
        * @param {Array} object.position - 坐标
+       * @param {string} elements.parentEleId - 挂载信息框容器的ID
        * @param {string} object.element - html 标签字符串
        * @param {Array} object.offset - 偏移
        * @param {boolean} object.boxShow - 是否构建box 实例
