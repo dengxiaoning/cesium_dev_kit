@@ -111,7 +111,7 @@ export default {
       viewerData.viewer.dataSources.add(viewerData.dataSource);
 
       // 加载行政区域的边界数据
-      const geojsonUrl = "/static/data/110000.json";
+      const geojsonUrl = "static/data/110000.json";
       viewerData.dataSource.load(geojsonUrl).then(() => {
         // 设置行政区域的样式
         const entities = viewerData.dataSource.entities.values;

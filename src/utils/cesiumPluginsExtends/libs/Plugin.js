@@ -27,11 +27,13 @@ const styleType = {
  * @property {styleType}[type=0] - 聚合样式
  * @property {Array<cluserColorsType>} cluserColors - 聚合圈颜色区间配置
  */
+
 /**
- * @typedef {Object}   clusterDataType -聚合数据类型 
-* @param {string} data.id - 数据id
- * @param {Array} data.position - 坐标
-* @param {string|object} data.otherProperty - 其它附加属性
+* @typedef {Object}   clusterDataType -聚合数据类型 
+* @property {string} id - 数据id
+* @property  {Array} position - 坐标
+* @property {string|object} otherProperty - 其它附加属性
+*
  */
 
 /**
