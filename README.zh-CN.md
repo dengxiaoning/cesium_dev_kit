@@ -31,8 +31,7 @@ API文档详情 [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](http
 |                                                  雷达案例                                                   |                                                       第一人称漫游                                                        |                                                      拖拽                                                       |
 |  ![rayCast](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rayCast.gif)  | ![fireworksEffect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/fireworksEffect.gif) | ![aniSoldier](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/aniSoldier.gif) |
 |                                                  光线投射                                                   |                                                         烟花效果                                                          |                                                   奔跑的士兵                                                    |
-|   ![路线规划](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |![自定义图元](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif) |
-![聚合图层](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif)|
+|   ![路线规划](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |![自定义图元](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif) |![聚合图层](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif)|
 |  路线规划                                                     | 自定义图元  |聚合图层|
 
 [更多>>](https://benpaodehenji.com/cesiumDevKit)

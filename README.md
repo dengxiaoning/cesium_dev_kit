@@ -33,9 +33,8 @@ See [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaode
 |                                                      radar                                                      |                                                          roaming                                                          |                                                      drag                                                       |
 |    ![rayCast](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rayCast.gif)    | ![fireworksEffect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/fireworksEffect.gif) | ![aniSoldier](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/aniSoldier.gif) |
 |                                                     rayCast                                                     |                                                      fireworksEffect                                                      |                                                   aniSoldier                                                    |
-|   ![pathPlan](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |![customPrimitive](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif) |
-![clusterLayer](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif) |
-|  pathPlan                                                     | customPrimitive  |clusterLayer|
+|   ![pathPlan](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |![customPrimitive](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif) |![clusterLayer](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif)  |
+|  pathPlan    | customPrimitive   |      clusterLayer      |
 
 [More>>](https://benpaodehenji.com/cesiumDevKit)
 
