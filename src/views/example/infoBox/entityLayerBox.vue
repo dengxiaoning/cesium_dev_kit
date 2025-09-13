@@ -63,9 +63,8 @@ export default {
       let css3Renderer = new Cesium.Scene.Css3Renderer([{ parentEleId: 'entityLayer-BOX', }], true);
       css3Renderer.addEntityLayer({
         position: [104.06417395476578, 30.636185094244944, 30.0],//高度为 boxHeightMax
-        element: `<div class='ysc-dynamic-layer ys-css3-box'>
-               <div class='line'></div>
-               <div class='main' style="font-size:20px">
+        element: `<div class='ysc-dynamic-layer'>
+               <div class='main line' style="font-size:20px;width:300px;height:200px;">
                 <div class="close__box__btn">X</div>
                         <div class="" style="color:#ff9800">信息点</div>
                        <div class=""> 鑫鑫大厦 </div>

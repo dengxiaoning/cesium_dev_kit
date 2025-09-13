@@ -10,7 +10,10 @@
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 import './css/utils.css';
-
+const viewerData = {
+  viewer: null,
+  css3Entity: null,
+};
 export default {
   mounted () {
     this.initMap()
@@ -19,6 +22,7 @@ export default {
     initMap () {
       const { viewer,
         material,
+        base
       } = new initCesium(
         {
           cesiumGlobal: Cesium,
@@ -34,7 +38,7 @@ export default {
 
       this.c_viewer = viewer;
       this.material = material;
-
+      this.b_base = base;
       this.material.setDefSceneConfig()
       this.material.setBloomLightScene()
       this.load3dTiles(viewer);
@@ -60,24 +64,51 @@ export default {
       });
       viewer.flyTo(tileset)
       _self.addEntityToScene(viewer);
+      _self.addListent()
     },
     addEntityToScene (viewer) {
-      let css3Renderer = new Cesium.Scene.Css3Renderer([{
+      viewerData.css3Entity = new Cesium.Scene.Css3Renderer([{
         id: 'box4',
         parentEleId: 'info-warp',
         position: [104.08985268964015, 30.635443158056148, 50.0],
-        element: `<div class="ys-css3-box ex-box" id="box4"><div class="close__box__btn">X</div>xxx 信息点</div>`,
-        // offset: [10, 10]
+        element: `<div class="ysc-dynamic-layer ex-box" id="box4"><div class="close__box__btn">X</div>
+        <div class="line"  style="width:300px;height:200px;">xxx 信息点</div></div>`,
+        offset: [10, -180]
       }], true);
-      setTimeout(() => {
-        css3Renderer.removeChild();
-      }, 9000);
+
+    },
+    addListent () {
+      const _self = this;
+      this.b_base.bindHandelEvent({
+        leftClick: function click (event, _handlers) {
+          if (Cesium.defined(viewerData.css3Entity)) { viewerData.css3Entity.close(); }// 先关闭其它的
+          const pickPosition = _self.c_viewer.scene.pickPosition(event.position)
+          const { lng, lat, alt } = _self.b_base.transformCartesianToWGS84(pickPosition)
+          if (Cesium.defined(pickPosition)) {
+
+            viewerData.css3Entity = new Cesium.Scene.Css3Renderer([{
+              id: 'box4',
+              parentEleId: 'info-warp',
+              position: [lng, lat, alt],
+              element: `<div class="ysc-dynamic-layer ex-box" id="box4"><div class="close__box__btn">X</div> 
+              <div class="line"  style="width:300px;height:200px;">
+                信息点<br/>经度： ${lng}<br/>纬度：${lat}<br/>高层：${alt}
+                </div>
+              </div>`,
+              offset: [10, -180]
+            }], true);
+
+          }
+        }
+      });
     }
   },
   beforeUnmount () {
     this.c_viewer = null;
     this.material = null;
     this.graphics = null;
+    this.b_base.removeHandlerByName(['LEFT_CLICK']);
+    this.b_base = null;
   }
 }
 </script>

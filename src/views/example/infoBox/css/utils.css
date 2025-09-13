@@ -1,11 +1,11 @@
 .ysc-dynamic-layer{
 
     /*重要*/
-    position: fixed;
+    position: absolute;
     top:0;
     left:0;
     width: 320px;
-    height:250px;
+    /* height:250px; */
     z-index: 99999;
 }
 .close__box__btn {
@@ -15,15 +15,17 @@
   cursor: pointer;
   color: #fff;
 }
-.ysc-dynamic-layer .line{
-    position: absolute;
-    left:0;
-    width:0;
-    height:100px;
-    bottom: 0;
-    background:url("../static/data/images/Textures/line.png");
-    animation:goLine 0.5s forwards;
+.ysc-dynamic-layer .line::before{
+  position: absolute;
+  content: "";
+  left: -25px;
+  width: 40;
+  height: 100px;
+  bottom: -50px;
+  background:url("../static/data/images/Textures/line.png");
+  animation:goLine 0.5s forwards;
 }
+
 @keyframes goLine {
     from{
         width:0
@@ -51,11 +53,9 @@
 }
 
 .ex-box {
-  width: 200px;
-  height: 100%;
   background: url("../static/data/images/Textures/layer_border.png") no-repeat;
-  color: #fff;
-  padding: 8px 20px;
+  padding: 18px 25px 0px;
+  background-size: 100% 100%;
 }
 
 
@@ -80,9 +80,7 @@
 .cesium-viewer-timelineContainer,.cesium-viewer-bottom{
     display: none!important;
 }
-.ys-css3-container{
-    position: fixed;
-}
+
 .ys-css3-box{
     position: fixed;
 }

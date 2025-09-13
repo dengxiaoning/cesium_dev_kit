@@ -548,6 +548,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "clusterLayer",
+      "path": "clusterLayer",
+      "component": "example/layer/clusterLayer",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "聚合图层",
+        "icon": "material-symbols:map-outline-sharp",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {
