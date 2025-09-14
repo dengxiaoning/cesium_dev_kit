@@ -33,6 +33,9 @@ API文档详情 [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](http
 |                                                  光线投射                                                   |                                                         烟花效果                                                          |                                                   奔跑的士兵                                                    |
 |   ![路线规划](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |![自定义图元](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif) |![聚合图层](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif)|
 |  路线规划                                                     | 自定义图元  |聚合图层|
+|   ![三维柱状](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)   | | |
+|  三维柱状 |
+
 
 [更多>>](https://benpaodehenji.com/cesiumDevKit)
 
