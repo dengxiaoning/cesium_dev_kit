@@ -37,6 +37,53 @@ const styleType = {
  */
 
 /**
+* @typedef {Object}   barLableType - 柱状label类型 
+* @property {string}[font=bold 24px Arial] - 字体大小
+* @property  {Cesium.Color}[fillColor=Cesium.Color.WHITE] - 填充颜色
+* @property {boolean}[showBackground=true] - 显示背景
+* @property {Cesium.VerticalOrigin}[verticalOrigin=Cesium.VerticalOrigin.BOTTOM] - 居中方式
+* @property {Cesium.Cartesian2}[pixelOffset=new Cesium.Cartesian2(0, 0)] - 偏移
+ */
+
+/**
+* @typedef {Object}   barBillboardType - 柱状billboard类型 
+* @property {number}[width=25] - 图标宽度
+* @property  {number}[height=25] - 图标高度
+* @property {Cesium.Cartesian2}[pixelOffset=new Cesium.Cartesian2(-35, 0)] - 偏移像素
+ */
+
+/**
+ * @typedef {Object}  barLayerStyleOptionsType - 柱状图层样式参数类型 
+ * @property {number} duration  - 柱状拉伸频率
+ * @property {boolean} loop  - 是否循环拉伸
+ * @property {number} boxWidth  - 柱状宽度
+ * @property {number} boxDepth - 柱状深度
+ * @property {boolean}  icon - 是否显示ICON
+ * @property {styleType} iconUrlArr - ICON数组（当数据中iconUrl 为空默认使用该数据作为icon图标）
+ * @property {boolean}  labelShow - 是否显示label
+ * @property {barLableType} label - label配置
+ * @property {barBillboardType} billboard - billboard 配置
+ */
+
+/**
+ * @typedef {Object}  barDataType - 柱状数据 
+ * @property {string} name  - 名称
+ * @property {string|Cesium.Color} color  - 颜色
+ * @property {string} iconUrl  - icon地址
+ * @property {string} count - 值（可为任何值，需对应numField名称）
+ * @property {Array}  center - 中心坐标
+ */
+
+/**
+* @typedef {Object}   barLayerDataType -柱状图层参数 
+* @property {barDataType} barData - 绘制柱状所需的数据
+* @property  {string}[numField=count] - number数据取值的字段
+* @property {number} multiple - 柱状拉伸的倍数（numField * multiple 得到拉伸高度）
+*
+ */
+
+
+/**
  * @typedef {Object}  queryOptionsType - 路线查询参数类型
  * @property {string} url  - 服务地址(可选)
  * @property {string} key  - 查询服务的key(可选)
@@ -84,6 +131,7 @@ Plugin.prototype = {
     this._installCss3Renderer()
     this._installTerrainClipPlan()
     this._installClusterLayer()
+    this._installBar3DLayer()
   },
 
   _installTerrainClipPlan: function () {
@@ -1460,6 +1508,242 @@ Plugin.prototype = {
         }
       }
       Cesium.Scene.ClusterLayer = ClusterLayer;
+    }
+  },
+   /*
+  * 拓展3d柱状图层
+  */
+  _installBar3DLayer: function () {
+    if (this._viewer) {
+      const _viewer = this._viewer;
+      /**
+       * Merges two objects, giving the last one precedence
+       * @param {Object} target
+       * @param {(Object|Array)} source
+       * @returns {Object}
+       */
+      function objectMerge(target, source) {
+        if (typeof target !== 'object') {
+          target = {}
+        }
+        if (Array.isArray(source)) {
+          return source.slice()
+        }
+        Object.keys(source).forEach(property => {
+          const sourceProperty = source[property]
+          if (typeof sourceProperty === 'object') {
+            target[property] = objectMerge(target[property], sourceProperty)
+          } else {
+            target[property] = sourceProperty
+          }
+        })
+        return target
+      }
+      const effort = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFCElEQVR4AexWWUjuVRCfz12v+5L7mqKmoqaCae744oJL+qKiSQgRET710Ms1CALlopIP6oNJoiCICylCoJQhKmIppKLmVi647+un2PzO9f/xrZp1I4r78c2ZOefMnPmdOXPm/PXoX/69BvDfikBFRYVlXV3dIPM7UHV19XF9ff1QS0vLj5WVlTdVVVXyhoaG35+SVn8qAo2NjWWtra0dJiYm27u7u0kREREEsrS0tDg6OopbW1t718XFRT8gIMBgc3PTrba2dpeBHjQ1Nf3S1tbW8hCgRwHU1NTMbmxsNC4sLLx3eXlpHBcXJ5wDAPfJ1taWcnJyKDk5mXx8fMjU1JSOj4/t2Kn1zc1N0MrKShEDOuvu7n6LxzT+DwJg9OOHh4cBcObp6Un29vYUGBhI+C0tLdHOzg4BEEcCQzQ8PCx08vPzKTc3lzIyMqigoICMjIzMtre3vxNKao1OAO3t7c/n5+cjo6KiKDw8nDjM5OzsrDDnOXJ3dyfJ+cTEBO3v71NMTIxiDMrsnMLCwoij6NrZ2ZmPMWXSCYDP+n0+V+EcO729vSVEQTI+PT0lV1dXqSsAQt/KykoxJgmwMzMzI7b5SBqTuE4ArOzs4eFB19fXdHJyIvT39vawEyFfXFzQs2fPhIxma2uLbGxsIGolJycnrOOvPqkVAF8xS3ZgzIlHzc3NNDg4KOxGRkaot7eXenp6iOdFwokJHQ2OBYRpgON8egOyMmkA6Orqem5tbb0rk8mIuTjTzMxMKi0tJSRXQkKCcI5FFhcXwXQSbsn09LSYBwC5XK7Pm3tbDNw3KgD6+vqcVldXPzM2NjYsLi6mlJQUCg4OFslnaGgoQuzv70/x8fGkp6dHrHu/zEvGDl4K9y2iJOUE1xAxam5u7iCE+0YFACfbxxwmIzhgEPcqmgzJhqQ6Pz+nmZkZoYDryYkrZKm5uroSdULqg7OdKbhEKgB4B++gsCBckoI2fnBwQAivo6MjjY2NERLQy8tL1AXIsEFNWF9f1wDAhcoM8xKpAEDlcnBQiZC425IyOJwPDAyII4iOjhZ3HknZ399PvAGRoFxDCGfv6+tLQUFBMFOQgYHBgwBkrKBQhoBEa+ab0NHRQSBOUkI+JCUlESKQnp5OsbGxojyj+qFqhoaGUlpamijPWEOZuDCZKfdVIsDF5pIfF+V5CgkJocTERELygSBnZWURigsUkVzYJRyjVIPzo0Rubm6YVhDyBR2uHXPgEqkA4MlulFyUVEkBDnC+AALCgyPNPYVLG+PkHlW2UwFwdnb2Ql9f/255eVlZ55XIfLvIwsJCnpqaeqS8oAqA8vLy3zh0P09NTRHKrrLi35ERfv5OIL6C++rrqADAJJ9zKlfAk8nJSXRfCc3OzhJAcI7Uqi+oAYCf033O7s+R/VIdVzd6Sh+OAYBfziUu5V+q22oAgAIrvvDz8+sGABDG/iqNj4+L3dvZ2X2hbQ2tAKBYWFiY4+3t/QMAjI6O7vDYxN3d3a/Mt5lfMX/0z59jNDc3R1yQerlGfK3NQCcAKJeUlCSycR8/PB9w/Y/kMPoxd2Ruwl84RqzjwNXTlwFFyGSyJObZzEuYf8JPecPQ0BA+WpaKiooyWVfr/0EAsGDjjOzs7G8hK1NkZKScwezyR8siA/qJP9e+Z97D/BvmXyUkJHzI4KvKysreVLZTlx8FoG7wlH5eXt6nj+n/owAec475/z8A7PIh+gMAAP//rzDbCQAAAAZJREFUAwDEKgBfgUOdbAAAAABJRU5ErkJggg==";
+      const applaud = "data:image/png;base64,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";
+      const likeImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADK0lEQVR4AdSWXUhTYRjHt1lK7eSmsyzNpbVZmYGLvBiU7SJlE2cXijd9SkVGSXXTVZQpInSRECGBSDgwpDApByGiWyEOolxYSpmIUtqXWXO6TWmz/5sxd96Z7p1t0fj/9n6cPef5v+/Oec4RCf7x57808ACb9gW8A2VgWWLdATGy5XfV1Nj6DAa3IjExB+OHIGixGlhLMqnT0rZsl8s3vW1oUEs5LgVz10FQCsqAb6by4mI7xheAAjCL1UA8naG0oEAdLRb3Yl4HmMVqIEEkFI7TWQqzssYwdxAwi9mAhOPI1c9LdEKvX4+JjYBZrAZkioSECTrLNrmcGCCsoY8tNWY1EJeekuKhTxrDcRKhUDiJeXJHoAlctAFSWGYRTnMbc7lgnUqpjETrp9VRUR8xmQ9KwRFwAGiACmwGMrAC8EQbuGLNyHlBky2Nz0DU/Ty1WkSuevT9lJ2Z+UGjUu3fpVQWoUCVbJDJLmFnbqyKimpcGRFhxsXbLxQIRhBIFolmTqK5Zv47ZkVkBg05WqjRWFqqqsiKyNCP5ooKjam6et/z2to9pECNNjXtHjcadzpaW1Nn2tuT3CZTbHNl5WiESFTiG+xnwPfg3+4bLZavbo+nw/e8YTVwp62N3Cm3gjKA/w/yDWXrN3Z0WBzT0zsQ9QR4FfAOzAoEkDeOubNVLv/1IEMg7zoK2AAClyWT1foZJ3gKzMCrgA1g/yFvHHPncl1dLIKuAZ4CNsCLYhzcNZm6p1wuUsCa6NCwGFAmJUUjMamGyWh5CouBlq4uUqbfIPMQ4CksBirq68nKL/Iy/x6E3EC5wdD5w+0eRr4FX15DbuDV4KAbyckrGxp/hdyAyWqV+KednwmpgaKyssdjNht5lN+cT8nv+RmY8bgH+D+ZG2ElUple3wN6Y/X6Pmle3mvQL8nNHQCD0TrdEKfTDXNa7XuxVjtCuGc2xyF6L3gJFhRt4Gpq9yNF8jOjwJe27596sJLz43b7OXD2m91+xjY5eRqcmnA4ToLjdqezeMrpPIaCc9jhch0iIGM66AR/FG2AvK2QkktzFGcgNZwVhC0u2sDivw7i6FIhPwEAAP//c8uOZAAAAAZJREFUAwAS2vhBEdJeLwAAAABJRU5ErkJggg=="
+      const defaultStyle = {
+        duration: 2000,
+        loop: false,
+        boxWidth: 40000,
+        boxDepth: 40000,
+        icon: true,
+        iconUrlArr:[],
+        labelShow:true,
+        label: {
+          font: 'bold 24px Arial',
+          fillColor: Cesium.Color.WHITE,
+          showBackground: true,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          pixelOffset: new Cesium.Cartesian2(0, 0)
+        },
+        billboard: {
+          width: 25,
+          height: 25,
+          pixelOffset: new Cesium.Cartesian2(-35, 0)
+        },
+      }
+      /**
+       * 全局类：
+       *  三维柱状图层管理
+       * @class
+       * @param {barLayerStyleOptionsType} options - 柱状样式配置、
+       * @example
+       * const barLayer = new Cesium.Scene.ThreeDimensionalBar({label: {font: 'bold 16px Arial' }})
+       */
+      function ThreeDimensionalBar (options) {
+        this.barLayer = null;
+        this.config = objectMerge(defaultStyle, options || {});
+        this._init()
+      }
+      ThreeDimensionalBar.prototype._init = function () {
+        this.barLayer = new Cesium.CustomDataSource("threeDimensionalBarLayer");
+        _viewer.dataSources.add(this.barLayer);
+      }
+      ThreeDimensionalBar.prototype._findWeight =function(arr) {
+        const max = Math.max(...arr)
+        const min = Math.min(...arr);
+        return { max, min };
+      }
+      ThreeDimensionalBar.prototype._limitNumberWithinRange =function(num, min, max) {
+        const MIN = min || 1;
+        const MAX = max || 20;
+        const parsed = parseInt(num)
+        return Math.min(Math.max(parsed, MIN), MAX)
+      }
+      /**
+       * 添加3D柱状图层
+       * @function
+       * @param {barLayerDataType} options - 聚合数据
+       * @example
+       * 
+       * const barLayer = new Cesium.Scene.ThreeDimensionalBar({label: {font: 'bold 16px Arial' }})
+       * barLayer.addDataToLayer(options)
+       */
+      ThreeDimensionalBar.prototype.addDataToLayer = function (options) {
+        const { barData, numField = 'count', multiple } = options;
+        const { max, min } = this._findWeight(barData.map(e => e[numField]))
+      
+        let iconUrlArr = this.config.iconUrlArr
+        // 位移数组
+        if (iconUrlArr.length > 0&&iconUrlArr.length<3) {
+          if (iconUrlArr.length < 2) {
+            iconUrlArr[1]=iconUrlArr[0]
+            iconUrlArr[2]=iconUrlArr[0]
+          } else if (iconUrlArr.length < 3) {
+            iconUrlArr[2]=iconUrlArr[0]
+          }
+        }
+
+        const maxNum = (max - min) / 2
+        barData.forEach((item, index) => {
+          const num = item[numField]
+          let iconUrl = null;
+          // 判断icon是否显示，如果显示，iconUrl 为空就自动计算
+          if (this.config.icon) {
+            if (!item.iconUrl) {
+              iconUrl = num >= max ?iconUrlArr[0]||likeImg : num >= num * (maxNum / num / 100) ?iconUrlArr[1]||applaud : iconUrlArr[2]||effort;
+            } else {
+              iconUrl =item.iconUrl
+            }
+          }
+          const weightVal = num > maxNum ? num * (maxNum / num / 100) : ((maxNum - num) / 100) * 5;
+          let weightNum = 1;
+          if (Cesium.defined(multiple)) {
+            weightNum=multiple
+          } else {
+            weightNum=this._limitNumberWithinRange(weightVal, min, maxNum)
+          }
+          this._add3DBarWithIcon({
+            id: item.name + index,
+            value: num,
+            color: item.color,
+            imgSrc: iconUrl,
+            position: item.center,
+            weight: weightNum
+          })
+        })
+      }
+      /**
+       * 移除3D柱状图层
+       * @function
+       * @example
+       * 
+       * const barLayer = new Cesium.Scene.ThreeDimensionalBar({label: {font: 'bold 16px Arial' }})
+       * barLayer.clear()
+       */
+      ThreeDimensionalBar.prototype.clear = function () {
+        if (this.barLayer) {
+          this.barLayer.entities.removeAll();
+        }
+      }
+      // 三维立体柱子
+      ThreeDimensionalBar.prototype._add3DBarWithIcon = function({ id, value, color, imgSrc, position,weight=1}) {
+        const _self = this;
+        // 先移除同位置的广告牌，避免被遮挡
+        const existIcon = _self.barLayer.entities.getById(id + '-icon')
+        if (existIcon) _self.barLayer.entities.remove(existIcon)
+      
+      
+        const width = _self.config.boxWidth //40000
+        const depth = _self.config.boxDepth //40000
+        const maxHeight = value*weight // 柱子高度与数值挂钩
+        let minHeight = 0 // 初始高度
+        let currentHeight = 0;
+        let barMaterial = null;
+        if (color instanceof Cesium.Color) {
+          barMaterial = color
+        } else {
+          barMaterial=Cesium.Color.fromCssColorString(color).withAlpha(0.85)
+        }
+
+        // 柱状实体
+        _self.barLayer.entities.add({
+          id: id + '-bar',
+          name: '3DBar',
+          position: new Cesium.CallbackProperty(function () {
+            return Cesium.Cartesian3.fromDegrees(position[0], position[1], currentHeight / 2)
+          }, false),
+          box: {
+            dimensions: new Cesium.CallbackProperty(function () {
+              return new Cesium.Cartesian3(width, depth, currentHeight)
+            }, false),
+            material:barMaterial,
+            outline: false
+          },
+          show: true // 确保动画过程中实体可见
+        })
+
+        let labelBc = null;
+        if (color instanceof Cesium.Color) {
+          labelBc = color
+        } else {
+          labelBc=Cesium.Color.fromCssColorString(color).withAlpha(0.7)
+        }
+        // 顶部数字label
+        if (_self.config.labelShow) {
+          _self.barLayer.entities.add({
+            id: id + '-label',
+            position: new Cesium.CallbackProperty(function () {
+              return Cesium.Cartesian3.fromDegrees(position[0],  position[1],currentHeight + 3000)
+            }, false),
+            label: {
+              text: value + '',
+              backgroundColor: labelBc,
+              ..._self.config.label
+            },
+            show: true
+          })
+        }
+      
+      
+        // 顶部的Icon 图标
+        if (_self.config.icon) {
+          _self.barLayer.entities.add({
+            id: id + '-icon',
+            position:new Cesium.CallbackProperty(function () {
+              return  Cesium.Cartesian3.fromDegrees(position[0], position[1],currentHeight + 22000)
+            }, false),
+            billboard: {
+              image: imgSrc,
+              ..._self.config.billboard
+            },
+            show: true
+          })
+        }
+      
+        // 使用requestAnimationFrame实现柱子动画
+        function animate() {
+          currentHeight = minHeight += _self.config.duration;
+          if (_self.config.loop) {
+            requestAnimationFrame(animate)
+          }else  if (minHeight <  maxHeight) {
+            requestAnimationFrame(animate)
+          }
+        }
+        animate()
+      }
+      Cesium.Scene.ThreeDimensionalBar = ThreeDimensionalBar;
     }
   },
   transformJD(lng, lat) {

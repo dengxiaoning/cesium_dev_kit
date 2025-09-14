@@ -560,6 +560,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "bar3D",
+      "path": "bar3D",
+      "component": "example/layer/bar3D",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "柱状3d图层",
+        "icon": "material-symbols:map-outline-sharp",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {
