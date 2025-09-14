@@ -11,6 +11,10 @@
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 import { barData } from './barData'
+import linkimg from '/static/data/images/file/fire.png'
+import applaud from '/static/data/images/file/cc1.jpg'
+import effort from '/static/data/images/file/cc3.jpg'
+
 
 const viewerData = {
   viewer: null,
@@ -55,7 +59,7 @@ export default {
       layer2.name = '电子'; layer2.id = 'layer2'; layer2.show = true; layer2.alpha = 0.1;
 
       viewerData.viewer = viewer;
-      viewerData.barLayer = new Cesium.Scene.ThreeDimensionalBar({ label: { font: 'bold 16px Arial' } })
+      viewerData.barLayer = new Cesium.Scene.ThreeDimensionalBar({ label: { font: 'bold 16px Arial' }, iconUrlArr: [linkimg, applaud, effort] })
       this.visualJuest()
       this.loadGeojson();
 
