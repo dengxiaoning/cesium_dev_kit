@@ -458,6 +458,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "pointLight",
+      "path": "pointLight",
+      "component": "example/scene/pointLight",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "点光源",
+        "icon": "fxemoji:fire",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {

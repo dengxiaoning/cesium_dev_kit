@@ -31,8 +31,7 @@ export default {
     // 添加地形数据
     async addWorldTerrainAsync (viewer) {
       try {
-        // const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
-        const terrainProvider = await Cesium.CesiumTerrainProvider.fromUrl("http://127.0.0.1:9801/static/terrain");
+        const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
         viewer.terrainProvider = terrainProvider;
       } catch (error) {
         console.log(`Failed to add world imagery: ${error}`);
@@ -58,11 +57,9 @@ export default {
             {
               type: 'UrlTemplateImageryProvider',
               option: {
-                // url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                url: "http://127.0.0.1:9801/static/map/{z}/{y}/{x}.jpg",
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                 subdomains: ['0', '1', '2', '3'],
                 tilingScheme: new Cesium.WebMercatorTilingScheme()
-                // tilingScheme: new Cesium.GeographicTilingScheme()
               }
             }]
         })
