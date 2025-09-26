@@ -1,4 +1,4 @@
-vec3 createPointLight(vec3 positionWC){
+const refect = `vec3 createPointLight(vec3 positionWC){
     // pow(clamp(1.-lightDistance/u_lightRadius,0. ,1.),2. );
     // lightDistance就是当前片元和点光源中心点的距离
     // length可以计算向量模,这里用当前的世界坐标-点光源的世界坐标
@@ -30,4 +30,5 @@ void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material){
     material.diffuse*=czm_height;
     // 添加点光源
     material.diffuse+=lightColor;
-}
+}`
+export {refect}

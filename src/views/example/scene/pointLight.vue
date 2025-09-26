@@ -39,7 +39,7 @@ export default {
             infoBox: false,
             shouldAnimate: true,
           },
-          extraConfig: {},
+          extraConfig: { depthTest: true },
           MapImageryList: tempData
         })
 
@@ -92,33 +92,40 @@ export default {
       let scene = viewer.scene;
       let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas)
       handler.setInputAction(e => {
-        let pickPositionElliposid = scene.camera.pickEllipsoid(e.position, scene.globe.elliposid);
-        let cameraPosition = {
-          cameraPosistion: viewer.camera.position,
-          heading: viewer.camera.heading,
-          pitch: viewer.camera.pitch,
-          roll: viewer.camera.roll
-        };
-        console.log('cameraPosition : ', cameraPosition)
+        var cartographic = viewer.scene.pickPosition(e.position);
+        // 点光源位置
+        this.pointLight(viewer, cartographic)
+        // 平行光,加载平行光源
+        // viewer.scene.light = new Cesium.DirectionalLight({
+        //   color: new Cesium.Color(1.0, 1.0, 1.0, 0.5),
+        //   direction: cartographic,
+        //   intensity: 1000.0
+        // })
 
-        // 将迪卡转换为地理坐标
-        let cartographic = Cesium.Cartographic.fromCartesian(pickPositionElliposid)
-        if (cartographic.height < 0) cartographic.height = 0
-        let graphicCoor = {
-          lon: Cesium.Math.toDegrees(cartographic.longitude),
-          lat: Cesium.Math.toDegrees(cartographic.latitude),
-          height: cartographic.height
-        };
-        const cartesians1 = Cesium.Cartesian3.fromDegrees(Cesium.Math.toDegrees(cartographic.longitude), Cesium.Math.toDegrees(cartographic.latitude));
 
-        viewer.scene.clampToHeightMostDetailed([cartesians1])
-          .then(clampedCartesians => {
-            console.log(clampedCartesians);
-            this.pointLight(viewer, clampedCartesians[0])
-          })
-        tileset.customShader.uniforms.u_lightPosition.value = Cesium.Cartesian3.fromDegrees(graphicCoor.lon, graphicCoor.lat, graphicCoor.height),
-          console.log('点击位置：', graphicCoor)
-        console.log("longitude:", cartographic.longitude, "latitude：", cartographic.latitude)
+        // 聚光灯
+        const customShader = new Cesium.CustomShader({
+          uniforms: {
+            u_lightPos: { type: Cesium.UniformType.VEC3, value: cartographic },
+            color: { type: Cesium.UniformType.VEC3, value: Cesium.Color.fromCssColorString('#02ff00') },
+            time: { type: Cesium.UniformType.INT, value: new Date().getTime() }
+          },
+          fragmentShaderText: `
+            void fragmentMain(FragmentInput fsInput,inout czm_modelMaterial  material) {
+              vec3 normal = normalize(fsInput.attributes.normalEC);
+              vec3 lightDir = normalize(fsInput.attributes.positionWC - u_lightPos);
+              float NdotL = max(dot(normal, lightDir), 0.5);
+              float lightDistance = length(fsInput.attributes.positionWC-u_lightPos);
+              float intensity=pow(clamp(1.-lightDistance/100.0,0. ,1.),2.);
+              //material.diffuse = material.diffuse * NdotL;
+              material.diffuse = vec3(1.,1.,1.)*intensity;
+            }`
+        });
+
+        tileset.customShader = customShader
+        // 更改点光源位置
+        // tileset.customShader.uniforms.u_lightPosition.value = cartographic;
+        console.log('点击位置：', cartographic)
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
     },
     addNightTexture (tileset) {
@@ -183,13 +190,13 @@ export default {
     pointLight (viewer, pos) {
       if (lightSource) viewer.entities.remove(lightSource)
       lightSource = viewer.entities.add({
-        position: pos,// Cesium.Cartesian3.fromDegrees(pos[0], pos[1], 0), // 经度、纬度、高度
+        position: pos,
         point: {
           pixelSize: 10, // 点光源的大小
           color: new Cesium.Color(1.0, 1.0, 0.0, 1.0), // 黄色
           outlineColor: new Cesium.Color(1.0, 1.0, 0.0, 1.0), // 黄色轮廓
           outlineWidth: 2,
-          heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND
+          heightReference: Cesium.HeightReference.CLAMP_TO_3D_TILE
         }
       });
 
