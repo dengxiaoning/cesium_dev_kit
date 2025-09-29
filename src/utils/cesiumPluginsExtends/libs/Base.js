@@ -35,6 +35,16 @@ let dfSt = undefined
  */
 
 /**
+ * @typedef {Object}  TDTStyleType - 天地图样式类型
+ * @property {string} img - 卫星影像
+ * @property {string} cia - 卫星影像标记
+ * @property {string} vec - 矢量图
+ * @property {string} cva - 矢量图标记
+ * @property {string} ter - 地形图
+ * @property {string} cta - 地形图标记
+ */
+
+/**
  * 基本构造方法base
  * @class
  * @param {object} params
@@ -1365,7 +1375,7 @@ Base.prototype = {
      * @global
      * @param {object} options
      * @param {string} options.key - 天地图key
-     * @param {string} options.style - 图层类型，可选['cva'|'img'|'ter']
+     * @param {TDTStyleType} [options.style=vec] - 图层类型
      * @returns  {WebMapTileServiceImageryProvider}
      * @example
      * viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({

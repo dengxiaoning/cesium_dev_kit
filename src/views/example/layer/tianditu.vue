@@ -1,10 +1,8 @@
 <template>
   <div class="sky-box">
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
 
-    <div class="cust-gui-box"
-         id="cust-gui-box"></div>
+    <div class="cust-gui-box" id="cust-gui-box"></div>
   </div>
 </template>
 <script >
@@ -52,22 +50,36 @@ export default {
       }));
       layer.name = '标注'; layer.id = 'layer1'; layer.show = true;
 
-      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({ key }), 2);
-      layer2.name = '电子'; layer2.id = 'layer2'; layer2.show = true; layer2.alpha = 0.4;
+      let layer2 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({ key, style: 'vec' }), 1);
+      layer2.name = '电子'; layer2.id = 'layer2'; layer2.show = true; layer2.alpha = 1;
 
       let layer3 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({
         key,
-        style: 'img'
+        style: 'cia'
       }));
-      layer3.name = '影像'; layer3.id = 'layer3'; layer3.show = false; layer3.alpha = 0.3;
+      layer3.name = '影像标注'; layer3.id = 'layer3'; layer3.show = false;
 
       let layer4 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({
         key,
-        style: 'ter'
-      }));
-      layer4.name = '地形'; layer4.id = 'layer3'; layer4.show = false; layer4.alpha = 0.3;
+        style: 'img'
+      }), 1);
+      layer4.name = '影像'; layer4.id = 'layer4'; layer4.show = false; layer4.alpha = 1;
 
-      this.control.showLayerSwitchPanel([layer, layer2, layer3, layer4], { elementId: 'cust-gui-box' })
+
+
+      let layer5 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({
+        key,
+        style: 'cta'
+      }));
+      layer5.name = '地形标注'; layer5.id = 'layer5'; layer5.show = false;
+
+
+      let layer6 = this.c_viewer.imageryLayers.addImageryProvider(new Cesium.Scene.TdtImageryProvider({
+        key,
+        style: 'ter'
+      }), 1);
+      layer6.name = '地形'; layer6.id = 'layer6'; layer6.show = false; layer6.alpha = 1;
+      this.control.showLayerSwitchPanel([layer, layer2, layer3, layer4, layer5, layer6], { elementId: 'cust-gui-box' })
       this.flyTo();
     },
     flyTo () {
