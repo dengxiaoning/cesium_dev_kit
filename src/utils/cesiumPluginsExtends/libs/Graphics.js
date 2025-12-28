@@ -194,8 +194,8 @@ Graphics.prototype = {
           new Cesium.Color(0.165, 0.165, 0.165, 0.8),
         verticalOrigin:
           options.l_verticalOrigin || Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: options.l_pixelOffset || new Cesium.Cartesian2(0, -30)
-        //heightReference:Cesium.HeightReference.RELATIVE_TO_GROUND
+        pixelOffset: options.l_pixelOffset || new Cesium.Cartesian2(0, -30),
+        heightReference:options.heightReference!=undefined?options.heightReference:Cesium.HeightReference.NONE
       })
     }
   },
@@ -236,10 +236,10 @@ Graphics.prototype = {
         height: options.b_height || 35,
         clampToGround: options.b_clampToGround || true,
         scale: options.b_scale || 1,
-        // eyeOffset :new Cesium.Cartesian2(0, -20),
+         eyeOffset : options.eyeOffset!=undefined?options.eyeOffset: Cesium.Cartesian3.ZERO,
         pixelOffset: options.b_pixelOffset || new Cesium.Cartesian2(0, -20),
-        scaleByDistance: options.b_scaleByDistance || undefined
-        // heightReference:Cesium.HeightReference.RELATIVE_TO_GROUND
+        scaleByDistance: options.b_scaleByDistance || undefined,
+        heightReference:options.HeightReference!=undefined?options.HeightReference:Cesium.HeightReference.NONE
       })
     }
   },
@@ -528,7 +528,7 @@ Graphics.prototype = {
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * graphicObj.graphics.getCylinderGraphics({
+   * graphicObj.graphics.createPointsGraphics({
    *    name:'cylinderObj',
    *    oid:'cylinderID',
         positions: [Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 400.0)],
@@ -537,7 +537,8 @@ Graphics.prototype = {
           b_width: 40,
           b_height: 25,
           b_scale: 1.5,
-          b_scaleByDistance: new Cesium.NearFarScalar(1.5e2, 2.0, 1.5e7, 0.5)
+          b_scaleByDistance: new Cesium.NearFarScalar(1.5e2, 2.0, 1.5e7, 0.5),
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
         },
         label: {
           l_text: '中科较大',

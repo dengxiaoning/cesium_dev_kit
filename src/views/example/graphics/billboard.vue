@@ -1,7 +1,6 @@
 <template>
   <div>
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
   </div>
 </template>
 <script >
@@ -78,7 +77,8 @@ export default {
           b_width: 40,
           b_height: 25,
           b_scale: 1.5,
-          b_scaleByDistance: new Cesium.NearFarScalar(1.5e2, 2.0, 1.5e7, 0.5)
+          b_scaleByDistance: new Cesium.NearFarScalar(1.5e2, 2.0, 1.5e7, 0.5),
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
         },
         label: {
           l_text: '中科较大',

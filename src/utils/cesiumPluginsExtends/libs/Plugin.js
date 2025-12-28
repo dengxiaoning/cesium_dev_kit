@@ -856,7 +856,7 @@ Plugin.prototype = {
         this._container = null
         this._elements = elements
         this._isBackHide = isBackHide
-        
+        this._postBuildFun=null
         this._parentEleId =
         elements.length>0?elements[0]['parentEleId']||'info-warp' : 'info-warp'
 
@@ -882,7 +882,7 @@ Plugin.prototype = {
 
 
         var $this = this
-        this._scene.preRender.addEventListener(function () {
+        this._postBuildFun = function () {
           var boxElements = getElementsByClass('close__box__btn');
           // 遍历所有元素并绑定点击事件
           boxElements.forEach(function(element) {
@@ -903,6 +903,7 @@ Plugin.prototype = {
               p,
               $this._scratch
             )
+
             const offsetX = $this._elements[i].offset ? $this._elements[i].offset[0] : 0;
             const offsety = $this._elements[i].offset ? $this._elements[i].offset[1] : 0;
             if (Cesium.defined(canvasPosition)) {
@@ -931,7 +932,8 @@ Plugin.prototype = {
               }
             }
           }
-        })
+        }
+        this._scene.preRender.addEventListener(this._postBuildFun)
       }
       /**
        * 根据Id 移除信息框中元素
@@ -953,12 +955,18 @@ Plugin.prototype = {
           e.id !== id
         })
         this._container.removeChild(document.getElementById(id))
+        if (this._postBuildFun) {
+          this._scene.preRender.removeEventListener(this._postBuildFun)
+        }
       }
       Css3Renderer.prototype.removeChild = function () {
           const parentNode = document.getElementById(this._parentEleId)
              if (parentNode.contains(this._container)) {
                     parentNode.removeChild(this._container)
-             }
+        }
+        if (this._postBuildFun) {
+          this._scene.preRender.removeEventListener(this._postBuildFun)
+        }
       }
        /**
        * 关闭信息框
@@ -978,7 +986,10 @@ Plugin.prototype = {
         const parentNode = document.getElementById(this._parentEleId)
            if (parentNode.contains(this._container)) {
                   parentNode.removeChild(this._container)
-           }
+        }
+        if (this._postBuildFun) {
+          this._scene.postRender.removeEventListener(this._postBuildFun)
+        }
       }
       Css3Renderer.prototype.append = function (object) {
         this._elements.push(object)
