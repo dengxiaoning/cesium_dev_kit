@@ -157,7 +157,8 @@ Graphics.prototype = {
    * @param {boolean} options.l_showBackground - 是否显示背景颜色
    * @param {object} options.l_backgroundColor - 背景颜色
    * @param {string} options.l_verticalOrigin - 垂直方向
-   * @param {object} options.l_pixelOffset - 偏移
+   * @param {Cesium.Cartesian2} options.l_pixelOffset - 偏移
+   * @param {Cesium.HeightReference} options.l_heightReference - 高程参照设置
    * @example
    * import { Graphics } from 'cesium_dev_kit'
    * const graphicObj = new Graphics({
@@ -173,7 +174,8 @@ Graphics.prototype = {
         l_showBackground: false,
         l_backgroundColor : new Cesium.Color(0.165, 0.165, 0.165, 0.8),
         l_verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
-        l_pixelOffset :new Cesium.Cartesian2(0, -30),
+        l_pixelOffset: new Cesium.Cartesian2(0, -30),
+        l_heightReference: Cesium.HeightReference.RELATIVE_TO_TERRAIN
    * })
    * @returns  {LabelGraphics} 返回LabelGraphics实例
    */
@@ -195,7 +197,7 @@ Graphics.prototype = {
         verticalOrigin:
           options.l_verticalOrigin || Cesium.VerticalOrigin.BOTTOM,
         pixelOffset: options.l_pixelOffset || new Cesium.Cartesian2(0, -30),
-        heightReference:options.heightReference!=undefined?options.heightReference:Cesium.HeightReference.NONE
+        heightReference:options.l_heightReference!=undefined?options.l_heightReference:Cesium.HeightReference.NONE
       })
     }
   },
@@ -209,7 +211,9 @@ Graphics.prototype = {
    * @param {boolean} options.b_clampToGround - 贴地
    * @param {number} options.b_scale - 缩放比例
    * @param {string} options.b_scaleByDistance - 缩放远近距离
-   * @param {object} options.b_pixelOffset - 偏移
+   * @param {Cesium.Cartesian2} options.b_pixelOffset - 偏移
+   * @param {Cesium.Cartesian2} options.b_eyeOffset - 视角偏移设置
+   * @param {Cesium.HeightReference} options.b_heightReference - 高程参照设置
    * @example
    * import { Graphics } from 'cesium_dev_kit'
    * const graphicObj = new Graphics({
@@ -224,6 +228,8 @@ Graphics.prototype = {
         b_scale : 1,
         b_pixelOffset :new Cesium.Cartesian2(0, -20),
         b_scaleByDistance : new Cesium.NearFarScalar(1.5e2, 0.7, 1.5e7, 0.5),
+        b_eyeOffset: new Cesium.Cartesian2(0, -20),
+        b_heightReference: Cesium.HeightReference.RELATIVE_TO_TERRAIN
    * })
    * @returns {BillboardGraphics}   返回BillboardGraphics实例
    */
@@ -236,10 +242,10 @@ Graphics.prototype = {
         height: options.b_height || 35,
         clampToGround: options.b_clampToGround || true,
         scale: options.b_scale || 1,
-         eyeOffset : options.eyeOffset!=undefined?options.eyeOffset: Cesium.Cartesian3.ZERO,
+         eyeOffset : options.b_eyeOffset!=undefined?options.b_eyeOffset: Cesium.Cartesian3.ZERO,
         pixelOffset: options.b_pixelOffset || new Cesium.Cartesian2(0, -20),
         scaleByDistance: options.b_scaleByDistance || undefined,
-        heightReference:options.HeightReference!=undefined?options.HeightReference:Cesium.HeightReference.NONE
+        heightReference:options.b_heightReference!=undefined?options.b_heightReference:Cesium.HeightReference.NONE
       })
     }
   },
