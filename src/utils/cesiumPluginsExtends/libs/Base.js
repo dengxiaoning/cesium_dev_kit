@@ -1145,8 +1145,8 @@ Base.prototype = {
    *
    *   base.bindHandelEvent({
    *      leftClick: function click (event, _handlers) {
-   *        const { wgs84Coor, graphicCoor } = base.getHandlerClickPosition(event);
-   *        console.log(wgs84Coor, graphicCoor);
+   *        const { wgs84Coor, graphicCoor, cameraPosition } = base.getHandlerClickPosition(event);
+   *        console.log(wgs84Coor, graphicCoor, cameraPosition);
    *      }
    *     })
    * @returns {clickPositionType}
@@ -1155,16 +1155,15 @@ Base.prototype = {
     if (this._viewer) {
       let scene = this._viewer.scene
       let viewer = this._viewer
-      let pickPositionElliposid = scene.camera.pickEllipsoid(
-        e.position,
-        scene.globe.elliposid
-      )
+      let pickPositionElliposid = scene.camera.pickEllipsoid(e.position, scene.globe.elliposid);
       let cameraPosition = {
-        heading: Cesium.Math.toDegrees(viewer.camera.heading),
-        pitch: Cesium.Math.toDegrees(viewer.camera.pitch),
-        roll: Cesium.Math.toDegrees(viewer.camera.roll),
-        position: viewer.camera.position
-      }
+        cameraPosistion: viewer.camera.position,
+        heading: viewer.camera.heading,
+        pitch: viewer.camera.pitch,
+        roll: viewer.camera.roll
+      };
+
+
       // 将迪卡转换为地理坐标
       let cartographic = Cesium.Cartographic.fromCartesian(
         pickPositionElliposid

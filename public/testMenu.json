@@ -572,6 +572,18 @@
         "isHide": false,
         "isKeepAlive": true
       }
+    },{
+      "name": "splitLayer",
+      "path": "splitLayer",
+      "component": "example/layer/layers_split",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "卷帘",
+        "icon": "material-symbols:map-outline-sharp",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
     }]
   },
   {
