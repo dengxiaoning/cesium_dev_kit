@@ -37,7 +37,7 @@
     "@vitejs/plugin-vue": "^1.9.3",
     "@vitejs/plugin-vue-jsx": "^1.2.0",
     "@vue/compiler-sfc": "^3.4.32",
-    "mitt": "^2.1.0",
+    "mitt": "^3.0.1",
     "prettier": "^2.2.1",
     "sass": "1.77.6",
     "typescript": "^5.4.5",
