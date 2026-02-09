@@ -49,7 +49,7 @@
     "vite-plugin-html": "^2.0.7",
     "vite-plugin-style-import": "^0.10.0",
     "vite-plugin-svg-icons": "^1.0.4",
-    "vue-tsc": "^0.0.24"
+    "vue-tsc": "^3.2.4"
   },
   "engines": {
     "node": "==16.0.0",
