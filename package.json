@@ -19,7 +19,7 @@
     "dat.gui": "^0.7.9",
     "echarts": "4.2.1",
     "element-plus": "^2.7.6",
-    "flatted": "^3.2.2",
+    "flatted": "^3.3.3",
     "js-cookie": "2.2.0",
     "libgif": "0.0.3",
     "nprogress": "0.2.0",
