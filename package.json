@@ -17,7 +17,7 @@
     "cesium-navigation-es6": "^3.0.9",
     "concaveman": "^1.1.1",
     "dat.gui": "^0.7.9",
-    "echarts": "4.2.1",
+    "echarts": "6.0.0",
     "element-plus": "^2.7.6",
     "flatted": "^3.2.2",
     "js-cookie": "2.2.0",
