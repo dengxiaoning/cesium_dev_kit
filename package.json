@@ -9,7 +9,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@turf/turf": "^6.5.0",
+    "@turf/turf": "^7.3.4",
     "@vueup/vue-quill": "^1.2.0",
     "axios": "^0.21.1",
     "cesium": "^1.105.0",
