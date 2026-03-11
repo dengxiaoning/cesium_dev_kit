@@ -11,7 +11,7 @@
   "dependencies": {
     "@turf/turf": "^6.5.0",
     "@vueup/vue-quill": "^1.2.0",
-    "axios": "^0.21.1",
+    "axios": "^1.13.6",
     "cesium": "^1.105.0",
     "cesium_dev_kit": "^1.0.76",
     "cesium-navigation-es6": "^3.0.9",
