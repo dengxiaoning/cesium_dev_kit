@@ -27,7 +27,7 @@
     "path-browserify": "^1.0.1",
     "three": "^0.163.0",
     "vue": "^3.2.13",
-    "vue-router": "^4.0.6",
+    "vue-router": "^5.0.3",
     "vuex": "^4.1.0"
   },
   "devDependencies": {
