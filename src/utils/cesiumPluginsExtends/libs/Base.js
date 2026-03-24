@@ -1039,6 +1039,7 @@ Base.prototype = {
       }
       // 地形
       if (!picks) {
+    
         var ray = this._viewer.scene.camera.getPickRay(px)
         if (!ray) return null
         cartesian = this._viewer.scene.globe.pick(ray, this._viewer.scene)

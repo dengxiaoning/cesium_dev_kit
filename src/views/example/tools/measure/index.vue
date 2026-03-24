@@ -28,26 +28,22 @@ export default {
     this.initMap()
   },
   methods: {
+    // 添加地形数据
+    async addWorldTerrainAsync (viewer) {
+      try {
+        const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+        viewer.terrainProvider = terrainProvider;
+      } catch (error) {
+        console.log(`Failed to add world imagery: ${error}`);
+      }
+    },
     async initMap () {
-      const tempData = [
-        {
-          type: 'UrlTemplateImageryProvider',
-          option: {
-            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
-          }
-        },
-        {
-          type: 'UrlTemplateImageryProvider',
-          option: {
-            url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
-          }
-        }
-      ]
       const {
         viewer,
         material,
         graphics,
-        draw
+        draw,
+        base
       } = new initCesium(
         {
           cesiumGlobal: Cesium,
@@ -56,16 +52,27 @@ export default {
             infoBox: false,
             shouldAnimate: true,
           },
-          extraConfig: {},
-          MapImageryList: tempData
+          extraConfig: {
+            depthTest: true,
+            AccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE'
+          },
+          MapImageryList: [{
+            type: 'UrlTemplateImageryProvider',
+            option: {
+              url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+              subdomains: ['0', '1', '2', '3'],
+              tilingScheme: new Cesium.WebMercatorTilingScheme()
+            }
+
+          }]
         })
 
       this.c_viewer = viewer;
-
+      this.b_base = base;
       this.material = material;
       this.graphics = graphics;
       this.draw = draw;
-
+      this.addWorldTerrainAsync(viewer);
       let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
       let tileset = this.c_viewer.scene.primitives.add(tiles)
       tileset.style = new Cesium.Cesium3DTileStyle({
@@ -82,13 +89,30 @@ export default {
           ]
         }
       });
-      viewer.flyTo(tileset)
+      // viewer.flyTo(tileset)
+      this.justVisualLocation()
 
+    },
+    justVisualLocation () {
+      this.b_base.flyTo({
+        position: {
+          x: -1282407.9014409434,
+          y: 5419513.991543971,
+          z: 3100164.1762982574,
+        },
+        orientation: {
+          heading: 0.7912511169225169,
+          pitch: -0.7329013575106695,
+          roll: 0.000013780821305431346,
+        },
+        duration: 2,
+      });
     },
     caldDistain (clicktype) {
       this.activeId = clicktype;
       this.draw.drawLineGraphics({
         measure: true,
+        clampToGround: true,
         callback: () => { }
       });
     },
@@ -96,6 +120,7 @@ export default {
       this.activeId = clicktype;
       this.draw.drawPolygonGraphics({
         measure: true,
+        clampToGround: true,
         callback: () => { }
       });
     },

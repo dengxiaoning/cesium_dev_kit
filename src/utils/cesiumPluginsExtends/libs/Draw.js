@@ -116,6 +116,167 @@ Draw.prototype = {
       poiObj = this._drawLayer.entities.add(_poiEntity);
     }
   },
+  // 绘制操作
+  _drawComand :function(options,drawingMode) {
+    var activeShapePoints = [],
+    $this = this,lineObj, activeShape,floatingPoint,
+    polygonObj = new Cesium.PolygonHierarchy(),
+    _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas);
+    // 获取全局handler
+   drawHandler = _handlers;
+  // left
+  _handlers.setInputAction(function (movement) {
+    var cartesian = $this.getCatesian3FromPX(movement.position);
+    if (Cesium.defined(cartesian)) {
+      if (activeShapePoints.length === 0) {
+        if (options.measure){
+            floatingPoint = _addInfoPoint(cartesian);
+        }
+        polygonObj.positions.push(cartesian.clone());
+        activeShapePoints.push(cartesian.clone());
+        const dynamicPositions = new Cesium.CallbackProperty(function () {
+          return activeShapePoints;
+        }, false);
+        const dynamicPositionsPolygon = new Cesium.CallbackProperty(function () {
+          if (drawingMode === "polygon") {
+            // return new Cesium.PolygonHierarchy(activeShapePoints);
+            return polygonObj;
+          }
+          return activeShapePoints;
+        }, false);
+        activeShape = drawShape(dynamicPositions,dynamicPositionsPolygon);
+      } else {
+        // 这个很关键，否决多边形转换wgs84 高程会丢失
+        polygonObj.positions.push(cartesian.clone());
+        activeShapePoints.push(cartesian.clone());
+        if (options.measure) {
+          _addInfoPoint(cartesian);
+        }
+      }
+
+      // 绘制直线 两个点
+      if (activeShapePoints.length == 2 && options.type === "straightLine") {
+        _handlers.destroy();
+        _handlers = null;
+        if (typeof options.callback === "function") {
+          options.callback($this.transformCartesianArrayToWGS84Array(activeShapePoints), activeShape);
+        }
+      }
+    }
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+  _handlers.setInputAction(function (movement) {
+    var newPosition = $this.getCatesian3FromPX(movement.endPosition);
+    $this.tooltip.showAtCartesian(newPosition,'右键单击结束!')
+    if (Cesium.defined(floatingPoint)) {
+      if (Cesium.defined(newPosition)) {
+        floatingPoint.position.setValue(newPosition);
+        activeShapePoints.pop();
+        activeShapePoints.push(newPosition);
+      }
+    }
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+  // 绘制线条
+  function drawShape (positionData,positionDataPolygon) {
+    let objEntity = new Cesium.Entity();
+    if (drawingMode=="line") {
+      objEntity.polyline = {
+        positions:positionData,
+        width: options.width || 5,
+        material: options.material || Cesium.Color.BLUE.withAlpha(0.8),
+        clampToGround: options.clampToGround || false,
+        clampToS3M: options.clampToS3M || false,
+      };
+    } else if (drawingMode === "polygon") {
+      objEntity.polyline = options.style;
+
+      objEntity.polyline['positions'] = positionData;
+
+      objEntity.polygon = {
+        hierarchy: positionDataPolygon,
+        material: options.material ||Cesium.Color.WHITE.withAlpha(0.7),
+        clampToGround:$this._objHasOwnProperty(options, 'clampToGround', false),
+      };
+      objEntity.clampToS3M = true;
+    }
+    return $this._drawLayer.entities.add(objEntity);
+
+  }
+    // 右键点击事件，结束绘制
+    function terminateShape () {
+      if (options.measure && drawingMode == "polygon") {
+        activeShapePoints.push(activeShapePoints[0])
+      }
+
+      lineObj = drawShape(activeShapePoints, activeShapePoints);
+    
+      if (options.height) {
+        //立体
+        lineObj.polygon.extrudedHeight = options.height;
+        lineObj.polygon.material = Cesium.Color.BLUE.withAlpha(0.5);
+      }
+        
+      if (options.measure && drawingMode == "polygon") {
+      //   // 获取坐标点
+      //   let posCoors = lineObj.polygon.hierarchy.getValue(Cesium.JulianDate.now()).positions;
+      // // 得到多边形的外包围球
+      // let boundingSphere = Cesium.BoundingSphere.fromPoints(posCoors);
+      // // 得到多边形中心点位置
+      // let centerCoors = boundingSphere.center;
+      // 量测
+      _addInfoPoint(activeShapePoints[0],true);
+    } 
+     
+    $this._viewer.entities.remove(floatingPoint);
+    $this._viewer.entities.remove(activeShape);
+    floatingPoint = undefined;
+    activeShape = undefined;
+    activeShapePoints = [];
+  }
+    // right
+    _handlers.setInputAction(function (movement) {
+
+      terminateShape();
+      if (typeof options.callback === "function") {
+        options.callback($this.transformCartesianArrayToWGS84Array(activeShapePoints), lineObj);
+      }
+      lineObj = undefined;
+      $this.tooltip.setVisible(false);
+      _handlers.destroy();
+      _handlers = null;
+    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+
+    //添加坐标点
+    const _addInfoPoint = function (position,endDraw) {
+      var _labelEntity = new Cesium.Entity();
+      _labelEntity.position = position;
+      _labelEntity.point = {
+        pixelSize: 10,
+        outlineColor: Cesium.Color.BLUE,
+        outlineWidth: 5,
+        HeightReference : Cesium.HeightReference.CLAMP_TO_TERRAIN,
+      };
+      var textStr = '';
+      var convertCoor = $this.transformCartesianArrayToWGS84Array(activeShapePoints)
+      if (drawingMode === "line") {
+        textStr = ($this.getPositionDistance(convertCoor) / 1000).toFixed(4) + "公里";
+      } else if (drawingMode === "polygon"&&endDraw) {
+        textStr = ($this.getPositionsArea(convertCoor) / 1000000.0).toFixed(4) +"平方公里";
+      }
+      if (drawingMode === "line" || (drawingMode === "polygon" && endDraw)) {
+        _labelEntity.label = {
+          text:textStr,
+          show: true,
+          showBackground: true,
+          font: "14px monospace",
+          horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          pixelOffset: new Cesium.Cartesian2(-20, -80), //left top
+        };
+      }
+      $this._drawLayer.entities.add(_labelEntity);
+    };
+  },
   /**
    * 画线 or 测距
    * @function
@@ -146,93 +307,7 @@ Draw.prototype = {
   drawLineGraphics: function (options) {
     options = options || {};
     if (this._viewer && options) {
-      var positions = [],
-        _lineEntity = new Cesium.Entity(),
-        $this = this,
-        lineObj,
-        _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas);
-      // 获取handler
-      drawHandler = _handlers;
-      // left
-      _handlers.setInputAction(function (movement) {
-        var cartesian = $this.getCatesian3FromPX(movement.position);
-        if (cartesian && cartesian.x) {
-          if (positions.length == 0) {
-            positions.push(cartesian.clone());
-          }
-          if (options.measure) {
-            _addInfoPoint(cartesian);
-          }
-          // 绘制直线 两个点
-          if (positions.length == 2 && options.type === "straightLine") {
-            _handlers.destroy();
-            _handlers = null;
-            if (typeof options.callback === "function") {
-              options.callback($this.transformCartesianArrayToWGS84Array(positions), lineObj);
-            }
-          }
-          positions.push(cartesian);
-        }
-      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
-      _handlers.setInputAction(function (movement) {
-        var cartesian = $this.getCatesian3FromPX(movement.endPosition);
-        $this.tooltip.showAtCartesian(cartesian,'右键单击结束!')
-        if (positions.length >= 2) {
-          if (cartesian && cartesian.x) {
-            positions.pop();
-            positions.push(cartesian);
-          }
-        }
-      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-      // right
-      _handlers.setInputAction(function (movement) {
-        $this.tooltip.setVisible(false);
-        _handlers.destroy();
-        _handlers = null;
-
-        var cartesian = $this.getCatesian3FromPX(movement.position);
-        if (options.measure) {
-          _addInfoPoint(cartesian);
-        }
-        if (typeof options.callback === "function") {
-          options.callback($this.transformCartesianArrayToWGS84Array(positions), lineObj);
-        }
-      }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-
-      _lineEntity.polyline = {
-        width: options.width || 5,
-        material: options.material || Cesium.Color.BLUE.withAlpha(0.8),
-        clampToGround: options.clampToGround || false,
-        clampToS3M: options.clampToS3M || false,
-      };
-      _lineEntity.polyline.positions = new Cesium.CallbackProperty(function () {
-        return positions;
-      }, false);
-
-      lineObj = this._drawLayer.entities.add(_lineEntity);
-
-      //添加坐标点
-      const _addInfoPoint = function (position) {
-        var _labelEntity = new Cesium.Entity();
-        _labelEntity.position = position;
-        _labelEntity.point = {
-          pixelSize: 10,
-          outlineColor: Cesium.Color.BLUE,
-          outlineWidth: 5,
-        };
-        _labelEntity.label = {
-          text:
-            ($this.getPositionDistance($this.transformCartesianArrayToWGS84Array(positions)) / 1000).toFixed(4) + "公里",
-          show: true,
-          showBackground: true,
-          font: "14px monospace",
-          horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          pixelOffset: new Cesium.Cartesian2(-20, -80), //left top
-        };
-        $this._drawLayer.entities.add(_labelEntity);
-      };
+      this._drawComand(options, "line");
     }
   },
   /**
@@ -267,116 +342,20 @@ Draw.prototype = {
    */
   drawPolygonGraphics: function (options) {
     options = options || {};
-    const orgStyle={
+    const orgStyle = {
       width: 3,
       material: Cesium.Color.BLUE.withAlpha(0.8),
       clampToGround: true,
     };
     if (options.style) {
-      options.style=Object.assign({},orgStyle,options.style)
+      options.style = Object.assign({}, orgStyle, options.style)
     } else {
-      options.style=orgStyle
+      options.style = orgStyle
     }
 
 
     if (this._viewer && options) {
-      var positions = [],
-        polygon = new Cesium.PolygonHierarchy(),
-        _polygonEntity = new Cesium.Entity(),
-        $this = this,
-        polyObj = null,
-        _handler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas);
-      // 获取handler
-      drawHandler = _handler;
-      const create = function () {
-        _polygonEntity.polyline = options.style;
-
-        _polygonEntity.polyline.positions = new Cesium.CallbackProperty(function () {
-          return positions;
-        }, false);
-
-        _polygonEntity.polygon = {
-          hierarchy: new Cesium.CallbackProperty(function () {
-            return polygon;
-          }, false),
-
-          material: Cesium.Color.WHITE.withAlpha(0.1),
-          clampToGround:$this._objHasOwnProperty(options, 'clampToGround', false),
-        };
-        _polygonEntity.clampToS3M = true;
-
-        polyObj = $this._drawLayer.entities.add(_polygonEntity);
-      };
-
-      const _addInfoPoint = function (position) {
-        var _labelEntity = new Cesium.Entity();
-        _labelEntity.position = position;
-        _labelEntity.point = {
-          pixelSize: 10,
-          outlineColor: Cesium.Color.BLUE,
-          outlineWidth: 5,
-        };
-        _labelEntity.label = {
-          text:
-            ($this.getPositionsArea($this.transformCartesianArrayToWGS84Array(positions)) / 1000000.0).toFixed(4) +
-            "平方公里",
-          show: true,
-          showBackground: true,
-          font: "14px monospace",
-          horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          pixelOffset: new Cesium.Cartesian2(-20, -50), //left top
-        };
-        $this._drawLayer.entities.add(_labelEntity);
-      };
-
-      // left
-      _handler.setInputAction(function (movement) {
-        var cartesian = $this.getCatesian3FromPX(movement.position);
-        if (cartesian && cartesian.x) {
-          if (positions.length == 0) {
-            polygon.positions.push(cartesian.clone());
-            positions.push(cartesian.clone());
-          }
-          positions.push(cartesian.clone());
-          polygon.positions.push(cartesian.clone());
-
-          if (!polyObj) create();
-        }
-      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-      // mouse
-      _handler.setInputAction(function (movement) {
-        var cartesian = $this.getCatesian3FromPX(movement.endPosition);
-        $this.tooltip.showAtCartesian(cartesian,'右键单击结束!')
-        if (positions.length >= 2) {
-          if (cartesian && cartesian.x) {
-            positions.pop();
-            positions.push(cartesian);
-            polygon.positions.pop();
-            polygon.positions.push(cartesian);
-          }
-        }
-      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-
-      // right
-      _handler.setInputAction(function () {
-        _handler.destroy();
-        $this.tooltip.setVisible(false);
-        positions.push(positions[0]);
-
-        if (options.height) {
-          //立体
-          _polygonEntity.polygon.extrudedHeight = options.height;
-          _polygonEntity.polygon.material = Cesium.Color.BLUE.withAlpha(0.5);
-        }
-        if (options.measure) {
-          // 量测
-          _addInfoPoint(positions[0]);
-        }
-        if (typeof options.callback === "function") {
-          options.callback($this.transformCartesianArrayToWGS84Array(positions), polyObj);
-        }
-      }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+      this._drawComand(options, "polygon");
     }
   },
   /**
