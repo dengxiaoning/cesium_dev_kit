@@ -1039,14 +1039,30 @@ Base.prototype = {
       }
       // 地形
       if (!picks) {
-    
         var ray = this._viewer.scene.camera.getPickRay(px)
         if (!ray) return null
         cartesian = this._viewer.scene.globe.pick(ray, this._viewer.scene)
         isOnTerrain = true
       }
+      // 如果拾取到了物体，但不是模型
+      if (picks&&!isOn3dtiles) {
+        cartesian = this._viewer.scene.pickPosition(px)
+        if (cartesian) {
+          let cartographic = Cesium.Cartographic.fromCartesian(cartesian)
+          if (cartographic.height < 0) cartographic.height = 0
+          let lon = Cesium.Math.toDegrees(cartographic.longitude),
+            lat = Cesium.Math.toDegrees(cartographic.latitude),
+            height = cartographic.height //模型高度
+          cartesian = this.transformWGS84ToCartesian({
+            lng: lon,
+            lat: lat,
+            alt: height
+          })
+        }
+      }
       // 地球
-      if (!isOn3dtiles && !isOnTerrain) {
+      if (!isOn3dtiles && !isOnTerrain&&!picks) {
+        
         cartesian = this._viewer.scene.camera.pickEllipsoid(
           px,
           this._viewer.scene.globe.ellipsoid

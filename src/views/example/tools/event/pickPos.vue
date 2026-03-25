@@ -222,15 +222,15 @@ export default {
       } else if (type === 'scenePickPos') {
         this.bindEventToScene(e => {
           // 用来拾取三维空间笛卡尔坐标
-          let pickPosition = scene.pickPosition(e.position);
+          let cartesian = scene.pickPosition(e.position);
           this.c_viewer.entities.add({
-            position: pickPosition,
+            position: cartesian,
             point: {
               color: Cesium.Color.RED,
               pixelSize: 50,// 像素大小
               outlineColor: Cesium.Color.YELLOWGREEN,
               outlineWidth: 2,// 边框
-              heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+              // heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
             }
           })
         })

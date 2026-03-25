@@ -184,8 +184,8 @@ Draw.prototype = {
         positions:positionData,
         width: options.width || 5,
         material: options.material || Cesium.Color.BLUE.withAlpha(0.8),
-        clampToGround: options.clampToGround || false,
-        clampToS3M: options.clampToS3M || false,
+        clampToGround: $this._objHasOwnProperty(options, 'clampToGround', false),
+        clampToS3M: $this._objHasOwnProperty(options, 'clampToS3M', false),
       };
     } else if (drawingMode === "polygon") {
       objEntity.polyline = options.style;
@@ -254,7 +254,7 @@ Draw.prototype = {
         pixelSize: 10,
         outlineColor: Cesium.Color.BLUE,
         outlineWidth: 5,
-        HeightReference : Cesium.HeightReference.CLAMP_TO_TERRAIN,
+        // HeightReference: options.clampToGround ? Cesium.HeightReference.CLAMP_TO_GROUND  : Cesium.HeightReference.NONE,
       };
       var textStr = '';
       var convertCoor = $this.transformCartesianArrayToWGS84Array(activeShapePoints)

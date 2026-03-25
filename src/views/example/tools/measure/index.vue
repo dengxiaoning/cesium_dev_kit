@@ -91,7 +91,7 @@ export default {
       });
       // viewer.flyTo(tileset)
       this.justVisualLocation()
-
+      this.loadGeojson();
     },
     justVisualLocation () {
       this.b_base.flyTo({
@@ -107,6 +107,38 @@ export default {
         },
         duration: 2,
       });
+    },
+    // 加载geojson
+    loadGeojson () {
+      const dataSourceObj = new Cesium.GeoJsonDataSource();
+      this.c_viewer.dataSources.add(dataSourceObj);
+      dataSourceObj
+        .load("/static/data/testData.json", {
+          // stroke: Cesium.Color.fromCssColorString('#2520aF'),
+          fill: Cesium.Color.fromCssColorString('#778899'),
+          // strokeWidth: 3,
+          markerSymbol: '?',
+          clampToGround: true,
+        })
+        .then((ent) => {
+          // 设置行政区域的样式
+          const entities = ent.entities.values;
+          for (let i = 0; i < entities.length; i++) {
+            const entity = entities[i];
+            // entity.polygon.material =
+            //   Cesium.Color.fromCssColorString('#FE1916').withAlpha(0.5); // Cesium.Color.RED.withAlpha(0.2);
+            entity.polygon.material = new Cesium.StripeMaterialProperty({
+              evenColor: Cesium.Color.DARKRED.withAlpha(0.5),
+              oddColor: Cesium.Color.INDIANRED.withAlpha(0.5),
+              repeat: 5.0,
+            });
+            entity.polygon.outline = true;
+            entity.polygon.outlineColor =
+              Cesium.Color.fromCssColorString('#FE1916');
+            entity.polygon.outlineWidth = 4.0;
+          }
+        });
+      // viewerData.viewer.zoomTo(viewerData.dataSource);
     },
     caldDistain (clicktype) {
       this.activeId = clicktype;
