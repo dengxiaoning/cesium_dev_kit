@@ -186,8 +186,7 @@ Analysis.prototype = {
 
       $this.drawPolygonGraphics({
         callback: function (polygon, polygonObj) {
-          $this._drawLayer.entities.remove(polygonObj);
-
+          // $this._drawLayer.entities.remove(polygonObj);
           let terrainClipPlan = new Cesium.Scene.TerrainClipPlan($this._viewer, {
             height: _height,
             splitNum: _splitNum,

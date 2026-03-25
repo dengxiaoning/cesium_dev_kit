@@ -124,59 +124,8 @@ Draw.prototype = {
     _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas);
     // 获取全局handler
    drawHandler = _handlers;
-  // left
-  _handlers.setInputAction(function (movement) {
-    var cartesian = $this.getCatesian3FromPX(movement.position);
-    if (Cesium.defined(cartesian)) {
-      if (activeShapePoints.length === 0) {
-        if (options.measure){
-            floatingPoint = _addInfoPoint(cartesian);
-        }
-        polygonObj.positions.push(cartesian.clone());
-        activeShapePoints.push(cartesian.clone());
-        const dynamicPositions = new Cesium.CallbackProperty(function () {
-          return activeShapePoints;
-        }, false);
-        const dynamicPositionsPolygon = new Cesium.CallbackProperty(function () {
-          if (drawingMode === "polygon") {
-            // return new Cesium.PolygonHierarchy(activeShapePoints);
-            return polygonObj;
-          }
-          return activeShapePoints;
-        }, false);
-        activeShape = drawShape(dynamicPositions,dynamicPositionsPolygon);
-      } else {
-        // 这个很关键，否决多边形转换wgs84 高程会丢失
-        polygonObj.positions.push(cartesian.clone());
-        activeShapePoints.push(cartesian.clone());
-        if (options.measure) {
-          _addInfoPoint(cartesian);
-        }
-      }
-
-      // 绘制直线 两个点
-      if (activeShapePoints.length == 2 && options.type === "straightLine") {
-        _handlers.destroy();
-        _handlers = null;
-        if (typeof options.callback === "function") {
-          options.callback($this.transformCartesianArrayToWGS84Array(activeShapePoints), activeShape);
-        }
-      }
-    }
-  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
-  _handlers.setInputAction(function (movement) {
-    var newPosition = $this.getCatesian3FromPX(movement.endPosition);
-    $this.tooltip.showAtCartesian(newPosition,'右键单击结束!')
-    if (Cesium.defined(floatingPoint)) {
-      if (Cesium.defined(newPosition)) {
-        floatingPoint.position.setValue(newPosition);
-        activeShapePoints.pop();
-        activeShapePoints.push(newPosition);
-      }
-    }
-  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-  // 绘制线条
+    
+  // 绘制几何图形
   function drawShape (positionData,positionDataPolygon) {
     let objEntity = new Cesium.Entity();
     if (drawingMode=="line") {
@@ -204,47 +153,42 @@ Draw.prototype = {
   }
     // 右键点击事件，结束绘制
     function terminateShape () {
-      if (options.measure && drawingMode == "polygon") {
-        activeShapePoints.push(activeShapePoints[0])
+        // activeShapePoints.shift();
+        // polygonObj.positions.shift();
+      if (drawingMode == "polygon") {
+          activeShapePoints.push(activeShapePoints[0]);
+          polygonObj.positions.push(activeShapePoints[0]);
       }
-
-      lineObj = drawShape(activeShapePoints, activeShapePoints);
-    
-      if (options.height) {
-        //立体
-        lineObj.polygon.extrudedHeight = options.height;
-        lineObj.polygon.material = Cesium.Color.BLUE.withAlpha(0.5);
-      }
+        lineObj = drawShape(activeShapePoints, activeShapePoints);
+        if (options.height) {
+          //立体
+          lineObj.polygon.extrudedHeight = options.height;
+          lineObj.polygon.material = Cesium.Color.BLUE.withAlpha(0.5);
+        }
+        if (options.measure && drawingMode == "polygon") {
+        //   // 获取坐标点
+        //   let posCoors = lineObj.polygon.hierarchy.getValue(Cesium.JulianDate.now()).positions;
+        // // 得到多边形的外包围球
+        // let boundingSphere = Cesium.BoundingSphere.fromPoints(posCoors);
+        // // 得到多边形中心点位置
+        // let centerCoors = boundingSphere.center;
+        // 量测
+        _addInfoPoint(activeShapePoints[0],true);
+        } 
         
-      if (options.measure && drawingMode == "polygon") {
-      //   // 获取坐标点
-      //   let posCoors = lineObj.polygon.hierarchy.getValue(Cesium.JulianDate.now()).positions;
-      // // 得到多边形的外包围球
-      // let boundingSphere = Cesium.BoundingSphere.fromPoints(posCoors);
-      // // 得到多边形中心点位置
-      // let centerCoors = boundingSphere.center;
-      // 量测
-      _addInfoPoint(activeShapePoints[0],true);
-    } 
-     
-    $this._viewer.entities.remove(floatingPoint);
-    $this._viewer.entities.remove(activeShape);
-    floatingPoint = undefined;
-    activeShape = undefined;
-    activeShapePoints = [];
-  }
-    // right
-    _handlers.setInputAction(function (movement) {
-
-      terminateShape();
+      // 将数据传回调用函数
       if (typeof options.callback === "function") {
-        options.callback($this.transformCartesianArrayToWGS84Array(activeShapePoints), lineObj);
+        // 在transformCartesianArrayToWGS84Array转换中似乎需要删除掉第一个坐标，转换后默认会加上？？？明天【20260325 23::29】在研究了
+        let shiftEleArr = activeShapePoints.map(e=>e)
+        shiftEleArr.shift()
+        options.callback($this.transformCartesianArrayToWGS84Array(shiftEleArr), lineObj);
       }
-      lineObj = undefined;
-      $this.tooltip.setVisible(false);
-      _handlers.destroy();
-      _handlers = null;
-    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+      $this._viewer.entities.remove(floatingPoint);
+      $this._viewer.entities.remove(activeShape);
+      floatingPoint = undefined;
+      activeShape = undefined;
+      activeShapePoints = [];
+    }
 
     //添加坐标点
     const _addInfoPoint = function (position,endDraw) {
@@ -274,8 +218,75 @@ Draw.prototype = {
           pixelOffset: new Cesium.Cartesian2(-20, -80), //left top
         };
       }
-      $this._drawLayer.entities.add(_labelEntity);
+    
+    return  $this._drawLayer.entities.add(_labelEntity);
     };
+
+   // left click
+   _handlers.setInputAction(function (movement) {
+    var cartesian = $this.getCatesian3FromPX(movement.position);
+    if (Cesium.defined(cartesian)) {
+      if (activeShapePoints.length === 0) {
+        if (options.measure){
+          floatingPoint = _addInfoPoint(cartesian);
+        }
+        polygonObj.positions.push(cartesian.clone());
+        activeShapePoints.push(cartesian.clone());
+        const dynamicPositions = new Cesium.CallbackProperty(function () {
+          return activeShapePoints;
+        }, false);
+        const dynamicPositionsPolygon = new Cesium.CallbackProperty(function () {
+          if (drawingMode === "polygon") {
+            // return new Cesium.PolygonHierarchy(activeShapePoints);
+            return polygonObj;
+          }
+          return activeShapePoints;
+        }, false);
+        activeShape = drawShape(dynamicPositions,dynamicPositionsPolygon);
+      } 
+      // 这个很关键，否决多边形转换wgs84 高程会丢失
+      polygonObj.positions.push(cartesian.clone());
+      activeShapePoints.push(cartesian.clone());
+      if (options.measure) {
+        _addInfoPoint(cartesian);
+      }
+ 
+      // 绘制直线 两个点,用于可视域分析,判断等于三，因为第一次加了两个点
+      if (options.type === "straightLine" && activeShapePoints.length == 3) {
+        activeShapePoints.shift();//删除掉第一个重复点
+        _handlers.destroy();
+        _handlers = null;
+        $this.tooltip.setVisible(false);
+        if (typeof options.callback === "function") {
+          options.callback($this.transformCartesianArrayToWGS84Array(activeShapePoints), activeShape);
+        }
+      }
+    }
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+    // mouse move
+  _handlers.setInputAction(function (movement) {
+    var newPosition = $this.getCatesian3FromPX(movement.endPosition);
+    $this.tooltip.showAtCartesian(newPosition,'右键单击结束!')
+    if (Cesium.defined(floatingPoint)) {
+      if (Cesium.defined(newPosition)) {
+        floatingPoint.position.setValue(newPosition);
+        activeShapePoints.pop();
+        polygonObj.positions.pop();
+        polygonObj.positions.push(newPosition);
+        activeShapePoints.push(newPosition);
+      }
+    }
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    
+    // right click
+    _handlers.setInputAction(function (movement) {
+      terminateShape();
+      lineObj = undefined;
+      $this.tooltip.setVisible(false);
+      _handlers.destroy();
+      _handlers = null;
+    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
   },
   /**
    * 画线 or 测距
