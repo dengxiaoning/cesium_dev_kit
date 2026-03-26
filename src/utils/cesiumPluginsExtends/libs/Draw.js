@@ -191,7 +191,7 @@ Draw.prototype = {
     }
 
     //添加坐标点
-    const _addInfoPoint = function (position,endDraw) {
+    const _addInfoPoint = function (position,endDraw=false,isFloatingPoint=false) {
       var _labelEntity = new Cesium.Entity();
       _labelEntity.position = position;
       _labelEntity.point = {
@@ -207,7 +207,7 @@ Draw.prototype = {
       } else if (drawingMode === "polygon"&&endDraw) {
         textStr = ($this.getPositionsArea(convertCoor) / 1000000.0).toFixed(4) +"平方公里";
       }
-      if (drawingMode === "line" || (drawingMode === "polygon" && endDraw)) {
+      if ((drawingMode === "line" || (drawingMode === "polygon" && endDraw)) && !isFloatingPoint) {
         _labelEntity.label = {
           text:textStr,
           show: true,
@@ -228,7 +228,7 @@ Draw.prototype = {
     if (Cesium.defined(cartesian)) {
       if (activeShapePoints.length === 0) {
         if (options.measure){
-          floatingPoint = _addInfoPoint(cartesian);
+          floatingPoint = _addInfoPoint(cartesian,'',true);
         }
         polygonObj.positions.push(cartesian.clone());
         activeShapePoints.push(cartesian.clone());
