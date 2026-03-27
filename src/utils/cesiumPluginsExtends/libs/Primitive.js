@@ -69,7 +69,7 @@ Primitive.prototype = {
         Texture = Cesium.Texture,
         Resource = Cesium.Resource,
         Transforms = Cesium.Transforms,
-        defaultValue = Cesium.defaultValue,
+        defaultValue = Cesium.defaultValue|| Cesium.Scene.defaultValue,
         _viewer = this._viewer,
         defaultStatic =
           this.getDfSt(['primitive', 'TetrahedronPrimitive']) ||
@@ -832,6 +832,7 @@ Primitive.prototype = {
    *  @private
    */
   _installShadowPrimitive: function () {
+    const defaultValue = Cesium.defaultValue || Cesium.Scene.defaultValue;
     const ViewshedLineVS =
       'in vec3 position;\n\
             uniform mat4 u_modelViewMatrix;\n\
@@ -860,7 +861,7 @@ Primitive.prototype = {
             });
      */
     function ShadowPrimitive(options) {
-      options = Cesium.defaultValue(options, Cesium.defaultValue.EMPTY_OBJECT)
+      options = defaultValue(options, defaultValue.EMPTY_OBJECT)
       var scene = options.scene
       if (!Cesium.defined(scene)) {
         throw new Cesium.DeveloperError('scene is required.')
@@ -887,8 +888,8 @@ Primitive.prototype = {
 
       this._direction = 0
       this._pitch = 0
-      this._horizontalFov = Cesium.defaultValue(options.horizontalFov, 60)
-      this._verticalFov = Cesium.defaultValue(options.verticalFov, 45)
+      this._horizontalFov = defaultValue(options.horizontalFov, 60)
+      this._verticalFov = defaultValue(options.verticalFov, 45)
 
       this._cameraUpdated = false
       this._targetPoint = this._viewerPosition.clone()

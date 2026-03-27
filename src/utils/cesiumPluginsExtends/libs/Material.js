@@ -130,7 +130,7 @@ Material.prototype = {
   _initPolylineCustomMaterialProperty(options) {
     if (options) {
       var Color = Cesium.Color,
-        defaultValue = Cesium.defaultValue,
+        defaultValue = Cesium.defaultValue||Cesium.Scene.defaultValue,
         defined = Cesium.defined,
         defineProperties = Object.defineProperties,
         Event = Cesium.Event,
@@ -312,7 +312,7 @@ Material.prototype = {
    */
   _initWallCustomMaterialProperty(options) {
     var Color = Cesium.Color,
-      defaultValue = Cesium.defaultValue,
+      defaultValue = Cesium.defaultValue||Cesium.Scene.defaultValue,
       defined = Cesium.defined,
       defineProperties = Object.defineProperties,
       Event = Cesium.Event,
@@ -387,7 +387,7 @@ Material.prototype = {
   _installWaveCircleMaterial: function () {
     var _self = this,
       Color = Cesium.Color,
-      defaultValue = Cesium.defaultValue,
+      defaultValue = Cesium.defaultValue||Cesium.Scene.defaultValue,
       defineProperties = Object.defineProperties,
       Event = Cesium.Event,
       Property = Cesium.Property,
@@ -487,7 +487,7 @@ Material.prototype = {
   // 渐变圆
   _installCircleFadeMaterial: function () {
     var Color = Cesium.Color,
-      defaultValue = Cesium.defaultValue,
+      defaultValue = Cesium.defaultValue||Cesium.Scene.defaultValue,
       defineProperties = Object.defineProperties,
       Event = Cesium.Event,
       Property = Cesium.Property,
@@ -571,7 +571,7 @@ Material.prototype = {
   // 城市光效线
   _installCityLineMaterial: function () {
     var Color = Cesium.Color,
-      defaultValue = Cesium.defaultValue,
+      defaultValue = Cesium.defaultValue||Cesium.Scene.defaultValue,
       defined = Cesium.defined,
       defineProperties = Object.defineProperties,
       Event = Cesium.Event,
@@ -686,7 +686,7 @@ Material.prototype = {
   // 城市警示墙
   _installWarnMaterial: function () {
     var Color = Cesium.Color,
-      defaultValue = Cesium.defaultValue,
+      defaultValue = Cesium.defaultValue||Cesium.Scene.defaultValue,
       defined = Cesium.defined,
       defineProperties = Object.defineProperties,
       Event = Cesium.Event,
@@ -781,7 +781,7 @@ Material.prototype = {
   // 轨迹流动线
   _installFlowMaterial: function () {
     var Color = Cesium.Color,
-      defaultValue = Cesium.defaultValue,
+      defaultValue = Cesium.defaultValue||Cesium.Scene.defaultValue,
       defineProperties = Object.defineProperties,
       Event = Cesium.Event,
       createPropertyDescriptor = Cesium.createPropertyDescriptor,
@@ -888,7 +888,7 @@ Material.prototype = {
   // 多线段尾链
   _installPolylineTrailLinkMaterial: function () {
     var Color = Cesium.Color,
-      defaultValue = Cesium.defaultValue,
+      defaultValue = Cesium.defaultValue||Cesium.Scene.defaultValue,
       defineProperties = Object.defineProperties,
       createPropertyDescriptor = Cesium.createPropertyDescriptor,
       Event = Cesium.Event,

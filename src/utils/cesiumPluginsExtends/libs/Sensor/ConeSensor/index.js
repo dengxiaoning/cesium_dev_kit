@@ -282,7 +282,8 @@ RadarPlugin.prototype = {
                 }
           })
      */
-    function n(t, e) {
+    function n (t, e) {
+      let defaultValue = Cesium.defaultValue || Cesium.Scene.defaultValue;
       (e = e || {}),
         (r = t.scene.globe.ellipsoid),
         (this._geometry = null),
@@ -299,10 +300,10 @@ RadarPlugin.prototype = {
         (this._trackedEntity = e.trackedEntity),
         (this.defaultColor = e.color ? e.color : Cesium.Color.YELLOW),
         (this.defaultLineColor = e.lineColor ? e.lineColor : this.defaultColor),
-        (this._show = Cesium.defaultValue(e.show, !0)),
-        (this._outline = Cesium.defaultValue(e.outline, !1)),
-        (this._topShow = Cesium.defaultValue(e.top, !0)),
-        (this._topOutline = Cesium.defaultValue(e.topOutline, !0)),
+        (this._show = defaultValue(e.show, !0)),
+        (this._outline = defaultValue(e.outline, !1)),
+        (this._topShow = defaultValue(e.top, !0)),
+        (this._topOutline = defaultValue(e.topOutline, !0)),
         (this._modelMatrix = Cesium.Matrix4.clone(Cesium.Matrix4.IDENTITY)),
         (this._quaternion = new Cesium.Quaternion()),
         (this._translation = new Cesium.Cartesian3()),
@@ -316,7 +317,7 @@ RadarPlugin.prototype = {
         (this.viewer = t),
         this.viewer.scene.primitives.add(this),
         this.updateGeometry(),
-        (this._groundArea = Cesium.defaultValue(e.groundArea, !1)),
+        (this._groundArea = defaultValue(e.groundArea, !1)),
         this.addGroundAreaEntity(this._groundArea);
     }
 

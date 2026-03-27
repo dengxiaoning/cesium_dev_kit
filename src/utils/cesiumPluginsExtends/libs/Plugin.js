@@ -135,6 +135,7 @@ Plugin.prototype = {
   },
 
   _installTerrainClipPlan: function () {
+    let defaultValue = Cesium.defaultValue|| Cesium.Scene.defaultValue
     /**
      *地形裁剪
      * @global
@@ -176,7 +177,7 @@ Plugin.prototype = {
         (this._height = this.options.height || 0),
         (this.bottomImg = i.bottomImg),
         (this.wallImg = i.wallImg),
-        (this.splitNum = Cesium.defaultValue(i.splitNum, 50)),
+        (this.splitNum = defaultValue(i.splitNum, 50)),
         this._positions &&
           this._positions.length > 0 &&
           this.updateData(this._positions)

@@ -1,7 +1,7 @@
 let Cesium = {}
 function InitRectangularSensorGraphics(cesiumGlobal) {
   Cesium = cesiumGlobal
-  var defaultValue = Cesium.defaultValue
+  var defaultValue = Cesium.defaultValue|| Cesium.Scene.defaultValue
   var defined = Cesium.defined
   var defineProperties = Object.defineProperties
   var DeveloperError = Cesium.DeveloperError

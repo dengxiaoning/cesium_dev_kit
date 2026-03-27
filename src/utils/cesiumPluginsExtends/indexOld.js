@@ -173,7 +173,7 @@ export function initCesium({
     throw 'Missing containerId parameter, please check the calling function initCesium.'
   }
   if (!cesiumGlobal.defaultValue) {
-    cesiumGlobal['defaultValue'] = defaultValue;
+    cesiumGlobal.Scene['defaultValue'] = defaultValue;
 }
   const initCom = new Controller(cesiumGlobal)
   const _viewer = initCom.init({

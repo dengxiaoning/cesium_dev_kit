@@ -1681,7 +1681,7 @@ Base.prototype = {
   _installGroundSkyBox: function () {
     var BoxGeometry = Cesium.BoxGeometry,
       Cartesian3 = Cesium.Cartesian3,
-      defaultValue = Cesium.defaultValue,
+      defaultValue = Cesium.defaultValue||Cesium.Scene.defaultValue,
       defined = Cesium.defined,
       destroyObject = Cesium.destroyObject,
       DeveloperError = Cesium.DeveloperError,
