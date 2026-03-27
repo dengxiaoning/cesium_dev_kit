@@ -1,4 +1,5 @@
 import { Controller } from './initConf'
+import defaultValue from './libs/defaultValue'
 import {
   Base,
   Material,
@@ -171,7 +172,9 @@ export function initCesium({
   if (!containerId&&!viewer) {
     throw 'Missing containerId parameter, please check the calling function initCesium.'
   }
-
+  if (!cesiumGlobal.defaultValue) {
+    cesiumGlobal['defaultValue'] = defaultValue;
+}
   const initCom = new Controller(cesiumGlobal)
   const _viewer = initCom.init({
     containerId,
