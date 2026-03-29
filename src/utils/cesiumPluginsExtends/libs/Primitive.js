@@ -2,6 +2,13 @@ let Cesium = null
 let dfSt = undefined
 import customVert from './glsl/pyramid.vert.js'
 import customFrag from './glsl/pyramid.frag.js'
+import h337 from "./heatmap"
+/**
+ * @typedef {Object}  HeatDataType - 热力图坐标数组类型
+ * @property {number} lng - 经度
+ * @property {number} lat - 纬度
+ * @property {number} num - 数值
+ */
 /**
  * 图元拓展模块
  * @class
@@ -2274,6 +2281,204 @@ Primitive.prototype = {
    */
   customPrimivive(params) {
     return this._initCustomPrimitive(params)
+  },
+  _heatmap :function() {
+    let heatmap = null,
+    height = 1080,
+    width = 1920,
+    bounds = [103.8258, 30.58595, 104.252263, 30.87];
+    return {
+      getHeatmap ({heatData,boundsArr,screenHeight,screenWidth}) {
+        bounds = boundsArr || bounds;
+        screenHeight = screenHeight || height;
+        screenWidth=screenWidth||width
+        const data = [];
+        for (const i of heatData) {
+          let lon = i.lng;
+          let lat = i.lat;
+          let x = Math.round(((lon - bounds[0]) / (bounds[2] - bounds[0])) * width);
+          let y = height - Math.round(((lat - bounds[1]) / (bounds[3] - bounds[1])) * height);
+
+          data.push({ x: x, y: y, value: i.num });
+        }
+        //创建热力图
+        this.createHeatmap(data);
+        //创建primitive
+        const primitive = this.createPrimitive();
+        return primitive;
+      },
+      createHeatmap(data) {
+        var domElement = document.createElement("div");
+        domElement.setAttribute("style", "width: " + width + "px; height: " + height + "px; margin: 0px; display: none;");
+        document.body.appendChild(domElement);
+        heatmap = h337.create({
+          container: domElement,
+          radius: 24,
+          maxOpacity: 1,
+          minOpacity: 0.1,
+          blur: 0.85,
+          gradient: {
+            ".2": "blue",
+            ".4": "green",
+            ".6": "yellow",
+            ".8": "orange",
+            ".9": "red",
+          },
+        });
+        heatmap.setData({
+          min: 0,
+          max: 100,
+          data: data,
+        });
+      },
+      createPrimitive() {
+        let material = new Cesium.ImageMaterialProperty({
+          image: heatmap._renderer.canvas,
+        });
+        let instance = this.generateGeometryInstance();
+        let appearance = new Cesium.MaterialAppearance({
+          material: Cesium.Material.fromType(Cesium.Material.ImageType, material.getValue(new Cesium.JulianDate())),
+        });
+        let opt = {
+          geometryInstances: instance,
+          appearance: appearance,
+          allowPicking: false,
+          asynchronous: false,
+          show: false,
+        };
+
+      
+        return new Cesium.Primitive(opt);
+      },
+      generateGeometryInstance() {
+        const dWidth = bounds[2] - bounds[0],
+          dHeight = bounds[3] - bounds[1],
+          left = bounds[0],
+          bottom = bounds[1];
+        const dx = 0.001,
+          dy = 0.001,
+          h = 0,
+          dh = 5;
+        let r = Math.floor(dWidth / dx),
+          l = Math.floor(dHeight / dy);
+        const grids = [];
+        for (let i = 0; i < l + 1; i++) {
+          let row = [];
+          for (let u = 0; u < r + 1; u++) {
+            let x = left + (u == r ? dWidth : u * dx),
+              y = bottom + (i == l ? dHeight : i * dy);
+            let screen = {
+              x: Math.round(((x - left) / dWidth) * width),
+              y: height - Math.round(((y - bottom) / dHeight) * height),
+            };
+            let v = heatmap.getValueAt(screen);
+            let color = heatmap._renderer.ctx.getImageData(screen.x, screen.y, 1, 1).data;
+            row.push([x, y, h + v * dh, color.map((c) => c / 255), [(x - left) / dWidth, (y - bottom) / dHeight]]);
+          }
+          grids.push(row);
+        }
+
+        const wgs84Positions = [];
+        const indices = [];
+        const colors = [];
+        const sts = [];
+        let vtxCursor = 0;
+        let idxCursor = 0;
+        for (let i = 0; i < l; i++) {
+          for (let u = 0; u < r; u++) {
+            let p1 = grids[i][u];
+            let p2 = grids[i][u + 1];
+            let p3 = grids[i + 1][u + 1];
+            let p4 = grids[i + 1][u];
+
+            this.addVertices(p1, wgs84Positions, colors, sts);
+            this.addVertices(p2, wgs84Positions, colors, sts);
+            this.addVertices(p3, wgs84Positions, colors, sts);
+            this.addVertices(p1, wgs84Positions, colors, sts);
+            this.addVertices(p3, wgs84Positions, colors, sts);
+            this.addVertices(p4, wgs84Positions, colors, sts);
+            indices.push(idxCursor + 0, idxCursor + 1, idxCursor + 2, idxCursor + 3, idxCursor + 4, idxCursor + 5);
+            idxCursor += 6;
+          }
+        }
+        return new Cesium.GeometryInstance({
+          geometry: Cesium.GeometryPipeline.computeNormal(this.generateGeometry(wgs84Positions, colors, indices, sts)),
+        });
+      },
+      addVertices(p, positions, colors, sts) {
+        const c3Position = Cesium.Cartesian3.fromDegrees(p[0], p[1], p[2]);
+        positions.push(c3Position.x, c3Position.y, c3Position.z);
+        colors.push(p[3][0], p[3][1], p[3][2], p[3][3]);
+        sts.push(p[4][0], p[4][1]);
+      },
+      generateGeometry(positions, colors, indices, sts) {
+        var attributes = new Cesium.GeometryAttributes({
+          position: new Cesium.GeometryAttribute({
+            componentDatatype: Cesium.ComponentDatatype.DOUBLE,
+            componentsPerAttribute: 3,
+            values: new Float64Array(positions),
+          }),
+          color: new Cesium.GeometryAttribute({
+            componentDatatype: Cesium.ComponentDatatype.FLOAT,
+            componentsPerAttribute: 4,
+            values: new Float32Array(colors),
+          }),
+          st: new Cesium.GeometryAttribute({
+            componentDatatype: Cesium.ComponentDatatype.FLOAT,
+            componentsPerAttribute: 2,
+            values: new Float32Array(sts),
+          }),
+        });
+        // 包围球
+        const boundingSphere = Cesium.BoundingSphere.fromVertices(positions, new Cesium.Cartesian3(0.0, 0.0, 0.0), 3);
+        //
+        const geometry = new Cesium.Geometry({
+          attributes: attributes,
+          indices: indices,
+          primitiveType: Cesium.PrimitiveType.TRIANGLES,
+          boundingSphere: boundingSphere,
+        });
+        return geometry;
+      },
+    }
+  },
+  /**
+   * 三维热力图
+   * @param {object} params
+   * @param {HeatDataType} params.heatData  - 热力数组
+   * @param {Array} [params.boundsArr=[103.8258, 30.58595, 104.252263, 30.87]] - 热力边界坐标
+   * @param {number} [params.screenHeight=1080] - 屏幕高度
+   * @param {number} [params.screenWidth=1920] - 屏幕宽度
+   * @example
+   * import { Primitive } from 'cesium_dev_kit'
+   * const priObj = new Primitive({
+   *    cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   *   })
+   * const HEAT_DATA = [{ lng: 104.009628, lat: 30.736313, num: 857 },
+      { lng: 104.042587, lat: 30.682755, num: 2043 },{ lng: 104.038467, lat: 30.693741, num: 2021 },{ lng: 104.04808, lat: 30.700607, num: 616 },
+      { lng: 104.013748, lat: 30.732193, num: 213 },{ lng: 104.005508, lat: 30.751419, num: 78 },{ lng: 104.063187, lat: 30.71022, num: 86 },
+      { lng: 104.042587, lat: 30.748672, num: 1346 },{ lng: 104.017868, lat: 30.692368, num: 6000 },{ lng: 104.061813, lat: 30.700607, num: 53 },
+      { lng: 103.962936, lat: 30.717087, num: 513 },{ lng: 104.100266, lat: 30.766525, num: 129 },{ lng: 104.045334, lat: 30.741806, num: 327 },
+      { lng: 104.039841, lat: 30.719833, num: 516 },{ lng: 104.028854, lat: 30.71434, num: 1268 },{ lng: 104.030228, lat: 30.708847, num: 243 },
+      { lng: 104.030228, lat: 30.725327, num: 477 },{ lng: 104.015121, lat: 30.719833, num: 15 },{ lng: 104.005508, lat: 30.690994, num: 339 },
+      { lng: 104.053574, lat: 30.733566, num: 739 },{ lng: 104.002762, lat: 30.725327, num: 1201 },{ lng: 104.135971, lat: 30.758286, num: 1384 },
+      { lng: 104.043961, lat: 30.696487, num: 998 },{ lng: 104.039841, lat: 30.725327, num: 300 },{ lng: 104.085159, lat: 30.793991, num: 4 },
+      { lng: 104.043961, lat: 30.697861, num: 154 },{ lng: 104.021988, lat: 30.736313, num: 383 },{ lng: 104.071426, lat: 30.682755, num: 245 },
+      { lng: 104.075546, lat: 30.682755, num: 1832 },{ lng: 104.074173, lat: 30.695114, num: 5941 },{ lng: 104.0522, lat: 30.689621, num: 676 },
+      { lng: 104.096146, lat: 30.7267, num: 148 },{ lng: 104.127731, lat: 30.750046, num: 467 },{ lng: 104.021988, lat: 30.699234, num: 1118 }];
+   * let custPrimitive = priObj.primitive.customPrimivive({
+   * const headMapObjectPivmitive = priObj.primitive.createHeatmap3d({
+        heatData: HEAT_DATA,
+        boundsArr: [103.8258, 30.58595, 104.252263, 30.87]
+      });
+      let primitiveObj = priObj.viewer.scene.primitives.add(headMapObjectPivmitive);
+      primitiveObj.show = true;
+   * @returns {Cesium.Primitive} 图元对象
+   */
+  createHeatmap3d (param) {
+    const initHeatmap = this._heatmap();
+    return initHeatmap.getHeatmap(param)
   }
 }
 export { Primitive }

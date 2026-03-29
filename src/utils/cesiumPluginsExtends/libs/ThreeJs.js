@@ -82,17 +82,17 @@ ThreeJs.prototype = {
    * 初始化three
    * @function
    * @param {object} options
-   * @param {number} options.fov - Camera frustum vertical field of view. Default 45.
+   * @param {number} [options.fov=45] - Camera frustum vertical field of view.
    *
-   * @param {number} options.aspect - Camera frustum aspect ratio. Default window.innerWidth/window.innerHeight.
+   * @param {number} [options.aspect=window.innerWidth/window.innerHeight] - Camera frustum aspect ratio. 
    *
-   * @param {number} options.near  - Camera frustum near plane. Default  1.
+   * @param {number} [options.near=1]  - Camera frustum near plane. 
    *
    * @param {number} options.far - Camera frustum far plane. Default 10000000.
-   * @param {Array} options.center - Camera center coordinate. Default [104.081701757991, 30.627042558105988].
-   * @param {Array} options.axesHelper - Enabled axes Helper. Default false.
-   * @param {Array} options.enableLighting - Enabled light. Default true.
-   * @param {Array} options.threeHabit - Enabled threejs Habit(Left click to modify pitch). Default true.
+   * @param {Array} [options.center=[104.081701757991, 30.627042558105988]] - Camera center coordinate.
+   * @param {Array} [options.axesHelper=false] - Enabled axes Helper.
+   * @param {Array} [options.enableLighting=true] - Enabled light. 
+   * @param {Array} [options.threeHabit=true] - Enabled threejs Habit(Left click to modify pitch).
    * @example
    * import { ThreeJs } from 'cesium_dev_kit'
    * const threeObj = new ThreeJs({

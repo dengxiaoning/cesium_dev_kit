@@ -305,7 +305,7 @@
       "meta": {
         "auth": ["admin", "test"],
         "title": "河流",
-        "icon": "emojione-monotone:railway-track",
+        "icon": "bi:journal-code",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
@@ -319,6 +319,19 @@
         "auth": ["admin", "test"],
         "title": "自定义图元",
         "icon": "emojione-monotone:railway-track",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    },{
+ 
+      "name": "heatmap3d",
+      "path":"heatmap3d",
+      "component": "example/primitive/heatmap3d",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "三维热力图",
+        "icon": "iconoir:bright-crown",
         "isAffix": false,
         "isHide": false,
         "isKeepAlive": true
