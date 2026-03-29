@@ -35,8 +35,8 @@ See [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaode
 |                                                     rayCast                                                     |                                                      fireworksEffect                                                      |                                                   aniSoldier                                                    |
 |   ![pathPlan](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |![customPrimitive](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif) |![clusterLayer](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif)  |
 |  pathPlan    | customPrimitive   |      clusterLayer      |
-|   ![bar3D](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)   | ![rollerBlind](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rollerBlind.gif)  | |
-|  bar3D | rollerBlind  |
+|   ![bar3D](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)   | ![rollerBlind](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rollerBlind.gif)  | ![heatmap3d](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/heatmap3d.gif) |
+|  bar3D | rollerBlind  | heatmap3d |
 
 [More>>](https://benpaodehenji.com/cesiumDevKit)
 
