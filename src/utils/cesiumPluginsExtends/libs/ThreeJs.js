@@ -83,12 +83,9 @@ ThreeJs.prototype = {
    * @function
    * @param {object} options
    * @param {number} [options.fov=45] - Camera frustum vertical field of view.
-   *
    * @param {number} [options.aspect=window.innerWidth/window.innerHeight] - Camera frustum aspect ratio. 
-   *
    * @param {number} [options.near=1]  - Camera frustum near plane. 
-   *
-   * @param {number} options.far - Camera frustum far plane. Default 10000000.
+   * @param {number} [options.far=10000000] - Camera frustum far plane.
    * @param {Array} [options.center=[104.081701757991, 30.627042558105988]] - Camera center coordinate.
    * @param {Array} [options.axesHelper=false] - Enabled axes Helper.
    * @param {Array} [options.enableLighting=true] - Enabled light. 

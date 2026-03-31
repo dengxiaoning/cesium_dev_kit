@@ -5,13 +5,22 @@ let dfSt = undefined;
 let Cesium = null;
 let drawHandler = null;
 /**
+ * @typedef {Object}  PolylineStyleType - 绘制多边形边线样式类型
+ * @property {number} [width=3] - polyine线宽
+ * @property {Cesium.Material} [material=Cesium.Color.BLUE.withAlpha(0.8)] - polyine边线材质
+ * @property {Boolean} [clampToGround=true] - 是否贴地
+ * @property {number} [granularity=Cesium.Math.RADIANS_PER_DEGREE] - 转角锐化值
+ * @property {Cesium.ArcType}[arcType=Cesium.ArcType.GEODESIC] - 线段类型
+ */
+
+/**
  * 画笔模块
  * @class
  * @augments  module:Base
  * @augments  module:Math3d
  * @augments  module:Math2d
  * @param {object} params
- * @param {object} params.viewer - cesium 实例
+ * @param {Cesium.Viewer} params.viewer - cesium 实例
  * @param {object} params.cesiumGlobal - cesium 全局对象
  * @param {Array} params.defaultStatic - 静态资源
  * @exports Draw
@@ -132,6 +141,8 @@ Draw.prototype = {
       objEntity.polyline = {
         positions:positionData,
         width: options.width || 5,
+        granularity: $this._objHasOwnProperty(options, 'granularity', Cesium.Math.RADIANS_PER_DEGREE),
+        arcType: $this._objHasOwnProperty(options, 'arcType', Cesium.ArcType.GEODESIC),
         material: options.material || Cesium.Color.BLUE.withAlpha(0.8),
         clampToGround: $this._objHasOwnProperty(options, 'clampToGround', false),
         clampToS3M: $this._objHasOwnProperty(options, 'clampToS3M', false),
@@ -178,13 +189,10 @@ Draw.prototype = {
         
       // 将数据传回调用函数
       if (typeof options.callback === "function") {
-        // 在transformCartesianArrayToWGS84Array转换中似乎需要删除掉第一个坐标，转换后默认会加上？？？明天【20260325 23::29】在研究了
-        let shiftEleArr = activeShapePoints.map(e=>e)
-        shiftEleArr.shift()
-        options.callback($this.transformCartesianArrayToWGS84Array(shiftEleArr), lineObj);
+        options.callback(activeShapePoints, lineObj);
       }
-      $this._viewer.entities.remove(floatingPoint);
-      $this._viewer.entities.remove(activeShape);
+      $this._drawLayer.entities.remove(floatingPoint);
+      $this._drawLayer.entities.remove(activeShape);
       floatingPoint = undefined;
       activeShape = undefined;
       activeShapePoints = [];
@@ -224,14 +232,14 @@ Draw.prototype = {
 
    // left click
    _handlers.setInputAction(function (movement) {
-    var cartesian = $this.getCatesian3FromPX(movement.position);
-    if (Cesium.defined(cartesian)) {
+    const cartesian = $this.getCatesian3FromPX(movement.position);
+     if (Cesium.defined(cartesian)) {
+      const cartesianClone = cartesian.clone()
       if (activeShapePoints.length === 0) {
-        if (options.measure){
-          floatingPoint = _addInfoPoint(cartesian,'',true);
-        }
-        polygonObj.positions.push(cartesian.clone());
-        activeShapePoints.push(cartesian.clone());
+        floatingPoint = _addInfoPoint(cartesianClone,'',true);
+        polygonObj.positions.push( cartesian.clone());
+        activeShapePoints.push(cartesianClone);
+       
         const dynamicPositions = new Cesium.CallbackProperty(function () {
           return activeShapePoints;
         }, false);
@@ -245,20 +253,23 @@ Draw.prototype = {
         activeShape = drawShape(dynamicPositions,dynamicPositionsPolygon);
       } 
       // 这个很关键，否决多边形转换wgs84 高程会丢失
-      polygonObj.positions.push(cartesian.clone());
-      activeShapePoints.push(cartesian.clone());
+      polygonObj.positions.push( cartesian.clone());
+      activeShapePoints.push(cartesianClone);
       if (options.measure) {
-        _addInfoPoint(cartesian);
+        _addInfoPoint(cartesianClone);
       }
  
       // 绘制直线 两个点,用于可视域分析,判断等于三，因为第一次加了两个点
       if (options.type === "straightLine" && activeShapePoints.length == 3) {
-        activeShapePoints.shift();//删除掉第一个重复点
+        activeShapePoints.pop();//删除掉第一个重复点
         _handlers.destroy();
         _handlers = null;
         $this.tooltip.setVisible(false);
         if (typeof options.callback === "function") {
-          options.callback($this.transformCartesianArrayToWGS84Array(activeShapePoints), activeShape);
+          // 去除重复的cartesian3，因为在mouse 悬停后会获取到重复坐标
+          activeShapePoints = $this._excludeDuplicatesCartesian(activeShapePoints);
+          options.callback(activeShapePoints, activeShape);
+          terminateShape();
         }
       }
     }
@@ -270,17 +281,19 @@ Draw.prototype = {
     $this.tooltip.showAtCartesian(newPosition,'右键单击结束!')
     if (Cesium.defined(floatingPoint)) {
       if (Cesium.defined(newPosition)) {
-        floatingPoint.position.setValue(newPosition);
         activeShapePoints.pop();
+        activeShapePoints.push(newPosition.clone());
         polygonObj.positions.pop();
-        polygonObj.positions.push(newPosition);
-        activeShapePoints.push(newPosition);
+        polygonObj.positions.push(newPosition.clone());
+        floatingPoint.position.setValue(newPosition);
       }
     }
   }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     
     // right click
     _handlers.setInputAction(function (movement) {
+      // 去除重复的cartesian3，因为在mouse 悬停后会获取到重复坐标
+      activeShapePoints = $this._excludeDuplicatesCartesian(activeShapePoints);
       terminateShape();
       lineObj = undefined;
       $this.tooltip.setVisible(false);
@@ -288,15 +301,29 @@ Draw.prototype = {
       _handlers = null;
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
   },
+  // Cartesian3去重
+  _excludeDuplicatesCartesian (orgCartesianArr) {
+    var arr5 = orgCartesianArr.reduce((pre, cur) => {
+      const leng = pre.length;
+     if(leng<1||!pre[leng-1].equals(cur)){
+      return pre.concat(cur)
+      }else{
+       return pre
+     }
+     },[])
+    return arr5
+  },
   /**
    * 画线 or 测距
    * @function
    * @param {object} options
    * @param {boolean} options.measure - 是否为测量
-   * @param {number} options.width - 线宽
-   * @param {object} options.material - 材质 默认值Cesium.Color.BLUE.withAlpha(0.8)
+   * @param {number} [options.width=5] - 线宽
+   * @param {Cesium.Material} [options.material=Cesium.Color.BLUE.withAlpha(0.8)] - 材质
    * @param {boolean} options.clampToGround - 是否贴地
    * @param {boolean} options.clampToS3M - 是否贴于s3m 模型上
+   * @param {number} [granularity=Cesium.Math.RADIANS_PER_DEGREE] - 转角锐化值
+   * @param {Cesium.ArcType}[arcType=CesiumArcType.GEODESIC] - 线段类型
    * @param {function} options.callback - 回调函数
    * @see {@link module:Base#getCatesian3FromPX|getCatesian3FromPX}
    * @see {@link module:Base#transformCartesianArrayToWGS84Array|transformCartesianArrayToWGS84Array}
@@ -325,7 +352,8 @@ Draw.prototype = {
    * 画面 or 测面积
    * @function
    * @param {object} options
-   * @param {boolean} options.style - 图形风格配置
+   * @param {PolylineStyleType} options.style - polyline线条配置
+   * @param {Cesium.Material} [options.mterial=Cesium.Color.WHITE.withAlpha(0.7)] - 几何体填充色
    * @param {boolean} options.measure - 是否为量测
    * @param {number} options.height - 拉伸高度
    * @param {boolean} options.clampToGround - 是否贴地
@@ -792,7 +820,7 @@ Draw.prototype = {
           material:  options.style.material
         },
         callback: function (polygon, polygonObj) {
-          const drawPos = $this.transformWGS84ArrayToCartesianArray(polygon)
+          const drawPos = polygon;
           const maximumHeights = [];
           const minimumHeights=[]
           if (options.style.maximumHeights) {
@@ -969,7 +997,7 @@ Draw.prototype = {
         callback: function (line, lineObj) {
           var entity = $this.createGraphics();
           entity.corridor = {
-            positions: $this.transformWGS84ArrayToCartesianArray(line),
+            positions: line,
             height: options.height || 1,
             width: options.width || 100,
             cornerType: Cesium.CornerType.BEVELED,
@@ -1033,7 +1061,7 @@ Draw.prototype = {
               ? $this.computeStar2d(arms, rOuter, rInner)
               : $this.computeCircleShap(circleRadius);
           entity.polylineVolume = {
-            positions: $this.transformWGS84ArrayToCartesianArray(line),
+            positions: line,//$this.transformWGS84ArrayToCartesianArray(line),
             shape: shapeVal,
             cornerType: Cesium.CornerType.MITERED,
             material: options.color || Cesium.Color.RED,

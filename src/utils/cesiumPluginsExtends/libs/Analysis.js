@@ -154,7 +154,6 @@ Analysis.prototype = {
    * @param {function} options.callback - 回调函数
    * @see {@link  TerrainClipPlan}
    * @see {@link  module:Draw#drawPolygonGraphics|drawPolygonGraphics}
-   * @see {@link  module:Base#transformWGS84ArrayToCartesianArray|transformWGS84ArrayToCartesianArray}
    * @example
    *  import { Analysis } from 'cesium_dev_kit'
    * const {analysis} = new Analysis({
@@ -186,14 +185,15 @@ Analysis.prototype = {
 
       $this.drawPolygonGraphics({
         callback: function (polygon, polygonObj) {
-          // $this._drawLayer.entities.remove(polygonObj);
+          $this._drawLayer.entities.remove(polygonObj);
+          polygon.pop();
           let terrainClipPlan = new Cesium.Scene.TerrainClipPlan($this._viewer, {
             height: _height,
             splitNum: _splitNum,
             wallImg: _wallImg,
             bottomImg: _bottomImg,
           });
-          const cartesian3Coor = $this.transformWGS84ArrayToCartesianArray(polygon);
+          const cartesian3Coor = polygon; 
           terrainClipPlan.updateData(cartesian3Coor);
 
           if (typeof options.callback === "function") {
@@ -310,7 +310,6 @@ Analysis.prototype = {
    * @param {object} options
    * @param {function} options.callback - 回调
    * @see {@link  module:Draw#drawLineGraphics|drawLineGraphics}
-   * @see {@link  module:Base#transformWGS84ArrayToCartesianArray|transformWGS84ArrayToCartesianArray}
    * @example
    *  import { Analysis } from 'cesium_dev_kit'
    * const {analysis} = new Analysis({
@@ -326,7 +325,7 @@ Analysis.prototype = {
       $this.drawWallGraphics({
         callback: function (wall) {
           var _cutVolumeAnalysis = new CutVolumeAnalysis({
-            positions: $this.transformWGS84ArrayToCartesianArray(wall, 100),
+            positions: wall,
             that: $this,
           });
 
@@ -351,8 +350,8 @@ function VisibilityAnalysis(params) {
       points = [],
       lines = [],
       pickedObjs = [],
-      position1 = that.transformWGS84ToCartesian(positions[0]),
-      position2 = that.transformWGS84ToCartesian(positions[1]);
+      position1 = positions[0],
+      position2 = positions[1]; 
     points = that.$graphics.createPointsGraphics({
       point: true,
       positions: [position1, position2],
@@ -650,8 +649,8 @@ function SlopeAnalysis(params) {
   if (params && params.positions) {
     var positions = params.positions,
       that = params.that,
-      position1 = that.transformWGS84ToCartesian(positions[0]),
-      position2 = that.transformWGS84ToCartesian(positions[1]);
+      position1 = positions[0],
+      position2 = positions[1];
     //显示结果
     function showResult(startPoint, endPoint) {
       //起止点相关信息

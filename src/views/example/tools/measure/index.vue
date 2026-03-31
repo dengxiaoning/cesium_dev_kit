@@ -145,7 +145,8 @@ export default {
       this.draw.drawLineGraphics({
         measure: true,
         clampToGround: true,
-        callback: () => { }
+        material: new Cesium.Color(255 / 255, 201 / 255, 38 / 255, 1),
+        callback: (res) => { console.log('line : ', res) }
       });
     },
     calArea (clicktype) {
@@ -153,7 +154,13 @@ export default {
       this.draw.drawPolygonGraphics({
         measure: true,
         clampToGround: true,
-        callback: () => { }
+        style: {
+          width: 6,
+          material: new Cesium.Color(221 / 255, 221 / 255, 221 / 255, 1),
+          clampToGround: true,
+        },
+        material: new Cesium.Color(77 / 255, 201 / 255, 255 / 255, 1),
+        callback: (res) => { console.log('polygon : ', res) }
       });
     },
     calTrangle (clicktype) {
