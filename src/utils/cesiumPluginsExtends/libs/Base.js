@@ -786,13 +786,20 @@ Base.prototype = {
    */
   transformCartesianToWGS84: function (cartesian) {
     if (this._viewer && cartesian) {
-      var ellipsoid = Cesium.Ellipsoid.WGS84
-      var cartographic = ellipsoid.cartesianToCartographic(cartesian)
-      return {
-        lng: Cesium.Math.toDegrees(cartographic.longitude),
-        lat: Cesium.Math.toDegrees(cartographic.latitude),
-        alt: cartographic.height
-      }
+      // var ellipsoid = Cesium.Ellipsoid.WGS84
+      // var cartographic = ellipsoid.cartesianToCartographic(cartesian)
+      // return {
+      //   lng: Cesium.Math.toDegrees(cartographic.longitude),
+      //   lat: Cesium.Math.toDegrees(cartographic.latitude),
+      //   alt: cartographic.height
+      // }
+      // 从笛卡尔坐标获取经纬度
+      const cartographicEntity =Cesium.Cartographic.fromCartesian(cartesian);
+     return  {
+        lng: Cesium.Math.toDegrees(cartographicEntity.longitude),
+        lat: Cesium.Math.toDegrees(cartographicEntity.latitude),
+        alt: cartographicEntity.height,
+      };
     }
   },
   /**
@@ -1148,6 +1155,29 @@ Base.prototype = {
         }
       }
     }
+  },
+  /**
+   * 获取鼠标点击后的位置信息
+   * @function
+   * @param {Cesium.Event} e - 监听的事件对象
+   * @example
+   * import { Base } from 'cesium_dev_kit'
+   * const {base} = new Base({
+   *     cesiumGlobal: Cesium,
+   *     containerId: 'cesiumContainer'
+   * })
+   *
+   *   base.bindHandelEvent({
+   *      leftClick: function click (event, _handlers) {
+   *        const { wgs84Coor, graphicCoor, cameraPosition } = base.pickUpPosition(event);
+   *        console.log(wgs84Coor, graphicCoor, cameraPosition);
+   *      }
+   *     })
+   * @returns {Cesium.Cartesian3}
+   */
+  pickUpPosition (e) {
+    const cartesian3 = this.getCatesian3FromPX(e.position);
+    return cartesian3;
   },
   /**
    * 获取鼠标点击后的位置信息

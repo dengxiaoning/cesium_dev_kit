@@ -1,5 +1,6 @@
 <template>
   <div class="sky-box">
+    <div id="entityLayer-BOX" class="info-msg-box"></div>
     <div id="cesiumContainer" class="map3d-contaner"></div>
     <el-card class="box-card">
       <template #header>
@@ -17,7 +18,11 @@
 <script >
 import * as Cesium from 'cesium'
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-
+import '../../infoBox/css/utils.css';
+const viewerData = {
+  viewer: null,
+  css3Entity: null,
+};
 export default {
   data () {
     return {
@@ -92,6 +97,7 @@ export default {
       // viewer.flyTo(tileset)
       this.justVisualLocation()
       this.loadGeojson();
+      this.addListent();
     },
     justVisualLocation () {
       this.b_base.flyTo({
@@ -106,6 +112,31 @@ export default {
           roll: 0.000013780821305431346,
         },
         duration: 2,
+      });
+    },
+    addListent () {
+      const _self = this;
+      this.b_base.bindHandelEvent({
+        leftClick: function click (event, _handlers) {
+          if (Cesium.defined(viewerData.css3Entity)) { viewerData.css3Entity.close(); }// 先关闭其它的
+          // const pickPosition = _self.c_viewer.scene.pickPosition(event.position)
+          const pickPosition = _self.b_base.pickUpPosition(event);
+          const { lng, lat, alt } = _self.b_base.transformCartesianToWGS84(pickPosition)
+          if (Cesium.defined(pickPosition)) {
+            viewerData.css3Entity = new Cesium.Scene.Css3Renderer([{
+              id: 'box4',
+              parentEleId: 'entityLayer-BOX',
+              position: pickPosition,
+              element: `<div class="ysc-dynamic-layer ex-box" id="box4"><div class="close__box__btn">X</div> 
+              <div class="line"  style="width:300px;height:200px;">
+                信息点<br/>经度： ${lng}<br/>纬度：${lat}<br/>高层：${alt}
+                </div>
+              </div>`,
+              offset: [0, -30]
+            }], true);
+
+          }
+        }
       });
     },
     // 加载geojson

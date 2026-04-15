@@ -835,7 +835,7 @@ Plugin.prototype = {
        * @param {Array} elements
        * @param {string} elements.id - dom ID
        * @param {string}[elements.parentEleId=info-warp] - 挂载信息框容器的ID
-       * @param {Array} elements.position - 坐标
+       * @param {Array|Cesium.Cartesian3} elements.position - 坐标
        * @param {string} elements.element - 字符串html 标签
        * @param {Array}[elements.offset=[0,0]] - 偏移
        * @param {boolean} isBackHide - 是否超出视野隐藏
@@ -883,49 +883,46 @@ Plugin.prototype = {
 
 
         var $this = this
+          let canvasHeight = $this._scene.canvas.clientHeight;
+          let windowPosition = new Cesium.Cartesian2();
         this._postBuildFun = function () {
+
           var boxElements = getElementsByClass('close__box__btn');
           // 遍历所有元素并绑定点击事件
           boxElements.forEach(function(element) {
-              element.addEventListener('click', function () {
-                  if (parentNode.contains(container)) {
-                    parentNode.removeChild(container)
+            element.addEventListener('click', function () {
+                if (parentNode.contains(container)) {
+                  parentNode.removeChild(container)
+                  if ( $this._postBuildFun) {
+                      $this._scene.postRender.removeEventListener( $this._postBuildFun)
                   }
-                });
-            });
-          //
+                }
+              });
+          });
+        
           for (var i = 0; i < container.children.length; i++) {
-            var p = Cesium.Cartesian3.fromDegrees(
-              $this._elements[i].position[0],
-              $this._elements[i].position[1],
-              $this._elements[i].position[2] || 0
-            )
-            var canvasPosition = $this._scene.cartesianToCanvasCoordinates(
-              p,
-              $this._scratch
-            )
+            let elPositon = '';
+            const eachEl = $this._elements[i];
+            const elPositonOrg = eachEl.position;
+            // 判断是否为cartesian3
+            if (elPositonOrg instanceof Cesium.Cartesian3) {
+              elPositon = elPositonOrg;
+            } else {
+              elPositon = Cesium.Cartesian3.fromDegrees(elPositonOrg[0], elPositonOrg[1],elPositonOrg[2] || 0)
+            }
+            // var canvasPosition = $this._scene.cartesianToCanvasCoordinates(elPositon, $this._scratch);
+           Cesium.SceneTransforms.worldToWindowCoordinates($this._scene, elPositon,windowPosition);
 
-            const offsetX = $this._elements[i].offset ? $this._elements[i].offset[0] : 0;
-            const offsety = $this._elements[i].offset ? $this._elements[i].offset[1] : 0;
-            if (Cesium.defined(canvasPosition)) {
-              container.children[i].style.left =
-                parseFloat(canvasPosition.x) +
-                parseFloat(offsetX) +
-                'px'
-              container.children[i].style.top =
-                parseFloat(canvasPosition.y) +
-                parseFloat(offsety) +
-                'px'
+            const offsetX =eachEl.offset ? eachEl.offset[0] : 0;
+            const offsety = eachEl.offset ? eachEl.offset[1] : 0;
+            if (Cesium.defined(windowPosition)) {
+              const curChild = container.children[i];
+              curChild.style.left =(windowPosition.x + offsetX)+'px'
+               curChild.style.top =( windowPosition.y - curChild.offsetHeight + offsety) + 'px'
               if ($this._isBackHide) {
                 var j = $this._camera.position,
-                  n =
-                    $this._scene.globe.ellipsoid.cartesianToCartographic(
-                      j
-                    ).height
-                if (
-                  !((n += 1 * $this._scene.globe.ellipsoid.maximumRadius),
-                  Cesium.Cartesian3.distance(j, p) > n)
-                ) {
+                  n = $this._scene.globe.ellipsoid.cartesianToCartographic(j).height
+                if (!((n += 1 * $this._scene.globe.ellipsoid.maximumRadius),Cesium.Cartesian3.distance(j, elPositon) > n)) {
                   container.children[i].style.display = 'block'
                 } else {
                   container.children[i].style.display = 'none'
@@ -934,7 +931,7 @@ Plugin.prototype = {
             }
           }
         }
-        this._scene.preRender.addEventListener(this._postBuildFun)
+        this._scene.postRender.addEventListener(this._postBuildFun)
       }
       /**
        * 根据Id 移除信息框中元素
@@ -957,7 +954,7 @@ Plugin.prototype = {
         })
         this._container.removeChild(document.getElementById(id))
         if (this._postBuildFun) {
-          this._scene.preRender.removeEventListener(this._postBuildFun)
+          this._scene.postRender.removeEventListener(this._postBuildFun)
         }
       }
       Css3Renderer.prototype.removeChild = function () {
@@ -966,7 +963,7 @@ Plugin.prototype = {
                     parentNode.removeChild(this._container)
         }
         if (this._postBuildFun) {
-          this._scene.preRender.removeEventListener(this._postBuildFun)
+          this._scene.postRender.removeEventListener(this._postBuildFun)
         }
       }
        /**

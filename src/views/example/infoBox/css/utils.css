@@ -1,12 +1,11 @@
 .ysc-dynamic-layer{
-
+    /* min-width: 320px;
+    min-height:250px; */
     /*重要*/
-    position: absolute;
-    top:0;
+    position: absolute; 
+     top:0;
     left:0;
-    width: 320px;
-    /* height:250px; */
-    z-index: 99999;
+    z-index: 99; 
 }
 .close__box__btn {
   position: absolute;
@@ -81,6 +80,6 @@
     display: none!important;
 }
 
-.ys-css3-box{
+/* .ys-css3-box{
     position: fixed;
-}
+} */
