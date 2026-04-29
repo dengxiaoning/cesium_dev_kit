@@ -82,8 +82,8 @@ const prototypeExtends = function (viewer, cesiumGlobal, defaultStatic) {
  * @property {PincerArrow}  pincerArrowObj - 标会（钳击箭头）模块
  */
 /**
- * 初始化Cesium 对象
-  * @constructor
+  * 初始化Cesium 对象
+   * @constructor
    * @param {object} params
    * @param {string}  params.cesiumGlobal - 全局Cesium 对象
    * @param {string}  params.containerId - 挂载cesium 对象的dom id
@@ -95,8 +95,11 @@ const prototypeExtends = function (viewer, cesiumGlobal, defaultStatic) {
    * @param {Cesium.Viewer.ConstructorOptions} params.viewerConfig - 同cesium viewer 配置参数,默认{}
    * @param {string}  params.defaultStatic - 静态数据配置
    * @param {Viewer} params.viewer - 外部传入已经实例化的cesium对象viewer(注：如该参数不为空，插件将直接使用viewer，而不会重新执行 new Cesium.Viewer操作)
-  * @example
-  * import { initCesium } from 'cesium_dev_kit'
+   *  @example
+   * import * as Cesium from 'cesium';
+   * import * as THREE from 'three';
+   * import { initCesium } from 'cesium_dev_kit'
+   * import { defaultStatic } from '/src/views/example/defaultStaticConf/index.js'
    * const {
    *      viewer,
           material:,
@@ -118,13 +121,19 @@ const prototypeExtends = function (viewer, cesiumGlobal, defaultStatic) {
         } =
    *   new initCesium({
             cesiumGlobal: Cesium,
+            threeGlobal: THREE,
             containerId: 'cesiumContainer',
+            threeContainerId: 'threeContainer',
             viewerConfig: {
               infoBox: false,
               shouldAnimate: true,
+              useDefaultRenderLoop: false,
+              selectionIndicator: false,
+              sceneModePicker: false
             },
             extraConfig: {
-              depthTest: true
+              depthTest: true,
+              AccessToken:"your access token"
             },
             imageryProvider: {
                 type: "WebMapTileServiceImageryProvider",
@@ -137,17 +146,18 @@ const prototypeExtends = function (viewer, cesiumGlobal, defaultStatic) {
                   maximumLevel: 18,
                 },
               },
-            MapImageryList: [{
-              type: "WebMapTileServiceImageryProvider",
-              option: {
-                url: "http://t0.tianditu.gov.cn/cia_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973",
-                layer: "cia",
-                style: "default",
-                tileMatrixSetID: "w",
-                format: "tiles",
-                maximumLevel: 18,
-              },
-            }],
+            MapImageryList: [ {
+                  type: 'UrlTemplateImageryProvider',
+                  option: {
+                    url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+                  }
+                },
+                {
+                  type: 'UrlTemplateImageryProvider',
+                  option: {
+                    url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
+                  }
+                }],
             defaultStatic
           })
    * @returns {resModulesType} 返回所有模块实例

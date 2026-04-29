@@ -13,12 +13,9 @@
 
 这是一个 Cesium 开发工具包，包含图层加载、坐标转换、坐标拾取、相机控制、测量、标绘、模型加载、模型平移旋转缩放、模型/3Dtiles 视角位置调整、模型拖拽、天气（雨，雪，雾）场景、雷达扫描、信息框、流动线、发光线、动态墙等各种发光材质、后置场景效果、通视分析、透视分析、坡度分析、淹没分析、方量分析、地形开挖等各种分析案例。
 
-
-
 ## API 文档
 
-API文档详情 [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaodehenji.com/cesiumDevKitDoc)
-
+API 文档详情 [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaodehenji.com/cesiumDevKitDoc)
 
 ## 功能展示
 
@@ -31,11 +28,10 @@ API文档详情 [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](http
 |                                                  雷达案例                                                   |                                                       第一人称漫游                                                        |                                                      拖拽                                                       |
 |  ![rayCast](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rayCast.gif)  | ![fireworksEffect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/fireworksEffect.gif) | ![aniSoldier](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/aniSoldier.gif) |
 |                                                  光线投射                                                   |                                                         烟花效果                                                          |                                                   奔跑的士兵                                                    |
-|   ![路线规划](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |![自定义图元](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif) |![聚合图层](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif)|
-|  路线规划                                                     | 自定义图元  |聚合图层|
-|   ![三维柱状](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)   | ![卷帘](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rollerBlind.gif) | ![heatmap3d](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/heatmap3d.gif)|
-|  三维柱状 | 卷帘 | 三维热力 |
-
+| ![路线规划](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif) |    ![自定义图元](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif)     | ![聚合图层](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif) |
+|                                                  路线规划                                                   |                                                        自定义图元                                                         |                                                    聚合图层                                                     |
+|  ![三维柱状](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)   |        ![卷帘](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rollerBlind.gif)         |  ![heatmap3d](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/heatmap3d.gif)  |
+|                                                  三维柱状                                                   |                                                           卷帘                                                            |                                                    三维热力                                                     |
 
 [更多>>](https://benpaodehenji.com/cesiumDevKit)
 
@@ -50,6 +46,84 @@ npm install cesium_dev_kit
 ### 1、完整引入
 
 通过初始化`initCesium` 可以获取到所有扩展模块
+
+#### 1. 通用方式
+
+```javaScript
+import * as Cesium from 'cesium';
+import * as THREE from 'three';
+import { initCesium } from 'cesium_dev_kit'
+import { defaultStatic } from '/src/views/example/defaultStaticConf/index.js'
+
+export default {
+    methods: {
+          // 添加地形
+          async addWorldTerrainAsync (viewer) {
+            try {
+              const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+              viewer.terrainProvider = terrainProvider;
+            } catch (error) {
+              console.log(`Failed to add world imagery: ${error}`);
+            }
+          },
+        initMap () {
+              // 配置多个 imagelayer 数组
+              const tempData = [
+                {
+                  type: 'UrlTemplateImageryProvider',
+                  option: {
+                    url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+                  }
+                },
+                {
+                  type: 'UrlTemplateImageryProvider',
+                  option: {
+                    url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
+                  }
+                }
+              ]
+            // 初始化.
+            const { viewer, material, graphics,sceneMang  } =
+              new initCesium({
+                    cesiumGlobal: Cesium,
+                    threeGlobal: THREE,
+                    containerId: 'cesiumContainer',
+                    threeContainerId: 'threeContainer',
+                    viewerConfig: {
+                      infoBox: false,
+                      shouldAnimate: true,
+                      useDefaultRenderLoop: false,
+                      selectionIndicator: false,
+                      sceneModePicker: false
+                    },
+                    extraConfig: {
+                      depthTest: true,
+                       AccessToken:"your access token"
+                    },
+                    imageryProvider: {
+                      type: "WebMapTileServiceImageryProvider",
+                      option: {
+                        url: "http://t0.tianditu.gov.cn/img_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973",
+                        layer: "img",
+                        style: "default",
+                        tileMatrixSetID: "w",
+                        format: "tiles",
+                        maximumLevel: 18,
+                      },
+                    },
+                    MapImageryList: tempData,
+                    defaultStatic
+                  })
+                  // 调用方法添加地形
+                  this.addWorldTerrainAsync(viewer);
+        }
+      }
+}
+```
+
+[更多详情见 :bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc/module-initCesium.html ](https://benpaodehenji.com/cesiumDevKitDoc/module-initCesium.html)
+
+#### 2. 自定义 viewer
 
 ```javaScript
  import { initCesium } from 'cesium_dev_kit'
@@ -114,8 +188,6 @@ const {viewer,graphics} = new Graphics({
       outlineWidth:1
   })
 ```
-
-
 
 ---
 

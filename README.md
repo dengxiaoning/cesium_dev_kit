@@ -14,29 +14,25 @@
 &emsp;This is a Cesium development kit that includes functionalities such as layer loading, coordinate conversion, coordinate picking, camera control, measurement, plotting, model loading and manipulation (translation, rotation scaling), 3Dtiles view position adjustment, weather effects (rain, snow, fog), scene rendering with radar scan and information box display capabilities. It also provides features for flow line visualization, lighting effects including dynamic wall and other luminous materials rendering.
 Additionally it supports Post effects, visibility analysis tools for perspective analysis and slope analysis. Furthermore it offers Inundation analysis as well as volume analysis capabilities and terrain excavation functionality.
 
-
-
 ## API documentation
 
 See [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaodehenji.com/cesiumDevKitDoc)
 
-
-
 ## Features
 
-|   ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)   |        ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)        |       ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)       |
-| :-------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------: |
-|                                                    material                                                     |                                                         analysis                                                          |                                                      plot                                                       |
-| ![dynamicRiver](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/dnyRiver.gif) |         ![extrude](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/extrude.gif)         |     ![effect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/effect.gif)     |
-|                                                  dynamicRiver                                                   |                                                          extrude                                                          |                                                     effect                                                      |
-|      ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)      |        ![roaming](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)         |       ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)       |
-|                                                      radar                                                      |                                                          roaming                                                          |                                                      drag                                                       |
-|    ![rayCast](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rayCast.gif)    | ![fireworksEffect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/fireworksEffect.gif) | ![aniSoldier](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/aniSoldier.gif) |
-|                                                     rayCast                                                     |                                                      fireworksEffect                                                      |                                                   aniSoldier                                                    |
-|   ![pathPlan](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |![customPrimitive](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif) |![clusterLayer](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif)  |
-|  pathPlan    | customPrimitive   |      clusterLayer      |
-|   ![bar3D](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)   | ![rollerBlind](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rollerBlind.gif)  | ![heatmap3d](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/heatmap3d.gif) |
-|  bar3D | rollerBlind  | heatmap3d |
+|   ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)   |        ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)        |         ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)         |
+| :-------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------: |
+|                                                    material                                                     |                                                         analysis                                                          |                                                        plot                                                         |
+| ![dynamicRiver](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/dnyRiver.gif) |         ![extrude](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/extrude.gif)         |       ![effect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/effect.gif)       |
+|                                                  dynamicRiver                                                   |                                                          extrude                                                          |                                                       effect                                                        |
+|      ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)      |        ![roaming](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)         |         ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)         |
+|                                                      radar                                                      |                                                          roaming                                                          |                                                        drag                                                         |
+|    ![rayCast](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rayCast.gif)    | ![fireworksEffect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/fireworksEffect.gif) |   ![aniSoldier](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/aniSoldier.gif)   |
+|                                                     rayCast                                                     |                                                      fireworksEffect                                                      |                                                     aniSoldier                                                      |
+|   ![pathPlan](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |  ![customPrimitive](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif)  | ![clusterLayer](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif) |
+|                                                    pathPlan                                                     |                                                      customPrimitive                                                      |                                                    clusterLayer                                                     |
+|      ![bar3D](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)      |     ![rollerBlind](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rollerBlind.gif)     |    ![heatmap3d](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/heatmap3d.gif)    |
+|                                                      bar3D                                                      |                                                        rollerBlind                                                        |                                                      heatmap3d                                                      |
 
 [More>>](https://benpaodehenji.com/cesiumDevKit)
 
@@ -46,12 +42,89 @@ See [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaode
 npm install cesium_dev_kit
 ```
 
-
 ## Use
 
 ### 1、Import all
 
 The initialization of 'initCesium' allows for the acquisition of all extension modules.
+
+#### 1. General method
+
+```javaScript
+import * as Cesium from 'cesium';
+import * as THREE from 'three';
+import { initCesium } from 'cesium_dev_kit'
+import { defaultStatic } from '/src/views/example/defaultStaticConf/index.js'
+
+export default {
+    methods: {
+          // add terrain
+          async addWorldTerrainAsync (viewer) {
+            try {
+              const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+              viewer.terrainProvider = terrainProvider;
+            } catch (error) {
+              console.log(`Failed to add world imagery: ${error}`);
+            }
+          },
+        initMap () {
+              // Configure multiple imagelayer arrays
+              const tempData = [
+                {
+                  type: 'UrlTemplateImageryProvider',
+                  option: {
+                    url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+                  }
+                },
+                {
+                  type: 'UrlTemplateImageryProvider',
+                  option: {
+                    url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
+                  }
+                }
+              ]
+            // init .
+            const { viewer, material, graphics,sceneMang  } =
+              new initCesium({
+                    cesiumGlobal: Cesium,
+                    threeGlobal: THREE,
+                    containerId: 'cesiumContainer',
+                    threeContainerId: 'threeContainer',
+                    viewerConfig: {
+                      infoBox: false,
+                      shouldAnimate: true,
+                      useDefaultRenderLoop: false,
+                      selectionIndicator: false,
+                      sceneModePicker: false
+                    },
+                    extraConfig: {
+                      depthTest: true,
+                        AccessToken:"your access token"
+                    },
+                    imageryProvider: {
+                      type: "WebMapTileServiceImageryProvider",
+                      option: {
+                        url: "http://t0.tianditu.gov.cn/img_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973",
+                        layer: "img",
+                        style: "default",
+                        tileMatrixSetID: "w",
+                        format: "tiles",
+                        maximumLevel: 18,
+                      },
+                    },
+                    MapImageryList: tempData,
+                    defaultStatic
+                  })
+                  // Call method to add terrain
+                  this.addWorldTerrainAsync(viewer);
+        }
+      }
+}
+```
+
+[For details, see :bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc/module-initCesium.html ](https://benpaodehenji.com/cesiumDevKitDoc/module-initCesium.html)
+
+#### 2. Custom viewer
 
 ```javaScript
  import { initCesium } from 'cesium_dev_kit'
@@ -128,8 +201,6 @@ const {viewer,graphics} = new Graphics({
 ```javaScript
 new cesium_dev_kit.initCesium({...})
 ```
-
-
 
 ---
 
