@@ -11,7 +11,7 @@ import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 let mixer;
 let dirLight;
 let clock = new THREE.Clock();
-let threeJsCenter = [104.01832061855143, 30.66413246586581];
+let threeJsCenter = [104.04624300169505, 30.677913135946746];
 const colors_pre = [
   new Cesium.Color(77 / 255, 201 / 255, 255 / 255, 1),
   new Cesium.Color(255 / 255, 201 / 255, 38 / 255, 1),
@@ -238,7 +238,7 @@ export default {
       // model
       const loader = new GLTFLoader();
       loader.load("static/data/model/Soldier.glb", function (gltf) {
-        gltf.scene.scale.set(200, 200, 200);
+        gltf.scene.scale.set(600, 600, 600);
         scene.add(gltf.scene);
         gltf.scene.traverse(function (object) {
           if (object.isMesh) {
