@@ -889,7 +889,12 @@ Plugin.prototype = {
 
           var boxElements = getElementsByClass('close__box__btn');
           // 遍历所有元素并绑定点击事件
-          boxElements.forEach(function(element) {
+          boxElements.forEach(function (element) {
+            element.style.position= "absolute";
+            element.style.top="5px";
+            element.style.right="5px";
+            element.style.cursor= "pointer";
+            element.style.color="#fff";
             element.addEventListener('click', function () {
                 if (parentNode.contains(container)) {
                   parentNode.removeChild(container)
@@ -917,8 +922,11 @@ Plugin.prototype = {
             const offsety = eachEl.offset ? eachEl.offset[1] : 0;
             if (Cesium.defined(windowPosition)) {
               const curChild = container.children[i];
+              curChild.style.position="absolute"; 
+              curChild.style.zIndex=99; 
               curChild.style.left =(windowPosition.x + offsetX)+'px'
-               curChild.style.top =( windowPosition.y - curChild.offsetHeight + offsety) + 'px'
+              curChild.style.top = (windowPosition.y - curChild.offsetHeight  + offsety) + 'px'
+
               if ($this._isBackHide) {
                 var j = $this._camera.position,
                   n = $this._scene.globe.ellipsoid.cartesianToCartographic(j).height

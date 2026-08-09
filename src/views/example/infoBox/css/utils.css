@@ -1,19 +1,4 @@
-.ysc-dynamic-layer{
-    /* min-width: 320px;
-    min-height:250px; */
-    /*重要*/
-    position: absolute; 
-     top:0;
-    left:0;
-    z-index: 99; 
-}
-.close__box__btn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  cursor: pointer;
-  color: #fff;
-}
+
 .ysc-dynamic-layer .line::before{
   position: absolute;
   content: "";
@@ -80,6 +65,3 @@
     display: none!important;
 }
 
-/* .ys-css3-box{
-    position: fixed;
-} */

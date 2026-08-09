@@ -786,13 +786,6 @@ Base.prototype = {
    */
   transformCartesianToWGS84: function (cartesian) {
     if (this._viewer && cartesian) {
-      // var ellipsoid = Cesium.Ellipsoid.WGS84
-      // var cartographic = ellipsoid.cartesianToCartographic(cartesian)
-      // return {
-      //   lng: Cesium.Math.toDegrees(cartographic.longitude),
-      //   lat: Cesium.Math.toDegrees(cartographic.latitude),
-      //   alt: cartographic.height
-      // }
       // 从笛卡尔坐标获取经纬度
       const cartographicEntity =Cesium.Cartographic.fromCartesian(cartesian);
      return  {
@@ -1157,7 +1150,8 @@ Base.prototype = {
     }
   },
   /**
-   * 获取鼠标点击后的位置信息
+   * 通过点击屏幕Cartesian2二维坐标，获取鼠标点击后的xy值；
+   * 根据xy判断当前目标对象是3dtiles、地形、模型、地球等通过不同方式获取对应位置信息
    * @function
    * @param {Cesium.Event} e - 监听的事件对象
    * @example
@@ -1169,11 +1163,11 @@ Base.prototype = {
    *
    *   base.bindHandelEvent({
    *      leftClick: function click (event, _handlers) {
-   *        const { wgs84Coor, graphicCoor, cameraPosition } = base.pickUpPosition(event);
-   *        console.log(wgs84Coor, graphicCoor, cameraPosition);
+   *        const cartesian3 = base.pickUpPosition(event);
+   *        console.log(cartesian3);
    *      }
    *     })
-   * @returns {Cesium.Cartesian3}
+   * @returns {boolean|Cartesian3}
    */
   pickUpPosition (e) {
     const cartesian3 = this.getCatesian3FromPX(e.position);

@@ -58,32 +58,47 @@ export default {
     async load3dTiles (viewer) {
       var _self = this;
 
-      let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
-      let tileset = this.c_viewer.scene.primitives.add(tiles)
-      tileset.style = new Cesium.Cesium3DTileStyle({
-        color: {
-          conditions: [
-            ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
-            ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
-            ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
-            ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
-            ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
-            ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
-            ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
-            ["true", "rgb(0, 149, 251, 0.3)"]
-          ]
-        }
-      });
+      // let tiles = await Cesium.Cesium3DTileset.fromUrl('static/data/3DTiles/building/tileset.json');
+      // let tileset = this.c_viewer.scene.primitives.add(tiles)
+      // tileset.style = new Cesium.Cesium3DTileStyle({
+      //   color: {
+      //     conditions: [
+      //       ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+      //       ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+      //       ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+      //       ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+      //       ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+      //       ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+      //       ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+      //       ["true", "rgb(0, 149, 251, 0.3)"]
+      //     ]
+      //   }
+      // });
       _self.addWorldTerrainAsync(viewer);
-      viewer.flyTo(tileset)
+      // viewer.flyTo(tileset)
       _self.addEntityToScene(viewer);
       _self.addListent()
+      _self.flyto();
+    },
+    flyto () {
+      this.b_base.flyTo({
+        position: {
+          "x": -1253559.409990999,
+          "y": 5419352.975314859,
+          "z": 3115333.259974615
+        },
+        orientation: {
+          "heading": 0.4188750281039546,
+          "pitch": -0.13308133526157673,
+          "roll": 0.000015282200091171205
+        }
+      })
     },
     addEntityToScene (viewer) {
       viewerData.css3Entity = new Cesium.Scene.Css3Renderer([{
         id: 'box4',
         parentEleId: 'info-warp',
-        position: [104.08985268964015, 30.635443158056148, 50.0],
+        position: [103.0249541939527, 29.419159397588423, 2435.85581824738],
         element: `<div class="ysc-dynamic-layer ex-box" id="box4"><div class="close__box__btn">X</div>
         <div class="line"  style="width:300px;height:200px;">xxx 信息点</div></div>`,
         offset: [10, -180]
@@ -96,19 +111,20 @@ export default {
         leftClick: function click (event, _handlers) {
           if (Cesium.defined(viewerData.css3Entity)) { viewerData.css3Entity.close(); }// 先关闭其它的
           const pickPosition = _self.c_viewer.scene.pickPosition(event.position)
-          const { lng, lat, alt } = _self.b_base.transformCartesianToWGS84(pickPosition)
-          if (Cesium.defined(pickPosition)) {
+          const cartiesian3 = _self.b_base.pickUpPosition(event);
+          const { lng, lat, alt } = _self.b_base.transformCartesianToWGS84(cartiesian3)
 
+          if (Cesium.defined(pickPosition)) {
             viewerData.css3Entity = new Cesium.Scene.Css3Renderer([{
               id: 'box4',
               parentEleId: 'info-warp',
-              position: [lng, lat, alt],
+              position: cartiesian3,
               element: `<div class="ysc-dynamic-layer ex-box" id="box4"><div class="close__box__btn">X</div> 
               <div class="line"  style="width:300px;height:200px;">
                 信息点<br/>经度： ${lng}<br/>纬度：${lat}<br/>高层：${alt}
                 </div>
               </div>`,
-              offset: [10, -180]
+              offset: [20, 50]
             }], true);
 
           }
