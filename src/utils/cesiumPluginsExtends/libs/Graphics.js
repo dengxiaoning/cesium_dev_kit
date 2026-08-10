@@ -59,7 +59,7 @@ Graphics.prototype = {
    *获取线图形
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.positions - 绘制线图形的坐标数组
+   * @param {Array<Cartesian3>} options.positions - 绘制线图形的坐标数组
    * @param {object} options.material - 配置线段材质
    * @param {number} options.width - 线宽
    * @param {boolean} options.clampToGround - 是否贴地
@@ -105,7 +105,7 @@ Graphics.prototype = {
    *获取面图形
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.positions - 绘制线图形的坐标数组
+   * @param {Array<Cartesian3>} options.positions - 绘制线图形的坐标数组
    * @param {object} options.material - 配置线段材质
    * @param {boolean} options.clampToGround - 是否贴地
    * @example
@@ -576,7 +576,7 @@ Graphics.prototype = {
    * 创建线
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.positions - 坐标数组
+   * @param {Array<Cartesian3>} options.positions - 坐标数组
    * @param {string} options.name - 图形名称
    * @param {string} options.oid - 原始id
    * @param {object} options.material - 配置线段材质
@@ -627,7 +627,7 @@ Graphics.prototype = {
    * 创建面
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.positions - 坐标数组
+   * @param {Array<Cartesian3>} options.positions - 坐标数组
    * @param {object} options.material - 配置线段材质
    * @param {boolean} options.clampToGround - 是否贴地
    * @param {boolean} options.clampToS3M - 是否贴s3m模型
@@ -743,7 +743,7 @@ Graphics.prototype = {
    * 创建地面指示
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.positions - 坐标数组
+   * @param {Array<Cartesian3>} options.positions - 坐标数组
    * @param {number} options.height - 高度
    * @param {number} options.width - 宽度
    * @param {object} options.material - 材质
@@ -804,7 +804,7 @@ Graphics.prototype = {
    * 构建动态线
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.positions - 坐标数组
+   * @param {Array<Cartesian3>} options.positions - 坐标数组
    * @param {object} options.material - 材质
    * @param {number} options.width - 宽度
    * @param {boolean} options.clampToGround - 是否贴地
@@ -1184,7 +1184,7 @@ Graphics.prototype = {
    *  动态渐变墙
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.positions - 坐标数组
+   * @param {Array<Cartesian3>} options.positions - 坐标数组
    * @param {number} options.alp - 透明比例 0~1
    * @param {number} options.num - 渐变步长
    * @param {number} options.speed - 速度 0~1
@@ -1332,7 +1332,7 @@ Graphics.prototype = {
    * 旋转面
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.positions - 坐标数组
+   * @param {Array<Cartesian3>} options.positions - 坐标数组
    * @param {Cartesian2} options.dimensions - 长宽高
    * @param {string} options.image - 图片
    * @example
@@ -1642,7 +1642,7 @@ Graphics.prototype = {
    * canvas 贴图
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.positions - 坐标数组
+   * @param {Array<Cartesian3>} options.positions - 坐标数组
    * @param {string} options.img - 图片
    * @param {number} options.cwidth - 宽度
    * @param {number} options.cheight - 高度
