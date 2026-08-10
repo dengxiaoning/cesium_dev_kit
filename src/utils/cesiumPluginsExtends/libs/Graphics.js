@@ -518,7 +518,7 @@ Graphics.prototype = {
    * 创建点信息
    * @function
    * @param {object} options
-   * @param {Array} options.positions - 坐标数组
+   * @param {Array<Cartesian3>} options.positions - 坐标数组
    * @param {string} options.name - 图形名称
    * @param {string} options.oid - 原始id
    * @param {boolean} options.material - 材质
@@ -671,7 +671,7 @@ Graphics.prototype = {
    * 创建Box
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.position - 坐标数组
+   * @param {Cartesian3} options.position - Cartesian3坐标
    * @param {boolean} options.show - 是否显示
    * @param {string} options.name - 名称
    * @param {object} options.dimensions - 盒子长宽高
@@ -711,7 +711,7 @@ Graphics.prototype = {
    * 创建模型
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.position - 坐标数组
+   * @param {Cartesian3} options.position - Cartesian3坐标
    * @param {string} options.m_url - 模型url
    * @param {string} options.url - 模型url
    * @param {number} options.m_scale - 缩放比例
@@ -857,7 +857,7 @@ Graphics.prototype = {
    * @function
    * @param {object} options
    * @param {CylinderGraphics} options.cylinder - 椎体对象
-   * @param {entity} options.entity - entity实体
+   * @param {Cesium.Entity} options.entity - entity实体
    * @param {number} options.width - 宽度
    * @param {boolean} options.clampToGround - 是否贴地
    * @see {@link module:Graphics#getCylinderGraphics|getCylinderGraphics}
@@ -877,7 +877,7 @@ Graphics.prototype = {
                   slices: 128,
    *         }
    * })
-   * @returns {cylinder} 返回cylinder实例
+   * @returns {Cesium.CylinderGraphics} 返回cylinder实例
    */
   craeteDynamicCylinderGraphics: function (options) {
     var param = {}
@@ -916,7 +916,7 @@ Graphics.prototype = {
    * 创建渐变锥体
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.position - 坐标数组
+   * @param {Cartesian3} options.position - Cartesian3坐标
    * @param {string} options.color - 颜色
    * @param {number} options.duration - 持续时长
    * @param {number} options.length - 长度
@@ -940,7 +940,7 @@ Graphics.prototype = {
           slices: 128,
           duration:5
    * })
-   * @returns {cylinder} 返回cylinder实例
+   * @returns {Cesium.CylinderGraphics} 返回cylinder实例
    */
   createFadeCylinderGraphics: function (options) {
     options = options || {}
@@ -960,7 +960,7 @@ Graphics.prototype = {
    *  创建旋转圆柱
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.position - 坐标数组
+   * @param {Cartesian3} options.position - Cartesian3坐标
    * @param {number} options.length - 长度
    * @param {number} options.topRadius - 顶部半径
    * @param {number} options.bottomRadius - 底部半径
@@ -986,7 +986,7 @@ Graphics.prototype = {
           }),
           slices: 128,
    * })
-   * @returns {cylinder} 返回cylinder实例
+   * @returns {Cesium.CylinderGraphics} 返回cylinder实例
    */
   craeteRotateCylinderGraphics: function (options) {
     if (options && options.position) {
@@ -1025,7 +1025,7 @@ Graphics.prototype = {
    *  创建闪烁圆
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.position - 坐标数组
+   * @param {Cartesian3} options.position - Cartesian3坐标
    * @param {number} options.alp - 频率
    * @param {boolean} options.flog - 显示雾气效果
    * @param {number} options.height - 高度
@@ -1045,7 +1045,7 @@ Graphics.prototype = {
           alp:2,
           flog:true
    * })
-   * @returns {ellipse} 返回ellipse实例
+   * @returns {Cesium.EllipseGraphics} 返回ellipse实例
    */
   craeteDynamicBlinkCircleGraphics: function (options) {
     if (options && options.position) {
@@ -1105,7 +1105,7 @@ Graphics.prototype = {
           scale:1500,
           scale2:800
    * })
-   * @returns {ellipse} 返回ellipse实例
+   * @returns {Cesium.EllipseGraphics} 返回ellipse实例
    */
   craeteDynamicCricleGraphics: function (options) {
     if (options && options.center) {
@@ -1210,7 +1210,7 @@ Graphics.prototype = {
           color: Cesium.Color.RED,
           speed:0.003;
    * })
-   * @returns {wall} 返回wall实例
+   * @returns {Cesium.WallGraphics} 返回wall实例
    */
   craeteDynamicShadeWallGraphics: function (options) {
     if (options && options.positions) {
@@ -1352,7 +1352,7 @@ Graphics.prototype = {
    *      image: "static/data/images/Textures/circle_bg.png",
           dimensions:new Cesium.Cartesian2(200.0, 150.0),
    * })
-   * @returns {plane} 返回plane实例
+   * @returns {Cesium.PlaneGraphics} 返回plane实例
    */
   craeteRotatePlaneGraphics: function (options) {
     if (options && options.center && options.positions) {
@@ -1392,7 +1392,7 @@ Graphics.prototype = {
    * 视频投放
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.position - 坐标数组
+   * @param {Cartesian3} options.position - Cartesian3坐标
    * @param {Cartesian2} options.dimensions - 长宽高
    * @param {HTMLElement} options.videoElement - video绑定dom
      * @param {Cartesian3} options.normal - 垂直方向
@@ -1430,7 +1430,7 @@ Graphics.prototype = {
    * gif 图片投影
    * @function
    * @param {object} options
-   * @param {Cartesian3} options.position - 坐标数组
+   * @param {Cartesian3} options.position - Cartesian3坐标
    * @param {Cartesian2} options.dimensions - 长宽高
    * @param {string} options.url - 图片
    * @param {Cartesian3} options.normal - 垂直方向
@@ -1444,7 +1444,7 @@ Graphics.prototype = {
         position: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 200),
         url: 'static/data/file/scene1.gif'
    * })
-   * @returns {billboard} 返回entity实例
+   * @returns {Cesium.BillboardGraphics} 返回entity实例
    */
   createGifBillboardGraphics: function (options) {
     if (SuperGif && options && options.position) {
@@ -1667,7 +1667,7 @@ Graphics.prototype = {
          speed:0.06,
          callback:res=>{console.log(res)}
    * })
-   *@returns {rectangle} 返回rectangle实例
+   *@returns {Cesium.RectangleGraphics} 返回rectangle实例
    */
   createCanvasGraphics: function (options) {
     if (options && options.positions) {
@@ -1728,7 +1728,7 @@ Graphics.prototype = {
         direction: '+',
         custMaterial: Cesium.Color.AQUAMARINE.withAlpha(0.5)
    * })
-   * @returns {wall} 返回wall实例
+   * @returns {Cesium.WallGraphics} 返回wall实例
    * 
    */
   createFanShape: function ({
