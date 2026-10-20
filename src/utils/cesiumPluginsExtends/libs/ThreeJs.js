@@ -149,6 +149,42 @@ ThreeJs.prototype = {
     _loop()
   },
   /**
+   * 设置 three 对象(模型/网格等)在地球上显示的位置
+   * 【注意】需要先调用 initThree 并且对象已通过 scene.add 添加到场景
+   * @function
+   * @param {object} object - three 对象(THREE.Object3D)
+   * @param {Array|Cartesian3|Cartographic} position - [lng, lat, height](经纬度:度,高度:米) 或 Cesium.Cartesian3/Cartographic
+   * @example
+   * const { scene, camera } = threeObj.threeJs.initThree({ center });
+   * const loader = new GLTFLoader();
+   * loader.load('model.glb', (gltf) => {
+   *   scene.add(gltf.scene);
+   *   threeObj.threeJs.setPosition(gltf.scene, [104.081701757991, 30.627042558105988, 0]);
+   * })
+   * @returns {ThreeJs}
+   */
+  setPosition(object, position) {
+    if (!this._three || !this._three.scene) {
+      console.error('ThreeJs.setPosition: please call initThree first.')
+      return this
+    }
+    this._three.scene.setObjectPosition(object, position)
+    return this
+  },
+  /**
+   * 获取 three 对象当前所在的地理位置
+   * @function
+   * @param {object} object - three 对象(THREE.Object3D)
+   * @returns {Array} [lng, lat, height] 经纬度:度,高度:米
+   */
+  getPosition(object) {
+    if (!this._three || !this._three.scene) {
+      console.error('ThreeJs.getPosition: please call initThree first.')
+      return null
+    }
+    return this._three.scene.getObjectPosition(object)
+  },
+  /**
    * 判断对象是否有某个属性
    * @private
    * @param {object} obj 对象

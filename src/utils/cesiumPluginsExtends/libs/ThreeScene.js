@@ -339,6 +339,10 @@ function initThreeScene({ THREE, Cesium, viewer }) {
 
       // 配置实体的位置和方向
       // this.syncGroup.position.copy(center)
+      // 固定 up 向量后再 lookAt,保证首次调用与后续渲染帧计算出的朝向完全一致
+      // (否则模型加载早于首帧渲染时(setObjectPosition 为首次调用),设置位置用的坐标系
+      //  与渲染用的坐标系存在绕铅垂线的旋转差,模型会偏离目标坐标,且距离 center 越远偏移越大)
+      this.syncGroup.up.set(0, 0, -1)
       this.syncGroup.lookAt(latDir)
       this.syncGroup.up.copy(latDir)
       this.syncGroup.updateMatrix()
@@ -565,6 +569,138 @@ function initThreeScene({ THREE, Cesium, viewer }) {
 
     cartesian3ToVector(cart) {
       return new THREE.Vector3(cart.x, cart.y, cart.z)
+    }
+
+    /**
+     * 坐标统一转 Cartesian3
+     * @private
+     * @param {Array|Cartesian3|Cartographic} position - [lng, lat, height](经纬度:度,高度:米) | Cesium.Cartesian3 | Cesium.Cartographic
+     * @returns {Cartesian3}
+     */
+    positionToCartesian(position) {
+      //数组形式 [lng, lat, height] 经纬度为度,高度为米
+      if (Array.isArray(position)) {
+        return Cesium.Cartesian3.fromDegrees(
+          position[0],
+          position[1],
+          position.length > 2 ? position[2] : 0
+        )
+      }
+
+      if (position && typeof position === 'object') {
+        //Cesium.Cartographic 经纬度为弧度
+        if (
+          typeof position.longitude === 'number' &&
+          typeof position.latitude === 'number'
+        ) {
+          return Cesium.Cartesian3.fromRadians(
+            position.longitude,
+            position.latitude,
+            position.height || 0
+          )
+        }
+
+        //Cesium.Cartesian3(ECEF 直角坐标)
+        if (
+          typeof position.x === 'number' &&
+          typeof position.y === 'number' &&
+          typeof position.z === 'number'
+        ) {
+          return new Cesium.Cartesian3(position.x, position.y, position.z)
+        }
+      }
+
+      throw new Error(
+        'THREE.ThreeCesiumScene: invalid position, expect [lng, lat, height] | Cesium.Cartesian3 | Cesium.Cartographic.'
+      )
+    }
+
+    /**
+     * 坐标转 three 世界坐标(以 initThree 传入的 center 为原点,单位:米)
+     * @function
+     * @param {Array|Cartesian3|Cartographic} position - [lng, lat, height](经纬度:度,高度:米) | Cesium.Cartesian3 | Cesium.Cartographic
+     * @returns {THREE.Vector3}
+     */
+    positionToWorldVector(position) {
+      const cartesian = this.positionToCartesian(position)
+      //场景原点坐标(center 经纬度,高度 0)
+      const origin = Cesium.Cartesian3.fromDegrees(
+        this.lngLat[0],
+        this.lngLat[1],
+        0
+      )
+      return new THREE.Vector3(
+        cartesian.x - origin.x,
+        cartesian.y - origin.y,
+        cartesian.z - origin.z
+      )
+    }
+
+    /**
+     * 设置对象在地球上显示的位置(模型需先通过 scene.add 添加)
+     * @function
+     * @param {object} object - three 对象(THREE.Object3D)
+     * @param {Array|Cartesian3|Cartographic} position - [lng, lat, height](经纬度:度,高度:米) | Cesium.Cartesian3 | Cesium.Cartographic
+     * @example
+     * scene.add(gltf.scene)
+     * scene.setObjectPosition(gltf.scene, [104.081701757991, 30.627042558105988, 0])
+     * @returns {Scene}
+     */
+    setObjectPosition(object, position) {
+      if (!object || !object.isObject3D) {
+        console.error(
+          'THREE.ThreeCesiumScene.setObjectPosition: object must be an instance of THREE.Object3D.',
+          object
+        )
+        return this
+      }
+
+      //同步场景原点朝向并刷新世界矩阵
+      this.updateGroupMatrixWorld()
+      this.updateMatrixWorld(true)
+
+      const worldPosition = this.positionToWorldVector(position)
+      object.position.copy(this.childrenGroup.worldToLocal(worldPosition))
+
+      return this
+    }
+
+    /**
+     * 获取对象当前所在的地理位置
+     * @function
+     * @param {object} object - three 对象(THREE.Object3D)
+     * @returns {Array} [lng, lat, height] 经纬度:度,高度:米
+     */
+    getObjectPosition(object) {
+      if (!object || !object.isObject3D) {
+        console.error(
+          'THREE.ThreeCesiumScene.getObjectPosition: object must be an instance of THREE.Object3D.',
+          object
+        )
+        return null
+      }
+
+      this.updateGroupMatrixWorld()
+      this.updateMatrixWorld(true)
+
+      const origin = Cesium.Cartesian3.fromDegrees(
+        this.lngLat[0],
+        this.lngLat[1],
+        0
+      )
+      const worldPosition = this.childrenGroup.localToWorld(object.position.clone())
+      const cartesian = new Cesium.Cartesian3(
+        worldPosition.x + origin.x,
+        worldPosition.y + origin.y,
+        worldPosition.z + origin.z
+      )
+      const cartographic = Cesium.Cartographic.fromCartesian(cartesian)
+
+      return [
+        Cesium.Math.toDegrees(cartographic.longitude),
+        Cesium.Math.toDegrees(cartographic.latitude),
+        cartographic.height
+      ]
     }
   }
   Scene.prototype.isScene = true

@@ -1,6 +1,7 @@
 <template>
   <div>
     <div id="cesiumContainer" class="map3d-contaner"></div>
+    <div id="threeContainer"></div>
   </div>
 </template>
 <script >
@@ -8,10 +9,19 @@ import * as Cesium from 'cesium'
 import * as THREE from 'three';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-let mixer;
+let mixers = [];
 let dirLight;
 let clock = new THREE.Clock();
 let threeJsCenter = [104.04624300169505, 30.677913135946746];
+// 士兵模型加载后显示的坐标 [经度, 纬度, 高度] 经纬度:度,高度:米
+let soldierPositions = [
+  [104.04624300169505, 30.677913135946746, 0],
+  [103.96684658213363, 30.707563699142355, 0],
+  [103.99124182762363, 30.66216843784849, 0],
+  [104.08199465161863, 30.755986264107932, 0],
+  [104.0674514054723, 30.669275369671197],
+  [104.01647054378103, 30.681205672372133]
+];
 const colors_pre = [
   new Cesium.Color(77 / 255, 201 / 255, 255 / 255, 1),
   new Cesium.Color(255 / 255, 201 / 255, 38 / 255, 1),
@@ -68,7 +78,9 @@ export default {
             cesiumGlobal: Cesium,
             threeGlobal: THREE,
             containerId: 'cesiumContainer',
+            threeContainerId: 'threeContainer',
             viewerConfig: {
+              useDefaultRenderLoop: false,
               infoBox: false,
               shouldAnimate: true,
               contextOptions: {
@@ -217,39 +229,42 @@ export default {
     },
     initThree (ThreeJs) {
       const { scene, renderer } = ThreeJs.initThree({ center: threeJsCenter, threeHabit: false, axesHelper: false });
+      mixers = [];
       this.initLight(scene)
 
-      this.initMeshes(scene, () => {
-        ThreeJs.loop(function () {
-          scene.update();
-
-          const delta = clock.getDelta();
-          mixer && mixer.update(delta);
-        })
+      // 单一渲染循环:场景更新 + 驱动所有模型的动画
+      ThreeJs.loop(() => {
+        scene.update();
+        const delta = clock.getDelta();
+        mixers.forEach((m) => m.update(delta));
       });
+
+      // 加载士兵模型,并按传入经纬度定位
+      soldierPositions.forEach((position) => {
+        this.initMeshes(scene, position);
+      });
+
       this.enableShadow(renderer)
       this.flyto(scene);
     },
-    initMeshes (scene, cb) {
-      // plane
-      // plane = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.MeshPhongMaterial({ color: 0x999999 }));
-      // plane.rotation.x = -Math.PI / 2;
-      // scene.add(plane);
-      // model
+    initMeshes (scene, position) {
       const loader = new GLTFLoader();
-      loader.load("static/data/model/Soldier.glb", function (gltf) {
+      loader.load("static/data/model/Soldier.glb", (gltf) => {
+        // 城市级视野下放大模型便于观察
         gltf.scene.scale.set(600, 600, 600);
-        scene.add(gltf.scene);
         gltf.scene.traverse(function (object) {
           if (object.isMesh) {
             object.castShadow = true;
           }
         });
-        const animation = gltf.animations[1];
-        mixer = new THREE.AnimationMixer(gltf.scene);
-        const action = mixer.clipAction(animation);
+        scene.add(gltf.scene);
+        // 指定模型加载后显示的位置(经纬度:度,高度:米)
+        this.threeJs.setPosition(gltf.scene, position);
+        // 每个模型各自独立的动画混合器
+        const mixer = new THREE.AnimationMixer(gltf.scene);
+        const action = mixer.clipAction(gltf.animations[1]);
         action.play();
-        cb && cb();
+        mixers.push(mixer);
       })
     },
     initLight (scene) {
@@ -276,6 +291,9 @@ export default {
     },
   },
   beforeUnmount () {
+    // 销毁three场景及viewer,避免渲染循环残留影响其它页面
+    this.threeJs && this.threeJs.destroyThreeJS();
+    mixers = [];
     this.c_viewer = null;
     this.material = null;
     this.passEffect = null;
@@ -301,5 +319,17 @@ export default {
       cursor: pointer;
     }
   }
+}
+#threeContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  font-family: sans-serif;
+  pointer-events: none;
 }
 </style>

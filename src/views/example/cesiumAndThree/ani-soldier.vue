@@ -16,6 +16,8 @@ let dirLight;
 let plane;
 let clock = new THREE.Clock();
 let center = [104.081701757991, 30.627042558105988];
+// 模型加载后显示的坐标 [经度, 纬度, 高度] 经纬度:度,高度:米
+let soldierPosition = [104.08131979123445, 30.627074837307173, 0];
 export default {
   mounted () {
     this.initMap()
@@ -121,13 +123,15 @@ export default {
       // scene.add(plane);
       // model
       const loader = new GLTFLoader();
-      loader.load("static/data/model/Soldier.glb", function (gltf) {
-        scene.add(gltf.scene);
+      loader.load("static/data/model/Soldier.glb", (gltf) => {
         gltf.scene.traverse(function (object) {
           if (object.isMesh) {
             object.castShadow = true;
           }
         });
+        scene.add(gltf.scene);
+        // 指定模型加载后显示的位置(经纬度:度,高度:米)
+        this.threeJs.setPosition(gltf.scene, soldierPosition);
         const animation = gltf.animations[1];
         mixer = new THREE.AnimationMixer(gltf.scene);
         const action = mixer.clipAction(animation);
