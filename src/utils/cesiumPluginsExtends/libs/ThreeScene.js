@@ -173,6 +173,7 @@ function initThreeScene({ THREE, Cesium, viewer }) {
       const sphere3 = new THREE.Mesh(geometry3, material3)
       sphere3.rotateX((90 * Math.PI) / 180)
       sphere3.position.z = this.ellipsoid.minimumRadius
+      this.sphere3 = sphere3
 
       const threeGroup = new THREE.Group()
       threeGroup.rotateX((-90 * Math.PI) / 180)
@@ -256,6 +257,9 @@ function initThreeScene({ THREE, Cesium, viewer }) {
     }
 
     updateSunMatrix() {
+      //哥伦布视图下太阳包围球为 ECEF 坐标,无法直接使用,保持默认的垂直光照
+      if (this.isColumbusViewMode()) return this
+
       const cc = this.cesiumViewer.scene.sun._boundingVolume.center
       const c3 = this.cartesian3ToVector(cc)
 
@@ -326,7 +330,83 @@ function initThreeScene({ THREE, Cesium, viewer }) {
       return this
     }
 
+    /**
+     * 当前是否为哥伦布视图模式(2.5D 投影)
+     * @returns {boolean}
+     */
+    isColumbusViewMode() {
+      return this.cesiumViewer.scene.mode === Cesium.SceneMode.COLUMBUS_VIEW
+    }
+
+    /**
+     * three 内容是否可与 cesium 保持同步渲染
+     * 2D 模式使用正交相机,无法与 three 透视相机同步;
+     * 场景模式切换动画(morph)过程中坐标处于插值中间态,同样跳过 three 渲染
+     * @returns {boolean}
+     */
+    isThreeRenderable() {
+      const scene = this.cesiumViewer.scene
+      if (scene.mode === Cesium.SceneMode.SCENE2D) return false
+      //morphTime: 0=2D/哥伦布视图,1=3D,中间值表示正在切换
+      return (
+        Math.abs(scene.morphTime) < Cesium.Math.EPSILON6 ||
+        Math.abs(scene.morphTime - 1) < Cesium.Math.EPSILON6
+      )
+    }
+
+    /**
+     * 场景原点(three 世界原点)对应的 cesium 世界坐标
+     * 3D 模式为 ECEF 坐标;哥伦布视图为 CV 世界坐标(见 cartesianToCVWorld)
+     * @returns {Cartesian3|THREE.Vector3}
+     */
+    getSceneOriginPosition() {
+      if (this.isColumbusViewMode()) {
+        return this.cartesianToCVWorld(
+          Cesium.Cartesian3.fromDegrees(this.lngLat[0], this.lngLat[1], 0)
+        )
+      }
+      return Cesium.Cartesian3.fromDegrees(this.lngLat[0], this.lngLat[1], 0)
+    }
+
+    /**
+     * ECEF 坐标转哥伦布视图世界坐标
+     * cesium 在 CV 模式下并非直接使用投影坐标渲染,而是将其轴序置换:
+     * CV 世界坐标 = Camera.TRANSFORM_2D * mapProjection.project(cartographic)
+     * 即 (高度, 投影东向, 投影北向) —— 对应着色器中的 position2D.zxy,
+     * 也就是 CV 世界中 x 轴为向上方向
+     * @param {Cartesian3} cartesian - ECEF 坐标
+     * @returns {THREE.Vector3}
+     */
+    cartesianToCVWorld(cartesian) {
+      const projected = this.cesiumViewer.scene.mapProjection.project(
+        Cesium.Cartographic.fromCartesian(cartesian)
+      )
+      return new THREE.Vector3(projected.z, projected.x, projected.y)
+    }
+
     updateGroupMatrixWorld() {
+      if (this.isColumbusViewMode()) {
+        // 哥伦布视图模式:three 世界坐标系即 cesium CV 世界坐标(投影坐标经轴序置换:
+        // x=高度(向上), y=投影东向, z=投影北向,单位:米),原点平移到 center 的投影位置;
+        // CV 中坐标轴方向恒定,无需逐帧 lookAt;
+        // syncGroup 旋转 Rx(-90°)·Ry(-90°),配合 childrenGroup 自身的-90°,使:
+        // 模型 +Y(头)指向世界 +X(直立)、+Z(面朝)指向世界 -Z(正南)、+X(右手)指向 +Y(正东),
+        // 与 3D 模式(固定 up=(0,0,-1) lookAt)推导出的朝向一致
+        this.cameraOffset.copy(this.getSceneOriginPosition())
+        this.syncGroup.rotation.set(-Math.PI / 2, -Math.PI / 2, 0)
+        this.syncGroup.updateMatrix()
+        this.syncGroup.up.set(1, 0, 0)
+        this.up.set(1, 0, 0)
+        //ECEF 模拟球在 CV 坐标系下没有意义,隐藏
+        this.sphere.visible = false
+        this.sphere3.visible = false
+        return this
+      }
+
+      //3D 模式恢复模拟球
+      this.sphere.visible = true
+      this.sphere3.visible = true
+
       // 得到面向模型的前向方向
       const center = this.cartesian3ToVector(
         Cesium.Cartesian3.fromDegrees(this.lngLat[0], this.lngLat[1], 0)
@@ -360,7 +440,13 @@ function initThreeScene({ THREE, Cesium, viewer }) {
       this.updateSunMatrix()
       this.updateGroupMatrixWorld()
       this.updateCameraMatrix()
-      this.renderThree()
+      //2D 模式及模式切换动画过程中跳过 three 渲染,避免与 cesium 显示不一致
+      if (this.isThreeRenderable()) {
+        this.renderThree()
+      } else {
+        //清空画布,避免残留切换前的内容
+        this.renderer.clear()
+      }
       this.renderCesium()
     }
 
@@ -623,12 +709,19 @@ function initThreeScene({ THREE, Cesium, viewer }) {
      */
     positionToWorldVector(position) {
       const cartesian = this.positionToCartesian(position)
-      //场景原点坐标(center 经纬度,高度 0)
-      const origin = Cesium.Cartesian3.fromDegrees(
-        this.lngLat[0],
-        this.lngLat[1],
-        0
-      )
+      //场景原点坐标(center 对应的 cesium 世界坐标)
+      const origin = this.getSceneOriginPosition()
+
+      //哥伦布视图:先转成 CV 世界坐标(投影坐标经轴序置换)再计算偏移
+      if (this.isColumbusViewMode()) {
+        const cvPosition = this.cartesianToCVWorld(cartesian)
+        return new THREE.Vector3(
+          cvPosition.x - origin.x,
+          cvPosition.y - origin.y,
+          cvPosition.z - origin.z
+        )
+      }
+
       return new THREE.Vector3(
         cartesian.x - origin.x,
         cartesian.y - origin.y,
@@ -683,18 +776,25 @@ function initThreeScene({ THREE, Cesium, viewer }) {
       this.updateGroupMatrixWorld()
       this.updateMatrixWorld(true)
 
-      const origin = Cesium.Cartesian3.fromDegrees(
-        this.lngLat[0],
-        this.lngLat[1],
-        0
-      )
+      const origin = this.getSceneOriginPosition()
       const worldPosition = this.childrenGroup.localToWorld(object.position.clone())
-      const cartesian = new Cesium.Cartesian3(
+      //绝对位置(three 世界坐标 + 场景原点偏移)
+      const position = new Cesium.Cartesian3(
         worldPosition.x + origin.x,
         worldPosition.y + origin.y,
         worldPosition.z + origin.z
       )
-      const cartographic = Cesium.Cartographic.fromCartesian(cartesian)
+
+      let cartographic
+      if (this.isColumbusViewMode()) {
+        //CV 世界坐标 (高度,东向,北向)置换回投影坐标 (东向,北向,高度) 再反投影
+        cartographic = this.cesiumViewer.scene.mapProjection.unproject(
+          new Cesium.Cartesian3(position.y, position.z, position.x)
+        )
+      } else {
+        //3D 模式:ECEF 反算
+        cartographic = Cesium.Cartographic.fromCartesian(position)
+      }
 
       return [
         Cesium.Math.toDegrees(cartographic.longitude),

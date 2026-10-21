@@ -2095,6 +2095,9 @@ Primitive.prototype = {
       this.scale = scale
     }
     CustomPrimitive.prototype.update = function (frameState) {
+      if (this._destroyed === true) {
+        return
+      }
       if (this.drawCommand === null) {
         this.createDrawCommand(frameState.context)
       }
@@ -2104,7 +2107,28 @@ Primitive.prototype = {
       frameState.commandList.push(this.drawCommand)
     }
     CustomPrimitive.prototype.isDestroyed = function () {
-      return false
+      return this._destroyed === true
+    }
+    //Cesium 场景自定义对象必须实现 destroy():PrimitiveCollection.removeAll 会对集合内
+    //每个对象调用 destroy(),缺失该方法时 viewer.destroy()(页面卸载销毁)会抛
+    //TypeError: primitives[i].destroy is not a function
+    CustomPrimitive.prototype.destroy = function () {
+      //texture、vertexArray 为本对象创建,需手动销毁;
+      //shaderProgram、renderState 来自 Cesium 缓存,由缓存统一管理,不能手动销毁
+      if (this._texture && !this._texture.isDestroyed()) {
+        this._texture.destroy()
+      }
+      this._texture = null
+      if (
+        this.drawCommand &&
+        this.drawCommand.vertexArray &&
+        !this.drawCommand.vertexArray.isDestroyed()
+      ) {
+        this.drawCommand.vertexArray.destroy()
+      }
+      this.drawCommand = null
+      this._destroyed = true
+      return undefined
     }
     CustomPrimitive.prototype.createTexture = function (context) {
       if (this._image === null) {
