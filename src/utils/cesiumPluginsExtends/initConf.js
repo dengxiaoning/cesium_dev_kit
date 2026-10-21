@@ -71,8 +71,52 @@ class Controller {
         )
       }
     }
+    // 监听容器尺寸变化,自动同步 canvas 尺寸(详见 bindContainerResize 注释)
+    // 外部传入的 viewer 由外部自行管理,不做绑定
+    if (!viewer) {
+      const containerEl =
+        mapID && mapID.nodeType === 1 ? mapID : document.getElementById(mapID)
+      this.bindContainerResize(_viewer, containerEl)
+    }
+
     this.viewer = _viewer
     return _viewer
+  }
+  /**
+   * 监听 viewer 容器尺寸变化并自动调用 viewer.resize()
+   * 【背景】useDefaultRenderLoop: false 时,cesium 不会像默认渲染循环那样自动同步
+   * canvas 尺寸,而融合 three 必须关闭默认渲染循环。路由切换重新挂载页面时,容器
+   * 可能先以 0 高度完成挂载(布局稍后恢复),此时创建的 canvas 绘图缓冲区会停留在
+   * 0 高,地图将永久黑屏。ResizeObserver 可在容器尺寸变化(包括初始 0 -> 正常尺寸)
+   * 时及时同步,同时兼顾侧栏折叠等仅容器尺寸变化、不触发 window resize 的场景。
+   * @param {Viewer} viewer - cesium viewer 实例
+   * @param {Element} container - viewer 容器 DOM 元素
+   */
+  bindContainerResize(viewer, container) {
+    if (typeof ResizeObserver === 'undefined' || !container) return
+    const doResize = () => {
+      try {
+        if (typeof viewer.isDestroyed !== 'function' || !viewer.isDestroyed()) {
+          viewer.resize()
+        }
+      } catch (e) {
+        // viewer 已销毁等情况静默忽略
+      }
+    }
+    const observer = new ResizeObserver(doResize)
+    observer.observe(container)
+    // 下一帧补一次同步,防止挂载瞬间布局尚未稳定
+    requestAnimationFrame(doResize)
+    // viewer 销毁时断开监听,避免闭包持有已销毁实例
+    const originalDestroy = viewer.destroy.bind(viewer)
+    viewer.destroy = function () {
+      try {
+        observer.disconnect()
+      } catch (e) {
+        // 忽略
+      }
+      return originalDestroy()
+    }
   }
   addImageryProvider(viewer, type, option) {
     viewer.imageryLayers.addImageryProvider(

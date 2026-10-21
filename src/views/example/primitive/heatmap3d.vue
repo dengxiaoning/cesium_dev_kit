@@ -83,6 +83,7 @@ export default {
               useDefaultRenderLoop: false,
               infoBox: false,
               shouldAnimate: true,
+              sceneMode: Cesium.SceneMode.COLUMBUS_VIEW,
               contextOptions: {
                 requestWebgl2: true,
               }
