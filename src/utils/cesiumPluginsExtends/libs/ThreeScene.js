@@ -247,6 +247,12 @@ function initThreeScene({ THREE, Cesium, viewer }) {
     }
 
     renderCesium() {
+      //与 cesium 默认渲染循环一致:先 resize 再 render。
+      //关闭 useDefaultRenderLoop 后若只调 render,挂载瞬间 canvas 高度为 0 会导致
+      //CesiumWidget._canRender 永远为 false(场景不再渲染、相机飞行也不会推进)
+      if (!this.cesiumViewer.isDestroyed()) {
+        this.cesiumViewer.resize()
+      }
       this.cesiumViewer.render()
       return this
     }

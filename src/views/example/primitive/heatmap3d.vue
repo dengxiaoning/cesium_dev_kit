@@ -8,10 +8,9 @@
 import * as Cesium from 'cesium'
 import * as THREE from 'three';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils";
 import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-let mixers = [];
 let dirLight;
-let clock = new THREE.Clock();
 let threeJsCenter = [104.04624300169505, 30.677913135946746];
 // 士兵模型加载后显示的坐标 [经度, 纬度, 高度] 经纬度:度,高度:米
 let soldierPositions = [
@@ -142,16 +141,16 @@ export default {
       this.initThree(this.threeJs);
     },
     flyto () {
+      // 初始视角:热力图中心正上方偏南约 9km,朝北俯视 -27°,
+      // 保证热力图、模型和扫描效果都在画面内,而不是飞到其它区域
+      // 【注意】Cesium.Cartesian3.fromDegrees 生成 ECEF 坐标,
+      // 哥伦布视图下 flyTo 会自动投影转换,3D 模式下语义一致,无需按模式区分
       this.material.flyTo({
-        position: {
-          "x": -1333918.4838154477,
-          "y": 5333666.232167955,
-          "z": 3228364.0737481005
-        },
+        position: Cesium.Cartesian3.fromDegrees(104.046, 30.6, 9000),
         orientation: {
-          "heading": 6.243674985466009,
-          "pitch": -0.17166755275714096,
-          "roll": 0.000443376324779976
+          heading: Cesium.Math.toRadians(354.3),
+          pitch: Cesium.Math.toRadians(-27.3),
+          roll: 0
         }
       })
     },
@@ -230,42 +229,81 @@ export default {
     },
     initThree (ThreeJs) {
       const { scene, renderer } = ThreeJs.initThree({ center: threeJsCenter, threeHabit: false, axesHelper: false });
-      mixers = [];
+      // 每个组件实例持有自己的 mixers/clock/渲染循环,避免路由切换后旧循环继续驱动新场景
+      this.mixers = [];
+      this.clock = new THREE.Clock();
       this.initLight(scene)
 
       // 单一渲染循环:场景更新 + 驱动所有模型的动画
-      ThreeJs.loop(() => {
+      const renderLoop = () => {
+        this._threeRaf = requestAnimationFrame(renderLoop);
         scene.update();
-        const delta = clock.getDelta();
-        mixers.forEach((m) => m.update(delta));
-      });
+        const delta = this.clock.getDelta();
+        this.mixers.forEach((m) => m.update(delta));
+      };
+      renderLoop();
 
-      // 加载士兵模型,并按传入经纬度定位
-      soldierPositions.forEach((position) => {
-        this.initMeshes(scene, position);
-      });
+      // 13MB 的模型只加载一次,再按位置克隆多个实例
+      this.initMeshes("static/data/model/Soldier.glb", scene, soldierPositions);
 
       this.enableShadow(renderer)
       this.flyto(scene);
     },
-    initMeshes (scene, position) {
+    /**
+     * 加载 glb 后按传入的位置克隆出多个实例
+     * @param {string} url 模型地址
+     * @param {object} scene three 场景
+     * @param {Array[]} positions 每个元素为 [经度, 纬度, 高度]
+     */
+    initMeshes (url, scene, positions) {
       const loader = new GLTFLoader();
-      loader.load("static/data/model/Soldier.glb", (gltf) => {
-        // 城市级视野下放大模型便于观察
-        gltf.scene.scale.set(600, 600, 600);
-        gltf.scene.traverse(function (object) {
-          if (object.isMesh) {
-            object.castShadow = true;
-          }
+
+      loader.load(url, (gltf) => {
+        const clips = gltf.animations ?? [];
+        if (clips.length === 0) {
+          console.warn(`${url} 没有动画`);
+        }
+
+        // 不同模型原始尺寸差异巨大(car_mine.glb 最大边约 842 单位,Soldier.glb 约 1.8 单位),
+        // 写死 scale 换模型后会导致模型过大或小到完全看不见,
+        // 这里统一按目标显示尺寸自动换算缩放,换模型无需再手调 scale
+        const rawSize = new THREE.Box3().setFromObject(gltf.scene).getSize(new THREE.Vector3());
+        const maxDim = Math.max(rawSize.x, rawSize.y, rawSize.z) || 1;
+        const targetSize = 500; // 模型最大边约显示为 500 米,城市视角下清晰可见,可按需调整
+        const modelScale = targetSize / maxDim;
+
+        // 只播一个动画片段:多个 clip 同时 weight=1 播放会互相混合成奇怪姿势
+        // (Soldier.glb 的片段为 Idle / Run / TPose / Walk,参考页面播的是 Index 1 = Run)
+        const runClip = clips.find((clip) => /run/i.test(clip.name)) || clips[1] || clips[0];
+
+        positions.forEach((position) => {
+          // 骨骼模型必须用 SkeletonUtils.clone,
+          // 普通 clone 会复用原来的骨骼,所有实例会一起动或变形错乱
+          const model = cloneSkeleton(gltf.scene);
+
+          model.scale.setScalar(modelScale);
+          model.traverse(function (object) {
+            if (object.isMesh) {
+              object.castShadow = true;
+            }
+          });
+
+          scene.add(model);
+          // 指定模型加载后显示的位置(经纬度:度,高度:米)
+          this.threeJs.setPosition(model, position);
+
+          if (!runClip) return;
+
+          // 每个实例使用独立的 AnimationMixer,才能各自播放互不影响
+          const mixer = new THREE.AnimationMixer(model);
+          const action = mixer.clipAction(runClip);
+          action.loop = THREE.LoopRepeat;
+          action.clampWhenFinished = false;
+          action.play();
+          this.mixers.push(mixer);
         });
-        scene.add(gltf.scene);
-        // 指定模型加载后显示的位置(经纬度:度,高度:米)
-        this.threeJs.setPosition(gltf.scene, position);
-        // 每个模型各自独立的动画混合器
-        const mixer = new THREE.AnimationMixer(gltf.scene);
-        const action = mixer.clipAction(gltf.animations[1]);
-        action.play();
-        mixers.push(mixer);
+      }, undefined, (error) => {
+        console.error(`模型加载失败: ${url}`, error);
       })
     },
     initLight (scene) {
@@ -293,8 +331,15 @@ export default {
   },
   beforeUnmount () {
     // 销毁three场景及viewer,避免渲染循环残留影响其它页面
+    if (this._threeRaf) {
+      cancelAnimationFrame(this._threeRaf);
+      this._threeRaf = null;
+    }
+    if (this.mixers) {
+      this.mixers.forEach((m) => m.stopAllAction());
+      this.mixers = [];
+    }
     this.threeJs && this.threeJs.destroyThreeJS();
-    mixers = [];
     this.c_viewer = null;
     this.material = null;
     this.passEffect = null;
