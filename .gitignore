@@ -5,5 +5,12 @@ dist
 build
 dist-ssr
 *.local
+*.tgz
 cesiumDevKit
 *-lock.*
+.workbuddy
+
+# API 文档产物（由 GitHub Actions 构建后发布到 Pages）
+docs
+# TypeDoc 用的声明桩，由 scripts/gen-api-stubs.mjs 生成
+src/utils/cesiumPluginsExtends/api

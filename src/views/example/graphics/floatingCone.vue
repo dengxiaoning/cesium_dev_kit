@@ -5,7 +5,7 @@
 <script>
 import * as Cesium from 'cesium'
 // import { initCesium } from '@/utils/cesiumPluginsExtends/index'
-import { initCesium } from 'cesium_dev_kit'
+import { initCesium } from '@/utils/cesiumPluginsExtends/index'
 
 export default {
   mounted () {

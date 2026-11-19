@@ -49,7 +49,11 @@ export default {
       roamCtrl: '停止',
       rangeNum: 140,
       headingNum: 90,
-      pitchNum: -10
+      pitchNum: -10,
+      pluginObj: null,
+      pathRomaObj: null,
+      entitesObj: null,
+      c_viewer: null
     }
   },
   mounted () {
@@ -72,7 +76,7 @@ export default {
           }
         }
       ]
-      const pluginObj = new initCesium(
+      this.pluginObj = new initCesium(
         {
           cesiumGlobal: Cesium,
           containerId: 'cesiumContainer',
@@ -83,10 +87,10 @@ export default {
           extraConfig: {},
           MapImageryList: tempData
         })
-      this.c_viewer = pluginObj.viewer;
-      this.pluginCtrl = pluginObj.plugin;
-      this.draw = pluginObj.draw;
-      this.material = pluginObj.material;
+      this.c_viewer = this.pluginObj.viewer;
+      this.pluginCtrl = this.pluginObj.plugin;
+      this.draw = this.pluginObj.draw;
+      this.material = this.pluginObj.material;
       this.flyto();
     },
     flyto () {
@@ -119,8 +123,12 @@ export default {
       if (this.paths.length <= 0) {
         this.$message({ type: "warning", message: '情形绘制漫游路线' })
       } else {
-
-        this.pathRomaObj = this.pluginCtrl.buildPathRoaming({
+        // 重复预览时先移除上一次的漫游实体，避免叠加
+        if (this.pathRomaObj) {
+          this.c_viewer.entities.remove(this.pathRomaObj)
+          this.pathRomaObj = null
+        }
+        const roamEntity = this.pluginCtrl.buildPathRoaming({
           name: '一品大街',
           paths: this.paths,
           polyline: { // 配置漫游路径（不配置则不绘制）
@@ -148,6 +156,10 @@ export default {
               Number(this.rangeNum))
           }
         })
+        this.pathRomaObj = roamEntity || null
+        if (!roamEntity) {
+          this.$message({ type: "warning", message: '漫游路径无效：至少需要两个不重合的点' })
+        }
       }
     },
     romaSpeedChange (e) {
@@ -159,11 +171,25 @@ export default {
     },
     removeRoma () {
       this.c_viewer.clock.shouldAnimate = false
-      this.c_viewer.entities.remove(this.pathRomaObj);
-      this.draw._drawLayer.entities.remove(this.entitesObj);
+      if (this.pathRomaObj) {
+        this.c_viewer.entities.remove(this.pathRomaObj)
+        this.pathRomaObj = null
+      }
+      if (this.entitesObj) {
+        this.draw._drawLayer.entities.remove(this.entitesObj)
+        this.entitesObj = null
+      }
+      // 漫游时相机被 lookAtTransform 锁定，移除后需要解除，否则视角无法自由旋转
+      this.c_viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY)
+      this.paths = []
     },
   },
   beforeUnmount () {
+    // dispose 会释放本模块添加的监听 / 实体；viewer 由 initCesium 创建，一并销毁
+    if (this.pluginObj) {
+      this.pluginObj.dispose()
+      this.pluginObj = null
+    }
     this.c_viewer = null;
     this.pluginCtrl = null;
     this.draw = null;

@@ -16,7 +16,16 @@ Additionally it supports Post effects, visibility analysis tools for perspective
 
 ## API documentation
 
-See [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaodehenji.com/cesiumDevKitDoc)
+See [:bookmark_tabs: https://dengxiaoning.github.io/cesium_dev_kit/](https://dengxiaoning.github.io/cesium_dev_kit/)
+
+The docs are generated from the JSDoc comments under `src/utils/cesiumPluginsExtends` (TypeDoc):
+
+```bash
+npm run docs        # output to docs/
+npm run docs:serve  # local preview at http://localhost:5174
+```
+
+Pushing to `main` triggers `.github/workflows/docs.yml`, which builds and deploys to GitHub Pages.
 
 ## Features
 
@@ -39,154 +48,134 @@ See [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaode
 ## Install
 
 ```shell
-npm install cesium_dev_kit
+npm install cesium_dev_kit cesium
+# optional: only needed for the Three.js integration
+npm install three
 ```
 
-## Use
+> Requires Cesium `>=1.105`. `three`, `echarts`, `dat.gui` and `libgif` are optional peer dependencies (installed only when their features are used).
+> The library no longer ships a Cesium Ion token. Pass your own token via
+> `extraConfig.AccessToken` or set `Cesium.Ion.defaultAccessToken` before creating the viewer.
 
-### 1、Import all
+## Quick start
 
-The initialization of 'initCesium' allows for the acquisition of all extension modules.
+### Import only what you need (recommended)
 
-#### 1. General method
+```ts
+import * as Cesium from 'cesium'
+import { Graphics } from 'cesium_dev_kit/graphics'
 
-```javaScript
-import * as Cesium from 'cesium';
-import * as THREE from 'three';
+// Your own token, e.g. from an environment variable
+Cesium.Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION_TOKEN
+
+const { viewer, graphics, dispose } = Graphics({
+  cesiumGlobal: Cesium,
+  containerId: 'cesiumContainer'
+})
+
+graphics.flyTo({
+  position: { x: -1337132, y: 5330611, z: 3228680 }
+})
+
+// Call this when the page / route is unmounted
+dispose()
+```
+
+Each subpath only bundles its own dependency graph. For example
+`cesium_dev_kit/graphics` does not pull in `echarts` or `dat.gui`.
+Available subpaths: `/graphics`, `/material`, `/primitive`, `/draw`, `/analysis`,
+`/plugin`, `/pass-effect`, `/control`, `/three`, `/custom-cesium-plugin`,
+`/default-static`.
+
+### Default images and assets
+
+Many helpers (sky box, point icon, light cone, water, analysis textures) fall
+back to a small set of default images. If you do not pass `defaultStatic`, the
+kit uses its built-in CDN config so that a fresh install works without 404s:
+
+```ts
+import { defaultStatic, createDefaultStatic } from 'cesium_dev_kit/default-static'
+
+// 1. Use the built-in CDN (default)
+// 2. Use your own CDN
+const myStatic = createDefaultStatic('https://cdn.example.com/')
+// 3. Use relative paths and self-host ./public/static from this repo
+const localStatic = createDefaultStatic('')
+```
+
+### Import all modules
+
+```ts
+import * as Cesium from 'cesium'
 import { initCesium } from 'cesium_dev_kit'
-import { defaultStatic } from '/src/views/example/defaultStaticConf/index.js'
 
-export default {
-    methods: {
-          // add terrain
-          async addWorldTerrainAsync (viewer) {
-            try {
-              const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
-              viewer.terrainProvider = terrainProvider;
-            } catch (error) {
-              console.log(`Failed to add world imagery: ${error}`);
-            }
-          },
-        initMap () {
-              // Configure multiple imagelayer arrays
-              const tempData = [
-                {
-                  type: 'UrlTemplateImageryProvider',
-                  option: {
-                    url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
-                  }
-                },
-                {
-                  type: 'UrlTemplateImageryProvider',
-                  option: {
-                    url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
-                  }
-                }
-              ]
-            // init .
-            const { viewer, material, graphics,sceneMang  } =
-              new initCesium({
-                    cesiumGlobal: Cesium,
-                    threeGlobal: THREE,
-                    containerId: 'cesiumContainer',
-                    threeContainerId: 'threeContainer',
-                    viewerConfig: {
-                      infoBox: false,
-                      shouldAnimate: true,
-                      useDefaultRenderLoop: false,
-                      selectionIndicator: false,
-                      sceneModePicker: false
-                    },
-                    extraConfig: {
-                      depthTest: true,
-                        AccessToken:"your access token"
-                    },
-                    imageryProvider: {
-                      type: "WebMapTileServiceImageryProvider",
-                      option: {
-                        url: "http://t0.tianditu.gov.cn/img_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973",
-                        layer: "img",
-                        style: "default",
-                        tileMatrixSetID: "w",
-                        format: "tiles",
-                        maximumLevel: 18,
-                      },
-                    },
-                    MapImageryList: tempData,
-                    defaultStatic
-                  })
-                  // Call method to add terrain
-                  this.addWorldTerrainAsync(viewer);
-        }
-      }
-}
-```
-
-[For details, see :bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc/module-initCesium.html ](https://benpaodehenji.com/cesiumDevKitDoc/module-initCesium.html)
-
-#### 2. Custom viewer
-
-```javaScript
- import { initCesium } from 'cesium_dev_kit'
- // custom viewer
-var myViewer = new Cesium.Viewer('cesiumContainer', {
-  animation: false, //Whether to display animation controls
-  homeButton: false, //Whether to display the home button
-  geocoder: false, //Whether to display the place name lookup control If set to true, it cannot be queried
-  baseLayerPicker: false, //Whether to display layer selection controls
-  timeline: false, //Whether to display the timeline control
-  fullscreenButton: true, //Whether to display the button in full screen
-  scene3DOnly: false, //If set to true, all geometry is drawn in 3D mode to save GPU resources
-  infoBox: false, //Whether to display the information displayed after clicking the element
-  sceneModePicker: false, //Whether to display projection mode controls 3D / 2D
-  navigationInstructionsInitiallyVisible: false,
-  navigationHelpButton: false, //Whether to display the help control
-  selectionIndicator: false //Whether to display indicator components
-});
-
- //Allowing an existing Viewer to be passed in, cesium_dev_kit will use the passed Viewer directly without re-instantiating it with "new Cesium.Viewer()".
- const {  viewer,  material, ... } = new initCesium({
+const kit = initCesium({
   cesiumGlobal: Cesium,
   containerId: 'cesiumContainer',
-  viewer: myViewer,
-  ...})
+  extraConfig: { AccessToken: 'YOUR_CESIUM_ION_TOKEN' }
+})
+
+const { viewer, graphics, primitive, analysis } = kit
+// ...
+
+// Destroys the viewer created by the kit.
+// If you passed an existing `viewer`, the kit will not destroy it.
+kit.dispose()
 ```
 
-### 2、Import on demand
+### Recommended entry: `createKit`
 
-The import of a single extension class can be tailored to meet specific functional requirements, thereby minimizing code redundancy.
+`createKit` takes the same options as `initCesium` but returns an explicit context and has a clearer `dispose()` contract:
 
-```javaScript
-import {Graphics} from 'cesium_dev_kit'
- // custom viewer
-var myViewer = new Cesium.Viewer('cesiumContainer', {
-  animation: false, //Whether to display animation controls
-  homeButton: false, //Whether to display the home button
-  geocoder: false, //Whether to display the place name lookup control If set to true, it cannot be queried
-  baseLayerPicker: false, //Whether to display layer selection controls
-  timeline: false, //Whether to display the timeline control
-  fullscreenButton: true, //Whether to display the button in full screen
-  scene3DOnly: false, //If set to true, all geometry is drawn in 3D mode to save GPU resources
-  infoBox: false, //Whether to display the information displayed after clicking the element
-  sceneModePicker: false, //Whether to display projection mode controls 3D / 2D
-  navigationInstructionsInitiallyVisible: false,
-  navigationHelpButton: false, //Whether to display the help control
-  selectionIndicator: false //Whether to display indicator components
-});
+```ts
+import * as Cesium from 'cesium'
+import { createKit } from 'cesium_dev_kit'
 
- //Allowing an existing Viewer to be passed in, cesium_dev_kit will use the passed Viewer directly without re-instantiating it with "new Cesium.Viewer()".
-const {viewer,graphics} = new Graphics({
-      cesiumGlobal: Cesium,
-    //containerId: 'cesiumContainer',
-      viewer: myViewer
-  })
-  graphics.getPointGraphics({
-      color:Cesium.Color.GREEN,
-      pixelSize:5,
-      outlineColor:Cesium.Color.WHITE,
-      outlineWidth:1
-  })
+const kit = createKit({
+  Cesium,                     // `cesiumGlobal` also works
+  containerId: 'cesiumContainer',
+  assetsBaseUrl: '/static/',  // same as createDefaultStatic('/static/')
+  extraConfig: { AccessToken: import.meta.env.VITE_CESIUM_ION_TOKEN },
+  onError: (err, ctx) => console.warn(ctx?.scope, err)
+})
+
+kit.context.viewer // identical to kit.viewer
+kit.graphics.createDynamicCircleGraphics({ /* ... */ })
+kit.dispose() // idempotent; kit.isDisposed() reports the state
 ```
+
+Contract:
+
+- If the kit created the viewer, `dispose()` calls `viewer.destroy()`;
+- If you passed your own viewer, `dispose()` only removes DataSources/listeners added by the kit and never destroys your viewer;
+- Multiple kits can coexist on one page — modules no longer share module-level `Cesium` / `dfSt` state;
+- The legacy `new initCesium({...})` form still works but is a compatibility entry; prefer `createKit` for new code.
+
+### Error handling
+
+Errors thrown by the library are `CesiumDevKitError` with a stable `code`:
+
+```ts
+import { isCesiumDevKitError, setErrorHandler } from 'cesium_dev_kit'
+
+try {
+  const kit = createKit({ Cesium, containerId: 'cesiumContainer' })
+} catch (err) {
+  if (isCesiumDevKitError(err) && err.code === 'MISSING_VIEWER') {
+    // provide a container
+  }
+}
+
+// Non-fatal errors caught internally default to console.warn
+setErrorHandler((err, ctx) => console.warn(ctx?.scope, err))
+```
+
+Codes: `MISSING_CESIUM`, `MISSING_VIEWER`, `INVALID_ARGUMENT`, `IMAGERY_FAILED`,
+`OPTIONAL_DEPENDENCY_MISSING`, `UNSUPPORTED_ENVIRONMENT`, `UNSUPPORTED_CESIUM_VERSION`, `INTERNAL`.
+
+> Naming: `craete*` methods now have canonical `create*` names (e.g. `craeteDynamicCricleGraphics` →
+> `createDynamicCircleGraphics`). The old names remain and are marked `@deprecated`.
+
 
 ### Used in h5
 
@@ -200,6 +189,18 @@ const {viewer,graphics} = new Graphics({
 
 ```javaScript
 new cesium_dev_kit.initCesium({...})
+```
+
+
+## Development
+
+```shell
+npm install
+npm run dev          # demo site
+npm run typecheck
+npm test
+npm run build:lib    # dist: ESM + CJS + .d.ts + sourcemaps
+npm run build        # demo site
 ```
 
 ---
@@ -244,8 +245,9 @@ This project includes but is not limited to the reference and reference of the a
 
 ## Project deficiency and optimization
 
-- 1、Extended classes not using type detection (TS)
+- 1、Cesium-related types are intentionally loose (`any`) to support CDN / global `window.Cesium` usage; precise types can be extended if you install cesium via npm
 - 2、No exception catching and handling
+- 3、Missing unit tests and automated release pipeline
 
 ## How to contribute
 

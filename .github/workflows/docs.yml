@@ -1,0 +1,61 @@
+name: Docs
+
+# 生成 API 文档并发布到 GitHub Pages：
+# https://dengxiaoning.github.io/cesium_dev_kit/
+on:
+  push:
+    branches: ['main']
+    paths:
+      - 'src/utils/cesiumPluginsExtends/**'
+      - 'scripts/gen-api-stubs.mjs'
+      - 'scripts/docs-theme.css'
+      - 'typedoc.json'
+      - 'typedoc.entry.md'
+      - 'tsconfig.docs.json'
+      - 'package.json'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只保留一次部署，新的推送取消排队中的旧任务
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build API docs (typedoc + JSDoc comments)
+        run: npm run docs
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

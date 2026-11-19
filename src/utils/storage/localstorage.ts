@@ -16,7 +16,7 @@ class LocalStorageAPI implements StorageType {
       localStorage.setItem(key, value)
     } catch (e) {
       // sessionStorage容量不够，根据保存的时间删除已缓存到 sessionStorage
-      if (e.name.toUpperCase().indexOf('QUOTA') >= 0) {
+      if ((e as Error).name.toUpperCase().indexOf('QUOTA') >= 0) {
         let item
         const tempArr = []
         // 先把所有的缓存对象来出来，放到 tempArr 里

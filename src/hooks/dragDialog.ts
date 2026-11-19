@@ -5,7 +5,7 @@ function bind(el: HTMLElement) {
 
   // 获取原有属性 ie dom元素.currentStyle 火狐谷歌 window.getComputedStyle(dom元素, null);
   const getStyle = (function () {
-    if (window.document.currentStyle) {
+    if ((window.document as any).currentStyle) {
       return (dom: any, attr: any) => dom.currentStyle[attr]
     } else {
       return (dom: any, attr: any) => getComputedStyle(dom, null)[attr]

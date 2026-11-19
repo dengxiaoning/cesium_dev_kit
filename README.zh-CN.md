@@ -15,7 +15,16 @@
 
 ## API 文档
 
-API 文档详情 [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](https://benpaodehenji.com/cesiumDevKitDoc)
+API 文档详情 [:bookmark_tabs: https://dengxiaoning.github.io/cesium_dev_kit/](https://dengxiaoning.github.io/cesium_dev_kit/)
+
+文档由 `src/utils/cesiumPluginsExtends` 下的 JSDoc 注释生成（TypeDoc）：
+
+```bash
+npm run docs        # 生成到 docs/
+npm run docs:serve  # 本地预览 http://localhost:5174
+```
+
+推送到 `main` 后由 `.github/workflows/docs.yml` 自动构建并发布到 GitHub Pages。
 
 ## 功能展示
 
@@ -38,158 +47,119 @@ API 文档详情 [:bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc](htt
 ## 安装
 
 ```shell
-npm install cesium_dev_kit
+npm install cesium_dev_kit cesium
+# 可选：仅 Three.js 集成需要
+npm install three
 ```
 
-## 使用
+> 需要 Cesium `>=1.105`，`three`、`echarts`、`dat.gui`、`libgif` 均为可选 peer 依赖（仅在使用对应功能时安装）。
+> 库内不再内置 Cesium Ion token，请通过 `extraConfig.AccessToken` 传入，或在应用入口设置 `Cesium.Ion.defaultAccessToken`。
 
-### 1、完整引入
+## 快速开始（推荐按需引入）
 
-通过初始化`initCesium` 可以获取到所有扩展模块
+```ts
+import * as Cesium from 'cesium'
+import { Graphics } from 'cesium_dev_kit/graphics'
 
-#### 1. 通用方式
+// 使用自己的 token，例如从环境变量读取
+Cesium.Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION_TOKEN
 
-```javaScript
-import * as Cesium from 'cesium';
-import * as THREE from 'three';
+const { viewer, graphics, dispose } = Graphics({
+  cesiumGlobal: Cesium,
+  containerId: 'cesiumContainer'
+})
+
+// 页面 / 路由卸载时释放 kit 自己创建的 viewer
+dispose()
+```
+
+`cesium_dev_kit/graphics` 不会连带引入 `echarts` / `dat.gui`。可用子路径：
+`/graphics`、`/material`、`/primitive`、`/draw`、`/analysis`、`/plugin`、
+`/pass-effect`、`/control`、`/three`、`/custom-cesium-plugin`、`/default-static`。
+
+### 默认图片与静态资源
+
+天空盒、点图标、光锥、水面、分析贴图等功能会用到一组默认图片。不传
+`defaultStatic` 时，库会使用内置 CDN 配置，保证新项目安装后不会出现 404：
+
+```ts
+import { defaultStatic, createDefaultStatic } from 'cesium_dev_kit/default-static'
+
+// 1. 使用内置 CDN（默认）
+// 2. 换成自己的 CDN
+const myStatic = createDefaultStatic('https://cdn.example.com/')
+// 3. 使用相对路径，并把本仓库的 ./public/static 自托管到你的站点
+const localStatic = createDefaultStatic('')
+```
+
+完整引入：
+
+```ts
 import { initCesium } from 'cesium_dev_kit'
-import { defaultStatic } from '/src/views/example/defaultStaticConf/index.js'
 
-export default {
-    methods: {
-          // 添加地形
-          async addWorldTerrainAsync (viewer) {
-            try {
-              const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
-              viewer.terrainProvider = terrainProvider;
-            } catch (error) {
-              console.log(`Failed to add world imagery: ${error}`);
-            }
-          },
-        initMap () {
-              // 配置多个 imagelayer 数组
-              const tempData = [
-                {
-                  type: 'UrlTemplateImageryProvider',
-                  option: {
-                    url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
-                  }
-                },
-                {
-                  type: 'UrlTemplateImageryProvider',
-                  option: {
-                    url: 'https://webst03.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&style=7',
-                  }
-                }
-              ]
-            // 初始化.
-            const { viewer, material, graphics,sceneMang  } =
-              new initCesium({
-                    cesiumGlobal: Cesium,
-                    threeGlobal: THREE,
-                    containerId: 'cesiumContainer',
-                    threeContainerId: 'threeContainer',
-                    viewerConfig: {
-                      infoBox: false,
-                      shouldAnimate: true,
-                      useDefaultRenderLoop: false,
-                      selectionIndicator: false,
-                      sceneModePicker: false
-                    },
-                    extraConfig: {
-                      depthTest: true,
-                       AccessToken:"your access token"
-                    },
-                    imageryProvider: {
-                      type: "WebMapTileServiceImageryProvider",
-                      option: {
-                        url: "http://t0.tianditu.gov.cn/img_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973",
-                        layer: "img",
-                        style: "default",
-                        tileMatrixSetID: "w",
-                        format: "tiles",
-                        maximumLevel: 18,
-                      },
-                    },
-                    MapImageryList: tempData,
-                    defaultStatic
-                  })
-                  // 调用方法添加地形
-                  this.addWorldTerrainAsync(viewer);
-        }
-      }
-}
-```
-
-[更多详情见 :bookmark_tabs: https://benpaodehenji.com/cesiumDevKitDoc/module-initCesium.html ](https://benpaodehenji.com/cesiumDevKitDoc/module-initCesium.html)
-
-#### 2. 自定义 viewer
-
-```javaScript
- import { initCesium } from 'cesium_dev_kit'
-
- // 自定义viewer
-var myViewer = new Cesium.Viewer('cesiumContainer', {
-  animation: false, //是否显示动画控件
-  homeButton: false, //是否显示home键
-  geocoder: false, //是否显示地名查找控件        如果设置为true，则无法查询
-  baseLayerPicker: false, //是否显示图层选择控件
-  timeline: false, //是否显示时间线控件
-  fullscreenButton: true, //是否全屏显示
-  scene3DOnly: false, //如果设置为true，则所有几何图形以3D模式绘制以节约GPU资源
-  infoBox: false, //是否显示点击要素之后显示的信息
-  sceneModePicker: false, //是否显示投影方式控件  三维/二维
-  navigationInstructionsInitiallyVisible: false,
-  navigationHelpButton: false, //是否显示帮助信息控件
-  selectionIndicator: false //是否显示指示器组件
-});
-
-// 允许传入一个现有的 Viewer，cesium_dev_kit 将直接使用传入的 Viewer，而不会使用“new Cesium.Viewer()”重新实例化它。
- const {  viewer,  material, ... } = new initCesium({
+const kit = initCesium({
   cesiumGlobal: Cesium,
   containerId: 'cesiumContainer',
-  viewer: myViewer,
-  ...})
+  extraConfig: { AccessToken: 'YOUR_CESIUM_ION_TOKEN' }
+})
+
+// ...
+kit.dispose()
 ```
 
-### 2、按需引入
+### 推荐入口：createKit
 
-可根据功能需求导出单一扩展类，减少代码冗余
+`createKit` 与 `initCesium` 参数一致，但返回显式上下文，`dispose()` 的边界也更清楚：
 
-```javaScript
-import {Graphics} from 'cesium_dev_kit'
+```ts
+import * as Cesium from 'cesium'
+import { createKit } from 'cesium_dev_kit'
 
-// 自定义viewer
-var myViewer = new Cesium.Viewer('cesiumContainer', {
-  animation: false, //是否显示动画控件
-  homeButton: false, //是否显示home键
-  geocoder: false, //是否显示地名查找控件        如果设置为true，则无法查询
-  baseLayerPicker: false, //是否显示图层选择控件
-  timeline: false, //是否显示时间线控件
-  fullscreenButton: true, //是否全屏显示
-  scene3DOnly: false, //如果设置为true，则所有几何图形以3D模式绘制以节约GPU资源
-  infoBox: false, //是否显示点击要素之后显示的信息
-  sceneModePicker: false, //是否显示投影方式控件  三维/二维
-  navigationInstructionsInitiallyVisible: false,
-  navigationHelpButton: false, //是否显示帮助信息控件
-  selectionIndicator: false //是否显示指示器组件
-});
+const kit = createKit({
+  Cesium,                     // 也可以写 cesiumGlobal
+  containerId: 'cesiumContainer',
+  assetsBaseUrl: '/static/',  // 等价于 createDefaultStatic('/static/')
+  extraConfig: { AccessToken: import.meta.env.VITE_CESIUM_ION_TOKEN },
+  onError: (err, ctx) => console.warn(ctx?.scope, err) // 接管非致命错误
+})
 
-// 允许传入一个现有的 Viewer，cesium_dev_kit 将直接使用传入的 Viewer，而不会使用“new Cesium.Viewer()”重新实例化它。
-const {viewer,graphics} = new Graphics({
-      cesiumGlobal: Cesium,
-      //containerId: 'cesiumContainer',
-      viewer: myViewer
-  })
-  graphics.getPointGraphics({
-      color:Cesium.Color.GREEN,
-      pixelSize:5,
-      outlineColor:Cesium.Color.WHITE,
-      outlineWidth:1
-  })
+kit.context.viewer // 与 kit.viewer 相同
+kit.graphics.createDynamicCircleGraphics({ /* ... */ })
+kit.dispose() // 幂等；kit.isDisposed() 可查询状态
 ```
 
----
+约定：
+
+- viewer 由 kit 创建时，`dispose()` 会 `viewer.destroy()`；
+- viewer 由调用方传入时，`dispose()` 只清理 kit 自己添加的 DataSource / 监听，不销毁 viewer；
+- 同一页面可以创建多个 kit：模块内部不再共享模块级 `Cesium` / `dfSt` 状态；
+- 旧写法 `new initCesium({...})` 仍然可用，但已标记为兼容入口，新代码建议用 `createKit`。
+
+### 错误处理
+
+库内主动抛出的错误统一为 `CesiumDevKitError`，带稳定的 `code`：
+
+```ts
+import { isCesiumDevKitError, setErrorHandler } from 'cesium_dev_kit'
+
+try {
+  const kit = createKit({ Cesium, containerId: 'cesiumContainer' })
+} catch (err) {
+  if (isCesiumDevKitError(err) && err.code === 'MISSING_VIEWER') {
+    // 自己补一个容器
+  }
+}
+
+// 库内被 catch 掉的非致命错误（销毁失败、可选依赖缺失等）默认 console.warn
+setErrorHandler((err, ctx) => console.warn(ctx?.scope, err))
+```
+
+错误码：`MISSING_CESIUM`、`MISSING_VIEWER`、`INVALID_ARGUMENT`、`IMAGERY_FAILED`、
+`OPTIONAL_DEPENDENCY_MISSING`、`UNSUPPORTED_ENVIRONMENT`、`UNSUPPORTED_CESIUM_VERSION`、`INTERNAL`。
+
+> 命名修正：`craete*` 系列方法已提供正式名 `create*`（如 `craeteDynamicCricleGraphics` →
+> `createDynamicCircleGraphics`），旧名保留并标记 `@deprecated`。
+
 
 ### 如需在 H5 中使用
 
@@ -204,6 +174,19 @@ const {viewer,graphics} = new Graphics({
 ```javaScript
 new cesium_dev_kit.initCesium({...})
 ```
+
+## 部署
+
+```shell
+npm install
+npm run dev          # 查看案例
+npm run typecheck
+npm test
+npm run build:lib    # 将插件打包，其中包含 ESM + CJS + .d.ts + 源码
+npm run build        # 查看案例 
+```
+
+---
 
 ## 使用范例
 
@@ -245,8 +228,9 @@ new cesium_dev_kit.initCesium({...})
 
 ## 项目不足与优化
 
-- 1、扩展类未使用类型检测(TS)
+- 1、Cesium 相关类型暂以宽松（`any`）为主，以兼容通过 CDN / 全局 `window.Cesium` 引入的方式；若使用 npm 安装的 cesium，可自行扩展精确类型
 - 2、未作异常捕捉和处理
+- 3、缺少单元测试与自动化发布流程
 
 ## 如何贡献
 

@@ -1,4 +1,4 @@
-name: NodeJS with Gulp
+name: CI
 
 on:
   push:
@@ -9,24 +9,46 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [16.x]
+        node-version: [18.x, 20.x, 22.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: npm
 
-      - name: build
-        run: |
-          npm config set registry http://registry.cnpmjs.org
-          npm config set registry http://registry.npm.taobao.org
-          npm config set strict-ssl false
-          npm cache clean --force
-          npm install --force
-          npm run build
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build library (ESM/CJS/types)
+        run: npm run build:lib
+
+      - name: Check package exports
+        run: npm run check:exports
+
+      # publint：校验 exports/main/types 是否符合 Node 解析规则
+      - name: Lint package (publint)
+        run: npm run check:publint
+
+      # attw：校验 ESM/CJS 下的类型声明是否都能正确解析
+      - name: Check type resolution (attw)
+        run: npm run check:types
+
+      - name: Build demo
+        run: npm run build
+
+      # 文档构建失败不阻塞示例，但要在 PR 阶段暴露出来
+      - name: Build API docs
+        run: npm run docs

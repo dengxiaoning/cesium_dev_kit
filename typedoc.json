@@ -1,0 +1,49 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "cesium_dev_kit",
+  "entryPoints": [
+    "src/utils/cesiumPluginsExtends/api/index.ts"
+  ],
+  "exclude": [
+    "**/glsl/**",
+    "**/*.d.ts"
+  ],
+  "tsconfig": "tsconfig.docs.json",
+  "out": "docs",
+  "readme": "typedoc.entry.md",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "cleanOutputDir": true,
+  "githubPages": true,
+  "searchInComments": true,
+  "commentStyle": "jsdoc",
+  "disableSources": true,
+  "categorizeByGroup": true,
+  "defaultCategory": "其他",
+  "categoryOrder": [
+    "实体图形",
+    "交互绘制",
+    "标绘箭头",
+    "图元与分析",
+    "空间分析",
+    "材质",
+    "场景插件",
+    "图层与控制",
+    "后处理特效",
+    "数学计算",
+    "Three.js 集成",
+    "DOM 与提示",
+    "基础设施",
+    "扩展",
+    "其他"
+  ],
+  "sourceLinkTemplate": "https://github.com/dengxiaoning/cesium_dev_kit/blob/main/{path}#L{line}",
+  "navigationLinks": {
+    "GitHub": "https://github.com/dengxiaoning/cesium_dev_kit",
+    "Demo": "https://benpaodehenji.com/cesiumDevKit"
+  },
+  "customCss": "scripts/docs-theme.css",
+  "favicon": "public/favicon.ico"
+}

@@ -1,45 +1,259 @@
 {
   "name": "cesium_dev_kit",
-  "version": "1.1.20",
+  "version": "1.1.23",
+  "description": "A Cesium development kit: plotting, measurement, analysis, custom materials/primitives, sensors, heatmap, effects and more.",
+  "keywords": [
+    "cesium",
+    "cesiumjs",
+    "gis",
+    "3d",
+    "map",
+    "plotting",
+    "measurement",
+    "analysis",
+    "material",
+    "primitive",
+    "sensor",
+    "heatmap",
+    "threejs"
+  ],
   "license": "MIT",
+  "homepage": "https://benpaodehenji.com/cesiumDevKit",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dengxiaoning/cesium_dev_kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dengxiaoning/cesium_dev_kit/issues"
+  },
+  "type": "commonjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./graphics": {
+      "import": {
+        "types": "./dist/graphics.d.mts",
+        "default": "./dist/graphics.mjs"
+      },
+      "require": {
+        "types": "./dist/graphics.d.ts",
+        "default": "./dist/graphics.cjs"
+      }
+    },
+    "./material": {
+      "import": {
+        "types": "./dist/material.d.mts",
+        "default": "./dist/material.mjs"
+      },
+      "require": {
+        "types": "./dist/material.d.ts",
+        "default": "./dist/material.cjs"
+      }
+    },
+    "./primitive": {
+      "import": {
+        "types": "./dist/primitive.d.mts",
+        "default": "./dist/primitive.mjs"
+      },
+      "require": {
+        "types": "./dist/primitive.d.ts",
+        "default": "./dist/primitive.cjs"
+      }
+    },
+    "./draw": {
+      "import": {
+        "types": "./dist/draw.d.mts",
+        "default": "./dist/draw.mjs"
+      },
+      "require": {
+        "types": "./dist/draw.d.ts",
+        "default": "./dist/draw.cjs"
+      }
+    },
+    "./analysis": {
+      "import": {
+        "types": "./dist/analysis.d.mts",
+        "default": "./dist/analysis.mjs"
+      },
+      "require": {
+        "types": "./dist/analysis.d.ts",
+        "default": "./dist/analysis.cjs"
+      }
+    },
+    "./plugin": {
+      "import": {
+        "types": "./dist/plugin.d.mts",
+        "default": "./dist/plugin.mjs"
+      },
+      "require": {
+        "types": "./dist/plugin.d.ts",
+        "default": "./dist/plugin.cjs"
+      }
+    },
+    "./pass-effect": {
+      "import": {
+        "types": "./dist/pass-effect.d.mts",
+        "default": "./dist/pass-effect.mjs"
+      },
+      "require": {
+        "types": "./dist/pass-effect.d.ts",
+        "default": "./dist/pass-effect.cjs"
+      }
+    },
+    "./control": {
+      "import": {
+        "types": "./dist/control.d.mts",
+        "default": "./dist/control.mjs"
+      },
+      "require": {
+        "types": "./dist/control.d.ts",
+        "default": "./dist/control.cjs"
+      }
+    },
+    "./three": {
+      "import": {
+        "types": "./dist/three.d.mts",
+        "default": "./dist/three.mjs"
+      },
+      "require": {
+        "types": "./dist/three.d.ts",
+        "default": "./dist/three.cjs"
+      }
+    },
+    "./custom-cesium-plugin": {
+      "import": {
+        "types": "./dist/custom-cesium-plugin.d.mts",
+        "default": "./dist/custom-cesium-plugin.mjs"
+      },
+      "require": {
+        "types": "./dist/custom-cesium-plugin.d.ts",
+        "default": "./dist/custom-cesium-plugin.cjs"
+      }
+    },
+    "./default-static": {
+      "import": {
+        "types": "./dist/default-static.d.mts",
+        "default": "./dist/default-static.mjs"
+      },
+      "require": {
+        "types": "./dist/default-static.d.ts",
+        "default": "./dist/default-static.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "graphics": [
+        "dist/graphics.d.ts"
+      ],
+      "material": [
+        "dist/material.d.ts"
+      ],
+      "primitive": [
+        "dist/primitive.d.ts"
+      ],
+      "draw": [
+        "dist/draw.d.ts"
+      ],
+      "analysis": [
+        "dist/analysis.d.ts"
+      ],
+      "plugin": [
+        "dist/plugin.d.ts"
+      ],
+      "pass-effect": [
+        "dist/pass-effect.d.ts"
+      ],
+      "control": [
+        "dist/control.d.ts"
+      ],
+      "three": [
+        "dist/three.d.ts"
+      ],
+      "custom-cesium-plugin": [
+        "dist/custom-cesium-plugin.d.ts"
+      ],
+      "default-static": [
+        "dist/default-static.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.zh-CN.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:lib": "tsup",
+    "typecheck": "tsc --noEmit",
     "strictbuild": "vue-tsc --noEmit && vite build",
-    "serve": "vite preview"
+    "test": "tsx tests/plotUtil.test.ts && tsx tests/math2d.test.ts && tsx tests/dispose.test.ts && tsx tests/scope.test.ts && tsx tests/plot.test.ts && tsx tests/defaultStatic.test.ts && tsx tests/api.test.ts && tsx tests/pathRoaming.test.ts && tsx tests/roaming.test.ts",
+    "serve": "vite preview",
+    "check:exports": "node scripts/check-exports.mjs",
+    "check:publint": "publint",
+    "check:types": "attw --pack . --profile node16",
+    "check:pkg": "npm run build:lib && npm run check:exports && publint && attw --pack . --profile node16",
+    "docs": "node scripts/gen-api-stubs.mjs && typedoc --options typedoc.json",
+    "docs:serve": "node scripts/serve-docs.mjs",
+    "prepack": "npm run build:lib"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "cesium": ">=1.105.0",
+    "dat.gui": ">=0.7.9",
+    "echarts": "^4.2.1 || ^5.0.0",
+    "libgif": ">=0.0.3",
+    "three": ">=0.160.0"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@babel/plugin-proposal-optional-chaining": "^7.14.5",
+    "@iconify/vue": "^3.0.0",
     "@turf/turf": "^6.5.0",
+    "@types/node": "^15.0.2",
+    "@vitejs/plugin-vue": "^1.9.3",
+    "@vitejs/plugin-vue-jsx": "^1.2.0",
+    "@vue/compiler-sfc": "^3.4.32",
     "@vueup/vue-quill": "^1.2.0",
     "axios": "^0.21.1",
     "cesium": "^1.105.0",
-    "cesium_dev_kit": "^1.0.76",
-    "cesium-navigation-es6": "^3.0.9",
-    "concaveman": "^1.1.1",
     "dat.gui": "^0.7.9",
     "echarts": "4.2.1",
     "element-plus": "^2.7.6",
     "flatted": "^3.2.2",
     "js-cookie": "2.2.0",
     "libgif": "0.0.3",
+    "mitt": "^2.1.0",
     "nprogress": "0.2.0",
     "ol": "^6.9.0",
     "path-browserify": "^1.0.1",
-    "three": "^0.163.0",
-    "vue": "^3.2.13",
-    "vue-router": "^4.0.6",
-    "vuex": "^4.1.0"
-  },
-  "devDependencies": {
-    "@babel/plugin-proposal-optional-chaining": "^7.14.5",
-    "@iconify/vue": "^3.0.0",
-    "@types/node": "^15.0.2",
-    "@vitejs/plugin-vue": "^1.9.3",
-    "@vitejs/plugin-vue-jsx": "^1.2.0",
-    "@vue/compiler-sfc": "^3.4.32",
-    "mitt": "^2.1.0",
     "prettier": "^2.2.1",
+    "publint": "^0.3.25",
     "sass": "1.77.6",
+    "three": "^0.163.0",
+    "tsup": "^8.5.1",
+    "tsx": "^3.14.0",
+    "typedoc": "^0.28.20",
     "typescript": "^5.4.5",
     "unplugin-auto-import": "^0.17.6",
     "unplugin-vue-components": "^0.27.2",
@@ -49,10 +263,27 @@
     "vite-plugin-html": "^2.0.7",
     "vite-plugin-style-import": "^0.10.0",
     "vite-plugin-svg-icons": "^1.0.4",
-    "vue-tsc": "^0.0.24"
+    "vue": "^3.2.13",
+    "vue-router": "^4.0.6",
+    "vue-tsc": "^0.0.24",
+    "vuex": "^4.1.0"
   },
   "engines": {
-    "node": "==16.0.0",
-    "npm": "==8.19.4"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "three": {
+      "optional": true
+    },
+    "dat.gui": {
+      "optional": true
+    },
+    "echarts": {
+      "optional": true
+    },
+    "libgif": {
+      "optional": true
+    }
   }
 }
