@@ -19,9 +19,11 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
 
-const ROOT = path.resolve(import.meta.dirname, '..')
+// Node 18 没有 import.meta.dirname（20.11+ 才有），CI 的 18.x 矩阵会直接崩
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const LIB_DIR = path.join(ROOT, 'src/utils/cesiumPluginsExtends/libs')
 const OUT_DIR = path.join(ROOT, 'src/utils/cesiumPluginsExtends/api')
 

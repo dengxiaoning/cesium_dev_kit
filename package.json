@@ -216,6 +216,7 @@
     "check:pkg": "npm run build:lib && npm run check:exports && publint && attw --pack . --profile node16",
     "docs": "node scripts/gen-api-stubs.mjs && typedoc --options typedoc.json",
     "docs:serve": "node scripts/serve-docs.mjs",
+    "build:demo:pages": "vite build --outDir docs/demo --emptyOutDir",
     "prepack": "npm run build:lib"
   },
   "peerDependencies": {

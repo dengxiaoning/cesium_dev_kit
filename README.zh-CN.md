@@ -13,18 +13,23 @@
 
 这是一个 Cesium 开发工具包，包含图层加载、坐标转换、坐标拾取、相机控制、测量、标绘、模型加载、模型平移旋转缩放、模型/3Dtiles 视角位置调整、模型拖拽、天气（雨，雪，雾）场景、雷达扫描、信息框、流动线、发光线、动态墙等各种发光材质、后置场景效果、通视分析、透视分析、坡度分析、淹没分析、方量分析、地形开挖等各种分析案例。
 
-## API 文档
+## API 文档与在线 Demo
 
-API 文档详情 [:bookmark_tabs: https://dengxiaoning.github.io/cesium_dev_kit/](https://dengxiaoning.github.io/cesium_dev_kit/)
+- API 文档：[:bookmark_tabs: https://dengxiaoning.github.io/cesium_dev_kit/](https://dengxiaoning.github.io/cesium_dev_kit/)
+- 在线 Demo：[:rocket: https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
+
+两者同属一个 GitHub Pages 站点：文档在根路径，Demo 在 `/demo/`。Demo 用模拟账号自动登录
+（`?auto=1`），左侧菜单就是全部示例，和文档里的类一一对应。
 
 文档由 `src/utils/cesiumPluginsExtends` 下的 JSDoc 注释生成（TypeDoc）：
 
 ```bash
-npm run docs        # 生成到 docs/
-npm run docs:serve  # 本地预览 http://localhost:5174
+npm run docs             # 生成 API 文档到 docs/
+npm run build:demo:pages # 把 Demo 构建到 docs/demo/
+npm run docs:serve       # 本地预览 http://localhost:5174
 ```
 
-推送到 `main` 后由 `.github/workflows/docs.yml` 自动构建并发布到 GitHub Pages。
+推送到 `main` 后由 `.github/workflows/docs.yml` 依次构建文档与 Demo，并发布到 GitHub Pages。
 
 ## 功能展示
 
@@ -42,7 +47,7 @@ npm run docs:serve  # 本地预览 http://localhost:5174
 |  ![三维柱状](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)   |        ![卷帘](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rollerBlind.gif)         |  ![heatmap3d](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/heatmap3d.gif)  |
 |                                                  三维柱状                                                   |                                                           卷帘                                                            |                                                    三维热力                                                     |
 
-[更多>>](https://benpaodehenji.com/cesiumDevKit)
+[更多>>](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
 
 ## 安装
 

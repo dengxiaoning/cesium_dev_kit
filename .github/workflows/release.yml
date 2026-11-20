@@ -15,15 +15,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 20
+      # 用 24.x：Node 24 自带 npm 11.5+，既能满足 --provenance，
+      # 也让下面的 npm Trusted Publishing（OIDC）方案可直接启用
+      - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 24.x
           registry-url: https://registry.npmjs.org
           cache: npm
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Unit tests
         run: npm test

@@ -6,7 +6,10 @@ on:
   push:
     branches: ['main']
     paths:
-      - 'src/utils/cesiumPluginsExtends/**'
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'vite.config.ts'
       - 'scripts/gen-api-stubs.mjs'
       - 'scripts/docs-theme.css'
       - 'typedoc.json'
@@ -32,17 +35,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 20
+      - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 24.x
           cache: npm
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Build API docs (typedoc + JSDoc comments)
         run: npm run docs
+
+      # Demo 站点发布到同一个 Pages 站点下的 /demo/，文档页顶部的「在线 Demo」就指向它。
+      # 必须放在 docs 之后：typedoc 会先清空 docs/，再往里写 demo 才能保留下来。
+      - name: Build demo site into docs/demo
+        run: npm run build:demo:pages
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

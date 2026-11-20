@@ -17,6 +17,20 @@ NProgress.configure({
 const obtainModules = getMoulesByRoute();
 const whiteList = ['/login', '/auth-redirect', '/bind', '/register']
 
+/**
+ * 演示站免登录：访问时带上 ?auto=1 即用内置的模拟账号自动登录。
+ *
+ * 这里的登录/取用户信息本来就是纯前端模拟（见 store/modules/user.ts），没有后端校验，
+ * 所以它本身不承担任何鉴权职责；这个开关只是为了让 GitHub Pages 上的在线 Demo
+ * 少一步「先看到登录页再点登录」，链接形如：
+ * https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1
+ */
+const DEMO_AUTO_LOGIN = (() => {
+  if (typeof window === 'undefined') return false
+  const search = window.location.search
+  return search.includes('auto=1')
+})()
+
 router.beforeEach((to: any, from: any, next: any) => {
   const hasetoken = getToken('USER-TOKEN');
   NProgress.start()
@@ -66,6 +80,12 @@ router.beforeEach((to: any, from: any, next: any) => {
     if (whiteList.indexOf(to.path) !== -1) {
       // 在免登录白名单，直接进入
       next()
+    } else if (DEMO_AUTO_LOGIN) {
+      // 演示站：用模拟账号登录后回到当前路由，省掉登录页这一跳
+      store.dispatch('Login', { username: 'admin', password: '123456' }).then(() => {
+        next({ ...to, replace: true })
+        NProgress.done()
+      })
     } else {
       next(`/login?redirect=${to.fullPath}`) // 否则全部重定向到登录页
       NProgress.done()

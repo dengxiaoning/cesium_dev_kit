@@ -7,8 +7,12 @@ dist-ssr
 *.local
 *.tgz
 cesiumDevKit
-*-lock.*
 .workbuddy
+
+# package-lock.json 纳入版本管理（CI 用 npm ci 才能可复现构建），
+# 这里只挡其他包管理器的 lock，避免同一个仓库出现多份依赖快照
+pnpm-lock.yaml
+yarn.lock
 
 # API 文档产物（由 GitHub Actions 构建后发布到 Pages）
 docs

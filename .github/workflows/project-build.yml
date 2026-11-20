@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [20.x, 22.x, 24.x]
 
     steps:
       - uses: actions/checkout@v4
@@ -23,8 +23,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
 
+      # lockfile 已纳入版本管理，用 npm ci 严格按 lockfile 安装，避免 CI 版本漂移
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Unit tests
         run: npm test

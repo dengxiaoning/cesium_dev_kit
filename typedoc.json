@@ -42,7 +42,7 @@
   "sourceLinkTemplate": "https://github.com/dengxiaoning/cesium_dev_kit/blob/main/{path}#L{line}",
   "navigationLinks": {
     "GitHub": "https://github.com/dengxiaoning/cesium_dev_kit",
-    "Demo": "https://benpaodehenji.com/cesiumDevKit"
+    "在线 Demo": "/cesium_dev_kit/demo/?auto=1"
   },
   "customCss": "scripts/docs-theme.css",
   "favicon": "public/favicon.ico"

@@ -14,18 +14,24 @@
 &emsp;This is a Cesium development kit that includes functionalities such as layer loading, coordinate conversion, coordinate picking, camera control, measurement, plotting, model loading and manipulation (translation, rotation scaling), 3Dtiles view position adjustment, weather effects (rain, snow, fog), scene rendering with radar scan and information box display capabilities. It also provides features for flow line visualization, lighting effects including dynamic wall and other luminous materials rendering.
 Additionally it supports Post effects, visibility analysis tools for perspective analysis and slope analysis. Furthermore it offers Inundation analysis as well as volume analysis capabilities and terrain excavation functionality.
 
-## API documentation
+## API documentation & live demo
 
-See [:bookmark_tabs: https://dengxiaoning.github.io/cesium_dev_kit/](https://dengxiaoning.github.io/cesium_dev_kit/)
+- API docs: [:bookmark_tabs: https://dengxiaoning.github.io/cesium_dev_kit/](https://dengxiaoning.github.io/cesium_dev_kit/)
+- Live demo: [:rocket: https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
+
+Both live on the same GitHub Pages site: docs at the root, the demo under `/demo/`. The demo logs
+in with a mock account (`?auto=1`), and its sidebar lists every example, matching the classes in
+the docs one by one.
 
 The docs are generated from the JSDoc comments under `src/utils/cesiumPluginsExtends` (TypeDoc):
 
 ```bash
-npm run docs        # output to docs/
-npm run docs:serve  # local preview at http://localhost:5174
+npm run docs             # build API docs into docs/
+npm run build:demo:pages # build the demo into docs/demo/
+npm run docs:serve       # local preview at http://localhost:5174
 ```
 
-Pushing to `main` triggers `.github/workflows/docs.yml`, which builds and deploys to GitHub Pages.
+Pushing to `main` triggers `.github/workflows/docs.yml`, which builds both and deploys to GitHub Pages.
 
 ## Features
 
@@ -43,7 +49,7 @@ Pushing to `main` triggers `.github/workflows/docs.yml`, which builds and deploy
 |      ![bar3D](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)      |     ![rollerBlind](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rollerBlind.gif)     |    ![heatmap3d](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/heatmap3d.gif)    |
 |                                                      bar3D                                                      |                                                        rollerBlind                                                        |                                                      heatmap3d                                                      |
 
-[More>>](https://benpaodehenji.com/cesiumDevKit)
+[More>>](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
 
 ## Install
 

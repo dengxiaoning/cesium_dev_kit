@@ -5,6 +5,12 @@ Cesium 开发套件：标绘、量算、分析、自定义材质 / 图元、传�
 A Cesium development kit: plotting, measurement, analysis, custom materials / primitives, sensors,
 heatmap, post-processing effects and Three.js integration.
 
+> **在线 Demo：<https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1>**
+>
+> 左侧目录里的每一个类，在 Demo 里都有对应的示例页面（标绘、量算、分析、材质、后处理、
+> 路径漫游……），页面左侧菜单按同样的分类排列，可以直接点开看效果，也可以对照着抄代码。
+> 演示站用模拟账号自动登录（`?auto=1`），无需注册。想本地跑：`npm run dev`。
+
 ## 安装
 
 ```bash

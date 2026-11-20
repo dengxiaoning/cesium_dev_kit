@@ -25,11 +25,32 @@ const MIME = {
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
   '.webp': 'image/webp',
+  '.bmp': 'image/bmp',
   '.ico': 'image/x-icon',
   '.map': 'application/json; charset=utf-8',
   '.woff': 'font/woff',
-  '.woff2': 'font/woff2'
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
+  '.otf': 'font/otf',
+  // Demo 站点（docs/demo）会用到这些：Cesium 的 Worker / 瓦片 / 模型
+  '.wasm': 'application/wasm',
+  '.xml': 'application/xml; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+  '.csv': 'text/csv; charset=utf-8',
+  '.glb': 'model/gltf-binary',
+  '.gltf': 'model/gltf+json',
+  '.bin': 'application/octet-stream',
+  '.b3dm': 'application/octet-stream',
+  '.pnts': 'application/octet-stream',
+  '.i3dm': 'application/octet-stream',
+  '.cmpt': 'application/octet-stream',
+  '.terrain': 'application/vnd.quantized-mesh',
+  '.ktx2': 'image/ktx2',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm'
 }
 
 if (!fs.existsSync(root)) {
