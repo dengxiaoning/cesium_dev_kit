@@ -43,7 +43,14 @@ jobs:
       - name: Check type resolution (attw)
         run: npm run check:types
 
-      # 需要仓库 Secrets 中配置 NPM_TOKEN
+      # 发布凭据二选一：
+      # A. 仓库 Secrets 里的 NPM_TOKEN 必须是「能绕过 2FA」的 token，否则会报
+      #    EOTP "This operation requires a one-time password from your authenticator"。
+      #    - Classic Token -> 类型选 Automation
+      #    - 或 Granular Token 勾选 "Bypass two-factor authentication (2FA)"
+      # B. 或改用 npm Trusted Publishing（OIDC，无需 token）：npmjs 包页 Settings ->
+      #    Trusted Publisher -> GitHub Actions 填 dengxiaoning/cesium_dev_kit、release.yml，
+      #    然后删掉下面的 NODE_AUTH_TOKEN（需要 npm >= 11.5，即 Node 24 runner）。
       - name: Publish to npm
         run: npm publish --provenance --access public
         env:
