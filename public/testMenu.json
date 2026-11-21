@@ -1007,6 +1007,32 @@
     }]
   },
   {
+    "name": "terrain",
+    "path": "/terrain",
+    "component": "Layout",
+    "meta": {
+      "auth": ["admin", "test"],
+      "title": "地形编辑",
+      "icon": "mdi:terrain",
+      "isAffix": false,
+      "isHide": false,
+      "isKeepAlive": true
+    },
+    "children": [{
+      "name": "terrainEdit",
+      "path": "terrainEdit",
+      "component": "example/terrain/terrainEdit",
+      "meta": {
+        "auth": ["admin", "test"],
+        "title": "地形开挖（塌陷/台阶/水面）",
+        "icon": "mdi:image-filter-hdr",
+        "isAffix": false,
+        "isHide": false,
+        "isKeepAlive": true
+      }
+    }]
+  },
+  {
     "name": "sysManage",
     "path": "/sysManage",
     "component": "Layout",

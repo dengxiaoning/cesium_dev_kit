@@ -9,6 +9,7 @@ import { Plugin } from './Plugin'
 import { ThreeJs } from './ThreeJs'
 import { Control } from './Control'
 import { Math2d, Math3d, AttackArrow, StraightArrow, PincerArrow } from '../libs/index'
+import { TerrainEdit } from '../libs/index'
 
 export type { SingleImportOptions, SingleImportConstructor } from './Base'
 export {
@@ -26,5 +27,6 @@ export {
   Math3d,
   AttackArrow,
   StraightArrow,
-  PincerArrow
+  PincerArrow,
+  TerrainEdit
 }

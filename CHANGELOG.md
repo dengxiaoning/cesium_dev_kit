@@ -5,6 +5,12 @@
 ## [Unreleased]
 
 ### 新增（Added）
+- 新增 **`TerrainEdit`（地形笔刷）** 模块：`setArea()` 就地铺一块可编辑区域后，**按住左键拖动即可连续涂抹**（下沉 / 抬升 / 整平 / 平滑，笔刷半径、强度、单笔高度、硬边均可调），实时改地形并即时重绘；同时保留多边形框选 + 一次成型的 `setPolygon()` + `apply()` 用法（塌陷/堆高/平整/平滑、台阶量化、坑底水面、土方统计）。`createKit()` 返回值新增 `terrainEdit` 字段，也可 `new TerrainEdit(viewer)` 单独使用。
+  为了让编辑区「不像贴片」：地表直接向当前影像图层取瓦片拼成纹理贴到网格上（`buildImageryTexture`），保留原卫星影像；等高线改为 marching squares 按固定等高距生成（缓坡稀疏、陡坡密集）并随涂抹实时重画；编辑区边缘用 `alphaMap` 羽化进原地表，羽化带按像素距离叠加低频扰动，避免四条边是笔直的「贴片线」。
+  由于 Cesium 的 `terrainProvider` 只读，实现方式为「先采样真实地形高度，再用 Three.js 局部规则格网覆盖多边形范围」，因此不污染全局地形，可随时 `undo()` / `clear()` 还原，也不影响范围外的地表。
+- 新增纯算法层 `libs/terrain/terrainGrid.ts`：规则格网构建、到边界距离加权形变扩散（`smoothstep` 羽化）、台阶量化、多边形耳切三角剖分、土方量与顶点着色；不依赖 Cesium / Three，可独立单测与复用。
+- 新增配套示例 `src/views/example/terrain/terrainEdit.vue`（菜单「地形编辑 → 地形开挖（塌陷/台阶/水面）」），含绘制范围、示例范围、模式/深度/台阶/水位调节、执行与撤销、统计面板。
+- 新增单测 `tests/terrainGrid.test.ts`：覆盖点在多边形、面积误差、正负距离、格网 `stride`/`inside`/`weight`、四种形变模式、台阶量化不超过设定深度、挖填方统计、三角剖分与顶点去重。
 - GitHub Pages 站点同时托管**在线 Demo**：文档在根路径、示例站发布在 `/demo/`，文档页顶部与侧边栏新增「在线 Demo」入口；演示站支持 `?auto=1` 用内置模拟账号直达，不再先落在登录页。
 - 新增 `npm run build:demo:pages`：把示例站构建到 `docs/demo/`（`base: './'`，可直接挂在任意子路径下）。
 - 新增 `cesium_dev_kit/default-static` 子路径，导出 `defaultStatic`、`createDefaultStatic()`、`DEFAULT_STATIC_BASE`：未显式传入 `defaultStatic` 时库内自动回退到默认 CDN，避免默认图片静默 404；支持一行代码切换到自有 CDN 或相对路径自托管。
@@ -28,6 +34,13 @@
 - `package.json` 补充 `description`、`keywords`、`repository`、`homepage`、`bugs` 等元数据，提升 npm 可发现性。
 
 ### 修复（Fixed）
+- 修复**一笔涂抹被重复叠加**：按住左键拖动时 `strokeAt()` 会被调用几十上百次，同一顶点只要还在笔刷范围内就每次再减一个 `maxDelta`，实测拖三趟能把中心点挖到 **376m** 深，坑壁近乎垂直、贴图被拉成竖条，从斜角看就像坑底「脱离」了地面。现在 `beginStroke()` 会存一份本笔起始高度，`applyBrush()` 通过 `strokeBase` 把单点在本笔内的改动夹在 `±maxDelta × strokeLimit` 以内。
+- 修复上一条修复带来的**笔刷「没反应」**：若只按 `±maxDelta` 夹紧，拖一整笔和单击一样深（实测均为 12m），下沉/抬升在视觉上几乎看不出变化。现引入 `strokeLimit`（一笔内同一位置最多叠加几次，默认 **6**）：单击仍为 `maxDelta × strength`，按住拖动可逐步加深到约 `maxDelta × 6`，抬笔再刷继续叠加。实测一笔拖动：下沉 29.5m、抬升 29.2m（此前被卡在 12m）。`strokeLimit` 为可选参数，不传时沿用默认 6。
+- 修复 `level` 模式**第二次落笔沿用上一笔目标高度**、看起来像整平失效：自动推断出的 `targetHeight` 现在只在本次笔画内有效，`endStroke()` / `clear()` 时清掉，外部显式传入的目标高度不受影响。
+- 修复 `enableBrush(false)` **关不掉笔刷**：原先只把开关置 false，`ScreenSpaceEventHandler` 从未销毁，左键拖地图时仍在落笔；现在关闭时会 `destroy()` 掉涂抹事件、把未结束的一笔 `endStroke()` 收尾并移除笔刷光标。
+- 修复关闭笔刷后**左键拖不动地图**：Cesium 的 `rotateEventTypes` 默认是单个枚举值 `0`（不是数组），原先用 `if (prev.rotateEventTypes)` 判断为假而跳过恢复，左键就一直被留在笔刷上；改为统一按数组存取，并在恢复后兜底确保左键回到旋转事件里。`enableBrush` 也改为幂等，重复开启不会覆盖已保存的相机配置。
+- 修复 Three 与 Cesium 合成时编辑区「随镜头上下浮动」：`ThreeScene.update()` 原顺序是先取相机矩阵再渲染 Cesium，导致 Three 永远用上一帧的矩阵，相机一动贴地内容就整体漂移；改为 `renderCesium() → updateCameraMatrix() → renderThree()` 后，拖拽/缩放实测逐帧误差 0 像素。
+- 修复画完地形后坑体「看着是平的」：涂抹只改高度，法线重算后顶点色里的明暗仍是旧的；现在从 `_baseColors` 底色按新法线重烘一次（顶点色是破坏性相乘，不能在上次结果上叠加）。
 - 修复 Demo 链接失效：`benpaodehenji.com` 域名已过期，README、文档导航（原 “Demo” 项）与首页全部改指 GitHub Pages 上的 `/demo/`。
 - 修复 `getDfSt()` 在目标字段不存在时返回 `baseService + undefined` 的问题；绝对地址、`data:` URI 和站点根路径不再被错误拼接 `baseService`。
 - 修复 README 示例中泄漏的真实天地图 token、失效的 `/src/views/...` 绝对路径、不存在的 `sceneMang` 字段，以及 `http://` 瓦片地址。

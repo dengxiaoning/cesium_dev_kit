@@ -15,7 +15,8 @@ import {
   AttackArrow,
   StraightArrow,
   PincerArrow,
-  ThreeJs
+  ThreeJs,
+  TerrainEdit
 } from './libs'
 import type { BaseInstance } from './libs/Base'
 import { disposeModule, resolveScopedConstructor, transferCleanups, disposeViewer } from './libs/Base'
@@ -35,6 +36,7 @@ import type { AttackArrowInstance } from './libs/plot/AttackArrow'
 import type { StraightArrowInstance } from './libs/plot/StraightArrow'
 import type { PincerArrowInstance } from './libs/plot/PincerArrow'
 import type { ThreeJsInstance } from './libs/ThreeJs'
+import type { TerrainEditInstance } from './libs/TerrainEdit'
 import { createContext, disposeContext } from './libs/context'
 import type { CesiumContext, CesiumContextOptions } from './libs/context'
 import { reportError } from './libs/errors'
@@ -89,6 +91,12 @@ export interface ResModulesType {
   pincerArrowObj: PincerArrowInstance
   /** threejs 集成模块 */
   threeJs: ThreeJsInstance
+  /**
+   * 地形编辑模块：圈定多边形后做塌陷 / 抬升 / 平整 / 平滑，并叠加水面。
+   *
+   * 依赖 three.js：需要 `createKit({ three })`，并在使用前调用 `kit.threeJs.initThree()`。
+   */
+  terrainEdit: TerrainEditInstance
 }
 
 /**
@@ -198,9 +206,12 @@ export function createKit(options: CreateKitOptions): ResModulesType {
       }
     : ''
   const _threeJs = new ThreeJs(_viewer, cesiumGlobal, defaultStatic, threeConf)
+  // 地形编辑依赖 three 场景，先拿到 threeJs 实例，真正绘制时再要求 initThree
+  const _terrainEdit = new TerrainEdit(_viewer, cesiumGlobal, three, _threeJs)
 
   // 按「依赖方先销毁、viewer 最后销毁」的顺序释放各模块资源
   const moduleInstances: any[] = [
+    _terrainEdit,
     _threeJs,
     _analysis,
     _draw,
@@ -261,6 +272,7 @@ export function createKit(options: CreateKitOptions): ResModulesType {
     straightArrowObj: _straightArrowObj,
     pincerArrowObj: _pincerArrowObj,
     threeJs: _threeJs,
+    terrainEdit: _terrainEdit,
     dispose,
     isDisposed: () => disposed
   }

@@ -1,9 +1,9 @@
 # cesium_dev_kit
 
-Cesium 开发套件：标绘、量算、分析、自定义材质 / 图元、传感器、热力图、后处理特效，以及 Three.js 集成。
+Cesium 开发套件：标绘、量算、分析、自定义材质 / 图元、传感器、热力图、后处理特效、Three.js 集成，以及地形编辑（开挖 / 堆高）。
 
 A Cesium development kit: plotting, measurement, analysis, custom materials / primitives, sensors,
-heatmap, post-processing effects and Three.js integration.
+heatmap, post-processing effects, Three.js integration and terrain editing.
 
 > **在线 Demo：<https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1>**
 >
@@ -62,7 +62,7 @@ graphics.createLineGraphics({ positions: [[104.09, 30.65], [104.11, 30.68]], wid
 
 ## API 索引（一个类一页）
 
-左侧目录就是全部 19 个类，点进去是该类的完整方法列表：每个方法的参数含义、默认值，
+左侧目录就是全部 20 个类，点进去是该类的完整方法列表：每个方法的参数含义、默认值，
 以及源码里写好的 `@example` 都能直接复制运行。
 
 | 分类 | 类 | 能力 |
@@ -82,10 +82,37 @@ graphics.createLineGraphics({ positions: [[104.09, 30.65], [104.11, 30.68]], wid
 | 数学计算 | [Math2d](./classes/Math2d.html) | 二维距离、方位角、三点圆心、多边形判断 |
 | 数学计算 | [Math3d](./classes/Math3d.html) | 三维距离、面积、方位角、地形插值、射线求交 |
 | Three.js 集成 | [ThreeJs](./classes/ThreeJs.html) | Three.js 场景叠加与同步 |
+| 地形编辑 | [TerrainEdit](./classes/TerrainEdit.html) | 按住拖动的地形笔刷（下沉/抬升/整平/平滑），保留影像贴图与等高线；也支持多边形一次成型、台阶、水面与土方统计 |
 | DOM 与提示 | [DomUtil](./classes/DomUtil.html) | DOM 创建、样式、事件绑定 |
 | DOM 与提示 | [TooltipUtil](./classes/TooltipUtil.html) | 地图气泡 / 提示框 |
 | 基础设施 | [Base](./classes/Base.html) | 坐标转换、事件绑定、拾取、天空盒、特效 |
 | 扩展 | [CustomCesiumPlugin](./classes/CustomCesiumPlugin.html) | 自定义 Cesium 插件基类 |
+
+地形编辑需要在 `createKit` 里传入 three，并先 `initThree`：
+
+```ts
+import * as THREE from 'three'
+
+const kit = createKit({ Cesium, three: THREE, containerId: 'cesiumContainer' })
+const { scene } = kit.threeJs.initThree({ center: [117.1, 36.25] })
+kit.threeJs.loop(() => scene.update())
+
+// ① 笔刷用法：铺一块可编辑区域，按住左键连续涂抹
+await kit.terrainEdit.setArea([117.1, 36.25], { size: 2400, segments: 160 })
+kit.terrainEdit
+  // maxDelta 是「单次施加」，strokeLimit 是「一笔内最多叠加几次」，
+  // 一笔最深刻度 ≈ maxDelta × strokeLimit（默认 12 × 6 = 72m），抬笔再刷可继续加深
+  .setBrush({ mode: 'lower', radius: 110, strength: 0.5, maxDelta: 12, strokeLimit: 6 })
+  .enableBrush(true)   // 左键涂抹，右键转视角，滚轮缩放
+
+// ② 多边形用法：一次成型，可带台阶 / 水面
+await kit.terrainEdit.setPolygon([[117.095, 36.245], [117.105, 36.245], [117.105, 36.255], [117.095, 36.255]])
+kit.terrainEdit.apply({ mode: 'sink', depth: 60, stepHeight: 6, waterLevel: 0.3 })
+console.log(kit.terrainEdit.getStats())
+```
+
+> 地表纹理直接取自当前影像图层（`buildImageryTexture`），所以挖开的地表仍然是它原本的
+> 卫星影像，而不是一块纯色网格；等高线按固定等高距用 marching squares 生成。
 
 > 方法签名的参数对象（如 `PointGraphicsOptions`）在方法页里已经展开成字段表，
 > 不用再点进类型页；`craeteXxx` 这类旧拼写的别名已从文档隐藏，请改用 `createXxx`。
@@ -107,5 +134,5 @@ kit.dispose() // 释放监听器 / DataSource；外部传入的 viewer 不会被
 ## 链接
 
 - [GitHub 仓库](https://github.com/dengxiaoning/cesium_dev_kit)
-- [在线示例](https://benpaodehenji.com/cesiumDevKit)
+- [在线示例](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
 - [English README](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/README.md)

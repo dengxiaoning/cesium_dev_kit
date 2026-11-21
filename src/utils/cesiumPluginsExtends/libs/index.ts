@@ -15,6 +15,7 @@ import { AttackArrow } from './plot/AttackArrow'
 import { StraightArrow } from './plot/StraightArrow'
 import { PincerArrow } from './plot/PincerArrow'
 import { ThreeJs } from './ThreeJs'
+import { TerrainEdit } from './TerrainEdit'
 
 
 export {
@@ -34,5 +35,6 @@ export {
   AttackArrow,
   StraightArrow,
   PincerArrow,
-  ThreeJs
+  ThreeJs,
+  TerrainEdit
 }

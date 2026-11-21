@@ -18,12 +18,23 @@ import {
   AttackArrow,
   StraightArrow,
   PincerArrow,
+  TerrainEdit,
 } from './singleImport/index'
 
 export type { CreateKitOptions, ResModulesType } from './indexOld'
 export type { CesiumContext, CesiumContextOptions } from './libs/context'
 export type { CesiumDevKitErrorCode, CesiumDevKitErrorHandler } from './libs/errors'
 export type { CesiumGlobal } from './libs/Base'
+export type {
+  TerrainEditInstance,
+  TerrainEditConstructor,
+  TerrainEditDrawOptions,
+  TerrainEditApplyOptions,
+  TerrainEditStatsResult,
+  TerrainEditModuleOptions,
+  TerrainEditPosition,
+  TerrainEditMode
+} from './libs/TerrainEdit'
 
 export {
   // 推荐入口
@@ -60,4 +71,5 @@ export {
   AttackArrow,
   StraightArrow,
   PincerArrow,
+  TerrainEdit,
 };

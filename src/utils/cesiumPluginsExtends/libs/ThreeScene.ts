@@ -504,6 +504,11 @@ function initThreeScene({ THREE, Cesium, viewer }: any) {
     update() {
       this.updateSunMatrix()
       this.updateGroupMatrixWorld()
+      // 先渲染 cesium，再用「本帧」的相机矩阵渲染 three。
+      // 两张 canvas 是两个独立 DOM 节点，屏幕合成顺序由 z-index 决定、与调用顺序无关，
+      // 所以这里的顺序可以自由选择：先 cesium 才能拿到本帧最新的相机矩阵，
+      // 否则 three 永远用上一帧的相机（滞后一帧），相机一动贴地内容就整体上下漂浮。
+      this.renderCesium()
       this.updateCameraMatrix()
       //2D 模式及模式切换动画过程中跳过 three 渲染,避免与 cesium 显示不一致
       if (this.isThreeRenderable()) {
@@ -512,7 +517,6 @@ function initThreeScene({ THREE, Cesium, viewer }: any) {
         //清空画布,避免残留切换前的内容
         this.renderer.clear()
       }
-      this.renderCesium()
     }
 
     add(object: any) {
