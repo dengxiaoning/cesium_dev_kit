@@ -616,6 +616,29 @@ export function hash2d(x: number, y: number): number {
   return n - Math.floor(n)
 }
 
+/**
+ * 二维值噪声（格点散列 + 平滑插值），返回 0~1。
+ *
+ * 比 Perlin 便宜、够用，关键是**同一坐标永远返回同一个值**：
+ * 笔刷的边角就是靠这个「按世界坐标取样」，才能反复按住加深时图案不抖动、不爬动。
+ * @param x - 采样点 x（任意实数，内部按整格取散列）
+ * @param y - 采样点 y
+ */
+export function valueNoise2(x: number, y: number): number {
+  const xi = Math.floor(x)
+  const yi = Math.floor(y)
+  const xf = x - xi
+  const yf = y - yi
+  // 五次平滑会比线性插值少一层「方格感」，这里用三次就够，省一次乘法
+  const u = xf * xf * (3 - 2 * xf)
+  const v = yf * yf * (3 - 2 * yf)
+  const a = hash2d(xi, yi)
+  const b = hash2d(xi + 1, yi)
+  const c = hash2d(xi, yi + 1)
+  const d = hash2d(xi + 1, yi + 1)
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v
+}
+
 /** 判断三角形是否为逆时针（叉积 > 0） */
 function cross(ax: number, ay: number, bx: number, by: number, cx: number, cy: number): number {
   return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax)
@@ -725,6 +748,49 @@ export function dedupePolygon<T extends TerrainLngLat>(points: T[], tolerance = 
 /** 笔刷模式：抬升 / 下沉 / 整平到目标高度 / 平滑 */
 export type TerrainBrushMode = 'raise' | 'lower' | 'level' | 'smooth'
 
+/**
+ * 平整核心占笔刷半径的比例（默认值）。
+ *
+ * 这是「刷出来是平台还是碗」的分水岭：核心圈内权重恒为 1，一圈刷下去
+ * 高度**恰好等于目标标高**，所以坑底是真正的平面；核心到笔刷外沿那一圈
+ * 才做过渡，形成一道有坡折的壁。
+ *
+ * 取 0.9：平台几乎铺满整个笔刷，过渡带只剩边缘薄薄一圈。
+ * 早期取 0（整圆软衰减）时，随便一刷就是个碗；取 0.5 也还是宽缓的斜面，
+ * 台阶在斜光下根本立不起来。
+ */
+const DEFAULT_BRUSH_CORE = 0.9
+
+/**
+ * 过渡带宽度相对台阶落差的倍数。
+ *
+ * 壁的宽度跟着「一级多高」走，而不是跟着笔刷半径走：4 米一级的台面，
+ * 立面就该只有几米宽，这样斜看才有台阶感；如果按半径比例给宽度，
+ * 4 米落差摊到几十米上，就退化成缓坡了。
+ */
+const BRUSH_WALL_PER_STEP = 0.9
+
+/**
+ * 边缘不规则度默认值。
+ *
+ * 平台的核心圈用噪声轻微掰一下，坑口轮廓才不是「圆规画出来的」。
+ * 幅度压得比早期版本小：真正让边缘清楚的是一刀切平的标高，
+ * 噪声只是把这条边揉得不那么规整，不需要靠它来「显形」。
+ */
+const DEFAULT_BRUSH_ROUGHNESS = 0.28
+
+/** 坡面安息角（度）：陡壁靠塌方收成这个角度，再陡就削 */
+const DEFAULT_REPOSE_DEG = 34
+
+/**
+ * 每次施加向目标标高推进的比例（默认值）。
+ *
+ * 取 1（一步压到位）是有意的：只要比例小于 1，核心圈内每个顶点推进的绝对量
+ * 就依赖它自己原来的高度，一圈刷下来只是把原地形**整体压低一点**，
+ * 还是那张曲面的缩放版 —— 看着「糊」的根源就在这儿。压到 1 才有真正的平面。
+ */
+const DEFAULT_BRUSH_RATE = 1
+
 export interface TerrainBrushOptions {
   mode: TerrainBrushMode
   /** 笔刷中心经度 */
@@ -733,14 +799,43 @@ export interface TerrainBrushOptions {
   lat: number
   /** 笔刷半径（米） */
   radius: number
-  /** 强度 0~1，默认 0.5；连续刷时会按此比例逐次逼近 */
+  /**
+   * 向目标标高推进的比例 0~1，默认 1（一步压到位）。
+   *
+   * 小于 1 时核心圈内每个顶点只推进自己剩余高差的一部分，一圈刷下来
+   * 只是把原曲面整体压低一点，坑底永远不是平的 —— 视觉上就是「糊」。
+   * 需要软笔触请用 `mode: 'smooth'`，不要靠调低这个值。
+   */
   strength?: number
-  /** `level` 模式的目标高度（米） */
-  targetHeight?: number
-  /** 硬边比例 0~1：0 为整圆软衰减，0.7 表示内 70% 半径几乎满强度 */
+  /**
+   * 平整核心占半径的比例 0~1，默认 0.9。
+   *
+   * 核心圈内高度被压到**同一个标高**，核心外只剩薄薄一圈线性过渡带 ——
+   * 于是一次落笔就是「平底 + 直壁 + 两道清楚的坡折」，而不是一个圆碗。
+   * 过渡带宽度跟台阶落差走（见 `BRUSH_WALL_PER_STEP`），不跟半径走。
+   */
   hardness?: number
-  /** 单次施加的最大高度变化（米），默认 60，避免一次刷出断崖 */
+  /**
+   * 坑口不规则度 0~1，默认 0.28。
+   *
+   * 用世界坐标的值噪声轻微掰动有效半径，坑沿因此有折角、不是标准圆。
+   * 噪声按世界坐标取样，同一处反复按住加深图案固定，不会抖动或跟着指针爬。
+   */
+  roughness?: number
+  /**
+   * 一级台阶的落差（米），默认 4。
+   *
+   * 未显式给 `targetHeight` 时，目标标高按「脚下高度 - 一级」对齐到台阶标高上，
+   * 所以反复落笔会落在同一套标高上，台阶能接得上。
+   */
   maxDelta?: number
+  /**
+   * 目标标高（米）。给了就一直往这个标高压（整条笔画可以锁同一个值），
+   * 不给则按 `maxDelta` 自动取下一级。
+   */
+  targetHeight?: number
+  /** 坡面安息角（度），默认 34：比这更陡的壁按塌方削成斜坡 */
+  reposeDeg?: number
   /**
    * 本笔开始时的格网高度快照。
    *
@@ -764,30 +859,236 @@ export interface TerrainBrushImpact {
   maxCol: number
   /** 实际被改动的顶点数 */
   changed: number
+  /** 本次施加的目标标高（米） */
+  target: number
+  /**
+   * 平整核心内「离目标标高的最大差距」（米）。
+   *
+   * 默认 `strength = 1` 时恒为 0（一步压平）；只有刻意调低强度才会大于 0，
+   * 调用方可据此判断这一级是否压到位、要不要继续推进。
+   */
+  gap: number
+}
+
+/**
+ * 把高度对齐到台阶标高上。
+ *
+ * `dir = -1` 取下一级（下沉）、`1` 取上一级（抬升）。绝对标高对齐的好处是
+ * 每一笔都落在同一套标高上，两笔之间的台阶能接得住，不会错半级。
+ * @param height - 当前高度（米）
+ * @param step - 台阶落差（米）
+ * @param dir - 方向：-1 向下一级，1 向上一级
+ */
+export function benchHeight(height: number, step: number, dir: -1 | 1): number {
+  if (!(step > 0)) return height
+  return dir < 0 ? Math.floor(height / step) * step : Math.ceil(height / step) * step
+}
+
+/**
+ * 取格网上任意点的双线性高度。
+ *
+ * 笔刷的「这一级从哪儿起」必须按**落笔处**的真实地面算，而不是最近顶点：
+ * 否则在缓坡上刷，参考高度会一跳一跳，台阶就乱了。
+ * @param grid - 格网
+ * @param lng - 经度
+ * @param lat - 纬度
+ */
+export function brushCenterHeight(
+  grid: TerrainGrid,
+  lng: number,
+  lat: number,
+  heights: Float32Array = grid.current
+): number {
+  const { bounds, stride, segments } = grid
+  const current = heights
+  if (segments < 1) return current[0] || 0
+  const fx = ((lng - bounds.minLng) / (bounds.maxLng - bounds.minLng)) * segments
+  const fy = ((lat - bounds.minLat) / (bounds.maxLat - bounds.minLat)) * segments
+  const col = Math.max(0, Math.min(segments - 1, Math.floor(fx)))
+  const row = Math.max(0, Math.min(segments - 1, Math.floor(fy)))
+  const tx = clamp(fx - col, 0, 1)
+  const ty = clamp(fy - row, 0, 1)
+  const i00 = row * stride + col
+  const a = current[i00] * (1 - tx) + current[i00 + 1] * tx
+  const b = current[i00 + stride] * (1 - tx) + current[i00 + stride + 1] * tx
+  return a * (1 - ty) + b * ty
+}
+
+/**
+ * 按安息角把陡壁塌成斜坡（就地改高度，只削不填 / 只填不削）。
+ *
+ * 为什么要这一步：平台一旦挖深，坑壁迟早会收成一道近乎垂直的面，
+ * 从斜角看就像在地面上开的方孔，不像被挖出来的坑。真实土石方会塌到
+ * 安息角附近，于是坑沿长出一圈**直的斜面**，斜面和平台交界处留下一道硬坡折 ——
+ * 这正是「台阶看得出来」的光学来源（明暗在折点处突变）。
+ *
+ * 做法是「限坡侵蚀」：相邻两点高差不能超过 `maxDrop`（= 单元边长 × tan(安息角)），
+ * 超了就把高的一侧削到只高出 `maxDrop`。只削不填，坑底就不会被塌下来的土抬回去。
+ * 从笔刷改动过的点出发，正反两个方向扫几遍，坡就会一格一格往外铺开；
+ * 没被碰过的格子不参与 —— 地块里天然的陡崖不会被顺手削平。
+ *
+ * @param grid - 格网
+ * @param rect - 参与计算的格网范围（笔刷外接框 + 塌方坡长度）
+ * @param seeds - 本次被笔刷改动的顶点索引（塌方的起点）
+ * @param maxDrop - 相邻两点允许的最大高差（米）
+ * @param fill - true 表示抬升模式：往低处填，形成土堆的斜坡
+ * @param maxDist - 扩散半径上限（米），超过就不再塌
+ * @param cx - 笔刷中心经度
+ * @param cy - 笔刷中心纬度
+ * @param mLng - 每经度米数
+ * @param passes - 扫描遍数（一遍 = 正向 + 反向），越大坡铺得越远
+ */
+function relaxTalus(
+  grid: TerrainGrid,
+  rect: { minRow: number; maxRow: number; minCol: number; maxCol: number },
+  seeds: number[],
+  maxDrop: number,
+  fill: boolean,
+  maxDist: number,
+  cx: number,
+  cy: number,
+  mLng: number,
+  passes: number
+): { minRow: number; maxRow: number; minCol: number; maxCol: number; changed: number } {
+  const stride = grid.stride
+  const current = grid.current
+  const b = grid.bounds
+  const row0 = Math.max(0, rect.minRow)
+  const row1 = Math.min(stride - 1, rect.maxRow)
+  const col0 = Math.max(0, rect.minCol)
+  const col1 = Math.min(stride - 1, rect.maxCol)
+  const width = col1 - col0 + 1
+  const height = row1 - row0 + 1
+  const empty = { minRow: row0, maxRow: row1, minCol: col0, maxCol: col1, changed: 0 }
+  if (width < 2 || height < 2) return empty
+
+  // touched：这批坡属于本次笔刷，只有它们之间的高差才需要削。
+  // 用外接框大小的掩膜，避免每次落笔都分配一张全格网的数组。
+  const touched = new Uint8Array(width * height)
+  for (let k = 0; k < seeds.length; k++) {
+    const i = seeds[k]
+    const row = (i / stride) | 0
+    const col = i - row * stride
+    if (row < row0 || row > row1 || col < col0 || col > col1) continue
+    touched[(row - row0) * width + (col - col0)] = 1
+  }
+
+  const dist2 = maxDist * maxDist
+  let changed = 0
+  let minRow = Infinity
+  let maxRow = -Infinity
+  let minCol = Infinity
+  let maxCol = -Infinity
+
+  /** 用邻点 (r2,c2) 去削 / 填 (r,c) */
+  const relax = (r: number, c: number, r2: number, c2: number) => {
+    const i = r * stride + c
+    const j = r2 * stride + c2
+    if (!grid.inside[i]) return
+    const ti = (r - row0) * width + (c - col0)
+    const tj = (r2 - row0) * width + (c2 - col0)
+    if (!touched[ti] && !touched[tj]) return
+    const hi = current[i]
+    const hj = current[j]
+    if (!fill) {
+      if (hi - hj <= maxDrop) return
+      if (maxDist > 0) {
+        const dx = (b.minLng + c * grid.dLng - cx) * mLng
+        const dz = (b.minLat + r * grid.dLat - cy) * METERS_PER_DEG_LAT
+        if (dx * dx + dz * dz > dist2) return
+      }
+      current[i] = hj + maxDrop
+    } else {
+      if (hj - hi <= maxDrop) return
+      if (maxDist > 0) {
+        const dx = (b.minLng + c * grid.dLng - cx) * mLng
+        const dz = (b.minLat + r * grid.dLat - cy) * METERS_PER_DEG_LAT
+        if (dx * dx + dz * dz > dist2) return
+      }
+      current[i] = hj - maxDrop
+    }
+    touched[ti] = 1
+    changed++
+    if (r < minRow) minRow = r
+    if (r > maxRow) maxRow = r
+    if (c < minCol) minCol = c
+    if (c > maxCol) maxCol = c
+  }
+
+  for (let pass = 0; pass < passes; pass++) {
+    // 正向：用「上 / 左」邻居削，坡往下、往右推进
+    for (let r = row0; r <= row1; r++) {
+      for (let c = col0; c <= col1; c++) {
+        if (r > row0) relax(r, c, r - 1, c)
+        if (c > col0) relax(r, c, r, c - 1)
+      }
+    }
+    // 反向：用「下 / 右」邻居削，坡往上、往左推进
+    for (let r = row1; r >= row0; r--) {
+      for (let c = col1; c >= col0; c--) {
+        if (r < row1) relax(r, c, r + 1, c)
+        if (c < col1) relax(r, c, r, c + 1)
+      }
+    }
+  }
+
+  if (!changed) return empty
+  return { minRow, maxRow, minCol, maxCol, changed }
 }
 
 /**
  * 在格网上落一笔笔刷，就地修改 `grid.current`。
  *
- * 与 `deformTerrain`（整块一次性形变）不同，这里只影响圆形范围，
- * 并按「到笔刷中心的距离」加权，边缘权重为 0，所以连续拖动时能刷出自然的坡面。
+ * 形变模型是「**目标标高**」而不是「按权重减一个量」：
+ * 核心圈内权重恒为 1，一圈刷下去高度恰好等于目标标高 —— 坑底是真正的平面；
+ * 核心外一圈带子线性过渡，于是坑壁是直的斜面，坑底与坑壁之间、坑壁与原地表
+ * 之间各有一道硬坡折。这就是「该平的平、该陡的陡」的来源；
+ * 按 `w × maxDelta` 逐次减量永远只能得到一阶导连续的曲面，也就是光滑的碗。
+ *
+ * 超过安息角的陡壁会被 `relaxTalus` 塌成斜坡，坑沿因此长出一圈塌方坡。
+ *
+ * 核心圈内是**绝对标高**而不是「相对高度减一个量」：斜坡上刷出来的也是水平面，
+ * 不会顺着原地形留一层起伏；这正是「该平的平」的来源。
  *
  * @param grid - 目标格网
  * @param options - 笔刷参数
  * @returns 受影响的格网范围；完全没落在格网内时返回 `null`
  */
 export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): TerrainBrushImpact | null {
+  const mode = options.mode
   const radius = Math.max(0.5, options.radius)
-  const strength = clamp(options.strength ?? 0.5, 0, 1)
-  const hardness = clamp(options.hardness ?? 0, 0, 0.95)
-  const maxDelta = Math.max(0.01, options.maxDelta ?? 60)
+  const strength = clamp(options.strength ?? DEFAULT_BRUSH_RATE, 0.01, 1)
+  const step = Math.max(0.01, options.maxDelta ?? 4)
+  const hardness = clamp(options.hardness ?? DEFAULT_BRUSH_CORE, 0, 0.95)
+  const poseDeg = clamp(options.reposeDeg ?? DEFAULT_REPOSE_DEG, 5, 80)
   /** 一笔内允许叠加几次：0 表示不限制，上限 500 防止误传天文数字 */
   const strokeLimit = Math.max(0, Math.min(500, options.strokeLimit ?? DEFAULT_STROKE_LIMIT))
-  const mode = options.mode
 
   const mLng = metersPerDegLng(options.lat)
-  const radiusDegLng = radius / mLng
-  const radiusDegLat = radius / METERS_PER_DEG_LAT
+  // 边缘棱角：用世界坐标噪声轻微掰动有效半径，坑口才有折角。
+  // 幅度比早期版本收敛很多 —— 让边缘「显形」的是标高平台，不是噪声。
+  const roughness = mode === 'smooth' ? 0 : clamp(options.roughness ?? DEFAULT_BRUSH_ROUGHNESS, 0, 1)
+  const cellM = Math.max(grid.dLat * METERS_PER_DEG_LAT, Math.abs(grid.dLng) * mLng) || 1
+  // 波长跟笔刷大小走，但不小于约 2.4 个格网：比格网还细就只剩噪点，看不出「棱角」
+  const lobeWave = Math.max(radius * 0.55, cellM * 2.4)
+  const grainWave = Math.max(radius * 0.38, cellM * 3.5)
+  const rough = roughness > 0
+
+  // 过渡带（立面）宽度：跟着台阶落差走，最少也得有半个格网，不然网格表达不出来
+  const skirt = clamp(
+    Math.max(step * BRUSH_WALL_PER_STEP, cellM * 0.6),
+    cellM * 0.45,
+    radius * 0.35
+  )
+  // 平台半径：硬边比例压出来的核心圈，但必须给过渡带留出位置。
+  // 平滑模式没有「平台」，仍是整圆软衰减，只是过渡更缓。
+  const isSmooth = mode === 'smooth'
+  const coreR = isSmooth ? 0 : Math.min(radius * hardness, radius - skirt)
+  const outerR = isSmooth ? radius : coreR + skirt
+  const scanRadius = outerR * (1 + roughness * 0.55)
+
+  const radiusDegLng = scanRadius / mLng
+  const radiusDegLat = scanRadius / METERS_PER_DEG_LAT
   const b = grid.bounds
   if (
     options.lng < b.minLng - radiusDegLng ||
@@ -803,8 +1104,20 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
   const row0 = Math.max(0, Math.floor((options.lat - radiusDegLat - b.minLat) / grid.dLat))
   const row1 = Math.min(grid.stride - 1, Math.ceil((options.lat + radiusDegLat - b.minLat) / grid.dLat))
 
-  const inner = 1 - hardness
+  // 目标标高：显式给了就用它（整条笔画锁同一个标高，拖出来才是平底沟槽），
+  // 没给就按落笔处高度自动取「下一级 / 上一级」台阶。
+  const centerH = brushCenterHeight(grid, options.lng, options.lat)
+  let target = options.targetHeight
+  if (target == null || !Number.isFinite(target)) {
+    if (mode === 'lower') target = benchHeight(centerH - step, step, -1)
+    else if (mode === 'raise') target = benchHeight(centerH + step, step, 1)
+    else target = centerH
+  }
+  const targetHeight = target as number
+
   let changed = 0
+  let gap = 0
+  const seeds: number[] = []
 
   for (let row = row0; row <= row1; row++) {
     const lat = b.minLat + row * grid.dLat
@@ -815,42 +1128,108 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
       const lng = b.minLng + col * grid.dLng
       const dx = (lng - options.lng) * mLng
       const dist = Math.sqrt(dx * dx + dz * dz)
-      if (dist > radius) continue
+      if (dist > scanRadius) continue
 
-      const falloff = clamp((1 - dist / radius) / inner, 0, 1)
-      const w = smoothstep(falloff) * strength
+      let rEff = radius
+      if (rough) {
+        // 采样用绝对经纬度换算的米，而不是「相对笔心的偏移」：
+        // 前者图案固定在地图上，按住不动反复加深也不会抖；后者会跟着指针爬，看着像沸腾。
+        const px = lng * mLng
+        const pz = lat * METERS_PER_DEG_LAT
+        const n1 = valueNoise2(px / lobeWave, pz / lobeWave)
+        const lobe = (n1 - 0.5) * 2
+        const notch = 1 - Math.abs(lobe)
+        const grain = (valueNoise2(px / grainWave + 37.2, pz / grainWave + 11.9) - 0.5) * 2
+        rEff = radius * (1 + roughness * (0.3 * lobe - 0.16 * notch * notch + 0.22 * grain))
+      }
+
+      if (dist > rEff) continue
+      // 核心圈恒 1（压到绝对平），过渡带线性收边（直的立面）：
+      // 不用 smoothstep —— 它在两端斜率为 0，坑底和坑沿都会被抹圆，坡折就没了。
+      const w = isSmooth ? clamp(1 - dist / rEff, 0, 1) : clamp((outerR - dist) / skirt, 0, 1)
       if (w <= 0) continue
 
       const h = grid.current[index]
-      let next = h
-      if (mode === 'raise') {
-        next = h + maxDelta * w
-      } else if (mode === 'lower') {
-        next = h - maxDelta * w
-      } else if (mode === 'level') {
-        const target = options.targetHeight ?? grid.base[index]
-        next = h + (target - h) * clamp(w * 1.6, 0, 1)
-      } else {
+      let next: number
+      if (mode === 'smooth') {
         // 平滑：向 3x3 邻域均值靠拢，权重太大会直接把细节抹平，这里额外压一下
         const avg = neighborAverage(grid, row, col)
         next = h + (avg - h) * clamp(w * 1.4, 0, 1)
+      } else {
+        // 直接压到目标标高，不做「只挖不填」的方向裁剪：
+        // 一旦裁剪，斜坡上比目标更低的半边会留着原地面，平台就不再平了。
+        // 目标标高本身按「脚下高度 ± 一级」取，所以整笔仍是朝一个方向推进。
+        next = h + (targetHeight - h) * w * strength
+        // 核心圈的高度差就是「这一级压平了没有」，调用方据此逐级下沉
+        if (w >= 1) {
+          const d = Math.abs(next - targetHeight)
+          if (d > gap) gap = d
+        }
       }
+
       // 本笔累计上限：默认不限制（strokeLimit = 0），按住会一直累加；
       // 只有显式传了正数才夹在 strokeBase ±（单次幅度 × 次数）内。
       const sb = options.strokeBase
       if (sb && strokeLimit > 0) {
-        const span = maxDelta * strokeLimit
+        const span = step * strokeLimit
         if (next > sb[index] + span) next = sb[index] + span
         else if (next < sb[index] - span) next = sb[index] - span
       }
       if (next !== h) {
         grid.current[index] = next
         changed++
+        seeds.push(index)
       }
     }
   }
 
-  return { minRow: row0, maxRow: row1, minCol: col0, maxCol: col1, changed }
+  let minRow = row0
+  let maxRow = row1
+  let minCol = col0
+  let maxCol = col1
+
+  // 陡壁塌到安息角：抬升模式是往下填（土堆），其余是往上削（坑壁）
+  if (mode !== 'smooth' && seeds.length) {
+    const repose = Math.tan((poseDeg * Math.PI) / 180)
+    const maxDrop = Math.max(0.05, cellM * repose)
+    // 塌方坡要够长：挖得越深，坑沿那一圈塌方坡就越往外铺。
+    // 按「落差 ÷ tan(安息角)」估坡长，再给两级格网的余量；上限压到 3 倍半径，
+    // 免得某一笔把整个地块都当成坡削平了。
+    // 深度按「原地形中心高度」算，而不是按本笔的落差：坑是一层层挖下去的，
+    // 塌方坡的长度要跟**总深度**走，否则每一笔都把上一笔的坡当成越界给截断。
+    const baseCenter = brushCenterHeight(grid, options.lng, options.lat, grid.base)
+    const depth = Math.abs(baseCenter - targetHeight)
+    const talusDist = Math.min(radius * 3, radius + depth / repose + cellM * 2)
+    const spread = Math.ceil(talusDist / cellM) + 1
+    const talus = relaxTalus(
+      grid,
+      {
+        minRow: row0 - spread,
+        maxRow: row1 + spread,
+        minCol: col0 - spread,
+        maxCol: col1 + spread
+      },
+      seeds,
+      maxDrop,
+      mode === 'raise',
+      talusDist,
+      options.lng,
+      options.lat,
+      mLng,
+      // 坡要往上铺到自然地面：一遍推进会有一格，按需要的格数给遍数，封顶 12 遍
+      Math.max(2, Math.min(12, Math.ceil(depth / maxDrop) + 1))
+    )
+    if (talus.changed > 0) {
+      changed += talus.changed
+      if (talus.minRow < minRow) minRow = talus.minRow
+      if (talus.maxRow > maxRow) maxRow = talus.maxRow
+      if (talus.minCol < minCol) minCol = talus.minCol
+      if (talus.maxCol > maxCol) maxCol = talus.maxCol
+    }
+  }
+
+  return { minRow, maxRow, minCol, maxCol, changed, target: targetHeight, gap }
+
 }
 
 /** 3x3 邻域均值（越界或掩膜外的邻点忽略） */

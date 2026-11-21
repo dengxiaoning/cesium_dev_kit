@@ -1024,7 +1024,7 @@
       "component": "example/terrain/terrainEdit",
       "meta": {
         "auth": ["admin", "test"],
-        "title": "地形开挖（塌陷/台阶/水面）",
+        "title": "地形重建",
         "icon": "mdi:image-filter-hdr",
         "isAffix": false,
         "isHide": false,

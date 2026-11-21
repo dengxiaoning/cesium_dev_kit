@@ -100,9 +100,11 @@ kit.threeJs.loop(() => scene.update())
 // ① 笔刷用法：铺一块可编辑区域，按住左键持续开挖
 await kit.terrainEdit.setArea([117.1, 36.25], { size: 2400, segments: 160 })
 kit.terrainEdit
-  // maxDelta 是「单次施加强度」：按住左键不放会按固定节拍持续累加，松开即停；
-  // 移动时按走过的地面距离施加（每 radius × 0.1 刷一次），所以快拖慢拖手感一致
-  .setBrush({ mode: 'lower', radius: 110, strength: 0.5, maxDelta: 3 })
+  // maxDelta 是「一级台阶的落差」：每次落笔把笔刷核心压到同一个绝对标高，
+  // 单笔就是「平底平台 + 窄直壁 + 两道硬坡折」，而不是一个光滑的碗。
+  // 拖动时整条笔画锁定该标高，沟底是水平的；指针停住才按节拍逐级下挖。
+  // 默认参数已经调好，无需额外开关：strength 1 / hardness 0.9 / roughness 0.28
+  .setBrush({ mode: 'lower', radius: 110, maxDelta: 3 })
   .enableBrush(true)   // 按住左键持续开挖，右键转视角，滚轮缩放
 
 // ② 多边形用法：一次成型，可带台阶 / 水面

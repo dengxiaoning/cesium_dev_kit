@@ -6,7 +6,7 @@
     <div class="panel">
       <div class="panel-title">
         <span class="dot"></span>
-        地形笔刷 · 矿山开挖
+        地形笔刷 · 地形重建
         <span class="badge" :class="{ off: !terrainReady }">{{ terrainReady ? '世界地形' : '平面地形' }}</span>
       </div>
 
@@ -19,13 +19,7 @@
       </div>
 
       <div class="row modes">
-        <button
-          v-for="item in modes"
-          :key="item.value"
-          class="chip"
-          :class="{ active: brush.mode === item.value }"
-          @click="changeMode(item.value)"
-        >
+        <button v-for="item in modes" :key="item.value" class="chip" :class="{ active: brush.mode === item.value }" @click="changeMode(item.value)">
           {{ item.label }}
         </button>
       </div>
@@ -36,15 +30,9 @@
       </div>
 
       <div class="slider">
-        <label>笔刷强度 <b>{{ Math.round(brush.strength * 100) }}%</b></label>
-        <input type="range" min="5" max="100" step="5" :value="Math.round(brush.strength * 100)" @input="onStrength" />
-        <span class="hint">{{ painting ? '按住左键不放会持续挖深 / 抬高，拖动即沿轨迹刷；右键转视角，滚轮缩放' : '笔刷已关闭：左键拖动旋转地图、滚轮缩放' }}</span>
-      </div>
-
-      <div class="slider">
-        <label>单次力度 <b>{{ brush.maxDelta }} m</b></label>
+        <label>台阶落差 <b>{{ brush.maxDelta }} m</b></label>
         <input type="range" min="1" max="20" step="1" v-model.number="brush.maxDelta" @input="syncBrush" />
-        <span class="hint">决定按住时的下挖速度：越大越快，松开左键立即停止</span>
+        <span class="hint">每刷一级的落差；按住左键不放会逐级下挖，拖动沿轨迹刷出平底平台</span>
       </div>
 
       <div class="slider" v-if="brush.mode === 'level'">
@@ -60,10 +48,6 @@
       <label class="check">
         <input type="checkbox" v-model="useTexture" @change="toggleTexture" />
         影像贴图（关闭后退回顶点着色）
-      </label>
-      <label class="check">
-        <input type="checkbox" v-model="cutSurface" @change="toggleCutSurface" />
-        开挖面岩土（关闭后坡面保留影像，陡壁会被拉伸）
       </label>
 
       <div class="stats" v-if="stats">
@@ -97,11 +81,10 @@ export default {
       terrainReady: false,
       showContour: true,
       useTexture: true,
-      cutSurface: true,
       targetHeight: null,
-      brush: { mode: 'lower', radius: 110, strength: 0.5, maxDelta: 3 },
+      brush: { mode: 'lower', radius: 110, maxDelta: 3 },
       stats: null,
-      tip: '按住左键持续开挖（停住也会继续加深），拖动沿轨迹刷；右键转视角，滚轮缩放',
+      tip: '按住左键逐级下挖，拖动沿轨迹刷出平底平台；右键转视角，滚轮缩放',
       error: '',
       modes: [
         { value: 'lower', label: '下沉' },
@@ -236,7 +219,7 @@ export default {
         this.terrainEdit.enableBrush(true)
         this.painting = true
         this.updateStats()
-        this.tip = '按住左键持续开挖（停住也会继续加深），拖动沿轨迹刷；右键转视角，滚轮缩放'
+        this.tip = '按住左键逐级下挖，拖动沿轨迹刷出平底平台；右键转视角，滚轮缩放'
       } catch (err) {
         this.error = '生成地形区域失败：' + (err && err.message ? err.message : err)
       } finally {
@@ -253,17 +236,13 @@ export default {
       this.painting = !this.painting
       this.terrainEdit.enableBrush(this.painting)
       this.tip = this.painting
-        ? '按住左键持续开挖（停住也会继续加深）；右键拖动转视角，滚轮缩放'
+        ? '按住左键逐级下挖，拖动刷出平底平台；右键拖动转视角，滚轮缩放'
         : '笔刷已关闭：左键拖动可旋转地图、滚轮缩放，随时可以再开启'
       this.updateStats()
     },
     changeMode (mode) {
       this.brush.mode = mode
       if (mode !== 'level') this.targetHeight = null
-      this.syncBrush()
-    },
-    onStrength (event) {
-      this.brush.strength = Number(event.target.value) / 100
       this.syncBrush()
     },
     onTarget (event) {
@@ -274,7 +253,6 @@ export default {
       this.terrainEdit.setBrush({
         mode: this.brush.mode,
         radius: this.brush.radius,
-        strength: this.brush.strength,
         maxDelta: this.brush.maxDelta,
         targetHeight: this.brush.mode === 'level' ? this.targetHeight : null
       })
@@ -284,9 +262,6 @@ export default {
     },
     toggleTexture () {
       this.terrainEdit.setTextureEnabled(this.useTexture)
-    },
-    toggleCutSurface () {
-      this.terrainEdit.setCutSurfaceEnabled(this.cutSurface)
     },
     undo () {
       this.terrainEdit.undo()
@@ -377,8 +352,13 @@ export default {
   padding: 14px 16px 12px;
   border: 1px solid rgba(110, 226, 255, 0.35);
   border-radius: 10px;
-  background: linear-gradient(160deg, rgba(9, 24, 36, 0.94), rgba(6, 14, 24, 0.94));
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 0 24px rgba(64, 196, 255, 0.06);
+  background: linear-gradient(
+    160deg,
+    rgba(9, 24, 36, 0.94),
+    rgba(6, 14, 24, 0.94)
+  );
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45),
+    inset 0 0 24px rgba(64, 196, 255, 0.06);
   color: #cfe9f5;
   font-size: 12px;
   backdrop-filter: blur(6px);
@@ -440,7 +420,11 @@ export default {
 }
 .btn.primary {
   border-color: rgba(87, 224, 255, 0.6);
-  background: linear-gradient(180deg, rgba(32, 122, 158, 0.9), rgba(20, 78, 104, 0.9));
+  background: linear-gradient(
+    180deg,
+    rgba(32, 122, 158, 0.9),
+    rgba(20, 78, 104, 0.9)
+  );
   color: #eafaff;
 }
 .btn.primary.active {

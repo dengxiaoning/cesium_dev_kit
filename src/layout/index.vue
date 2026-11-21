@@ -1,6 +1,8 @@
 <template>
   <div class="app-wrapper">
     <component :is="layout" />
+    <!-- 每个示例页右下角的源码入口，非示例页自动隐藏 -->
+    <DemoCodePanel />
   </div>
 </template>
 
@@ -14,12 +16,14 @@ import {
 } from 'vue'
 import { useStore } from 'store/index'
 import Defaults from './main/index.vue'
+import DemoCodePanel from '@/components/DemoCodePanel/index.vue'
 import { Utils } from '@/utils/index'
 
 export default defineComponent({
   name: 'Layout',
   components: {
-    Defaults
+    Defaults,
+    DemoCodePanel
   },
   setup() {
     const { proxy } = getCurrentInstance() as any

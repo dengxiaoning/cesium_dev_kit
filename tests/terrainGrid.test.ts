@@ -165,9 +165,7 @@ assert.deepStrictEqual(
 const color = terrainVertexColor(1, 0.5, true)
 assert.ok(color.every((c) => c >= 0 && c <= 1), '颜色分量应在 0~1')
 
-console.log('✓ terrainGrid 全部测试通过')
-
-/* ---------- 笔刷式编辑 ---------- */
+/* ---------- 笔刷式编辑：目标标高平台模型 ---------- */
 
 function makeGrid(segments = 24) {
   const grid = buildTerrainGrid(POLYGON, { segments, slopeWidth: 40 })
@@ -182,191 +180,217 @@ function makeGrid(segments = 24) {
   return grid
 }
 
-{
-  const grid = makeGrid()
-  const centerLng = (POLYGON[0].lng + POLYGON[2].lng) / 2
-  const centerLat = (POLYGON[0].lat + POLYGON[2].lat) / 2
-  const col = Math.round((centerLng - grid.bounds.minLng) / grid.dLng)
-  const row = Math.round((centerLat - grid.bounds.minLat) / grid.dLat)
-  const index = row * grid.stride + col
-  const before = grid.current[index]
+type Grid = ReturnType<typeof buildTerrainGrid>
+const CENTER_LNG = (POLYGON[0].lng + POLYGON[2].lng) / 2
+const CENTER_LAT = (POLYGON[0].lat + POLYGON[2].lat) / 2
 
+/** 以笔心为圆心、给定半径（米）内所有 inside 顶点的高度 */
+function ringHeights(grid: Grid, lng: number, lat: number, r: number): number[] {
+  const mLng = metersPerDegLng(lat)
+  const b = grid.bounds
+  const out: number[] = []
+  for (let row = 0; row < grid.stride; row++) {
+    const dz = (b.minLat + row * grid.dLat - lat) * 111319.49
+    for (let col = 0; col < grid.stride; col++) {
+      const i = row * grid.stride + col
+      if (!grid.inside[i]) continue
+      const dx = (b.minLng + col * grid.dLng - lng) * mLng
+      if (Math.hypot(dx, dz) > r) continue
+      out.push(grid.current[i])
+    }
+  }
+  return out
+}
+
+function brushCenterIndex(grid: Grid) {
+  const col = Math.round((CENTER_LNG - grid.bounds.minLng) / grid.dLng)
+  const row = Math.round((CENTER_LAT - grid.bounds.minLat) / grid.dLat)
+  return row * grid.stride + col
+}
+
+{
+  // 核心：一次落笔把圈内压到同一个「绝对标高」，斜坡上也必须是水平面。
+  // 旧模型按权重逐次减量，刷出来只是原曲面的缩放版 —— 看着就是一片糊。
+  const grid = makeGrid(96)
+  const R = 220
   const impact = applyBrush(grid, {
-    mode: 'lower',
-    lng: centerLng,
-    lat: centerLat,
-    radius: 220,
-    strength: 0.6,
-    maxDelta: 40
+    mode: 'lower', lng: CENTER_LNG, lat: CENTER_LAT,
+    radius: R, strength: 1, maxDelta: 8, roughness: 0
   })
   assert.ok(impact && impact.changed > 0, '落笔应改动若干顶点')
-  assert.ok(grid.current[index] < before, '下沉模式应让中心点变低')
+  const core = ringHeights(grid, CENTER_LNG, CENTER_LAT, R * 0.5)
+  assert.ok(core.length > 50, `平台内应有足够顶点，实际 ${core.length}`)
+  const spread = Math.max(...core) - Math.min(...core)
+  assert.ok(spread < 1e-4, `平台内高度必须完全一致，实测极差 ${spread.toFixed(4)}`)
   assert.ok(
-    before - grid.current[index] <= 40 + 1e-6,
-    '单次下沉不应超过 maxDelta'
+    Math.abs(core[0] - impact!.target) < 1e-4,
+    '平台标高应恰好等于目标标高，而不是把原曲面整体压低一点'
   )
+  assert.ok(impact!.gap < 1e-4, '默认 strength = 1 应一步压平')
 
-  // 笔刷圆外不应被改动
-  const farCol = Math.min(grid.stride - 1, col + 20)
-  const farIndex = row * grid.stride + farCol
-  if (grid.inside[farIndex]) {
+  // 塌方坡会铺到笔刷半径之外一点，但更远的地形必须原样保留
+  const far = brushCenterIndex(grid) + 40
+  if (grid.inside[far]) {
     assert.ok(
-      Math.abs(grid.current[farIndex] - grid.base[farIndex]) < 1e-6,
-      '笔刷半径之外的地形不应变化'
+      Math.abs(grid.current[far] - grid.base[far]) < 1e-6,
+      '塌方坡范围之外不应变化'
     )
   }
 }
 
 {
-  // 默认（不传 strokeLimit）不限制累计：这是「按住左键不放就持续加深」的基础，
-  // 调用方按住期间按节拍反复施加，深度应该一直线性增长。
-  const grid = makeGrid()
-  const centerLng = (POLYGON[0].lng + POLYGON[2].lng) / 2
-  const centerLat = (POLYGON[0].lat + POLYGON[2].lat) / 2
-  const col = Math.round((centerLng - grid.bounds.minLng) / grid.dLng)
-  const row = Math.round((centerLat - grid.bounds.minLat) / grid.dLat)
-  const index = row * grid.stride + col
-  const before = grid.current[index]
-  const strokeBase = new Float32Array(grid.current)
-  const maxDelta = 10
-  const rounds = 30
+  // 立面要窄：平台铺满大半个笔刷，只剩边缘薄薄一圈过渡。
+  // 若退化成整圆软衰减的「碗」，等于目标标高的点只会剩中心一个。
+  const grid = makeGrid(96)
+  const R = 220
+  const impact = applyBrush(grid, {
+    mode: 'lower', lng: CENTER_LNG, lat: CENTER_LAT,
+    radius: R, strength: 1, maxDelta: 8, roughness: 0
+  })!
+  const mLng = metersPerDegLng(CENTER_LAT)
+  const b = grid.bounds
+  let flatMax = 0
+  for (let row = 0; row < grid.stride; row++) {
+    const dz = (b.minLat + row * grid.dLat - CENTER_LAT) * 111319.49
+    for (let col = 0; col < grid.stride; col++) {
+      const i = row * grid.stride + col
+      if (!grid.inside[i]) continue
+      if (Math.abs(grid.current[i] - impact.target) > 1e-4) continue
+      const dx = (b.minLng + col * grid.dLng - CENTER_LNG) * mLng
+      flatMax = Math.max(flatMax, Math.hypot(dx, dz))
+    }
+  }
+  assert.ok(flatMax > R * 0.7, `平台应铺满大半个笔刷，实测 ${flatMax.toFixed(1)}m`)
+}
 
+{
+  // 每一笔都是清清楚楚的一级：坑心高度恰好等于该笔的目标标高
+  const grid = makeGrid(96)
+  const targets = [894, 888, 882, 876, 870]
+  const idx = brushCenterIndex(grid)
+  for (const t of targets) {
+    const imp = applyBrush(grid, {
+      mode: 'lower', lng: CENTER_LNG, lat: CENTER_LAT,
+      radius: 180, strength: 1, maxDelta: 6, roughness: 0, targetHeight: t
+    })!
+    assert.strictEqual(imp.target, t, '显式目标标高应被原样采用')
+    assert.ok(
+      Math.abs(grid.current[idx] - t) < 1e-4,
+      `目标 ${t} 的这一笔坑心应恰好压到位，实际 ${grid.current[idx].toFixed(2)}`
+    )
+  }
+}
+
+{
+  // 默认（不传 strokeLimit / targetHeight）持续累加：除首笔对齐到台阶标高外，
+  // 每笔恰好降一级，最终标高落在台阶的整数倍上。
+  const grid = makeGrid()
+  const idx = brushCenterIndex(grid)
+  const step = 10
+  const rounds = 20
+  const heights: number[] = []
   for (let k = 0; k < rounds; k++) {
     applyBrush(grid, {
-      mode: 'lower',
-      lng: centerLng,
-      lat: centerLat,
-      radius: 200,
-      strength: 1,
-      maxDelta,
-      strokeBase
+      mode: 'lower', lng: CENTER_LNG, lat: CENTER_LAT,
+      radius: 200, strength: 1, maxDelta: step, roughness: 0
     })
+    heights.push(grid.current[idx])
   }
-  const drop = before - grid.current[index]
+  for (let k = 2; k < rounds; k++) {
+    const d = heights[k - 1] - heights[k]
+    assert.ok(Math.abs(d - step) < 1e-3, `第 ${k} 笔应降一级 ${step}m，实际 ${d.toFixed(3)}`)
+  }
+  const last = heights[rounds - 1]
   assert.ok(
-    Math.abs(drop - maxDelta * rounds) < 1e-3,
-    `默认应持续累加（${maxDelta * rounds}），实际 ${drop.toFixed(2)}`
+    Math.abs(last / step - Math.round(last / step)) < 1e-6,
+    `反复落笔后标高应对齐台阶，实际 ${last.toFixed(3)}`
   )
 }
 
 {
   // 显式给 strokeLimit 时才夹紧：单点累计不超过 maxDelta * strokeLimit
   const grid = makeGrid()
-  const centerLng = (POLYGON[0].lng + POLYGON[2].lng) / 2
-  const centerLat = (POLYGON[0].lat + POLYGON[2].lat) / 2
-  const col = Math.round((centerLng - grid.bounds.minLng) / grid.dLng)
-  const row = Math.round((centerLat - grid.bounds.minLat) / grid.dLat)
-  const index = row * grid.stride + col
-  const before = grid.current[index]
+  const idx = brushCenterIndex(grid)
+  const before = grid.current[idx]
   const strokeBase = new Float32Array(grid.current)
-  const maxDelta = 10
-  const strokeLimit = 3
-
+  const step = 10
   for (let k = 0; k < 30; k++) {
     applyBrush(grid, {
-      mode: 'lower',
-      lng: centerLng,
-      lat: centerLat,
-      radius: 200,
-      strength: 1,
-      maxDelta,
-      strokeLimit,
-      strokeBase
+      mode: 'lower', lng: CENTER_LNG, lat: CENTER_LAT,
+      radius: 200, strength: 1, maxDelta: step, strokeLimit: 3,
+      roughness: 0, strokeBase
     })
   }
-  const drop = before - grid.current[index]
   assert.ok(
-    Math.abs(drop - maxDelta * strokeLimit) < 1e-3,
-    `显式 strokeLimit 应夹在 maxDelta * strokeLimit，实际 ${drop.toFixed(2)}`
+    Math.abs(before - grid.current[idx] - 30) < 1e-3,
+    `strokeLimit 应夹在 30m，实际 ${(before - grid.current[idx]).toFixed(2)}`
   )
 }
 
 {
-  // 单击：只施加一次，深度为 maxDelta * strength
-  const grid = makeGrid()
-  const centerLng = (POLYGON[0].lng + POLYGON[2].lng) / 2
-  const centerLat = (POLYGON[0].lat + POLYGON[2].lat) / 2
-  const col = Math.round((centerLng - grid.bounds.minLng) / grid.dLng)
-  const row = Math.round((centerLat - grid.bounds.minLat) / grid.dLat)
-  const index = row * grid.stride + col
-  const before = grid.current[index]
-  applyBrush(grid, {
-    mode: 'lower',
-    lng: centerLng,
-    lat: centerLat,
-    radius: 200,
-    strength: 1,
-    maxDelta: 10,
-    strokeBase: new Float32Array(grid.current)
-  })
-  const drop = before - grid.current[index]
-  assert.ok(Math.abs(drop - 10) < 1e-6, `单击应刚好下沉 maxDelta，实际 ${drop.toFixed(2)}`)
+  // 单击：压到按脚下高度取整的下一级台阶，核心圈绝对平
+  const grid = makeGrid(96)
+  const idx = brushCenterIndex(grid)
+  const before = grid.current[idx]
+  const step = 10
+  const imp = applyBrush(grid, {
+    mode: 'lower', lng: CENTER_LNG, lat: CENTER_LAT,
+    radius: 200, strength: 1, maxDelta: step, roughness: 0
+  })!
+  assert.ok(grid.current[idx] < before, '单击应让中心变低')
+  assert.ok(
+    Math.abs(grid.current[idx] - imp.target) < 1e-4,
+    '单击后中心应恰好落在目标标高上'
+  )
+  assert.ok(
+    Math.abs(imp.target - Math.floor((before - step) / step) * step) < 1e-3,
+    '目标标高应对齐到台阶'
+  )
 }
 
 {
-  // 抬升同理：持续施加应该一直累加（按住不放就一直抬高）
+  // 抬升同理：每笔抬一级，标高对齐台阶
   const grid = makeGrid()
-  const centerLng = (POLYGON[0].lng + POLYGON[2].lng) / 2
-  const centerLat = (POLYGON[0].lat + POLYGON[2].lat) / 2
-  const col = Math.round((centerLng - grid.bounds.minLng) / grid.dLng)
-  const row = Math.round((centerLat - grid.bounds.minLat) / grid.dLat)
-  const index = row * grid.stride + col
-  const before = grid.current[index]
-  const strokeBase = new Float32Array(grid.current)
+  const idx = brushCenterIndex(grid)
+  const before = grid.current[idx]
+  const step = 5
   for (let k = 0; k < 20; k++) {
     applyBrush(grid, {
-      mode: 'raise',
-      lng: centerLng,
-      lat: centerLat,
-      radius: 200,
-      strength: 1,
-      maxDelta: 5,
-      strokeBase
+      mode: 'raise', lng: CENTER_LNG, lat: CENTER_LAT,
+      radius: 200, strength: 1, maxDelta: step, roughness: 0
     })
   }
-  const rise = grid.current[index] - before
-  assert.ok(Math.abs(rise - 100) < 1e-3, `抬升应持续累加到 100，实际 ${rise.toFixed(2)}`)
+  const rise = grid.current[idx] - before
+  assert.ok(rise > 90 && rise < 110, `抬升 20 笔应累计约 100m，实际 ${rise.toFixed(2)}`)
+  const h = grid.current[idx]
+  assert.ok(
+    Math.abs(h / step - Math.round(h / step)) < 1e-6,
+    '抬升后标高应对齐台阶'
+  )
 }
 
 {
-  const grid = makeGrid()
-  const centerLng = (POLYGON[0].lng + POLYGON[2].lng) / 2
-  const centerLat = (POLYGON[0].lat + POLYGON[2].lat) / 2
-  const col = Math.round((centerLng - grid.bounds.minLng) / grid.dLng)
-  const row = Math.round((centerLat - grid.bounds.minLat) / grid.dLat)
-  const index = row * grid.stride + col
-  const before = grid.current[index]
-
-  applyBrush(grid, { mode: 'raise', lng: centerLng, lat: centerLat, radius: 200, strength: 0.5, maxDelta: 30 })
-  assert.ok(grid.current[index] > before, '抬升模式应让中心点变高')
-
   // 整平：反复刷到目标高度
-  const target = before - 50
+  const grid = makeGrid()
+  const idx = brushCenterIndex(grid)
+  const target = grid.current[idx] - 50
   for (let k = 0; k < 12; k++) {
     applyBrush(grid, {
-      mode: 'level',
-      lng: centerLng,
-      lat: centerLat,
-      radius: 200,
-      strength: 0.8,
-      targetHeight: target
+      mode: 'level', lng: CENTER_LNG, lat: CENTER_LAT,
+      radius: 200, strength: 0.8, targetHeight: target
     })
   }
   assert.ok(
-    Math.abs(grid.current[index] - target) < 5,
-    `整平应逼近目标高度，实际 ${grid.current[index].toFixed(2)}，目标 ${target.toFixed(2)}`
+    Math.abs(grid.current[idx] - target) < 5,
+    `整平应逼近目标高度，实际 ${grid.current[idx].toFixed(2)}`
   )
 }
 
 {
   // 平滑：应降低邻域方差
   const grid = makeGrid(16)
-  const centerLng = (POLYGON[0].lng + POLYGON[2].lng) / 2
-  const centerLat = (POLYGON[0].lat + POLYGON[2].lat) / 2
   const variance = () => {
-    let sum = 0
-    let sq = 0
-    let n = 0
+    let sum = 0, sq = 0, n = 0
     for (let i = 0; i < grid.vertexCount; i++) {
       if (!grid.inside[i]) continue
       sum += grid.current[i]
@@ -377,7 +401,10 @@ function makeGrid(segments = 24) {
   }
   const before = variance()
   for (let k = 0; k < 5; k++) {
-    applyBrush(grid, { mode: 'smooth', lng: centerLng, lat: centerLat, radius: 400, strength: 1 })
+    applyBrush(grid, {
+      mode: 'smooth', lng: CENTER_LNG, lat: CENTER_LAT,
+      radius: 400, strength: 1
+    })
   }
   assert.ok(variance() <= before, '平滑不应增大整体方差')
 }
@@ -455,3 +482,117 @@ function makeGrid(segments = 24) {
   applyBrush(filled, { mode: 'lower', lng: holeLng, lat: holeLat, radius: 200, strength: 1, maxDelta: 5 })
   assert.ok(filled.current[center] < before - 4, '空洞填平后必须能被笔刷挖动')
 }
+
+/* ---------- 拖动平台 / 边界不规则度 / 确定性 ---------- */
+
+{
+  // 整条笔画锁同一个目标标高：沿轨迹拖过缓坡，沟底必须是同一个标高。
+  // 这是「该平的平」的关键 —— 每笔各按脚下取一级只会得到一串碗。
+  const grid = makeGrid(160)
+  const target = 880
+  const mLng = metersPerDegLng(CENTER_LAT)
+  for (let k = 0; k < 6; k++) {
+    applyBrush(grid, {
+      mode: 'lower', lng: CENTER_LNG + (k * 30) / mLng, lat: CENTER_LAT,
+      radius: 110, strength: 1, maxDelta: 4, roughness: 0, targetHeight: target
+    })
+  }
+  const row = Math.round((CENTER_LAT - grid.bounds.minLat) / grid.dLat)
+  const c0 = Math.round((CENTER_LNG - grid.bounds.minLng) / grid.dLng)
+  const bottom: number[] = []
+  for (let col = c0 - 2; col <= c0 + 18; col++) bottom.push(grid.current[row * grid.stride + col])
+  const spread = Math.max(...bottom) - Math.min(...bottom)
+  assert.ok(spread < 1e-4, `拖动刷出的沟底应是同一个标高，实测极差 ${spread.toFixed(4)}`)
+  assert.ok(Math.abs(bottom[0] - target) < 1e-4, '沟底标高应等于锁定目标')
+}
+
+{
+  /** 把落笔影响到的顶点按方位分成 24 个扇区，取每个扇区最远的「受影响半径 / 笔刷半径」 */
+  const ringProfile = (roughness: number, sectors = 24) => {
+    const grid = buildTerrainGrid(POLYGON, { segments: 96, slopeWidth: 40 })
+    for (let i = 0; i < grid.vertexCount; i++) {
+      grid.base[i] = 900
+      grid.current[i] = 900
+    }
+    const lng = 117.1
+    const lat = 36.25
+    const radius = 250
+    const impact = applyBrush(grid, { mode: 'lower', lng, lat, radius, strength: 1, maxDelta: 20, roughness })!
+
+    const mLng = metersPerDegLng(lat)
+    const b = grid.bounds
+    const out = new Array(sectors).fill(0)
+    for (let row = 0; row < grid.stride; row++) {
+      const dz = (b.minLat + row * grid.dLat - lat) * 111319.49
+      for (let col = 0; col < grid.stride; col++) {
+        const i = row * grid.stride + col
+        if (!grid.inside[i]) continue
+        // 只量「平台边界」：塌方坡按行列扫描扩散，若统计所有被改动点，
+        // 它的方形特征会被误算成边界不规则。
+        if (Math.abs(grid.current[i] - impact.target) > 1e-4) continue
+        const dx = (b.minLng + col * grid.dLng - lng) * mLng
+        const d = Math.hypot(dx, dz)
+        let a = Math.atan2(dz, dx)
+        if (a < 0) a += Math.PI * 2
+        const s = Math.min(sectors - 1, Math.floor((a / (Math.PI * 2)) * sectors))
+        out[s] = Math.max(out[s], d / radius)
+      }
+    }
+    return out
+  }
+
+  const spread = (p: number[]) => Math.max(...p) - Math.min(...p)
+  const mean = (p: number[]) => p.reduce((a, b) => a + b, 0) / p.length
+  const plain = ringProfile(0)
+  const jagged = ringProfile(0.6)
+  assert.ok(spread(plain) < 0.03, `roughness = 0 应是一圈标准圆，实测 ${spread(plain).toFixed(3)}`)
+  assert.ok(spread(jagged) > 0.12, `roughness 增大后边界必须明显不规则，实测 ${spread(jagged).toFixed(3)}`)
+  assert.ok(
+    mean(jagged) > 0.8 && mean(jagged) < 1.0,
+    `棱角不该把笔刷尺寸带跑，实测平均半径 ${mean(jagged).toFixed(3)}`
+  )
+
+  // 噪声按世界坐标取样：同一处反复落笔，图案必须是固定的（否则按住不放会「沸腾」）
+  const snapshot = (roughness: number) => {
+    const grid = buildTerrainGrid(POLYGON, { segments: 48, slopeWidth: 40 })
+    for (let i = 0; i < grid.vertexCount; i++) {
+      grid.base[i] = 900
+      grid.current[i] = 900
+    }
+    for (let k = 0; k < 3; k++) {
+      applyBrush(grid, {
+        mode: 'lower', lng: 117.1, lat: 36.25,
+        radius: 200, strength: 1, maxDelta: 5, roughness
+      })
+    }
+    return grid.current
+  }
+  const a = snapshot(0.6)
+  const again = snapshot(0.6)
+  for (let i = 0; i < a.length; i++) {
+    assert.strictEqual(a[i], again[i], `同样的落笔必须得到同样的高度（第 ${i} 个顶点）`)
+  }
+
+  // `smooth` 是修平动作，加棱角只会把刚修好的面又搓毛 —— 对它不生效
+  const smoothed = (roughness: number) => {
+    const grid = buildTerrainGrid(POLYGON, { segments: 48, slopeWidth: 40 })
+    for (let i = 0; i < grid.vertexCount; i++) {
+      const row = Math.floor(i / grid.stride)
+      const h = 900 + (row % 7) * 12
+      grid.base[i] = h
+      grid.current[i] = h
+    }
+    applyBrush(grid, {
+      mode: 'smooth', lng: 117.1, lat: 36.25,
+      radius: 200, strength: 1, roughness
+    })
+    return grid.current
+  }
+  const s0 = smoothed(0)
+  const s1 = smoothed(1)
+  for (let i = 0; i < s0.length; i++) {
+    assert.strictEqual(s0[i], s1[i], `smooth 模式不应受 roughness 影响（第 ${i} 个顶点）`)
+  }
+}
+
+console.log('✓ terrainGrid 全部测试通过')

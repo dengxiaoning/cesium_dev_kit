@@ -8,6 +8,7 @@ import { CesiumDevKitError, reportError } from './errors'
 import type { ThreeJsInstance } from './ThreeJs'
 import {
   applyBrush,
+  benchHeight,
   buildContourSegments,
   buildTerrainGrid,
   deformTerrain,
@@ -42,10 +43,11 @@ export type { TerrainEditMode }
  *
  * 地形软件的手感是「按住不放就一直挖」，而不是「拖一下算一次」：
  * 指针停住不动也应该继续加深。这里用一个固定节拍的循环来施加，
- * 80ms 约合 12.5 次/秒，配合默认 `maxDelta = 3` 大约 19m/s，
- * 按住一秒挖十几米到二十米，和《城市天际线》里按住不放的节奏接近。
+ * 笔刷现在按「一级一级的台阶」推进（每拍降 `maxDelta`），不是连续磨高度，
+ * 节拍太快会把台阶糊成一片。140ms 约 7 级/秒 × 默认 3m ≈ 21m/s，
+ * 既能感到持续下挖，又留得住每一级的层次。
  */
-const SPRAY_INTERVAL = 80
+const SPRAY_INTERVAL = 140
 
 /**
  * 判定「指针已停住」的静默时间（毫秒）。
@@ -227,17 +229,31 @@ export interface TerrainEditStatsResult extends TerrainStats {
 export interface TerrainEditBrushOptions {
   /** 笔刷模式，默认 `lower`（下沉） */
   mode?: TerrainBrushMode
-  /** 笔刷半径（米），默认 120 */
+  /** 笔刷半径（米），默认 110 */
   radius?: number
-  /** 强度 0~1，默认 0.5 */
+  /**
+   * 向目标标高推进的比例 0~1，默认 1（一步压到绝对平）。
+   *
+   * 小于 1 时坑底永远压不平、会留着原地面的起伏，看起来就是一片糊。
+   * 需要软笔触请换 `mode: 'smooth'`，不要调低这个值。
+   */
   strength?: number
-  /** 硬边比例 0~1，默认 0，即整圆软衰减 */
+  /** 平整核心占半径的比例 0~1，默认 0.9：平台几乎铺满笔刷，边缘只留一圈窄立面 */
   hardness?: number
   /**
-   * 单次施加的最大高度变化（米），默认 3。
+   * 坑口不规则度 0~1，默认 0.28。
    *
-   * 按住左键期间会按固定节拍反复施加（见 `SPRAY_INTERVAL`），所以这个值决定的是
-   * 「下挖速度」而不是「一刀深度」：指针按住不动，深度也会一直累加。
+   * 用世界坐标的值噪声轻微掰动有效半径，让边界不是圆规画出来的。
+   * 它只负责「不那么规整」；让笔迹清楚的是一刀切平的标高，不是这个参数。
+   * 噪声按世界坐标取样，按住不放反复加深时图案固定，不会抖动或漂移。
+   */
+  roughness?: number
+  /**
+   * 一级台阶的落差（米），默认 3。
+   *
+   * 每次落笔都把笔刷核心压到同一个**目标标高**，拖动时整条笔画锁这个值，
+   * 于是刷出来是平底平台而不是碗。按住不放由 `SPRAY_INTERVAL` 按拍逐级下降，
+   * 所以这个值同时决定台阶的高度和下挖速度。
    */
   maxDelta?: number
   /**
@@ -264,11 +280,12 @@ export interface TerrainEditAreaOptions {
   /** 是否把区域内部被包住的空洞填平，默认 true（见 setPolygon） */
   fillHoles?: boolean
   /**
-   * 挖/填出来的坡面是否换成岩土材质，默认 true。
+   * 是否启用程序化岩土材质，默认 false。
    *
-   * 影像按经纬度平面投影取样，坡面越陡被拉得越长（拉伸比 = sqrt(1 + 坡度²)），
-   * 挖到几百米深时坑壁会糊成一片色带。打开后按「坡度 + 挖填深度」把影像渐变成
-   * 程序化岩土，从而消除这种拉伸。关掉则完全保留原始影像。
+   * 这是给「在近乎垂直的陡壁上强行贴影像」准备的高级选项，正常开挖不需要：
+   * 笔刷现在刷出的是平底平台 + 窄立面，立面只有几米宽，影像几乎不被拉伸；
+   * 台阶的层次靠几何坡折和方向性明暗表现，比换一张贴图清楚得多。
+   * 打开后按「坡度 + 挖填深度」把影像渐变成岩土。
    */
   cutSurface?: boolean
 }
@@ -399,15 +416,15 @@ export interface TerrainEditInstance {
    * @example
    * // 以当前视野中心为原点，铺一块 2km、160x160 的可编辑器
    * await terrainEdit.setArea([117.1, 36.25], { size: 2000, segments: 160 })
-   * terrainEdit.enableBrush({ mode: 'lower', radius: 150, strength: 0.6 })
+   * terrainEdit.setBrush({ mode: 'lower', radius: 150, maxDelta: 3 }).enableBrush(true)
    */
   setArea(center: TerrainEditPosition, options?: TerrainEditAreaOptions): Promise<TerrainEditInstance>
 
   /**
    * 设置笔刷参数（不影响已刷出的地形）。
-   * @param options - 模式、半径、强度、硬边、目标高度
+   * @param options - 模式、半径、台阶落差、目标高度
    * @example
-   * terrainEdit.setBrush({ mode: 'level', radius: 200, strength: 0.8, targetHeight: 900 })
+   * terrainEdit.setBrush({ mode: 'level', radius: 200, targetHeight: 900 })
    */
   setBrush(options?: TerrainEditBrushOptions): TerrainEditInstance
 
@@ -551,8 +568,9 @@ export function createTerrainEditModule() {
     this._brush = {
       mode: 'lower',
       radius: 110,
-      strength: 0.5,
-      hardness: 0,
+      strength: 1,
+      hardness: 0.9,
+      roughness: 0.28,
       maxDelta: 3,
       strokeLimit: 0,
       targetHeight: null
@@ -573,12 +591,16 @@ export function createTerrainEditModule() {
     this._strokeDist = 0
     // 本笔起始高度快照，仅用于「一笔 = 一步撤销」
     this._strokeBase = null
+    // 本次笔画锁定的目标标高：拖动的所有落笔共用它，才会刷出平底平台
+    this._strokeTarget = null
+    // 定时器按拍施加时置位，用来把「按住不动」和「拖动」区分开
+    this._sprayTick = false
     // level 模式自动推断出来的目标高度：只在本次笔画内有效，抬笔后清掉
     this._targetAuto = false
     // 贴图与网格缓存
     this._useTexture = true
-    // 挖/填出来的坡面是否换成岩土材质（关掉则保留原始影像，但陡壁上会有拉伸）
-    this._cutSurface = true
+    // 程序化岩土材质默认关闭：层次靠几何坡折 + 方向明暗，不靠换贴图掩盖拉伸
+    this._cutSurface = false
     this._texture = null
     this._surface = null
     this._localXZ = null
@@ -1499,10 +1521,12 @@ export function createTerrainEditModule() {
      * 所以翻出的坡面能看出体积感，而对齐的平地又不会比周围影像暗一块。
      * 顶点色是破坏性相乘，所以必须从 `_baseColors` 底色重算，不能在上一次结果上再乘。
      *
-     * 挖过的地方额外做两件事：
-     * 1. 按「挖/填的深度 + 坡度」算出开挖强度写进 `aCut`，片元着色器按它把影像换成岩土色；
-     * 2. 顺着固定的光照方向烘一层方向性明暗，让新挖出来的断面有迎光面/背光面，
-     *    否则光靠「法线越陡越暗」只能得到一块均匀的暗色，看着还是平的。
+     * 被刷动过的顶点额外烘一层**方向性明暗**：迎光立面提亮、背光立面压暗。
+     * 台阶之所以一眼看得出来，靠的是坡折处这道明暗突变，而不是换一张贴图；
+     * 天然陡崖没被刷过（相对 base 位移为 0）不受影响，保持影像原样。
+     *
+     * 另外把「开挖强度」写进 `aCut`：只有显式打开 `setCutSurfaceEnabled(true)`
+     * 时才由片元着色器据此把陡壁渐变成程序化岩土，默认关闭。
      * @private
      */
     _bakeShading(this: TerrainEditInstance & Record<string, any>, geometry?: any) {
@@ -1529,10 +1553,17 @@ export function createTerrainEditModule() {
         const nz = normals.getZ(i)
         const ndl = Math.abs(nx * up.x + ny * up.y + nz * up.z)
         let shade = 0.84 + 0.16 * Math.min(1, ndl)
+        const moved = Math.abs(current[i] - origin[i])
+        // 方向性明暗：只作用于被刷动过的顶点，迎光立面提亮、背光立面压暗。
+        // 台阶「一眼看得出来」靠的是折点处这道明暗突变，而不是换一张贴图；
+        // 天然陡崖没被刷过（moved = 0），保持影像原样。
+        if (moved > 0.001) {
+          const sunDot = nx * sx + ny * sy + nz * sz
+          shade *= 1 + Math.min(1, moved / 6) * 0.3 * sunDot
+        }
         let cut = 0
         if (cutArr) {
           const delta = current[i] - origin[i]
-          const moved = Math.abs(delta)
           if (this._cutSurface && moved > 2) {
             // 只对「真的动过」的顶点生效：没刷到的地方即使天然陡峭也保持影像原样
             const edited = Math.min(1, (moved - 2) / 6)
@@ -1730,7 +1761,7 @@ export function createTerrainEditModule() {
 
     /**
      * 设置笔刷参数
-     * @param options - 模式、半径、强度、硬边、目标高度
+     * @param options - 模式、半径、台阶落差、目标高度
      */
     setBrush(this: TerrainEditInstance & Record<string, any>, options: TerrainEditBrushOptions = {}) {
       const b = this._brush
@@ -1739,6 +1770,7 @@ export function createTerrainEditModule() {
         radius: Math.max(1, options.radius ?? b.radius),
         strength: Math.min(1, Math.max(0.01, options.strength ?? b.strength)),
         hardness: Math.min(0.95, Math.max(0, options.hardness ?? b.hardness)),
+        roughness: Math.min(1, Math.max(0, options.roughness ?? b.roughness)),
         maxDelta: Math.max(0.5, options.maxDelta ?? b.maxDelta),
         strokeLimit: Math.max(0, Math.min(200, options.strokeLimit ?? b.strokeLimit)),
         targetHeight: options.targetHeight === undefined ? b.targetHeight : options.targetHeight
@@ -1831,6 +1863,8 @@ export function createTerrainEditModule() {
       if (!this._grid) return this
       this._stroking = true
       this._strokeBase = new Float32Array(this._grid.current)
+      this._strokeTarget = null
+      this._sprayTick = false
       this._popStrokeSnapshot()
       return this
     },
@@ -1852,6 +1886,21 @@ export function createTerrainEditModule() {
         this._brush.targetHeight = target
         this._targetAuto = true
       }
+      if (brush.mode === 'lower' || brush.mode === 'raise') {
+        const dir: -1 | 1 = brush.mode === 'lower' ? -1 : 1
+        const step = Math.max(0.5, brush.maxDelta)
+        if (this._strokeTarget == null) {
+          // 第一笔：按落笔处高度对齐到「下一级台阶」，整条笔画都锁这个标高。
+          // 拖动时沿途的新地面同样被压到这里，于是刷出来是平底平台 / 沟槽，
+          // 而不是每笔各降一级、坑底跟着原地形起伏的一串碗。
+          this._strokeTarget = benchHeight(this._heightAt(lng, lat) + dir * step, step, dir)
+        } else if (this._sprayTick) {
+          // 指针停住不动、定时器按拍施加：每拍再走一级，按住才会一层层往下掉
+          this._strokeTarget += dir * step
+        }
+        target = this._strokeTarget
+      }
+      this._sprayTick = false
       const impact = applyBrush(this._grid, {
         mode: brush.mode,
         lng,
@@ -1859,6 +1908,7 @@ export function createTerrainEditModule() {
         radius: brush.radius,
         strength: brush.strength,
         hardness: brush.hardness,
+        roughness: brush.roughness,
         maxDelta: brush.maxDelta,
         strokeLimit: brush.strokeLimit,
         targetHeight: target == null ? undefined : target,
@@ -1882,6 +1932,9 @@ export function createTerrainEditModule() {
       if (!this._stroking) return this
       this._stroking = false
       this._strokeBase = null
+      // 抬笔即释放锁定标高，下一笔重新按脚下地形取台阶
+      this._strokeTarget = null
+      this._sprayTick = false
       this._lastContourAt = 0
       // 自动推断的目标高度用完即弃，避免下一次整平沿用上一笔的旧目标
       if (this._targetAuto) {
@@ -1898,8 +1951,9 @@ export function createTerrainEditModule() {
     /**
      * 挖/填出来的坡面是否显示为岩土
      *
-     * 打开（默认）时，坡度越陡、挖得越深的地方越偏向程序化岩土，避免影像被拉成一片糊；
-     * 关掉则完全保留原始影像，陡壁上会看到明显的拉伸。
+     * 默认关闭：平底平台 + 窄立面的几何本身就让影像几乎不被拉伸，
+     * 台阶层次由坡折和方向明暗表现。只有在近乎垂直的陡壁上贴影像时，
+     * 才需要打开它把坡面渐变成程序化岩土。
      * @param enabled - 是否启用开挖面材质
      */
     setCutSurfaceEnabled(this: TerrainEditInstance & Record<string, any>, enabled: boolean) {
@@ -2073,6 +2127,8 @@ export function createTerrainEditModule() {
         // 否则「移动 + 定时」会把同一位置叠加两遍，拖一下就成深井
         const now = typeof performance !== 'undefined' ? performance.now() : Date.now()
         if (now - (this._lastMoveAt || 0) < SPRAY_IDLE) return
+        // 标记这一拍来自「原地按住」，strokeAt 才会把锁定标高再推进一级
+        this._sprayTick = true
         this.strokeAt(this._sprayAt.lng, this._sprayAt.lat)
       }, SPRAY_INTERVAL)
       return this
