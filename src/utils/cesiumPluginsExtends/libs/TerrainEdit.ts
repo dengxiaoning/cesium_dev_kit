@@ -37,6 +37,150 @@ import type {
 
 export type { TerrainEditMode }
 
+/**
+ * 按住左键时的持续施加速度（毫秒一次）。
+ *
+ * 地形软件的手感是「按住不放就一直挖」，而不是「拖一下算一次」：
+ * 指针停住不动也应该继续加深。这里用一个固定节拍的循环来施加，
+ * 80ms 约合 12.5 次/秒，配合默认 `maxDelta = 3` 大约 19m/s，
+ * 按住一秒挖十几米到二十米，和《城市天际线》里按住不放的节奏接近。
+ */
+const SPRAY_INTERVAL = 80
+
+/**
+ * 判定「指针已停住」的静默时间（毫秒）。
+ *
+ * 按住左键期间：
+ * - 指针还在移动 → 由 `MOUSE_MOVE` 按路径施加，定时器不介入（否则同一位置会被
+ *   移动事件和定时器双重累加，拖一下就成了深井）；
+ * - 指针停住超过这个时间 → 才由定时器以 `SPRAY_INTERVAL` 的节拍持续加深。
+ *
+ * 250ms 比一般鼠标的移动事件间隔（8~16ms）大一个量级，即使设备掉到 4fps、
+ * 两次 `mousemove` 之间隔了两百多毫秒，也不会把「还在拖」误判成「停住了」；
+ * 同时又短到让人感觉不出「按住之后才开始挖」的延迟。
+ */
+const SPRAY_IDLE = 250
+
+/**
+ * 指针移动时，每走过这么远才施加一次（按笔刷半径的比例算）。
+ *
+ * 不能「每次 mousemove 都施加」：鼠标 16ms 报一次位置，慢慢拖时几十次都落在
+ * 同一个笔刷圈内，同一片地形被反复减，拖动反而比按住不动还深。
+ * 按距离节流后，涂抹密度只跟走过的路程有关，快拖慢拖的深浅一致。
+ */
+const STROKE_STEP_RATIO = 0.1
+
+/** 小于这个屏幕像素位移视为「指针没动」（手抖 / 亚像素噪声） */
+const MOVE_IDLE_PX = 1
+
+/**
+ * 光照方向（局部坐标），与 `_rebuild` 里给水面用的平行光保持一致。
+ *
+ * 地表用的是 `MeshBasicMaterial`（不吃实时光照，才能跟周围影像同色），
+ * 但开挖出来的坡面需要明暗才看得出体积，所以在 CPU 端按这个方向把明暗烘进顶点色。
+ */
+const SUN_DIR = { x: 0.35, y: 1, z: 0.3 }
+
+/**
+ * 开挖面孔隙噪声 + 岩土色（GLSL 片段，注入 `MeshBasicMaterial` 的片元着色器）。
+ *
+ * 为什么必须换成程序化岩土色，而不是继续用影像：
+ * 影像按经纬度平面投影取样，坡面一陡，同样的像元被摊到长得多的坡面上，
+ * 拉伸比是 sqrt(1 + 坡度²)。挖到几百米深时坡面接近垂直，等于把影像拉长十几倍，
+ * 于是整块坑壁成了「放射状色带」——这就是「越挖越模糊、越来越不像」的成因。
+ * 分辨率再高也治不了，因为要摊薄的是同一个像素。
+ *
+ * 这里用局部三维坐标算噪声（不做投影），所以密度处处一致、不会被拉伸；
+ * 再叠一层沿高度方向的层理，看着像被机械挖开的岩土断面。
+ */
+const EARTH_COMMON_GLSL = `
+varying float vCut;
+varying vec3 vLocalPos;
+float teHash(vec3 p) {
+  p = fract(p * 0.3183099 + vec3(0.11, 0.23, 0.37));
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+float teNoise(vec3 x) {
+  vec3 i = floor(x);
+  vec3 f = fract(x);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(mix(teHash(i), teHash(i + vec3(1.0, 0.0, 0.0)), f.x),
+        mix(teHash(i + vec3(0.0, 1.0, 0.0)), teHash(i + vec3(1.0, 1.0, 0.0)), f.x), f.y),
+    mix(mix(teHash(i + vec3(0.0, 0.0, 1.0)), teHash(i + vec3(1.0, 0.0, 1.0)), f.x),
+        mix(teHash(i + vec3(0.0, 1.0, 1.0)), teHash(i + vec3(1.0, 1.0, 1.0)), f.x), f.y),
+    f.z);
+}
+float teFbm(vec3 p) {
+  float sum = 0.0;
+  float amp = 0.5;
+  for (int i = 0; i < 3; i++) {
+    sum += amp * teNoise(p);
+    p *= 2.07;
+    amp *= 0.5;
+  }
+  return sum;
+}
+`
+
+const EARTH_APPLY_GLSL = `
+{
+  float teAmt = clamp(abs(vCut), 0.0, 1.0);
+  if (teAmt > 0.004) {
+    vec3 p = vLocalPos;
+    // 每像素覆盖多少米：远看时要把高频细节淡出，否则细密噪声会糊成一层「毛毡」
+    float px = max(fwidth(p.x), max(fwidth(p.y), fwidth(p.z)));
+    float fineFade = 1.0 - smoothstep(0.35, 1.1, px);
+
+    // 三个尺度：整片色区（约 200m）→ 斑块（约 30m）→ 碎石（约 7m）
+    float macro = teFbm(p * 0.005);
+    float coarse = teFbm(p * 0.032);
+    float medium = teFbm(p * 0.14);
+    float fine = teNoise(p * 1.1);
+
+    // 层理：用低频噪声把条带的相位扭一扭，不然等高的地方会连成一圈同心环
+    float warp = teFbm(p * 0.016 + vec3(0.0, 0.0, 3.7));
+    float band = fract((p.y + warp * 30.0) * 0.075);
+    float strata = smoothstep(0.08, 0.42, band) * (1.0 - smoothstep(0.56, 0.92, band));
+
+    vec3 rock = mix(vec3(0.062, 0.046, 0.034), vec3(0.145, 0.112, 0.082), coarse);
+    // 大尺度色区：偏黄褐 / 偏青灰，避免整面墙一个色
+    rock = mix(rock, vec3(0.175, 0.132, 0.086), macro * 0.72);
+    rock = mix(rock, vec3(0.088, 0.086, 0.082), (1.0 - macro) * 0.42);
+    rock = mix(rock, vec3(0.225, 0.186, 0.146), strata * 0.3);
+    rock *= 0.90 + 0.20 * medium;
+    rock *= 1.0 + (fine - 0.5) * 0.5 * fineFade;
+    // 借一点当地地表色相：挖在城市里偏暖、挖在草坡上偏绿，
+    // 免得整块坑壁像一块灰色补丁贴上去
+  #ifdef USE_MAP
+    vec3 localTone = texture2D(map, vMapUv, 2.0).rgb;
+    float toneLum = max(dot(localTone, vec3(0.299, 0.587, 0.114)), 0.04);
+    rock *= mix(vec3(1.0), localTone / toneLum, 0.34);
+  #endif
+
+    // 碎屑的凹凸：用噪声沿光照方向的差分当微法线，近看才有「土石」的颗粒感
+    if (fineFade > 0.01) {
+      float bump0 = teNoise(p * 1.6);
+      float bumpX = teNoise(p * 1.6 + vec3(0.6, 0.0, 0.0));
+      float bumpZ = teNoise(p * 1.6 + vec3(0.0, 0.0, 0.6));
+      float bump = ((bumpX - bump0) * 0.32 + (bumpZ - bump0) * 0.27) * 3.2;
+      rock *= clamp(1.0 + bump * fineFade, 0.55, 1.6);
+    }
+    diffuseColor.rgb = mix(diffuseColor.rgb, rock, teAmt);
+  }
+}
+`
+
+/** 两个经纬度点之间的近似地面距离（米），只用于判断指针走了多远 */
+function geoDistanceMeters(a: TerrainLngLat, b: TerrainLngLat): number {
+  const mPerDegLat = 111319.49079327358
+  const mPerDegLng = mPerDegLat * Math.cos((((a.lat + b.lat) / 2) * Math.PI) / 180)
+  const dx = (b.lng - a.lng) * mPerDegLng
+  const dy = (b.lat - a.lat) * mPerDegLat
+  return Math.sqrt(dx * dx + dy * dy)
+}
+
 /** 多边形顶点输入：`[lng, lat]`、`[lng, lat, height]`、`{lng, lat}` 或 Cesium.Cartesian3 */
 export type TerrainEditPosition =
   | [number, number]
@@ -89,13 +233,18 @@ export interface TerrainEditBrushOptions {
   strength?: number
   /** 硬边比例 0~1，默认 0，即整圆软衰减 */
   hardness?: number
-  /** 单次施加的最大高度变化（米），默认 12 */
+  /**
+   * 单次施加的最大高度变化（米），默认 3。
+   *
+   * 按住左键期间会按固定节拍反复施加（见 `SPRAY_INTERVAL`），所以这个值决定的是
+   * 「下挖速度」而不是「一刀深度」：指针按住不动，深度也会一直累加。
+   */
   maxDelta?: number
   /**
-   * 一笔之内同一位置最多叠加几次，默认 6。
+   * 一笔之内的累计上限系数（`maxDelta × strokeLimit`）。
    *
-   * 一笔最深刻度约为 `maxDelta * strokeLimit`：单击只改一次，按住拖动会逐步加深。
-   * 设成 1 等于「拖一整笔也只抵一次点击」，笔刷会显得没反应。
+   * 默认 `0` 表示**不限制**：按住左键就一直累加，松开才停，和地形软件一致。
+   * 只有需要「一刀最多挖多深」时才设置它。
    */
   strokeLimit?: number
   /** `level` 模式的目标高程（米），缺省取落笔处原地形高度 */
@@ -112,6 +261,16 @@ export interface TerrainEditAreaOptions {
   feather?: number
   /** 是否取影像作为地表贴图，默认 true */
   texture?: boolean
+  /** 是否把区域内部被包住的空洞填平，默认 true（见 setPolygon） */
+  fillHoles?: boolean
+  /**
+   * 挖/填出来的坡面是否换成岩土材质，默认 true。
+   *
+   * 影像按经纬度平面投影取样，坡面越陡被拉得越长（拉伸比 = sqrt(1 + 坡度²)），
+   * 挖到几百米深时坑壁会糊成一片色带。打开后按「坡度 + 挖填深度」把影像渐变成
+   * 程序化岩土，从而消除这种拉伸。关掉则完全保留原始影像。
+   */
+  cutSurface?: boolean
 }
 
 
@@ -178,7 +337,10 @@ export interface TerrainEditInstance {
    *   [117.095, 36.255]
    * ])
    */
-  setPolygon(positions: TerrainEditPosition[], options?: { segments?: number; slopeWidth?: number }): Promise<TerrainEditInstance>
+  setPolygon(
+    positions: TerrainEditPosition[],
+    options?: { segments?: number; slopeWidth?: number; fillHoles?: boolean }
+  ): Promise<TerrainEditInstance>
 
   /**
    * 对当前范围执行一次形变。
@@ -285,6 +447,17 @@ export interface TerrainEditInstance {
   setTextureEnabled(enabled: boolean): TerrainEditInstance
 
   /**
+   * 挖/填出来的坡面是否换成岩土材质（默认 true）。
+   *
+   * 影像按经纬度平面取样，坡面越陡被拉得越长（拉伸比 = sqrt(1 + 坡度²)），
+   * 挖到几百米深时坑壁会糊成一片色带。打开后按「坡度 + 挖填深度」把影像渐变成
+   * 程序化岩土，消除这种拉伸；关掉则完全保留原始影像。
+   * @example
+   * terrainEdit.setCutSurfaceEnabled(false)
+   */
+  setCutSurfaceEnabled(enabled: boolean): TerrainEditInstance
+
+  /**
    * 重建地表贴图（例如切换了影像图层、或区域范围变了之后）。
    */
   refreshTexture(): Promise<TerrainEditInstance>
@@ -380,8 +553,8 @@ export function createTerrainEditModule() {
       radius: 110,
       strength: 0.5,
       hardness: 0,
-      maxDelta: 12,
-      strokeLimit: 6,
+      maxDelta: 3,
+      strokeLimit: 0,
       targetHeight: null
     }
     this._brushEnabled = false
@@ -389,13 +562,23 @@ export function createTerrainEditModule() {
     this._stroking = false
     this._brushCursor = null
     this._brushPointer = null
-    // 本笔起始高度快照：同一定点被反复命中也只累计到 maxDelta * strokeLimit，
-    // 既不会刷出几百米深井，也不会像「只给 maxDelta」那样整笔和单击一样浅
+    // 按住左键期间的持续施加循环与当前落笔位置
+    this._sprayTimer = null
+    this._sprayAt = null
+    this._onWindowUp = null
+    this._onCanvasLeave = null
+    this._lastMoveAt = 0
+    this._lastHit = null
+    this._lastMovePos = null
+    this._strokeDist = 0
+    // 本笔起始高度快照，仅用于「一笔 = 一步撤销」
     this._strokeBase = null
     // level 模式自动推断出来的目标高度：只在本次笔画内有效，抬笔后清掉
     this._targetAuto = false
     // 贴图与网格缓存
     this._useTexture = true
+    // 挖/填出来的坡面是否换成岩土材质（关掉则保留原始影像，但陡壁上会有拉伸）
+    this._cutSurface = true
     this._texture = null
     this._surface = null
     this._localXZ = null
@@ -771,12 +954,22 @@ export function createTerrainEditModule() {
 
     /**
      * 设置编辑范围
+     *
+     * 手绘多边形如果有折返/自交，射线法会把交点旁的一小块判成「区域外」，
+     * 那块地方在网格里既没有面、笔刷也刷不到，下沉之后就变成一块顶着原地面、
+     * 看起来像「叠加层被戳穿」的孤岛。默认会把这类**被包住的内部空洞**补成实心
+     * （`fillHoles`），需要保留镂空时再显式关掉。
+     *
      * @function
+     * @param positions - 范围顶点
+     * @param options - 每边划分数与边缘过渡宽度、是否填平内部空洞
+     * @example
+     * await terrainEdit.setPolygon(points, { segments: 160, slopeWidth: 80 })
      */
     async setPolygon(
       this: TerrainEditInstance & Record<string, any>,
       positions: TerrainEditPosition[],
-      options?: { segments?: number; slopeWidth?: number }
+      options?: { segments?: number; slopeWidth?: number; fillHoles?: boolean }
     ) {
       const list: TerrainLngLatHeight[] = dedupePolygon(this._normalizePositions(positions), 1e-9)
       if (list.length < 3) {
@@ -784,7 +977,11 @@ export function createTerrainEditModule() {
       }
       const segments = (options && options.segments) || this._options.segments || DEFAULT_SEGMENTS
       const slopeWidth = (options && options.slopeWidth) || this._options.slopeWidth
-      const grid = buildTerrainGrid(list, { segments, slopeWidth })
+      const grid = buildTerrainGrid(list, {
+        segments,
+        slopeWidth,
+        fillHoles: options ? options.fillHoles : undefined
+      })
       await this._sampleHeights(grid)
 
       this._polygon = list.map((p) => ({ lng: p.lng, lat: p.lat }))
@@ -910,6 +1107,9 @@ export function createTerrainEditModule() {
       const positions = new Float32Array(grid.vertexCount * 3)
       const colors = new Float32Array(grid.vertexCount * 3)
       const uvs = new Float32Array(grid.vertexCount * 2)
+      // 每顶点的「开挖量」：-1 是挖到底、+1 是堆到顶、0 是没动过。
+      // 片元着色器按它把影像渐变成岩土（见 EARTH_APPLY_GLSL），值在 _bakeShading 里写。
+      const cuts = new Float32Array(grid.vertexCount)
       const localXZ = new Float32Array(grid.vertexCount * 3)
       const texture = this._texture
       const useMap = !!(texture && texture.canvas)
@@ -972,6 +1172,7 @@ export function createTerrainEditModule() {
       geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
       geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
       geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2))
+      geometry.setAttribute('aCut', new THREE.BufferAttribute(cuts, 1))
       geometry.setIndex(indices)
       geometry.computeVertexNormals()
       geometry.computeBoundingSphere()
@@ -1170,6 +1371,9 @@ export function createTerrainEditModule() {
      * - 明暗已经烘进顶点色，`map * vertexColor` 就是最终结果；
      * - 自己不写 GLSL，就不会踩到 three 与 cesium 渲染器组合下的各种坑。
      *
+     * 唯一的例外是「开挖面换岩土色」：这一步必须逐像素混合两张材质，
+     * 用 `onBeforeCompile` 在 `map_fragment` 之后插一段就够，其余流程仍是内置材质，
+     * 不会碰到裁剪、透明、色彩空间这些容易出错的地方。
      * @private
      */
     _makeSurfaceMaterial(this: TerrainEditInstance & Record<string, any>, canvas?: HTMLCanvasElement) {
@@ -1178,6 +1382,7 @@ export function createTerrainEditModule() {
         side: THREE.DoubleSide,
         transparent: true
       }
+      const material = new THREE.MeshBasicMaterial(params)
       if (canvas) {
         const tex = new THREE.CanvasTexture(canvas)
         // 影像本身是 sRGB：标成 sRGBColorSpace 后，three 采样时解到线性、输出时
@@ -1187,14 +1392,51 @@ export function createTerrainEditModule() {
         } else if (THREE.sRGBEncoding != null) {
           tex.encoding = THREE.sRGBEncoding
         }
-        tex.anisotropy = 4
+        // 斜视角下 mipmap 各向异性决定远处地表糊不糊：按显卡上限给足，
+        // 否则越靠近地平线越糊成一片，看着像没贴图。
+        tex.minFilter = THREE.LinearMipmapLinearFilter
+        tex.magFilter = THREE.LinearFilter
+        tex.generateMipmaps = true
+        tex.anisotropy = this._maxAnisotropy()
         tex.needsUpdate = true
         params.map = tex
+        material.map = tex
         // 边缘羽化：把编辑区「化」进原地表，避免一圈生硬的矩形接缝
         const alpha = this._makeEdgeAlphaMap()
-        if (alpha) params.alphaMap = alpha
+        if (alpha) {
+          params.alphaMap = alpha
+          material.alphaMap = alpha
+        }
+        // 开挖面：把影像渐变成程序化岩土（详见 EARTH_COMMON_GLSL 的注释）
+        material.onBeforeCompile = (shader: any) => {
+          shader.vertexShader = shader.vertexShader
+            .replace(
+              '#include <common>',
+              '#include <common>\nattribute float aCut;\nvarying float vCut;\nvarying vec3 vLocalPos;'
+            )
+            .replace('#include <begin_vertex>', '#include <begin_vertex>\nvCut = aCut;\nvLocalPos = position;')
+          shader.fragmentShader = shader.fragmentShader
+            .replace('#include <common>', '#include <common>\n' + EARTH_COMMON_GLSL)
+            .replace('#include <map_fragment>', '#include <map_fragment>\n' + EARTH_APPLY_GLSL)
+        }
+        material.customProgramCacheKey = () => 'terrain-edit-earth'
       }
-      return new THREE.MeshBasicMaterial(params)
+      return material
+    },
+
+    /**
+     * 取当前渲染器支持的最大各向异性过滤等级（拿不到就退回 4）
+     * @private
+     */
+    _maxAnisotropy(this: TerrainEditInstance & Record<string, any>) {
+      try {
+        const renderer = this._threeJs && (this._threeJs as any)._three && (this._threeJs as any)._three.renderer
+        const caps = renderer && renderer.capabilities
+        const max = caps && typeof caps.getMaxAnisotropy === 'function' ? caps.getMaxAnisotropy() : 4
+        return Math.max(4, Math.min(16, Number(max) || 4))
+      } catch (e) {
+        return 4
+      }
     },
 
     /**
@@ -1251,11 +1493,16 @@ export function createTerrainEditModule() {
     },
 
     /**
-     * 把明暗重新烘进顶点色
+     * 把明暗重新烘进顶点色，并刷新「开挖量」属性
      *
      * 亮度只跟「法线与地表法线的夹角」有关：平地 1.0（影像原样输出）、陡坡压到 0.84，
      * 所以翻出的坡面能看出体积感，而对齐的平地又不会比周围影像暗一块。
      * 顶点色是破坏性相乘，所以必须从 `_baseColors` 底色重算，不能在上一次结果上再乘。
+     *
+     * 挖过的地方额外做两件事：
+     * 1. 按「挖/填的深度 + 坡度」算出开挖强度写进 `aCut`，片元着色器按它把影像换成岩土色；
+     * 2. 顺着固定的光照方向烘一层方向性明暗，让新挖出来的断面有迎光面/背光面，
+     *    否则光靠「法线越陡越暗」只能得到一块均匀的暗色，看着还是平的。
      * @private
      */
     _bakeShading(this: TerrainEditInstance & Record<string, any>, geometry?: any) {
@@ -1265,17 +1512,53 @@ export function createTerrainEditModule() {
       if (!geo || !base || !up || !this._grid) return this
       const normals = geo.getAttribute('normal')
       const colorsAttr = geo.getAttribute('color')
+      const cutAttr = geo.getAttribute('aCut')
       if (!normals || !colorsAttr) return this
       const arr = colorsAttr.array as Float32Array
+      const cutArr = cutAttr ? (cutAttr.array as Float32Array) : null
       const count = this._grid.vertexCount
+      const current = this._grid.current
+      const origin = this._grid.base
+      const sunLen = Math.hypot(SUN_DIR.x, SUN_DIR.y, SUN_DIR.z) || 1
+      const sx = SUN_DIR.x / sunLen
+      const sy = SUN_DIR.y / sunLen
+      const sz = SUN_DIR.z / sunLen
       for (let i = 0; i < count; i++) {
-        const ndl = Math.abs(normals.getX(i) * up.x + normals.getY(i) * up.y + normals.getZ(i) * up.z)
-        const shade = 0.84 + 0.16 * Math.min(1, ndl)
+        const nx = normals.getX(i)
+        const ny = normals.getY(i)
+        const nz = normals.getZ(i)
+        const ndl = Math.abs(nx * up.x + ny * up.y + nz * up.z)
+        let shade = 0.84 + 0.16 * Math.min(1, ndl)
+        let cut = 0
+        if (cutArr) {
+          const delta = current[i] - origin[i]
+          const moved = Math.abs(delta)
+          if (this._cutSurface && moved > 2) {
+            // 只对「真的动过」的顶点生效：没刷到的地方即使天然陡峭也保持影像原样
+            const edited = Math.min(1, (moved - 2) / 6)
+            // 坡度门槛：约 37° 起、53° 满。缓坡（<30°）保留影像——那种坡上影像拉伸不严重，
+            // 硬换成岩土反而把整片山坡刷成灰面；真正的陡壁才需要换材质。
+            const steep = Math.min(1, Math.max(0, (0.8 - ndl) / 0.22))
+            const deep = Math.min(1, Math.max(0, (moved - 60) / 160))
+            let amount = edited * Math.max(steep, deep * 0.85)
+            // 中间段往上顶一点：避免出现「半影像半岩石」的糊状过渡
+            amount = Math.pow(amount, 0.7)
+            if (amount > 0.002) {
+              const sunDot = Math.min(1, Math.max(0, nx * sx + ny * sy + nz * sz))
+              shade *= 1 - amount * (1 - (0.34 + 0.66 * sunDot))
+              // 越深越暗：坑底见不到斜射光，靠这个把「深度」交代清楚
+              shade *= 1 - 0.22 * Math.min(1, moved / 320) * amount
+              cut = delta < 0 ? -amount : amount
+            }
+          }
+          cutArr[i] = cut
+        }
         arr[i * 3] = base[i * 3] * shade
         arr[i * 3 + 1] = base[i * 3 + 1] * shade
         arr[i * 3 + 2] = base[i * 3 + 2] * shade
       }
       colorsAttr.needsUpdate = true
+      if (cutAttr) cutAttr.needsUpdate = true
       return this
     },
 
@@ -1293,6 +1576,20 @@ export function createTerrainEditModule() {
       }
       const b = this._grid.bounds
       const token = ++this._textureToken
+      // 贴图分辨率按范围大小自适应：范围越大，同样的画布越糊，
+      // 2400m 用 2048 只有 1.2m/像素，平地上都能看出比周围影像软一档。
+      // 这里把长边对齐到「约 0.8m/像素」的档位，并在瓦片数上限内取层级。
+      const centerLat = (b.minLat + b.maxLat) / 2
+      const longSide = Math.max(
+        (b.maxLng - b.minLng) * 111319.49 * Math.cos((centerLat * Math.PI) / 180),
+        (b.maxLat - b.minLat) * 111319.49
+      )
+      const texPreset =
+        longSide > 3500
+          ? { maxSize: 4096, maxTiles: 256, metersPerPixel: 0.9 }
+          : longSide > 1200
+            ? { maxSize: 3072, maxTiles: 144, metersPerPixel: 0.8 }
+            : { maxSize: 2048, maxTiles: 96, metersPerPixel: 0.5 }
       let result = null
       // 刚进页面时影像图层可能还没 ready，取瓦片会全部落空；
       // 这里退避重试几次，避免「第一次进来看不到地表纹理、点一下才有」。
@@ -1302,7 +1599,7 @@ export function createTerrainEditModule() {
             Cesium,
             list,
             { minLng: b.minLng, minLat: b.minLat, maxLng: b.maxLng, maxLat: b.maxLat },
-            { maxSize: 2048, metersPerPixel: 1.0, maxTiles: 120 }
+            texPreset
           )
         } catch (e) {
           result = null
@@ -1418,6 +1715,7 @@ export function createTerrainEditModule() {
       const dLng = half / metersPerDegLng(point.lat)
       this._areaMode = true
       this._useTexture = options.texture !== false
+      if (options.cutSurface !== undefined) this._cutSurface = options.cutSurface !== false
       await this.setPolygon(
         [
           [point.lng - dLng, point.lat - dLat],
@@ -1425,7 +1723,7 @@ export function createTerrainEditModule() {
           [point.lng + dLng, point.lat + dLat],
           [point.lng - dLng, point.lat + dLat]
         ],
-        { segments: options.segments ?? 160, slopeWidth: options.feather ?? 80 }
+        { segments: options.segments ?? 160, slopeWidth: options.feather ?? 80, fillHoles: options.fillHoles }
       )
       return this
     },
@@ -1442,7 +1740,7 @@ export function createTerrainEditModule() {
         strength: Math.min(1, Math.max(0.01, options.strength ?? b.strength)),
         hardness: Math.min(0.95, Math.max(0, options.hardness ?? b.hardness)),
         maxDelta: Math.max(0.5, options.maxDelta ?? b.maxDelta),
-        strokeLimit: Math.max(1, Math.min(20, options.strokeLimit ?? b.strokeLimit)),
+        strokeLimit: Math.max(0, Math.min(200, options.strokeLimit ?? b.strokeLimit)),
         targetHeight: options.targetHeight === undefined ? b.targetHeight : options.targetHeight
       }
       // 外部明确给了目标高度就不再算「自动推断」，抬笔时不能清掉
@@ -1494,8 +1792,9 @@ export function createTerrainEditModule() {
         controller.tiltEventTypes = [Cesium.ScreenSpaceEventType.MIDDLE_DOWN]
         this._ensureBrushHandler()
       } else {
-        // 收笔：把没结束的这一笔落定（否则 `_stroking` 一直是 true，等高线不更新）
-        this.endStroke()
+        // 收笔：先停掉持续施加，再把没结束的这一笔落定
+        //（否则 `_stroking` 一直是 true，等高线不更新）
+        this._finishStroke()
         this._destroyBrushHandler()
         this._removeBrushCursor()
         if (this._prevController) {
@@ -1597,6 +1896,21 @@ export function createTerrainEditModule() {
     },
 
     /**
+     * 挖/填出来的坡面是否显示为岩土
+     *
+     * 打开（默认）时，坡度越陡、挖得越深的地方越偏向程序化岩土，避免影像被拉成一片糊；
+     * 关掉则完全保留原始影像，陡壁上会看到明显的拉伸。
+     * @param enabled - 是否启用开挖面材质
+     */
+    setCutSurfaceEnabled(this: TerrainEditInstance & Record<string, any>, enabled: boolean) {
+      const next = !!enabled
+      if (next === this._cutSurface) return this
+      this._cutSurface = next
+      if (this._surface) this._bakeShading(this._surface.geometry)
+      return this
+    },
+
+    /**
      * 是否用影像贴图显示编辑区
      * @param enabled - true 取影像瓦片贴地
      */
@@ -1655,21 +1969,122 @@ export function createTerrainEditModule() {
         if (!this._brushEnabled) return
         const hit = this._pickLngLat(movement.position)
         this._updateBrushCursor(hit)
-        if (hit) this.beginStroke().strokeAt(hit.lng, hit.lat)
+        if (!hit) return
+        this._sprayAt = { lng: hit.lng, lat: hit.lat }
+        this._lastHit = { lng: hit.lng, lat: hit.lat }
+        this._lastMovePos = { x: movement.position.x, y: movement.position.y }
+        this._strokeDist = 0
+        this._lastMoveAt = typeof performance !== 'undefined' ? performance.now() : Date.now()
+        this.beginStroke().strokeAt(hit.lng, hit.lat)
+        // 按住不放也要继续挖：起一个固定节拍的循环反复施加，
+        // 指针停住不动时深度照样累加，松开左键才停。
+        this._startSpray()
       }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
 
       handler.setInputAction((movement: any) => {
         if (!this._brushEnabled) return
-        const hit = this._pickLngLat(movement.endPosition)
+        const p = movement.endPosition
+        const now = typeof performance !== 'undefined' ? performance.now() : Date.now()
+        // 用「屏幕像素」判断有没有动：远景下 1px 可能只有几厘米，
+        // 若用米做阈值，慢拖会被误判成静止，定时器就会接管、把拖动变成原地深挖。
+        const lastPos = this._lastMovePos
+        const pixelDist = lastPos ? Math.hypot(p.x - lastPos.x, p.y - lastPos.y) : Infinity
+        if (pixelDist < MOVE_IDLE_PX) {
+          // 指针基本没动：这里不施加，也不刷新 `_lastMoveAt`，
+          // 让定时器在静止超过 SPRAY_IDLE 后接管「原地持续加深」
+          return
+        }
+        // 只要指针真的动了就先记账，**哪怕这一帧没拾取到地形**。
+        // 否则指针滑出地表时 hit 为 null 直接 return，`_lastMoveAt` 停在旧值，
+        // 定时器会误以为用户「按着没动」，继续在旧位置往下挖。
+        this._lastMoveAt = now
+        this._lastMovePos = { x: p.x, y: p.y }
+        const hit = this._pickLngLat(p)
         this._updateBrushCursor(hit)
-        if (this._stroking && hit) this.strokeAt(hit.lng, hit.lat)
+        if (!this._stroking) return
+        if (!hit) {
+          // 指针移到了地形之外：停止持续施加，避免在旧位置继续加深
+          this._stopSpray()
+          this._sprayAt = null
+          this._lastHit = null
+          return
+        }
+        this._sprayAt = { lng: hit.lng, lat: hit.lat }
+        // 用「地面距离」累积步长：涂抹密度只跟走过的路程有关，快拖慢拖深浅一致
+        const lastHit = this._lastHit
+        this._strokeDist += lastHit ? geoDistanceMeters(lastHit, hit) : 0
+        this._lastHit = { lng: hit.lng, lat: hit.lat }
+        const step = Math.max(1, (this._brush.radius || 100) * STROKE_STEP_RATIO)
+        if (this._strokeDist >= step) {
+          this._strokeDist -= step
+          this.strokeAt(hit.lng, hit.lat)
+        }
+        // 指针移出画布后循环会被停掉，移回来时这里再补起来
+        this._startSpray()
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
 
       handler.setInputAction(() => {
         if (!this._brushEnabled) return
-        this.endStroke()
+        this._finishStroke()
       }, Cesium.ScreenSpaceEventType.LEFT_UP)
 
+      // 指针移出画布后 Cesium 不再派发事件，用窗口级抬起兜底，避免「松手了还在挖」
+      if (typeof window !== 'undefined') {
+        const onUp = () => {
+          if (this._brushEnabled && this._stroking) this._finishStroke()
+        }
+        this._onWindowUp = onUp
+        window.addEventListener('mouseup', onUp)
+      }
+      // 移出画布时先停下持续施加；移回来由 MOUSE_MOVE 重新拉起
+      const canvas = this._viewer.scene.canvas
+      if (canvas && typeof canvas.addEventListener === 'function') {
+        const onLeave = () => this._stopSpray()
+        this._onCanvasLeave = onLeave
+        canvas.addEventListener('mouseleave', onLeave)
+      }
+      return this
+    },
+
+    /** 结束当前这一笔：停掉持续施加循环、清掉落笔位置，再收笔落定 */
+    _finishStroke(this: TerrainEditInstance & Record<string, any>) {
+      this._stopSpray()
+      this._sprayAt = null
+      this._lastHit = null
+      this._lastMovePos = null
+      this._strokeDist = 0
+      this.endStroke()
+      return this
+    },
+
+    /**
+     * 开始按住期间的持续施加。
+     *
+     * 地形笔刷的手感是「按住不放就一直挖」，而不是「移动一次算一次」：
+     * 指针停在原地时也要继续加深 / 抬高，松开左键即停。
+     * @private
+     */
+    _startSpray(this: TerrainEditInstance & Record<string, any>) {
+      if (this._sprayTimer) return this
+      if (typeof window === 'undefined') return this
+      this._sprayTimer = window.setInterval(() => {
+        if (!this._brushEnabled || !this._stroking || !this._sprayAt) return
+        // 指针还在移动：这一笔由 MOUSE_MOVE 按路径施加，定时器不参与，
+        // 否则「移动 + 定时」会把同一位置叠加两遍，拖一下就成深井
+        const now = typeof performance !== 'undefined' ? performance.now() : Date.now()
+        if (now - (this._lastMoveAt || 0) < SPRAY_IDLE) return
+        this.strokeAt(this._sprayAt.lng, this._sprayAt.lat)
+      }, SPRAY_INTERVAL)
+      return this
+    },
+
+    /** 停止持续施加 */
+    _stopSpray(this: TerrainEditInstance & Record<string, any>) {
+      if (this._sprayTimer) {
+        if (typeof window !== 'undefined') window.clearInterval(this._sprayTimer)
+        else clearInterval(this._sprayTimer)
+        this._sprayTimer = null
+      }
       return this
     },
 
@@ -1684,6 +2099,21 @@ export function createTerrainEditModule() {
       const handler = this._brushHandler
       this._brushHandler = null
       this._stroking = false
+      // 先把持续施加和兜底监听都撤掉，再销毁 Cesium 的事件处理器
+      this._stopSpray()
+      this._sprayAt = null
+      this._lastHit = null
+      this._lastMovePos = null
+      this._strokeDist = 0
+      if (this._onWindowUp && typeof window !== 'undefined') {
+        window.removeEventListener('mouseup', this._onWindowUp)
+      }
+      this._onWindowUp = null
+      const canvas = this._viewer && this._viewer.scene && this._viewer.scene.canvas
+      if (this._onCanvasLeave && canvas && typeof canvas.removeEventListener === 'function') {
+        canvas.removeEventListener('mouseleave', this._onCanvasLeave)
+      }
+      this._onCanvasLeave = null
       if (!handler) return this
       try {
         handler.destroy()

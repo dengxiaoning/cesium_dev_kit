@@ -218,7 +218,8 @@ function makeGrid(segments = 24) {
 }
 
 {
-  // 一笔之内反复落笔：既不能把一次拖动叠成几百米竖井，也不能浅到和单击一样
+  // 默认（不传 strokeLimit）不限制累计：这是「按住左键不放就持续加深」的基础，
+  // 调用方按住期间按节拍反复施加，深度应该一直线性增长。
   const grid = makeGrid()
   const centerLng = (POLYGON[0].lng + POLYGON[2].lng) / 2
   const centerLat = (POLYGON[0].lat + POLYGON[2].lat) / 2
@@ -228,7 +229,38 @@ function makeGrid(segments = 24) {
   const before = grid.current[index]
   const strokeBase = new Float32Array(grid.current)
   const maxDelta = 10
-  const strokeLimit = 6
+  const rounds = 30
+
+  for (let k = 0; k < rounds; k++) {
+    applyBrush(grid, {
+      mode: 'lower',
+      lng: centerLng,
+      lat: centerLat,
+      radius: 200,
+      strength: 1,
+      maxDelta,
+      strokeBase
+    })
+  }
+  const drop = before - grid.current[index]
+  assert.ok(
+    Math.abs(drop - maxDelta * rounds) < 1e-3,
+    `默认应持续累加（${maxDelta * rounds}），实际 ${drop.toFixed(2)}`
+  )
+}
+
+{
+  // 显式给 strokeLimit 时才夹紧：单点累计不超过 maxDelta * strokeLimit
+  const grid = makeGrid()
+  const centerLng = (POLYGON[0].lng + POLYGON[2].lng) / 2
+  const centerLat = (POLYGON[0].lat + POLYGON[2].lat) / 2
+  const col = Math.round((centerLng - grid.bounds.minLng) / grid.dLng)
+  const row = Math.round((centerLat - grid.bounds.minLat) / grid.dLat)
+  const index = row * grid.stride + col
+  const before = grid.current[index]
+  const strokeBase = new Float32Array(grid.current)
+  const maxDelta = 10
+  const strokeLimit = 3
 
   for (let k = 0; k < 30; k++) {
     applyBrush(grid, {
@@ -244,34 +276,8 @@ function makeGrid(segments = 24) {
   }
   const drop = before - grid.current[index]
   assert.ok(
-    drop <= maxDelta * strokeLimit + 1e-6,
-    `一笔内累计下沉应被限制在 maxDelta * strokeLimit，实际 ${drop.toFixed(2)}`
-  )
-  assert.ok(drop > 9, '仍然应该挖到接近 maxDelta')
-  // 关键回归：拖动一笔必须明显深于单击，否则笔刷会「没反应」
-  assert.ok(
-    drop > maxDelta * 2,
-    `拖动一笔应明显深于单击（>2*maxDelta），实际 ${drop.toFixed(2)}`
-  )
-
-  // 换一笔（新的快照）可以继续往下挖
-  const nextBase = new Float32Array(grid.current)
-  for (let k = 0; k < 30; k++) {
-    applyBrush(grid, {
-      mode: 'lower',
-      lng: centerLng,
-      lat: centerLat,
-      radius: 200,
-      strength: 1,
-      maxDelta,
-      strokeLimit,
-      strokeBase: nextBase
-    })
-  }
-  const total = before - grid.current[index]
-  assert.ok(
-    total > drop * 1.9 && total <= maxDelta * strokeLimit * 2 + 1e-6,
-    `两笔应累计约 2*maxDelta*strokeLimit，实际 ${total.toFixed(2)}`
+    Math.abs(drop - maxDelta * strokeLimit) < 1e-3,
+    `显式 strokeLimit 应夹在 maxDelta * strokeLimit，实际 ${drop.toFixed(2)}`
   )
 }
 
@@ -291,11 +297,35 @@ function makeGrid(segments = 24) {
     radius: 200,
     strength: 1,
     maxDelta: 10,
-    strokeLimit: 6,
     strokeBase: new Float32Array(grid.current)
   })
   const drop = before - grid.current[index]
   assert.ok(Math.abs(drop - 10) < 1e-6, `单击应刚好下沉 maxDelta，实际 ${drop.toFixed(2)}`)
+}
+
+{
+  // 抬升同理：持续施加应该一直累加（按住不放就一直抬高）
+  const grid = makeGrid()
+  const centerLng = (POLYGON[0].lng + POLYGON[2].lng) / 2
+  const centerLat = (POLYGON[0].lat + POLYGON[2].lat) / 2
+  const col = Math.round((centerLng - grid.bounds.minLng) / grid.dLng)
+  const row = Math.round((centerLat - grid.bounds.minLat) / grid.dLat)
+  const index = row * grid.stride + col
+  const before = grid.current[index]
+  const strokeBase = new Float32Array(grid.current)
+  for (let k = 0; k < 20; k++) {
+    applyBrush(grid, {
+      mode: 'raise',
+      lng: centerLng,
+      lat: centerLat,
+      radius: 200,
+      strength: 1,
+      maxDelta: 5,
+      strokeBase
+    })
+  }
+  const rise = grid.current[index] - before
+  assert.ok(Math.abs(rise - 100) < 1e-3, `抬升应持续累加到 100，实际 ${rise.toFixed(2)}`)
 }
 
 {
@@ -382,4 +412,46 @@ function makeGrid(segments = 24) {
 
   const empty = buildContourSegments(grid, 100000)
   assert.strictEqual(empty.length, 0, '等高距大于高差时不应产生线')
+}
+
+/* ---------- 内部空洞：自交/折返多边形留下的「孤岛」 ---------- */
+
+{
+  // 外框 + 内圈小方框：射线法的奇偶规则会把小方框内部判成「外部」，
+  // 而它被外框包住，四邻域灌不到 —— 正是「下沉后原地顶出来一块」的成因。
+  const cx = 117.1
+  const cy = 36.25
+  const s = 0.005
+  const p = (x: number, y: number) => ({ lng: cx + x * s, lat: cy + y * s })
+  const RING = [p(-1, -1), p(1, -1), p(1, 1), p(-1, 1), p(0.3, 0.3), p(0.7, 0.3), p(0.7, 0.7), p(0.3, 0.7)]
+
+  // 小方框的中心（单位坐标 0.5,0.5）才算「洞心」
+  const holeLng = cx + 0.5 * s
+  const holeLat = cy + 0.5 * s
+  assert.strictEqual(pointInPolygon(holeLng, holeLat, RING), false, '小方框内部按奇偶规则是「外部」')
+
+  const filled = buildTerrainGrid(RING, { segments: 40, slopeWidth: 20 })
+  const raw = buildTerrainGrid(RING, { segments: 40, slopeWidth: 20, fillHoles: false })
+  const b = filled.bounds
+  const col = Math.round((holeLng - b.minLng) / filled.dLng)
+  const row = Math.round((holeLat - b.minLat) / filled.dLat)
+  const center = row * filled.stride + col
+
+  assert.strictEqual(raw.inside[center], 0, '关掉 fillHoles 时应保留内部空洞（复现原现象）')
+  assert.strictEqual(filled.inside[center], 1, '默认应把被包住的空洞填平')
+  assert.ok(filled.weight[center] > 0.99, '补出来的点应给满权重，避免坑底留台阶')
+
+  // 普通矩形不该被这次填充改动
+  const plain = buildTerrainGrid(POLYGON, { segments: 24, slopeWidth: 80 })
+  const plainRaw = buildTerrainGrid(POLYGON, { segments: 24, slopeWidth: 80, fillHoles: false })
+  const count = (arr: Uint8Array) => Array.from(arr).filter(Boolean).length
+  assert.strictEqual(count(plain.inside), count(plainRaw.inside), '矩形范围不受 fillHoles 影响')
+
+  // 填平之后笔刷要能刷到洞里：在洞心落一笔，洞内顶点高度必须变化
+  const heights = new Float32Array(filled.vertexCount).fill(100)
+  filled.current = heights
+  filled.base = new Float32Array(heights)
+  const before = filled.current[center]
+  applyBrush(filled, { mode: 'lower', lng: holeLng, lat: holeLat, radius: 200, strength: 1, maxDelta: 5 })
+  assert.ok(filled.current[center] < before - 4, '空洞填平后必须能被笔刷挖动')
 }

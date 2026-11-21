@@ -36,6 +36,14 @@ export interface TerrainGridOptions {
   padRatio?: number
   /** 边缘过渡宽度（米），默认取区域短边的 12%，至少 12 米 */
   slopeWidth?: number
+  /**
+   * 是否填平「被包住」的内部空洞，默认 `true`。
+   *
+   * 手绘多边形一旦折返/自交，射线法的奇偶规则会把交点附近的一小块判成外部，
+   * 那一小块既没有网格面、笔刷也刷不到，沉下去之后就像原地面从坑底顶了出来。
+   * 编辑区本身是连续的，内部镂空只会是误判，所以默认补成实心。
+   */
+  fillHoles?: boolean
 }
 
 /** 一次地形编辑用的规则格网 */
@@ -108,11 +116,11 @@ const METERS_PER_DEG_LAT = 111319.49079327358
 /**
  * 一笔之内同一位置默认最多叠加的次数。
  *
- * 取 6 是手感与安全的折中：单击只改一次（`maxDelta * strength`），
- * 按住拖动会逐步加深到约 `maxDelta * 6`，两者差异肉眼可辨；
- * 同时又能挡住「一笔刷出几百米竖井」那类重复叠加。
+ * 取 0 表示**不限制**：调用方（`TerrainEdit`）在按住左键期间会按节拍持续施加，
+ * 深度由「按住多久」决定，松开即停，与地形软件一致。
+ * 需要「一刀最多挖多深」的保护时再显式传正数。
  */
-const DEFAULT_STROKE_LIMIT = 6
+const DEFAULT_STROKE_LIMIT = 0
 
 /**
  * 每经度 1 度对应的米数（随纬度收缩）
@@ -223,6 +231,65 @@ export function polygonArea(polygon: TerrainLngLat[]): number {
 }
 
 /**
+ * 填平「被包住」的内部空洞（就地改 `inside`）。
+ *
+ * 画多边形时手一抖折返一下，就有两段边相交；射线法的奇偶规则会把交点旁边
+ * 的一小块判成「外部」。这一小块在格网里没有面、笔刷也刷不到，位置又在编辑区中间，
+ * 于是下沉之后它原地不动，看起来就像**原地面从坑底顶穿了叠加层**。
+ *
+ * 编辑区是连续的，内部镂空只可能是误判，所以做法很直接：从格网四条边上的外部顶点
+ * 做 4 邻域洪水填充，凡是灌不到的非 inside 顶点，就是被包住的洞，一律补成 inside。
+ *
+ * @param inside - 掩膜（1 = 在编辑区内），会被就地修改
+ * @param stride - 每边顶点数
+ * @returns 本次补上的顶点掩膜（1 = 新补的），供调用方补距离/权重
+ * @example
+ * const filled = fillEnclosedHoles(grid.inside, grid.stride)
+ * filled.forEach((v, i) => { if (v) grid.weight[i] = 1 })
+ */
+export function fillEnclosedHoles(inside: Uint8Array, stride: number): Uint8Array {
+  const filledMask = new Uint8Array(inside.length)
+  if (stride < 3) return filledMask
+
+  // outside：从边界能灌到的真正外部。用定长队列而不是数组 shift，16 万顶点也不掉速
+  const outside = new Uint8Array(inside.length)
+  const queue = new Int32Array(inside.length)
+  let head = 0
+  let tail = 0
+  const push = (index: number) => {
+    if (inside[index] || outside[index]) return
+    outside[index] = 1
+    queue[tail++] = index
+  }
+
+  for (let col = 0; col < stride; col++) {
+    push(col)
+    push((stride - 1) * stride + col)
+  }
+  for (let row = 0; row < stride; row++) {
+    push(row * stride)
+    push(row * stride + stride - 1)
+  }
+
+  while (head < tail) {
+    const index = queue[head++]
+    const row = (index / stride) | 0
+    const col = index - row * stride
+    if (row > 0) push(index - stride)
+    if (row < stride - 1) push(index + stride)
+    if (col > 0) push(index - 1)
+    if (col < stride - 1) push(index + 1)
+  }
+
+  for (let i = 0; i < inside.length; i++) {
+    if (inside[i] || outside[i]) continue
+    inside[i] = 1
+    filledMask[i] = 1
+  }
+  return filledMask
+}
+
+/**
  * 生成编辑格网（只算几何，不含高度采样）。
  *
  * 顶点按行优先排列，索引 = row * stride + col。
@@ -274,6 +341,18 @@ export function buildTerrainGrid(polygon: TerrainLngLat[], options: TerrainGridO
       inside[index] = 1
       distance[index] = dist
       weight[index] = smoothstep(dist / slopeWidth)
+    }
+  }
+
+  // 自交/折返多边形会在内部留下「被包住」的空洞：补成实心，
+  // 否则那块地方既没面也刷不动，下沉后就是一块顶着原地面的孤岛。
+  if (options.fillHoles !== false) {
+    const filled = fillEnclosedHoles(inside, stride)
+    for (let i = 0; i < vertexCount; i++) {
+      if (!filled[i]) continue
+      // 补出来的点属于内圈：给满权重，不再羽化（否则坑底会留一圈台阶）
+      distance[i] = slopeWidth
+      weight[i] = 1
     }
   }
 
@@ -665,18 +744,15 @@ export interface TerrainBrushOptions {
   /**
    * 本笔开始时的格网高度快照。
    *
-   * 按住拖动时 `strokeAt` 会被调用几十上百次，同一顶点仍落在笔刷范围内就会被
-   * 反复叠加——一笔下来能挖出几百米深的竖井（坑壁垂直、贴图被拉成布条）。
-   * 传入快照后，单点在本笔内的累计改动被夹在 `±maxDelta * strokeLimit` 以内：
-   * 一笔最多改多少，要更深就抬笔再刷，和地形软件的手感一致。
+   * 只在设置了 `strokeLimit > 0` 时用于夹紧单点累计改动；默认不限制，
+   * 依靠调用方「指针移动时按路径施加、停住时按节拍施加」来控制手感。
    */
   strokeBase?: Float32Array | null
   /**
-   * 一笔之内同一位置最多叠加几次，默认 6。
+   * 一笔之内同一位置最多叠加几次，默认 0（不限制）。
    *
-   * 注意不能把它当成「总限幅」直接压到 1：那样拖一整笔和点一下一样深，
-   * 笔刷会完全没有手感。默认 6 时一笔最深刻度约为 `maxDelta * 6`，
-   * 单击则只改一次 `maxDelta * strength`，两者差异明显。
+   * 正常笔刷留空即可：按住左键会持续加深，松开才停。
+   * 传正数时单点累计改动被夹在 `±maxDelta × strokeLimit` 以内。
    */
   strokeLimit?: number
 }
@@ -705,8 +781,8 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
   const strength = clamp(options.strength ?? 0.5, 0, 1)
   const hardness = clamp(options.hardness ?? 0, 0, 0.95)
   const maxDelta = Math.max(0.01, options.maxDelta ?? 60)
-  // 一笔内允许叠加几次：下限 1 保证行为可预期，上限 20 防止真刷出断崖
-  const strokeLimit = Math.max(1, Math.min(20, options.strokeLimit ?? DEFAULT_STROKE_LIMIT))
+  /** 一笔内允许叠加几次：0 表示不限制，上限 500 防止误传天文数字 */
+  const strokeLimit = Math.max(0, Math.min(500, options.strokeLimit ?? DEFAULT_STROKE_LIMIT))
   const mode = options.mode
 
   const mLng = metersPerDegLng(options.lat)
@@ -759,10 +835,10 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
         const avg = neighborAverage(grid, row, col)
         next = h + (avg - h) * clamp(w * 1.4, 0, 1)
       }
-      // 本笔累计上限：一笔之内单点最多偏离 strokeBase ±（单次幅度 × 允许叠加次数）。
-      // 这个上限必须明显大于单次幅度，否则拖一整笔和点一下一样深，笔刷会「没反应」。
+      // 本笔累计上限：默认不限制（strokeLimit = 0），按住会一直累加；
+      // 只有显式传了正数才夹在 strokeBase ±（单次幅度 × 次数）内。
       const sb = options.strokeBase
-      if (sb) {
+      if (sb && strokeLimit > 0) {
         const span = maxDelta * strokeLimit
         if (next > sb[index] + span) next = sb[index] + span
         else if (next < sb[index] - span) next = sb[index] - span

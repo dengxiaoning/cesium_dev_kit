@@ -97,13 +97,13 @@ const kit = createKit({ Cesium, three: THREE, containerId: 'cesiumContainer' })
 const { scene } = kit.threeJs.initThree({ center: [117.1, 36.25] })
 kit.threeJs.loop(() => scene.update())
 
-// ① 笔刷用法：铺一块可编辑区域，按住左键连续涂抹
+// ① 笔刷用法：铺一块可编辑区域，按住左键持续开挖
 await kit.terrainEdit.setArea([117.1, 36.25], { size: 2400, segments: 160 })
 kit.terrainEdit
-  // maxDelta 是「单次施加」，strokeLimit 是「一笔内最多叠加几次」，
-  // 一笔最深刻度 ≈ maxDelta × strokeLimit（默认 12 × 6 = 72m），抬笔再刷可继续加深
-  .setBrush({ mode: 'lower', radius: 110, strength: 0.5, maxDelta: 12, strokeLimit: 6 })
-  .enableBrush(true)   // 左键涂抹，右键转视角，滚轮缩放
+  // maxDelta 是「单次施加强度」：按住左键不放会按固定节拍持续累加，松开即停；
+  // 移动时按走过的地面距离施加（每 radius × 0.1 刷一次），所以快拖慢拖手感一致
+  .setBrush({ mode: 'lower', radius: 110, strength: 0.5, maxDelta: 3 })
+  .enableBrush(true)   // 按住左键持续开挖，右键转视角，滚轮缩放
 
 // ② 多边形用法：一次成型，可带台阶 / 水面
 await kit.terrainEdit.setPolygon([[117.095, 36.245], [117.105, 36.245], [117.105, 36.255], [117.095, 36.255]])

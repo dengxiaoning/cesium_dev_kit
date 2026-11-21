@@ -38,18 +38,13 @@
       <div class="slider">
         <label>笔刷强度 <b>{{ Math.round(brush.strength * 100) }}%</b></label>
         <input type="range" min="5" max="100" step="5" :value="Math.round(brush.strength * 100)" @input="onStrength" />
-        <span class="hint">{{ painting ? '按住左键拖动连续涂抹；右键拖动转视角，滚轮缩放' : '笔刷已关闭：左键拖动旋转地图、滚轮缩放' }}</span>
+        <span class="hint">{{ painting ? '按住左键不放会持续挖深 / 抬高，拖动即沿轨迹刷；右键转视角，滚轮缩放' : '笔刷已关闭：左键拖动旋转地图、滚轮缩放' }}</span>
       </div>
 
       <div class="slider">
-        <label>单次高度 <b>{{ brush.maxDelta }} m</b></label>
-        <input type="range" min="2" max="60" step="1" v-model.number="brush.maxDelta" @input="syncBrush" />
-      </div>
-
-      <div class="slider">
-        <label>叠加次数 <b>{{ brush.strokeLimit }} 次</b></label>
-        <input type="range" min="1" max="12" step="1" v-model.number="brush.strokeLimit" @input="syncBrush" />
-        <span class="hint">一笔最深刻度约 {{ brush.maxDelta * brush.strokeLimit }} m，抬笔再刷可继续加深</span>
+        <label>单次力度 <b>{{ brush.maxDelta }} m</b></label>
+        <input type="range" min="1" max="20" step="1" v-model.number="brush.maxDelta" @input="syncBrush" />
+        <span class="hint">决定按住时的下挖速度：越大越快，松开左键立即停止</span>
       </div>
 
       <div class="slider" v-if="brush.mode === 'level'">
@@ -65,6 +60,10 @@
       <label class="check">
         <input type="checkbox" v-model="useTexture" @change="toggleTexture" />
         影像贴图（关闭后退回顶点着色）
+      </label>
+      <label class="check">
+        <input type="checkbox" v-model="cutSurface" @change="toggleCutSurface" />
+        开挖面岩土（关闭后坡面保留影像，陡壁会被拉伸）
       </label>
 
       <div class="stats" v-if="stats">
@@ -98,10 +97,11 @@ export default {
       terrainReady: false,
       showContour: true,
       useTexture: true,
+      cutSurface: true,
       targetHeight: null,
-      brush: { mode: 'lower', radius: 110, strength: 0.5, maxDelta: 12, strokeLimit: 6 },
+      brush: { mode: 'lower', radius: 110, strength: 0.5, maxDelta: 3 },
       stats: null,
-      tip: '左键按住拖动即可开挖，右键转视角，滚轮缩放',
+      tip: '按住左键持续开挖（停住也会继续加深），拖动沿轨迹刷；右键转视角，滚轮缩放',
       error: '',
       modes: [
         { value: 'lower', label: '下沉' },
@@ -236,7 +236,7 @@ export default {
         this.terrainEdit.enableBrush(true)
         this.painting = true
         this.updateStats()
-        this.tip = '左键按住拖动即可开挖，右键转视角，滚轮缩放'
+        this.tip = '按住左键持续开挖（停住也会继续加深），拖动沿轨迹刷；右键转视角，滚轮缩放'
       } catch (err) {
         this.error = '生成地形区域失败：' + (err && err.message ? err.message : err)
       } finally {
@@ -253,7 +253,7 @@ export default {
       this.painting = !this.painting
       this.terrainEdit.enableBrush(this.painting)
       this.tip = this.painting
-        ? '左键按住拖动即可开挖，右键拖动转视角，滚轮缩放'
+        ? '按住左键持续开挖（停住也会继续加深）；右键拖动转视角，滚轮缩放'
         : '笔刷已关闭：左键拖动可旋转地图、滚轮缩放，随时可以再开启'
       this.updateStats()
     },
@@ -276,7 +276,6 @@ export default {
         radius: this.brush.radius,
         strength: this.brush.strength,
         maxDelta: this.brush.maxDelta,
-        strokeLimit: this.brush.strokeLimit,
         targetHeight: this.brush.mode === 'level' ? this.targetHeight : null
       })
     },
@@ -285,6 +284,9 @@ export default {
     },
     toggleTexture () {
       this.terrainEdit.setTextureEnabled(this.useTexture)
+    },
+    toggleCutSurface () {
+      this.terrainEdit.setCutSurfaceEnabled(this.cutSurface)
     },
     undo () {
       this.terrainEdit.undo()
