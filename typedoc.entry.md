@@ -116,6 +116,36 @@ console.log(kit.terrainEdit.getStats())
 > 地表纹理直接取自当前影像图层（`buildImageryTexture`），所以挖开的地表仍然是它原本的
 > 卫星影像，而不是一块纯色网格；等高线按固定等高距用 marching squares 生成。
 
+### 保存与二次编辑
+
+库不替你决定数据存到哪儿，只负责给出一份**完整、可序列化**的结果；落库、落盘、
+发后端由业务侧决定：
+
+```ts
+// 导出：一次拿到「原始 + 编辑后」两份高度场、多边形、水面与笔刷设置
+const data = kit.terrainEdit.exportData()!   // 尚未圈定范围时返回 null
+await fetch('/api/terrain/42', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(data)                 // 纯 JSON，无 TypedArray / 无类实例
+})
+
+// 载入：不会再采样地形，直接复原成可继续编辑的状态（换设备、地形服务变了也一样）
+const saved = await (await fetch('/api/terrain/42')).json()
+kit.terrainEdit.importData(saved).enableBrush(true)
+
+// 只要数值、不需要序列化时用它：数组是副本，差值是挖填量（负数挖、正数填）
+const field = kit.terrainEdit.getHeightField()!
+const delta = field.current.map((h, i) => h - field.base[i])
+```
+
+> 为什么不是内置一个 `save()` 写文件：编辑数据可能要进业务库、要带用户与权限、
+> 要压缩加密、要转换成 GIS 格式，这些决定都不属于渲染库。`exportData()` 返回的
+> 结构稳定（带 `kind` 与 `version`），你可以原样存，也可以只取 `grid.current` 自己转格式。
+> 体量参考：`segments = 160` 约 277KB（两份 161×161 Float32，base64 后），gzip 约 180KB。
+> 体量是被「无损」撑起来的：需要更小就降低 `segments`，或用 `getHeightField()` 自己转成
+> Int16 量化 / GeoTIFF 之类的格式。
+
 > 方法签名的参数对象（如 `PointGraphicsOptions`）在方法页里已经展开成字段表，
 > 不用再点进类型页；`craeteXxx` 这类旧拼写的别名已从文档隐藏，请改用 `createXxx`。
 

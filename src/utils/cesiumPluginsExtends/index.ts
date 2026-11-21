@@ -33,7 +33,13 @@ export type {
   TerrainEditStatsResult,
   TerrainEditModuleOptions,
   TerrainEditPosition,
-  TerrainEditMode
+  TerrainEditMode,
+  TerrainEditSnapshot,
+  TerrainEditBrushState,
+  TerrainEditAreaInfo,
+  TerrainEditViewState,
+  TerrainHeightField,
+  TerrainHeightsPayload
 } from './libs/TerrainEdit'
 
 export {

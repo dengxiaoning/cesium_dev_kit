@@ -18,6 +18,12 @@
         <button class="btn ghost" :disabled="!ready" @click="undo">撤销</button>
       </div>
 
+      <div class="row">
+        <button class="btn" :disabled="!ready" @click="saveTerrain">保存数据</button>
+        <button class="btn" :disabled="!ready || loading" @click="pickFile">载入数据</button>
+        <input ref="fileInput" class="file" type="file" accept=".json,application/json" @change="loadTerrain" />
+      </div>
+
       <div class="row modes">
         <button v-for="item in modes" :key="item.value" class="chip" :class="{ active: brush.mode === item.value }" @click="changeMode(item.value)">
           {{ item.label }}
@@ -268,6 +274,82 @@ export default {
       this.updateStats()
       this.tip = '已撤销上一步'
     },
+    /** 导出当前编辑结果并让浏览器下载：演示「数据接口 + 自己的存储」怎么配合 */
+    saveTerrain () {
+      const data = this.terrainEdit.exportData()
+      if (!data) {
+        this.tip = '还没有可导出的地形，先刷两笔'
+        return
+      }
+      const text = JSON.stringify(data)
+      const blob = new Blob([text], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `terrain-${data.grid.segments}x${data.grid.segments}-${Date.now()}.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+      const kb = (text.length / 1024).toFixed(0)
+      this.tip = `已导出 ${kb} KB：含原始 / 编辑后两份高度场，可直接 POST 到自己的后端，再 importData 复原`
+    },
+    pickFile () {
+      const input = this.$refs.fileInput
+      if (input) input.click()
+    },
+    /** 载入导出的 JSON：不重新采样地形，直接恢复成可继续编辑的状态 */
+    loadTerrain (event) {
+      const file = event.target.files && event.target.files[0]
+      if (!file) return
+      const reader = new FileReader()
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(String(reader.result))
+          this.terrainEdit.importData(data)
+          this.applySnapshotUi(data)
+          this.terrainEdit.enableBrush(true)
+          this.painting = true
+          this.areaCenter = this.snapshotCenter(data)
+          this.focusArea()
+          this.error = ''
+          this.updateStats()
+          this.tip = `已载入 ${file.name}（${data.grid.segments}×${data.grid.segments} 网格），可继续刷`
+        } catch (err) {
+          this.error = '载入失败：' + (err && err.message ? err.message : err)
+        } finally {
+          event.target.value = ''
+        }
+      }
+      reader.onerror = () => {
+        this.error = '读取文件失败'
+      }
+      reader.readAsText(file)
+    },
+    /** 把数据包里的笔刷 / 显示状态同步回界面，避免面板和实际状态不一致 */
+    applySnapshotUi (data) {
+      const view = data.view || {}
+      this.useTexture = view.texture !== false
+      this.showContour = view.contour !== false
+      if (data.brush) {
+        this.brush.mode = data.brush.mode || 'lower'
+        this.brush.radius = data.brush.radius || 110
+        this.brush.maxDelta = data.brush.maxDelta || 3
+      }
+      if (this.brush.mode !== 'level') this.targetHeight = null
+    },
+    snapshotCenter (data) {
+      if (data.area && data.area.center) return data.area.center
+      const list = data.polygon || []
+      if (!list.length) return { lng: DEFAULT_CENTER[0], lat: DEFAULT_CENTER[1] }
+      let lng = 0
+      let lat = 0
+      list.forEach((p) => {
+        lng += Number(p.lng) || 0
+        lat += Number(p.lat) || 0
+      })
+      return { lng: lng / list.length, lat: lat / list.length }
+    },
     pickCenter () {
       const scene = this.viewer.scene
       const canvas = scene.canvas
@@ -433,6 +515,9 @@ export default {
 .btn.ghost {
   flex: 0 0 60px;
   background: transparent;
+}
+.file {
+  display: none;
 }
 .modes {
   gap: 6px;

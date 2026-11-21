@@ -24,7 +24,10 @@ import {
   terrainVertexColor
 } from './terrain/terrainGrid'
 import { buildImageryTextureFromLayers } from './terrain/terrainTexture'
+import { packHeights, unpackHeights } from './terrain/terrainData'
+import type { TerrainHeightsPayload } from './terrain/terrainData'
 import type {
+  TerrainBounds,
   TerrainBrushMode,
   TerrainDeformOptions,
   TerrainEditMode,
@@ -37,6 +40,8 @@ import type {
 /* ===== 对外类型 ===== */
 
 export type { TerrainEditMode }
+/** 高度场载荷（`TerrainEditSnapshot.grid` 的类型），便于自行拼装 / 校验数据 */
+export type { TerrainHeightsPayload }
 
 /**
  * 按住左键时的持续施加速度（毫秒一次）。
@@ -74,6 +79,17 @@ const STROKE_STEP_RATIO = 0.1
 
 /** 小于这个屏幕像素位移视为「指针没动」（手抖 / 亚像素噪声） */
 const MOVE_IDLE_PX = 1
+
+/** 导出数据的格式标识：用来判断一份 JSON 到底是不是本模块导出的地形 */
+const TERRAIN_SNAPSHOT_KIND = 'cesium-dev-kit:terrain-edit' as const
+
+/**
+ * 导出数据的版本号。
+ *
+ * 结构发生**不兼容**变更时才递增；载入时版本对不上会直接报错，
+ * 而不是按新结构去读旧数据（高度场错位是最难排查的一类问题）。
+ */
+const TERRAIN_SNAPSHOT_VERSION = 1
 
 /**
  * 光照方向（局部坐标），与 `_rebuild` 里给水面用的平行光保持一致。
@@ -290,6 +306,83 @@ export interface TerrainEditAreaOptions {
   cutSurface?: boolean
 }
 
+/** 笔刷参数快照（不含只在一次笔画内有效的 `targetHeight`） */
+export type TerrainEditBrushState = Required<Omit<TerrainEditBrushOptions, 'targetHeight'>>
+
+/** 笔刷区域参数快照，便于按同样的范围重建 */
+export interface TerrainEditAreaInfo {
+  /** 区域中心 */
+  center: TerrainLngLat
+  /** 边长（米） */
+  size: number
+  /** 每边划分数 */
+  segments: number
+  /** 边缘过渡宽度（米） */
+  feather: number
+}
+
+/** 导出时一并带走的表现状态 */
+export interface TerrainEditViewState {
+  /** 水面高程（米），null 表示没有水面 */
+  waterLevel: number | null
+  /** 是否显示等高线 */
+  contour: boolean
+  /** 等高距（米），0 表示按高差自动取 */
+  contourInterval: number
+  /** 是否使用影像贴图 */
+  texture: boolean
+  /** 是否启用程序化岩土材质 */
+  cutSurface: boolean
+}
+
+/**
+ * 地形编辑数据包（`exportData()` 的返回值）。
+ *
+ * 整体是可 `JSON.stringify` 的纯数据：没有类实例、没有 TypedArray、没有 DOM 引用，
+ * 所以能直接 `POST` 给后端、塞进 `localStorage`、写进 IndexedDB 或做成文件下载。
+ *
+ * 高度场是 **base + current** 两份：只存 current 的话，载入后就没法再算挖填方、
+ * 也没法把坡面明暗重新烘对，二次编辑会「看起来一样、但所有统计都变 0」。
+ */
+export interface TerrainEditSnapshot {
+  /** 固定标识：`cesium-dev-kit:terrain-edit`，用来识别数据来源 */
+  kind: 'cesium-dev-kit:terrain-edit'
+  /** 数据格式版本，当前为 1；结构不兼容变更时递增 */
+  version: number
+  /** 导出时间（ISO 8601） */
+  createdAt: string
+  /** `area`：`setArea()` 铺的矩形；`polygon`：手绘 / `setPolygon()` 的范围 */
+  mode: 'area' | 'polygon'
+  /** `setArea()` 的原始参数，`polygon` 模式下为 null */
+  area: TerrainEditAreaInfo | null
+  /** 编辑范围顶点（含高度） */
+  polygon: TerrainLngLatHeight[]
+  /** 高度场与重建格网所需的参数 */
+  grid: TerrainHeightsPayload
+  /** 表现状态 */
+  view: TerrainEditViewState
+  /** 笔刷参数，载入后可接着刷 */
+  brush: TerrainEditBrushState
+  /** 导出时的土方统计，便于「不载入模型也能读数据」的展示场景 */
+  stats: TerrainEditStatsResult | null
+}
+
+/**
+ * 内存形态的高度场（`getHeightField()` 的返回值）。
+ *
+ * 不需要序列化、只想马上算点东西时用它：数组是副本，改它不会影响场景。
+ */
+export interface TerrainHeightField {
+  /** 每边划分数（顶点数 = segments + 1） */
+  segments: number
+  /** 格网覆盖的经纬度范围 */
+  bounds: TerrainBounds
+  /** 原始地形高度（米） */
+  base: Float32Array
+  /** 编辑后地形高度（米）；与 `base` 之差即每点挖填量（负数挖、正数填） */
+  current: Float32Array
+}
+
 
 /** 创建地形编辑模块的参数 */
 export interface TerrainEditModuleOptions {
@@ -403,6 +496,75 @@ export interface TerrainEditInstance {
    * 获取当前多边形（度）。
    */
   getPolygon(): TerrainLngLatHeight[]
+
+  /**
+   * 导出当前编辑结果，得到一份可直接 `JSON.stringify` 的数据包。
+   *
+   * **为什么是「返回数据」而不是「保存文件」**：这个模块跑在调用方的页面里，
+   * 数据落到哪儿（后端接口、localStorage、对象存储、GIS 文件、剪贴板）属于业务决定，
+   * 库不该替用户选。所以这里只产出**完整、自包含、可序列化**的快照，
+   * 存哪儿、存多久、要不要加密压缩，交给调用方；示例页里的「保存数据」
+   * 就是拿这个返回值自己做了个下载，而不是库内置了一套存储。
+   *
+   * 快照不只包含高度：二次编辑需要「原始地形 + 几何参数」才能正确重算挖填方、
+   * 重烘坡面明暗、继续用笔刷，所以 `grid.base` 与 `grid.current` 两份高度场都会带上
+   * （Float32 原样 base64，往返逐位无损），并附带多边形、区域参数、水面 / 等高线 /
+   * 贴图状态以及笔刷设置。
+   *
+   * 体量：`segments = 160` 时约 277KB（两份 161×161 的 Float32，base64 后），gzip 约 180KB。
+   * 这份开销是「无损」换来的：需要更小的载荷就降低 `setArea({ segments })`，
+   * 或者只用 `getHeightField()` 自己量化 / 转成 GeoTIFF 等格式。
+   *
+   * @returns 数据包；尚未圈定编辑范围时返回 null
+   * @example
+   * // 存到自己的后端
+   * const data = terrainEdit.exportData()
+   * await fetch('/api/terrain/1', { method: 'POST', body: JSON.stringify(data) })
+   *
+   * // 或者做成文件让用户下载（下载这一步属于业务侧，不在库里）
+   * const blob = new Blob([JSON.stringify(data)], { type: 'application/json' })
+   * const a = document.createElement('a')
+   * a.href = URL.createObjectURL(blob)
+   * a.download = 'terrain.json'
+   * a.click()
+   */
+  exportData(): TerrainEditSnapshot | null
+
+  /**
+   * 载入 `exportData()` 导出的数据，恢复到可继续编辑的状态。
+   *
+   * 与 `setPolygon()` 的关键区别：**不会再采样地形**。高度直接从数据包里恢复，
+   * 所以即使此刻没有配置地形服务、或者原地形数据已经变了，也能一模一样地复原；
+   * 载入后笔刷、撤销、统计、水面、等高线照常工作，地表贴图按新范围在后台重新取。
+   *
+   * 数据包结构不对（不是本模块导出的、版本不匹配、base64 损坏、长度对不上、
+   * 范围与 polygon 不匹配）都会抛 `INVALID_ARGUMENT`，不会渲染出一块错位的地形。
+   *
+   * @param snapshot - `exportData()` 的返回值，或它 `JSON.parse` 之后的对象；
+   * 也可以直接给 JSON 字符串（例如 `localStorage.getItem()` 的返回值），内部会自己解析
+   * @example
+   * const data = await (await fetch('/api/terrain/1')).json()
+   * terrainEdit.importData(data).enableBrush(true)
+   *
+   * // 从 localStorage 读也一样
+   * terrainEdit.importData(localStorage.getItem('terrain-1') || '')
+   */
+  importData(snapshot: TerrainEditSnapshot | string): TerrainEditInstance
+
+  /**
+   * 取当前高度场（Float32Array 副本），用于在内存里做二次计算。
+   *
+   * 不需要序列化、只要数值时用这个：不经过 base64，直接拿到 `base` / `current`，
+   * 两者之差就是每个顶点的挖填量（负数挖、正数填），可以直接喂给等高线、
+   * 坡度分析、导出成 GeoTIFF 或自己的格网格式。数组是副本，改它不影响场景。
+   *
+   * @returns 高度场；尚未圈定编辑范围时返回 null
+   * @example
+   * const field = terrainEdit.getHeightField()
+   * const delta = field.current.map((h, i) => h - field.base[i])
+   * console.log('最大挖深', Math.min(...delta))
+   */
+  getHeightField(): TerrainHeightField | null
 
   /**
    * 就地开辟一块可连续涂抹的地形编辑区域（不需要先画多边形）。
@@ -608,6 +770,9 @@ export function createTerrainEditModule() {
     this._lastContourAt = 0
     this._up = null
     this._areaMode = false
+    this._areaInfo = null
+    // 建格网时是否填平内部空洞：导出/载入要按同一个值重建，inside 掩膜才对得上
+    this._fillHoles = true
     this._textureToken = 0
     this._contourInterval = 0
     this._dirty = false
@@ -1009,6 +1174,12 @@ export function createTerrainEditModule() {
       this._polygon = list.map((p) => ({ lng: p.lng, lat: p.lat }))
       this._polygonHeight = list.map((p) => p.height || 0)
       this._grid = grid
+      // 记下这次建格网用的参数：导出时要带上，载入时才能重建出同一张 inside 掩膜
+      this._fillHoles = !(options && options.fillHoles === false)
+      this._areaInfo = null
+      // 直接给多边形（含手绘结束）就是「手绘范围」，之前若用过 setArea 要把区域标记清掉，
+      // 否则边框会因为 areaMode 仍在而被隐藏
+      this._areaMode = false
       this._history = []
       this._waterLevel = null
       // 范围变了，旧贴图（按旧包围盒裁的 UV）不能再用
@@ -1026,13 +1197,14 @@ export function createTerrainEditModule() {
      */
     _renderBoundary(this: TerrainEditInstance & Record<string, any>) {
       if (!this._polygon.length) return
+      // 先拆旧边框：从 area 切到手绘（或反过来）时，旧边框不能留在场上
+      if (this._boundaryEntity && this._draftSource) {
+        this._draftSource.entities.remove(this._boundaryEntity)
+      }
+      this._boundaryEntity = null
       // 笔刷区域是人为划的矩形，画出来像「贴片」，不显示
       if (this._areaMode) return
       const source = this._ensureDraftSource()
-      if (this._boundaryEntity) {
-        source.entities.remove(this._boundaryEntity)
-        this._boundaryEntity = null
-      }
       const positions = this._polygon.map((p: TerrainLngLat) =>
         Cesium.Cartesian3.fromDegrees(p.lng, p.lat, 0)
       )
@@ -1744,7 +1916,8 @@ export function createTerrainEditModule() {
       const half = size / 2
       const dLat = half / 111319.49079327358
       const dLng = half / metersPerDegLng(point.lat)
-      this._areaMode = true
+      const segments = options.segments ?? 160
+      const feather = options.feather ?? 80
       this._useTexture = options.texture !== false
       if (options.cutSurface !== undefined) this._cutSurface = options.cutSurface !== false
       await this.setPolygon(
@@ -1754,8 +1927,13 @@ export function createTerrainEditModule() {
           [point.lng + dLng, point.lat + dLat],
           [point.lng - dLng, point.lat + dLat]
         ],
-        { segments: options.segments ?? 160, slopeWidth: options.feather ?? 80, fillHoles: options.fillHoles }
+        { segments, slopeWidth: feather, fillHoles: options.fillHoles }
       )
+      // setPolygon 会把范围当成「手绘」重置，这里再标回区域模式：
+      // 区域是人为划的矩形，不该画边框；导出时也要带上原始参数，便于原样重建
+      this._areaMode = true
+      this._areaInfo = { center: { lng: point.lng, lat: point.lat }, size, segments, feather }
+      this._renderBoundary()
       return this
     },
 
@@ -2393,6 +2571,8 @@ export function createTerrainEditModule() {
       this._localXZ = null
       this._baseColors = null
       this._areaMode = false
+      this._areaInfo = null
+      this._fillHoles = true
       this._strokeBase = null
       if (this._targetAuto) {
         this._brush.targetHeight = null
@@ -2427,6 +2607,141 @@ export function createTerrainEditModule() {
         lat: p.lat,
         height: this._polygonHeight[index] || 0
       }))
+    },
+
+    /**
+     * 导出当前编辑结果（纯数据，可直接序列化）
+     * @function
+     */
+    exportData(this: TerrainEditInstance & Record<string, any>): TerrainEditSnapshot | null {
+      if (!this._grid) return null
+      const brush = this._brush
+      const info = this._areaInfo
+      return {
+        kind: TERRAIN_SNAPSHOT_KIND,
+        version: TERRAIN_SNAPSHOT_VERSION,
+        createdAt: new Date().toISOString(),
+        mode: this._areaMode ? 'area' : 'polygon',
+        area: info
+          ? {
+              center: { lng: info.center.lng, lat: info.center.lat },
+              size: info.size,
+              segments: info.segments,
+              feather: info.feather
+            }
+          : null,
+        polygon: this.getPolygon(),
+        // base 与 current 都带上：只存 current 的话，载入后挖填方会归零、坡面明暗也失效
+        grid: packHeights(this._grid, { fillHoles: this._fillHoles }),
+        view: {
+          waterLevel: this._waterLevel,
+          contour: this._showGrid,
+          contourInterval: this._stepHeight,
+          texture: this._useTexture,
+          cutSurface: this._cutSurface
+        },
+        brush: {
+          mode: brush.mode,
+          radius: brush.radius,
+          strength: brush.strength,
+          hardness: brush.hardness,
+          roughness: brush.roughness,
+          maxDelta: brush.maxDelta,
+          strokeLimit: brush.strokeLimit
+        },
+        stats: this.getStats()
+      }
+    },
+
+    /**
+     * 载入编辑结果（不重新采样地形）
+     * @function
+     */
+    importData(
+      this: TerrainEditInstance & Record<string, any>,
+      snapshot: TerrainEditSnapshot | string
+    ): TerrainEditInstance {
+      const invalid = (message: string) => new CesiumDevKitError('INVALID_ARGUMENT', message)
+      let data: any = snapshot
+      // 允许直接塞 localStorage / 后端返回的 JSON 字符串，省掉调用方一次 JSON.parse
+      if (typeof data === 'string') {
+        try {
+          data = JSON.parse(data)
+        } catch (err: any) {
+          throw invalid('地形数据不是合法 JSON：' + (err && err.message ? err.message : String(err)))
+        }
+      }
+      if (!data || typeof data !== 'object') throw invalid('地形数据为空')
+      if (data.kind !== TERRAIN_SNAPSHOT_KIND) {
+        throw invalid('不是 TerrainEdit.exportData() 导出的数据')
+      }
+      if (data.version !== TERRAIN_SNAPSHOT_VERSION) {
+        throw invalid(`地形数据版本不支持：${data.version}`)
+      }
+      const list: TerrainLngLatHeight[] = this._normalizePositions(data.polygon || [])
+      if (list.length < 3) throw invalid('地形数据里的 polygon 少于 3 个顶点')
+
+      let grid: TerrainGrid
+      try {
+        grid = unpackHeights(list, data.grid)
+      } catch (err: any) {
+        throw invalid('地形数据无法还原：' + (err && err.message ? err.message : String(err)))
+      }
+
+      // 正在涂抹时先收笔：否则这一笔的定时器会在数据换掉之后继续往新格网里写
+      if (this._stroking) this._finishStroke()
+
+      this._polygon = list.map((p) => ({ lng: p.lng, lat: p.lat }))
+      this._polygonHeight = list.map((p) => p.height || 0)
+      this._grid = grid
+      this._fillHoles = data.grid.fillHoles !== false
+      this._areaMode = data.mode === 'area'
+      this._areaInfo =
+        data.area && data.area.center
+          ? {
+              center: { lng: Number(data.area.center.lng), lat: Number(data.area.center.lat) },
+              size: Number(data.area.size) || 0,
+              segments: Number(data.area.segments) || grid.segments,
+              feather: Number(data.area.feather) || grid.slopeWidth
+            }
+          : null
+
+      const view = data.view || {}
+      this._useTexture = view.texture !== false
+      this._cutSurface = view.cutSurface === true
+      this._showGrid = view.contour !== false
+      this._stepHeight = Number(view.contourInterval) || 0
+      this._waterLevel = typeof view.waterLevel === 'number' ? view.waterLevel : null
+
+      // 历史属于上一份地形，载入后不该还能撤回去；贴图按新范围重取
+      this._history = []
+      this._texture = null
+      this._textureToken++
+      this._strokeBase = null
+      this._strokeTarget = null
+      this._targetAuto = false
+      if (data.brush) this.setBrush({ ...data.brush, targetHeight: null })
+      else this._brush.targetHeight = null
+
+      this._rebuild()
+      this._renderBoundary()
+      if (this._useTexture) this._requestTexture()
+      return this
+    },
+
+    /**
+     * 取当前高度场（Float32Array 副本）
+     * @function
+     */
+    getHeightField(this: TerrainEditInstance & Record<string, any>): TerrainHeightField | null {
+      const grid: TerrainGrid | null = this._grid
+      if (!grid) return null
+      return {
+        segments: grid.segments,
+        bounds: { ...grid.bounds },
+        base: new Float32Array(grid.base),
+        current: new Float32Array(grid.current)
+      }
     },
 
     /**

@@ -1,6 +1,6 @@
 {
   "name": "cesium_dev_kit",
-  "version": "1.1.24",
+  "version": "1.2.0",
   "description": "A Cesium development kit: plotting, measurement, analysis, custom materials/primitives, sensors, heatmap, effects and more.",
   "keywords": [
     "cesium",
@@ -18,7 +18,7 @@
     "threejs"
   ],
   "license": "MIT",
-  "homepage": "https://benpaodehenji.com/cesiumDevKit",
+  "homepage": "https://dengxiaoning.github.io/cesium_dev_kit",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dengxiaoning/cesium_dev_kit.git"
@@ -208,7 +208,7 @@
     "build:lib": "tsup",
     "typecheck": "tsc --noEmit",
     "strictbuild": "vue-tsc --noEmit && vite build",
-    "test": "tsx tests/plotUtil.test.ts && tsx tests/math2d.test.ts && tsx tests/dispose.test.ts && tsx tests/scope.test.ts && tsx tests/plot.test.ts && tsx tests/defaultStatic.test.ts && tsx tests/api.test.ts && tsx tests/pathRoaming.test.ts && tsx tests/roaming.test.ts && tsx tests/terrainGrid.test.ts",
+    "test": "tsx tests/plotUtil.test.ts && tsx tests/math2d.test.ts && tsx tests/dispose.test.ts && tsx tests/scope.test.ts && tsx tests/plot.test.ts && tsx tests/defaultStatic.test.ts && tsx tests/api.test.ts && tsx tests/pathRoaming.test.ts && tsx tests/roaming.test.ts && tsx tests/terrainGrid.test.ts && tsx tests/terrainData.test.ts",
     "serve": "vite preview",
     "check:exports": "node scripts/check-exports.mjs",
     "check:publint": "publint",
