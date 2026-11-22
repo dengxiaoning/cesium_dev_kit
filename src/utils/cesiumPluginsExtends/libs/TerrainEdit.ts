@@ -23,7 +23,7 @@ import {
   terrainStats,
   terrainVertexColor
 } from './terrain/terrainGrid'
-import { buildImageryTextureFromLayers } from './terrain/terrainTexture'
+import { buildImageryTextureFromLayers, slopeDrapeOffset } from './terrain/terrainTexture'
 import { packHeights, unpackHeights } from './terrain/terrainData'
 import type { TerrainHeightsPayload } from './terrain/terrainData'
 import type {
@@ -102,13 +102,11 @@ const SUN_DIR = { x: 0.35, y: 1, z: 0.3 }
 /**
  * 开挖面孔隙噪声 + 岩土色（GLSL 片段，注入 `MeshBasicMaterial` 的片元着色器）。
  *
- * 为什么必须换成程序化岩土色，而不是继续用影像：
- * 影像按经纬度平面投影取样，坡面一陡，同样的像元被摊到长得多的坡面上，
- * 拉伸比是 sqrt(1 + 坡度²)。挖到几百米深时坡面接近垂直，等于把影像拉长十几倍，
- * 于是整块坑壁成了「放射状色带」——这就是「越挖越模糊、越来越不像」的成因。
- * 分辨率再高也治不了，因为要摊薄的是同一个像素。
+ * 默认开启的「岩土断面」材质（可用 `setCutSurfaceEnabled(false)` 关闭）。
+ * 陡壁上的卫星影像是平面俯视图，竖向铺到立面上必然发虚 / 折叠；这里的 3D 噪声
+ * 按坡度 + 挖填深度逐渐盖住影像，近垂直立面看起来像真实的土石断面。
  *
- * 这里用局部三维坐标算噪声（不做投影），所以密度处处一致、不会被拉伸；
+ * 用局部三维坐标算噪声（不做投影），所以密度处处一致、不会被拉伸；
  * 再叠一层沿高度方向的层理，看着像被机械挖开的岩土断面。
  */
 const EARTH_COMMON_GLSL = `
@@ -296,12 +294,11 @@ export interface TerrainEditAreaOptions {
   /** 是否把区域内部被包住的空洞填平，默认 true（见 setPolygon） */
   fillHoles?: boolean
   /**
-   * 是否启用程序化岩土材质，默认 false。
+   * 是否启用程序化岩土材质，默认 true。
    *
-   * 这是给「在近乎垂直的陡壁上强行贴影像」准备的高级选项，正常开挖不需要：
-   * 笔刷现在刷出的是平底平台 + 窄立面，立面只有几米宽，影像几乎不被拉伸；
-   * 台阶的层次靠几何坡折和方向性明暗表现，比换一张贴图清楚得多。
-   * 打开后按「坡度 + 挖填深度」把影像渐变成岩土。
+   * 陡壁上的卫星影像是平面俯视图，竖向铺到立面上必然发虚；打开后按「坡度 + 挖填深度」
+   * 在影像之上叠一层 3D 噪声岩土，近垂直立面会逐渐换成土石断面。缓坡仍以影像为主。
+   * 需要完全保留影像时显式关掉。
    */
   cutSurface?: boolean
 }
@@ -626,11 +623,10 @@ export interface TerrainEditInstance {
   setTextureEnabled(enabled: boolean): TerrainEditInstance
 
   /**
-   * 挖/填出来的坡面是否换成岩土材质（默认 true）。
+   * 挖/填出来的坡面是否叠加程序化岩土材质（默认 true）。
    *
-   * 影像按经纬度平面取样，坡面越陡被拉得越长（拉伸比 = sqrt(1 + 坡度²)），
-   * 挖到几百米深时坑壁会糊成一片色带。打开后按「坡度 + 挖填深度」把影像渐变成
-   * 程序化岩土，消除这种拉伸；关掉则完全保留原始影像。
+   * 陡壁上的卫星影像是平面俯视图，近垂直面会发虚；打开后按「坡度 + 挖填深度」
+   * 在影像之上叠一层 3D 噪声岩土，更像真实的开挖断面。缓坡仍保留影像。
    * @example
    * terrainEdit.setCutSurfaceEnabled(false)
    */
@@ -761,14 +757,19 @@ export function createTerrainEditModule() {
     this._targetAuto = false
     // 贴图与网格缓存
     this._useTexture = true
-    // 程序化岩土材质默认关闭：层次靠几何坡折 + 方向明暗，不靠换贴图掩盖拉伸
-    this._cutSurface = false
+    // 程序化岩土材质默认开启：陡壁上的卫星影像无论怎么投影都容易发虚 / 折叠，
+    // 用 3D 噪声岩土把近垂直立面盖住，缓坡仍保留影像
+    this._cutSurface = true
     this._texture = null
     this._surface = null
     this._localXZ = null
     this._baseColors = null
     this._lastContourAt = 0
     this._up = null
+    // 经度 / 纬度方向在 three 局部坐标中的单位向量：把顶点法线分解成
+    // 「东西 / 南北 / 上下」三个分量，用于陡壁贴图的弧长展开（见 _updateSurfaceUVs）
+    this._east = null
+    this._north = null
     this._areaMode = false
     this._areaInfo = null
     // 建格网时是否填平内部空洞：导出/载入要按同一个值重建，inside 掩膜才对得上
@@ -1297,6 +1298,12 @@ export function createTerrainEditModule() {
       const upB = this._toLocal(center.lng, center.lat, 100)
       const up = new THREE.Vector3().subVectors(upB, upA).normalize()
       this._up = up
+      // 东 / 北方向的局部单位向量。只在中心取一次：范围只有几公里，
+      // 局部平面内方向变化可以忽略；每个顶点都要用，不能每次都去算经纬度投影。
+      const eastB = this._toLocal(center.lng + 1e-5, center.lat, 0)
+      const northB = this._toLocal(center.lng, center.lat + 1e-5, 0)
+      this._east = new THREE.Vector3().subVectors(eastB, upA).normalize()
+      this._north = new THREE.Vector3().subVectors(northB, upA).normalize()
 
       const positions = new Float32Array(grid.vertexCount * 3)
       const colors = new Float32Array(grid.vertexCount * 3)
@@ -1369,6 +1376,8 @@ export function createTerrainEditModule() {
       geometry.setAttribute('aCut', new THREE.BufferAttribute(cuts, 1))
       geometry.setIndex(indices)
       geometry.computeVertexNormals()
+      // 法线出来之后才能算「立面展开」UV：把陡壁的贴图坐标按坡面弧长铺开
+      this._updateSurfaceUVs(geometry)
       geometry.computeBoundingSphere()
 
       // 按「法线相对地表法线」把明暗烘进顶点色：平地面亮度严格 1.0
@@ -1551,9 +1560,82 @@ export function createTerrainEditModule() {
       }
       attr.needsUpdate = true
       mesh.geometry.computeVertexNormals()
+      // 高度/法线变了，陡壁的展开 UV 得一起重算，否则刚挖出的立面又会退回成竖条
+      this._updateSurfaceUVs(mesh.geometry)
       // 法线变了，明暗得跟着重烘，不然刚挖出来的坡面还是按旧法线打光，看着像贴了张图
       this._bakeShading(mesh.geometry)
       mesh.geometry.computeBoundingSphere()
+      return this
+    },
+
+    /**
+     * 按坡面弧长重算贴图 UV，消除陡壁上的「竖向拉伸」
+     *
+     * 影像是经纬度平面投影：同一个像元会被摊到整条立面上，坡越陡拉得越长。
+     * 这里把 UV 沿坡面方向补上「弧长比平面投影多出来的那一段」，
+     * 于是纹理在立面上按 1:1 的尺度铺开，而不是被拉成竖条。
+     *
+     * 关键点：
+     * - 只补偿 `L - R`（弧长 - 水平投影），不是把整条立面重新展开到外侧，
+     *   所以缓坡上补偿量趋于 0，不会把原本正常的平地/缓坡纹理拉花；
+     * - 补偿方向取「从参考边（坑口 / 坡脚）指向当前顶点」的一侧，
+     *   也就是把纹理顺着立面往里续，接缝落在坑底 / 平台内侧这种硬折边上；
+     * - 近垂直立面（约 49°~64° 起）逐渐淡出：竖直面上网格法线容易左右跳，
+     *   继续展开会把纹理折成锯齿；这一段交给默认开启的程序化岩土材质。
+     * @private
+     */
+    _updateSurfaceUVs(this: TerrainEditInstance & Record<string, any>, geometry?: any) {
+      const geo = geometry || (this._surface && this._surface.geometry)
+      const texture = this._texture
+      const grid: TerrainGrid | null = this._grid
+      const up = this._up
+      const east = this._east
+      const north = this._north
+      if (!geo || !texture || !texture.uv || !grid || !up || !east || !north) return this
+      const normals = geo.getAttribute('normal')
+      const uvAttr = geo.getAttribute('uv')
+      if (!normals || !uvAttr) return this
+
+      const arr = uvAttr.array as Float32Array
+      const current = grid.current
+      const origin = grid.base
+      const stride = grid.stride
+      const dLng = grid.dLng
+      const dLat = grid.dLat
+      const b = grid.bounds
+      const mPerDegLat = 111319.49079327358
+      // 每纬度 1 度的经度米数只随行变化，按行缓存一次即可（涂抹时每帧都会跑）
+      let mLng = metersPerDegLng(b.minLat)
+      // 复用同一个对象，避免每个顶点都新建一个 { east, north }
+      const off = { east: 0, north: 0 }
+      for (let i = 0; i < grid.vertexCount; i++) {
+        const row = Math.floor(i / stride)
+        const col = i % stride
+        const lng = b.minLng + col * dLng
+        const lat = b.minLat + row * dLat
+        if (col === 0) mLng = metersPerDegLng(lat)
+        let dlng = 0
+        let dlat = 0
+        const d = current[i] - origin[i]
+        if (Math.abs(d) > 1e-3) {
+          const nx = normals.getX(i)
+          const ny = normals.getY(i)
+          const nz = normals.getZ(i)
+          // 法线在「东 / 北 / 上」三个方向的分量
+          const nLng = nx * east.x + ny * east.y + nz * east.z
+          const nLat = nx * north.x + ny * north.y + nz * north.z
+          const nUp = Math.abs(nx * up.x + ny * up.y + nz * up.z)
+          // 平面投影比坡面弧长短走的那一段，按米算好后换成经纬度偏移。
+          // 缓坡上这个量趋于 0，陡壁上约等于高差，过渡是连续的。
+          slopeDrapeOffset(d, nLng, nLat, nUp, off)
+          dlng = off.east / mLng
+          dlat = off.north / mPerDegLat
+        }
+        const pair = texture.uv(lng + dlng, lat + dlat)
+        arr[i * 2] = pair[0]
+        arr[i * 2 + 1] = pair[1]
+      }
+      uvAttr.needsUpdate = true
       return this
     },
 
@@ -1743,7 +1825,9 @@ export function createTerrainEditModule() {
             // 硬换成岩土反而把整片山坡刷成灰面；真正的陡壁才需要换材质。
             const steep = Math.min(1, Math.max(0, (0.8 - ndl) / 0.22))
             const deep = Math.min(1, Math.max(0, (moved - 60) / 160))
-            let amount = edited * Math.max(steep, deep * 0.85)
+            // `deep` 只对下挖生效：抬升出来的平台顶部是平的，应该保留影像，
+            // 不能因为「高差大」就把整个平台顶也刷成岩土。
+            let amount = edited * Math.max(steep, delta < 0 ? deep * 0.85 : 0)
             // 中间段往上顶一点：避免出现「半影像半岩石」的糊状过渡
             amount = Math.pow(amount, 0.7)
             if (amount > 0.002) {
@@ -2127,11 +2211,10 @@ export function createTerrainEditModule() {
     },
 
     /**
-     * 挖/填出来的坡面是否显示为岩土
+     * 挖/填出来的坡面是否叠加程序化岩土
      *
-     * 默认关闭：平底平台 + 窄立面的几何本身就让影像几乎不被拉伸，
-     * 台阶层次由坡折和方向明暗表现。只有在近乎垂直的陡壁上贴影像时，
-     * 才需要打开它把坡面渐变成程序化岩土。
+     * 默认开启：近垂直立面用 3D 噪声岩土替代影像，避免影像被拉成竖条 / 折叠；
+     * 缓坡仍以影像为主。关掉则完全保留影像。
      * @param enabled - 是否启用开挖面材质
      */
     setCutSurfaceEnabled(this: TerrainEditInstance & Record<string, any>, enabled: boolean) {
@@ -2169,6 +2252,10 @@ export function createTerrainEditModule() {
 
     /**
      * 屏幕坐标 -> 经纬度（贴地）
+     *
+     * Cesium 的 `globe.pick` 只能打到**原始地形**上；编辑区是叠在上面的 three 网格，
+     * 挖下去以后射线会先命中原始地表，落笔点会比指针偏出一大截（坑越深偏得越远）。
+     * 所以命中后再沿射线和「编辑后的高度场」求一次交点，让笔刷圈始终跟着指针。
      * @private
      */
     _pickLngLat(this: TerrainEditInstance & Record<string, any>, windowPosition: any) {
@@ -2177,12 +2264,80 @@ export function createTerrainEditModule() {
       if (!ray || !scene.globe) return null
       const cartesian = scene.globe.pick(ray, scene)
       if (!cartesian) return null
-      const carto = Cesium.Cartographic.fromCartesian(cartesian)
+      let carto = Cesium.Cartographic.fromCartesian(cartesian)
       if (!carto) return null
+      const edited = this._pickEditedSurface(ray, cartesian)
+      if (edited) carto = edited
       return {
         lng: Cesium.Math.toDegrees(carto.longitude),
         lat: Cesium.Math.toDegrees(carto.latitude)
       }
+    },
+
+    /**
+     * 沿拾取射线求与「编辑后地表」的交点
+     *
+     * 射线高度随距离单调变化，所以「射线当前高度 = 该处地表高度」这个不动点
+     * 用几次牛顿迭代就能收敛。只在编辑区内计算；交点跑到范围外时返回 null，
+     * 调用方退回原始地形交点。
+     * @private
+     */
+    _pickEditedSurface(
+      this: TerrainEditInstance & Record<string, any>,
+      ray: any,
+      cartesian: any
+    ) {
+      const grid: TerrainGrid | null = this._grid
+      if (!grid || !Cesium) return null
+      const b = grid.bounds
+      const toDeg = Cesium.Math.toDegrees
+      // 允许一格误差：圈边缘的拾取点可能刚好落在格网外
+      const padLng = grid.dLng
+      const padLat = grid.dLat
+      const inside = (lng: number, lat: number) =>
+        lng >= b.minLng - padLng &&
+        lng <= b.maxLng + padLng &&
+        lat >= b.minLat - padLat &&
+        lat <= b.maxLat + padLat
+
+      let t = Cesium.Cartesian3.distance(ray.origin, cartesian)
+      if (!Number.isFinite(t) || t <= 0) return null
+      const tMax = t + 20000
+      const point = new Cesium.Cartesian3()
+      const up = new Cesium.Cartesian3()
+      let best: any = null
+      let bestErr = Infinity
+      let initialErr = Infinity
+
+      for (let k = 0; k < 8; k++) {
+        Cesium.Cartesian3.multiplyByScalar(ray.direction, t, point)
+        Cesium.Cartesian3.add(ray.origin, point, point)
+        const current = Cesium.Cartographic.fromCartesian(point)
+        if (!current) break
+        const lng = toDeg(current.longitude)
+        const lat = toDeg(current.latitude)
+        if (!inside(lng, lat)) break
+        const surface = this._heightAt(lng, lat)
+        const err = Math.abs(surface - current.height)
+        if (k === 0) initialErr = err
+        if (err < bestErr) {
+          bestErr = err
+          best = current
+        }
+        if (err < 0.05) break
+        Cesium.Ellipsoid.WGS84.geodeticSurfaceNormal(point, up)
+        const dhdt = Cesium.Cartesian3.dot(ray.direction, up)
+        if (!Number.isFinite(dhdt) || Math.abs(dhdt) < 1e-6) break
+        const next = t + (surface - current.height) / dhdt
+        if (!Number.isFinite(next) || next < 0 || next > tMax) break
+        if (Math.abs(next - t) < 0.01) break
+        t = next
+      }
+
+      // 迭代没有把误差压下去（陡壁上来回跳）就退回原始地形交点，别把落笔点甩得更远
+      if (!best) return null
+      if (bestErr > grid.cellSize && bestErr >= initialErr) return null
+      return best
     },
 
     /**
@@ -2570,6 +2725,8 @@ export function createTerrainEditModule() {
       this._surface = null
       this._localXZ = null
       this._baseColors = null
+      this._east = null
+      this._north = null
       this._areaMode = false
       this._areaInfo = null
       this._fillHoles = true
@@ -2708,7 +2865,7 @@ export function createTerrainEditModule() {
 
       const view = data.view || {}
       this._useTexture = view.texture !== false
-      this._cutSurface = view.cutSurface === true
+      this._cutSurface = view.cutSurface !== false
       this._showGrid = view.contour !== false
       this._stepHeight = Number(view.contourInterval) || 0
       this._waterLevel = typeof view.waterLevel === 'number' ? view.waterLevel : null

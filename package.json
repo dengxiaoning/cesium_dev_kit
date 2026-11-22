@@ -1,6 +1,6 @@
 {
   "name": "cesium_dev_kit",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A Cesium development kit: plotting, measurement, analysis, custom materials/primitives, sensors, heatmap, effects and more.",
   "keywords": [
     "cesium",
@@ -208,7 +208,7 @@
     "build:lib": "tsup",
     "typecheck": "tsc --noEmit",
     "strictbuild": "vue-tsc --noEmit && vite build",
-    "test": "tsx tests/plotUtil.test.ts && tsx tests/math2d.test.ts && tsx tests/dispose.test.ts && tsx tests/scope.test.ts && tsx tests/plot.test.ts && tsx tests/defaultStatic.test.ts && tsx tests/api.test.ts && tsx tests/pathRoaming.test.ts && tsx tests/roaming.test.ts && tsx tests/terrainGrid.test.ts && tsx tests/terrainData.test.ts",
+    "test": "tsx tests/plotUtil.test.ts && tsx tests/math2d.test.ts && tsx tests/dispose.test.ts && tsx tests/scope.test.ts && tsx tests/plot.test.ts && tsx tests/defaultStatic.test.ts && tsx tests/api.test.ts && tsx tests/pathRoaming.test.ts && tsx tests/roaming.test.ts && tsx tests/terrainGrid.test.ts && tsx tests/terrainData.test.ts && tsx tests/terrainTexture.test.ts",
     "serve": "vite preview",
     "check:exports": "node scripts/check-exports.mjs",
     "check:publint": "publint",

@@ -55,6 +55,10 @@
         <input type="checkbox" v-model="useTexture" @change="toggleTexture" />
         影像贴图（关闭后退回顶点着色）
       </label>
+      <label class="check">
+        <input type="checkbox" v-model="cutSurface" @change="toggleCutSurface" />
+        开挖面岩土（陡壁更自然）
+      </label>
 
       <div class="stats" v-if="stats">
         <div><span>范围面积</span><b>{{ stats.area }} 万㎡</b></div>
@@ -87,6 +91,7 @@ export default {
       terrainReady: false,
       showContour: true,
       useTexture: true,
+      cutSurface: true,
       targetHeight: null,
       brush: { mode: 'lower', radius: 110, maxDelta: 3 },
       stats: null,
@@ -219,7 +224,8 @@ export default {
           size: 2400,
           segments: 160,
           feather: 90,
-          texture: this.useTexture
+          texture: this.useTexture,
+          cutSurface: this.cutSurface
         })
         this.syncBrush()
         this.terrainEdit.enableBrush(true)
@@ -268,6 +274,9 @@ export default {
     },
     toggleTexture () {
       this.terrainEdit.setTextureEnabled(this.useTexture)
+    },
+    toggleCutSurface () {
+      this.terrainEdit.setCutSurfaceEnabled(this.cutSurface)
     },
     undo () {
       this.terrainEdit.undo()
@@ -330,6 +339,7 @@ export default {
     applySnapshotUi (data) {
       const view = data.view || {}
       this.useTexture = view.texture !== false
+      this.cutSurface = view.cutSurface !== false
       this.showContour = view.contour !== false
       if (data.brush) {
         this.brush.mode = data.brush.mode || 'lower'

@@ -595,4 +595,39 @@ function brushCenterIndex(grid: Grid) {
   }
 }
 
+{
+  // 笔刷圈是硬边界：陡坡上落笔，圈外的地形一点都不该动。
+  // 旧实现让塌方坡按「深度 ÷ tan(安息角)」往外铺、上限 3 倍半径，
+  // 小半径笔刷会明显刷到圈外很远的地方。
+  const steep = buildTerrainGrid(POLYGON, { segments: 96, slopeWidth: 40 })
+  for (let i = 0; i < steep.vertexCount; i++) {
+    const col = i % steep.stride
+    // 每格抬 12m（约 48°），足以触发安息角塌方
+    const h = 600 + col * 12
+    steep.base[i] = h
+    steep.current[i] = h
+  }
+  const R = 60
+  const impact = applyBrush(steep, {
+    mode: 'lower', lng: CENTER_LNG, lat: CENTER_LAT,
+    radius: R, strength: 1, maxDelta: 10, roughness: 0.6
+  })!
+  assert.ok(impact && impact.changed > 0, '陡坡上落笔应改动地形')
+
+  const mLng = metersPerDegLng(CENTER_LAT)
+  const b = steep.bounds
+  let maxOutside = 0
+  for (let row = 0; row < steep.stride; row++) {
+    const dz = (b.minLat + row * steep.dLat - CENTER_LAT) * 111319.49
+    for (let col = 0; col < steep.stride; col++) {
+      const i = row * steep.stride + col
+      if (!steep.inside[i]) continue
+      const dx = (b.minLng + col * steep.dLng - CENTER_LNG) * mLng
+      if (Math.hypot(dx, dz) <= R + 1e-6) continue
+      maxOutside = Math.max(maxOutside, Math.abs(steep.current[i] - steep.base[i]))
+    }
+  }
+  assert.ok(maxOutside < 1e-6, `笔刷圈外不应有任何改动，实测最大 ${maxOutside.toFixed(2)}m`)
+}
+
 console.log('✓ terrainGrid 全部测试通过')

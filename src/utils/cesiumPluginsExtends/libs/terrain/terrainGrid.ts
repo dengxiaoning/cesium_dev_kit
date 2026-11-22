@@ -797,7 +797,7 @@ export interface TerrainBrushOptions {
   lng: number
   /** 笔刷中心纬度 */
   lat: number
-  /** 笔刷半径（米） */
+  /** 笔刷半径（米）。也是硬边界：圈外的地形不会被这一笔改动 */
   radius: number
   /**
    * 向目标标高推进的比例 0~1，默认 1（一步压到位）。
@@ -819,7 +819,7 @@ export interface TerrainBrushOptions {
    * 坑口不规则度 0~1，默认 0.28。
    *
    * 用世界坐标的值噪声轻微掰动有效半径，坑沿因此有折角、不是标准圆。
-   * 噪声按世界坐标取样，同一处反复按住加深图案固定，不会抖动或跟着指针爬。
+   * 噪声只把边界往里揉，不会超出 `radius`；同一处反复按住加深图案固定，不抖动。
    */
   roughness?: number
   /**
@@ -925,7 +925,7 @@ export function brushCenterHeight(
  * 做法是「限坡侵蚀」：相邻两点高差不能超过 `maxDrop`（= 单元边长 × tan(安息角)），
  * 超了就把高的一侧削到只高出 `maxDrop`。只削不填，坑底就不会被塌下来的土抬回去。
  * 从笔刷改动过的点出发，正反两个方向扫几遍，坡就会一格一格往外铺开；
- * 没被碰过的格子不参与 —— 地块里天然的陡崖不会被顺手削平。
+ * 铺到 `maxDist` 为止 —— 调用方把 `maxDist` 设为笔刷半径，圈外的天然陡崖不受影响。
  *
  * @param grid - 格网
  * @param rect - 参与计算的格网范围（笔刷外接框 + 塌方坡长度）
@@ -1045,7 +1045,8 @@ function relaxTalus(
  * 之间各有一道硬坡折。这就是「该平的平、该陡的陡」的来源；
  * 按 `w × maxDelta` 逐次减量永远只能得到一阶导连续的曲面，也就是光滑的碗。
  *
- * 超过安息角的陡壁会被 `relaxTalus` 塌成斜坡，坑沿因此长出一圈塌方坡。
+ * 超过安息角的陡壁会被 `relaxTalus` 塌成斜坡，坑壁因此是「平台 + 直壁」的剖面。
+ * 塌方坡只铺在笔刷圈内，圈外的天然地形不会被削平。
  *
  * 核心圈内是**绝对标高**而不是「相对高度减一个量」：斜坡上刷出来的也是水平面，
  * 不会顺着原地形留一层起伏；这正是「该平的平」的来源。
@@ -1140,7 +1141,12 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
         const lobe = (n1 - 0.5) * 2
         const notch = 1 - Math.abs(lobe)
         const grain = (valueNoise2(px / grainWave + 37.2, pz / grainWave + 11.9) - 0.5) * 2
-        rEff = radius * (1 + roughness * (0.3 * lobe - 0.16 * notch * notch + 0.22 * grain))
+        // 只允许噪声把边界往里揉，不往外扩：`radius` 是用户看到的笔刷圈，
+        // 也是硬边界，圈外不能有任何改动。
+        rEff = Math.min(
+          radius,
+          radius * (1 + roughness * (0.3 * lobe - 0.16 * notch * notch + 0.22 * grain))
+        )
       }
 
       if (dist > rEff) continue
@@ -1192,14 +1198,14 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
   if (mode !== 'smooth' && seeds.length) {
     const repose = Math.tan((poseDeg * Math.PI) / 180)
     const maxDrop = Math.max(0.05, cellM * repose)
-    // 塌方坡要够长：挖得越深，坑沿那一圈塌方坡就越往外铺。
-    // 按「落差 ÷ tan(安息角)」估坡长，再给两级格网的余量；上限压到 3 倍半径，
-    // 免得某一笔把整个地块都当成坡削平了。
+    // 塌方坡只铺到笔刷圈以内：`radius` 是光标圈画出来的范围，圈外的天然地形
+    // 不应被顺手削平。旧实现按「深度 ÷ tan(安息角)」往外铺、上限 3 倍半径，
+    // 小半径笔刷会明显刷到圈外很远的地方。
+    const talusDist = radius
     // 深度按「原地形中心高度」算，而不是按本笔的落差：坑是一层层挖下去的，
-    // 塌方坡的长度要跟**总深度**走，否则每一笔都把上一笔的坡当成越界给截断。
+    // 塌方坡的遍数要跟**总深度**走。
     const baseCenter = brushCenterHeight(grid, options.lng, options.lat, grid.base)
     const depth = Math.abs(baseCenter - targetHeight)
-    const talusDist = Math.min(radius * 3, radius + depth / repose + cellM * 2)
     const spread = Math.ceil(talusDist / cellM) + 1
     const talus = relaxTalus(
       grid,
