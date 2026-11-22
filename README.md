@@ -2,7 +2,7 @@
 
 [![Build Status][build-main]][build-status]
 [![NPM Package][npm]][npm-url]
-[![NPM DownloadsWeekly][npm-download]][npmtrends-url]
+[![NPM Downloads][npm-download]][npmtrends-url]
 [![Build Size][build-size]][build-size-url]
 [![GitHub Repo stars][repo-stars]][star-chart]
 [![license][license-uri]][license-link]
@@ -35,18 +35,18 @@ Pushing to `main` triggers `.github/workflows/docs.yml`, which builds both and d
 
 ## Features
 
-|   ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif)   |        ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)        |         ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)         |
+|   ![material](src/assets/image/preview/material.gif)   |        ![analysis](src/assets/image/preview/analysis.gif)        |         ![plot](src/assets/image/preview/plot.gif)         |
 | :-------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------: |
 |                                                    material                                                     |                                                         analysis                                                          |                                                        plot                                                         |
-| ![dynamicRiver](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/dnyRiver.gif) |         ![extrude](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/extrude.gif)         |       ![effect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/effect.gif)       |
+| ![dynamicRiver](src/assets/image/preview/dnyRiver.gif) |         ![extrude](src/assets/image/preview/extrude.gif)         |       ![effect](src/assets/image/preview/effect.gif)       |
 |                                                  dynamicRiver                                                   |                                                          extrude                                                          |                                                       effect                                                        |
-|      ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)      |        ![roaming](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)         |         ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)         |
+|      ![radar](src/assets/image/preview/radar.gif)      |        ![roaming](src/assets/image/preview/pathRoam.gif)         |         ![drag](src/assets/image/preview/drag.gif)         |
 |                                                      radar                                                      |                                                          roaming                                                          |                                                        drag                                                         |
-|    ![rayCast](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rayCast.gif)    | ![fireworksEffect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/fireworksEffect.gif) |   ![aniSoldier](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/aniSoldier.gif)   |
+|    ![rayCast](src/assets/image/preview/rayCast.gif)    | ![fireworksEffect](src/assets/image/preview/fireworksEffect.gif) |   ![aniSoldier](src/assets/image/preview/aniSoldier.gif)   |
 |                                                     rayCast                                                     |                                                      fireworksEffect                                                      |                                                     aniSoldier                                                      |
-|   ![pathPlan](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif)   |  ![customPrimitive](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif)  | ![clusterLayer](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif) |
+|   ![pathPlan](src/assets/image/preview/pathPlan.gif)   |  ![customPrimitive](src/assets/image/preview/custPrimitive.gif)  | ![clusterLayer](src/assets/image/preview/clusterLayer.gif) |
 |                                                    pathPlan                                                     |                                                      customPrimitive                                                      |                                                    clusterLayer                                                     |
-|      ![bar3D](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)      |     ![rollerBlind](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rollerBlind.gif)     |    ![heatmap3d](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/heatmap3d.gif)    |
+|      ![bar3D](src/assets/image/preview/bar3d.gif)      |     ![rollerBlind](src/assets/image/preview/rollerBlind.gif)     |    ![heatmap3d](src/assets/image/preview/heatmap3d.gif)    |
 |                                                      bar3D                                                      |                                                        rollerBlind                                                        |                                                      heatmap3d                                                      |
 
 [More>>](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
@@ -62,6 +62,44 @@ npm install three
 > Requires Cesium `>=1.105`. `three`, `echarts`, `dat.gui` and `libgif` are optional peer dependencies (installed only when their features are used).
 > The library no longer ships a Cesium Ion token. Pass your own token via
 > `extraConfig.AccessToken` or set `Cesium.Ion.defaultAccessToken` before creating the viewer.
+
+## Cesium static assets (required)
+
+`cesium_dev_kit` draws on top of Cesium but does not ship Cesium's own runtime assets. Before the
+first render, `Assets/`, `Workers/`, `ThirdParty/` and `Widgets/widgets.css` must be reachable —
+otherwise you get a blank globe, missing terrain/imagery workers, or unstyled widgets.
+
+**Vite (recommended)** — one plugin does the copying for you:
+
+```bash
+npm i -D vite-plugin-cesium
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import cesium from 'vite-plugin-cesium'
+
+export default defineConfig({ plugins: [cesium()] })
+```
+
+**Manual (webpack / Rspack / Rollup)**
+
+1. Copy `node_modules/cesium/Build/Cesium/{Assets,Workers,ThirdParty,Widgets}` into your public
+   directory, e.g. `public/cesium/`.
+2. Point Cesium at it **before** Cesium is imported: `window.CESIUM_BASE_URL = '/cesium/'`.
+3. Import the widget styles: `import 'cesium/Build/Cesium/Widgets/widgets.css'`.
+
+Give the container an explicit size, or the canvas collapses to 0px:
+
+```css
+#cesiumContainer {
+  width: 100%;
+  height: 100%;
+}
+```
+
+Also make sure `Cesium.Ion.defaultAccessToken` is set, or pass `extraConfig.AccessToken`.
 
 ## Quick start
 
@@ -183,19 +221,25 @@ Codes: `MISSING_CESIUM`, `MISSING_VIEWER`, `INVALID_ARGUMENT`, `IMAGERY_FAILED`,
 > `createDynamicCircleGraphics`). The old names remain and are marked `@deprecated`.
 
 
-### Used in h5
+### Script tag / no bundler
 
-- Import index.umd.js directly into html
+Current releases ship only ESM (`dist/*.mjs`) and CJS (`dist/*.cjs`) builds. `index.umd.js` and the
+`window.cesium_dev_kit` global are **no longer published**, so the old
+`<script src="index.umd.js">` snippet will 404. For a plain HTML page, bundle a small entry with
+Vite in `iife` format:
 
-```javaScript
-<script type="text/javascript" src="index.umd.js"></script>
+```ts
+// vite.config.ts
+export default {
+  build: {
+    lib: { entry: 'src/main.ts', formats: ['iife'], name: 'demo' },
+    rollupOptions: { output: { inlineDynamicImports: true } }
+  }
+}
 ```
 
-- Initialize object
-
-```javaScript
-new cesium_dev_kit.initCesium({...})
-```
+Then load the generated file with a `<script>` tag. If you need an official UMD build back,
+please open an issue.
 
 
 ## Development
@@ -225,13 +269,9 @@ npm run build        # demo site
 
 Do you use and like cesium_dev_kit but you don’t find a way to show some love? If yes, please consider donating to support this project. Otherwise, no worries, regardless of whether there is support or not, I will keep maintaining this project. Still, if you buy me a cup of coffee I would be more than happy though😄
 
-- [![Support via PayPal](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/paypal-logo-129x32.svg)](https://paypal.me/xiaoningdeng?country.x=C2&locale.x=en_US)
+- [![Support via PayPal](src/assets/image/preview/paypal-logo-129x32.svg)](https://paypal.me/xiaoningdeng?country.x=C2&locale.x=en_US)
 
-- WeChat / AliPay
-  <div style="display: flex">
-    <img alt="wechat" title="wechat" src="https://benpaodehenji.com/cesium_dev_kit/static/data/images/wechat.png">
-    <img alt="alipay" title="alipay" src="https://benpaodehenji.com/cesium_dev_kit/static/data/images/alipay.png">
-  </div>
+- [GitHub Sponsors](https://github.com/sponsors/dengxiaoning)
 
 ##
 
@@ -252,8 +292,8 @@ This project includes but is not limited to the reference and reference of the a
 ## Project deficiency and optimization
 
 - 1、Cesium-related types are intentionally loose (`any`) to support CDN / global `window.Cesium` usage; precise types can be extended if you install cesium via npm
-- 2、No exception catching and handling
-- 3、Missing unit tests and automated release pipeline
+- 2、Errors are normalized as `CesiumDevKitError` with stable codes, and non-fatal ones go through `setErrorHandler` (see above); a few legacy helpers still swallow errors silently
+- 3、Unit tests cover the pure algorithm layers (12 suites). Browser/DOM-level integration tests and a Cesium version matrix are still missing
 
 ## How to contribute
 
@@ -273,13 +313,13 @@ See [CONTRIBUTING](./CONTRIBUTING.md) for more details on donations...
 
 I am grateful to the generous individuals who awarded me these little stars, thank you for your support :heart:
 
-[![Stargazers repo roster for @dengxiaoning/cesium_dev_kit][stargazers-url]][stargazers-link]
+[See all stargazers](https://github.com/dengxiaoning/cesium_dev_kit/stargazers) · [Star history](https://api.star-history.com/svg?repos=dengxiaoning/cesium_dev_kit&type=Date)
 
 ## `Fork`
 
 @sincely、`@ooil929`、 @InPanda、 `luyufanzhi`、AllenChiangCN、`Liquid-Zhangliquan`... thank you for your attention :heart:
 
-[![Forkers repo roster for @dengxiaoning/cesium_dev_kit][forkers-url]][forkers-link]
+[See all forks](https://github.com/dengxiaoning/cesium_dev_kit/network/members)
 
 [npm]: https://img.shields.io/npm/v/cesium_dev_kit
 [npm-url]: https://www.npmjs.com/package/cesium_dev_kit
@@ -292,8 +332,4 @@ I am grateful to the generous individuals who awarded me these little stars, tha
 [build-status]: https://github.com/dengxiaoning/cesium_dev_kit
 [build-main]: https://img.shields.io/github/actions/workflow/status/dengxiaoning/cesium_dev_kit/project-build.yml?branch=main&logo=github
 [repo-stars]: https://img.shields.io/github/stars/dengxiaoning/cesium_dev_kit?style=plastic&logo=github
-[forkers-url]: https://bytecrank.com/nastyox/reporoster/php/forkersSVG.php?user=dengxiaoning&repo=cesium_dev_kit
-[forkers-link]: https://github.com/dengxiaoning/cesium_dev_kit/network/members
-[stargazers-url]: https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?user=dengxiaoning&repo=cesium_dev_kit
-[stargazers-link]: https://github.com/dengxiaoning/cesium_dev_kit/stargazers
 [star-chart]: https://api.star-history.com/svg?repos=dengxiaoning/cesium_dev_kit&type=Date

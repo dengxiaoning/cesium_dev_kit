@@ -2,7 +2,7 @@
 
 [![Build Status][build-main]][build-status]
 [![NPM Package][npm]][npm-url]
-[![NPM DownloadsWeekly][npm-download]][npmtrends-url]
+[![NPM 下载量][npm-download]][npmtrends-url]
 [![Build Size][build-size]][build-size-url]
 [![GitHub Repo stars][repo-stars]][star-chart]
 [![license][license-uri]][license-link]
@@ -33,18 +33,18 @@ npm run docs:serve       # 本地预览 http://localhost:5174
 
 ## 功能展示
 
-| ![material](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/material.gif) |        ![analysis](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/analysis.gif)        |       ![plot](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/plot.gif)       |
+| ![material](src/assets/image/preview/material.gif) |        ![analysis](src/assets/image/preview/analysis.gif)        |       ![plot](src/assets/image/preview/plot.gif)       |
 | :---------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------: |
 |                                                    材质                                                     |                                                           分析                                                            |                                                      标绘                                                       |
-| ![dnyRiver](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/dnyRiver.gif) |         ![extrude](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/extrude.gif)         |     ![effect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/effect.gif)     |
+| ![dnyRiver](src/assets/image/preview/dnyRiver.gif) |         ![extrude](src/assets/image/preview/extrude.gif)         |     ![effect](src/assets/image/preview/effect.gif)     |
 |                                                    河流                                                     |                                                         图形挤压                                                          |                                                      特效                                                       |
-|    ![radar](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/radar.gif)    |        ![roaming](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathRoam.gif)         |       ![drag](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/drag.gif)       |
+|    ![radar](src/assets/image/preview/radar.gif)    |        ![roaming](src/assets/image/preview/pathRoam.gif)         |       ![drag](src/assets/image/preview/drag.gif)       |
 |                                                  雷达案例                                                   |                                                       第一人称漫游                                                        |                                                      拖拽                                                       |
-|  ![rayCast](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rayCast.gif)  | ![fireworksEffect](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/fireworksEffect.gif) | ![aniSoldier](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/aniSoldier.gif) |
+|  ![rayCast](src/assets/image/preview/rayCast.gif)  | ![fireworksEffect](src/assets/image/preview/fireworksEffect.gif) | ![aniSoldier](src/assets/image/preview/aniSoldier.gif) |
 |                                                  光线投射                                                   |                                                         烟花效果                                                          |                                                   奔跑的士兵                                                    |
-| ![路线规划](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/pathPlan.gif) |    ![自定义图元](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/custPrimitive.gif)     | ![聚合图层](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/clusterLayer.gif) |
+| ![路线规划](src/assets/image/preview/pathPlan.gif) |    ![自定义图元](src/assets/image/preview/custPrimitive.gif)     | ![聚合图层](src/assets/image/preview/clusterLayer.gif) |
 |                                                  路线规划                                                   |                                                        自定义图元                                                         |                                                    聚合图层                                                     |
-|  ![三维柱状](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/bar3d.gif)   |        ![卷帘](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/rollerBlind.gif)         |  ![heatmap3d](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/heatmap3d.gif)  |
+|  ![三维柱状](src/assets/image/preview/bar3d.gif)   |        ![卷帘](src/assets/image/preview/rollerBlind.gif)         |  ![heatmap3d](src/assets/image/preview/heatmap3d.gif)  |
 |                                                  三维柱状                                                   |                                                           卷帘                                                            |                                                    三维热力                                                     |
 
 [更多>>](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
@@ -59,6 +59,43 @@ npm install three
 
 > 需要 Cesium `>=1.105`，`three`、`echarts`、`dat.gui`、`libgif` 均为可选 peer 依赖（仅在使用对应功能时安装）。
 > 库内不再内置 Cesium Ion token，请通过 `extraConfig.AccessToken` 传入，或在应用入口设置 `Cesium.Ion.defaultAccessToken`。
+
+## Cesium 静态资源（必读）
+
+`cesium_dev_kit` 只负责在 Cesium 之上扩展能力，**不包含 Cesium 自身的运行资源**。首次渲染前，
+`Assets/`、`Workers/`、`ThirdParty/` 和 `Widgets/widgets.css` 必须可访问，否则会出现
+地球不显示、地形/影像瓦片加载失败、控件没有样式等问题。
+
+**Vite（推荐）**：用插件自动拷贝，不用手写配置。
+
+```bash
+npm i -D vite-plugin-cesium
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import cesium from 'vite-plugin-cesium'
+
+export default defineConfig({ plugins: [cesium()] })
+```
+
+**手动配置（webpack / Rspack / Rollup）**
+
+1. 把 `node_modules/cesium/Build/Cesium/{Assets,Workers,ThirdParty,Widgets}` 拷到静态目录，例如 `public/cesium/`；
+2. 在**引入 Cesium 之前**设置 `window.CESIUM_BASE_URL = '/cesium/'`；
+3. 引入控件样式：`import 'cesium/Build/Cesium/Widgets/widgets.css'`。
+
+容器必须给明确高度，否则画布高度为 0、页面一片空白：
+
+```css
+#cesiumContainer {
+  width: 100%;
+  height: 100%;
+}
+```
+
+另外别忘了设置 `Cesium.Ion.defaultAccessToken`，或者通过 `extraConfig.AccessToken` 传入。
 
 ## 快速开始（推荐按需引入）
 
@@ -166,19 +203,23 @@ setErrorHandler((err, ctx) => console.warn(ctx?.scope, err))
 > `createDynamicCircleGraphics`），旧名保留并标记 `@deprecated`。
 
 
-### 如需在 H5 中使用
+### 不用打包器 / script 标签直引
 
-- html 中直接引入 index.umd.js
+当前发布物只包含 ESM（`dist/*.mjs`）和 CJS（`dist/*.cjs`），**不再发布 `index.umd.js`**，
+`window.cesium_dev_kit` 这个全局变量也随之取消 —— 老的
+`<script src="index.umd.js">` 写法会 404。如果页面不能上打包器，用 Vite 打一个 `iife` 包再引：
 
-```javaScript
-<script type="text/javascript" src="index.umd.js"></script>
+```ts
+// vite.config.ts
+export default {
+  build: {
+    lib: { entry: 'src/main.ts', formats: ['iife'], name: 'demo' },
+    rollupOptions: { output: { inlineDynamicImports: true } }
+  }
+}
 ```
 
-- 初始化对象
-
-```javaScript
-new cesium_dev_kit.initCesium({...})
-```
+生成的 js 用 `<script>` 引入即可。如果需要官方重新提供 UMD 构建，欢迎提 issue。
 
 ## 部署
 
@@ -207,13 +248,9 @@ npm run build        # 查看案例
 
 你是否使用并喜欢 cesium_dev_kit，但你没有找到一种方式来表达你的喜欢? 如果是，请考虑捐款来支持这个项目。或许不是也不用担心，不管有没有支持，我都会继续维护这个项目。不过，如果你请我喝杯咖啡，我会非常高兴 😄
 
-- [![Support via PayPal](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/assets/image/preview/paypal-logo-129x32.svg)](https://paypal.me/xiaoningdeng?country.x=C2&locale.x=en_US)
+- [![Support via PayPal](src/assets/image/preview/paypal-logo-129x32.svg)](https://paypal.me/xiaoningdeng?country.x=C2&locale.x=en_US)
 
-- 微信 / 支付宝
-  <div style="display: flex">
-    <img alt="wechat" title="wechat" src="https://benpaodehenji.com/cesium_dev_kit/static/data/images/wechat.png">
-    <img alt="alipay" title="alipay" src="https://benpaodehenji.com/cesium_dev_kit/static/data/images/alipay.png">
-  </div>
+- [GitHub Sponsors](https://github.com/sponsors/dengxiaoning)
 
 ##
 
@@ -234,8 +271,8 @@ npm run build        # 查看案例
 ## 项目不足与优化
 
 - 1、Cesium 相关类型暂以宽松（`any`）为主，以兼容通过 CDN / 全局 `window.Cesium` 引入的方式；若使用 npm 安装的 cesium，可自行扩展精确类型
-- 2、未作异常捕捉和处理
-- 3、缺少单元测试与自动化发布流程
+- 2、错误已统一为 `CesiumDevKitError`（稳定 code），非致命错误走 `setErrorHandler`；少数旧工具方法仍会静默吞掉异常
+- 3、单元测试覆盖纯算法层（12 个套件），浏览器 / DOM 级集成测试与 Cesium 版本矩阵仍缺失
 
 ## 如何贡献
 
@@ -253,13 +290,13 @@ npm run build        # 查看案例
 
 非常感谢留下星星的好心人，感谢您的支持 :heart:
 
-[![Stargazers repo roster for @dengxiaoning/cesium_dev_kit][stargazers-url]][stargazers-link]
+[查看全部 Stargazers](https://github.com/dengxiaoning/cesium_dev_kit/stargazers) · [Star 增长曲线](https://api.star-history.com/svg?repos=dengxiaoning/cesium_dev_kit&type=Date)
 
 ## `Fork`
 
 @sincely、`@ooil929`、 @InPanda、 `luyufanzhi`、AllenChiangCN、`Liquid-Zhangliquan` :heart:
 
-[![Forkers repo roster for @dengxiaoning/cesium_dev_kit][forkers-url]][forkers-link]
+[查看全部 Fork](https://github.com/dengxiaoning/cesium_dev_kit/network/members)
 
 [npm]: https://img.shields.io/npm/v/cesium_dev_kit
 [npm-url]: https://www.npmjs.com/package/cesium_dev_kit
@@ -272,8 +309,4 @@ npm run build        # 查看案例
 [build-status]: https://github.com/dengxiaoning/cesium_dev_kit
 [build-main]: https://img.shields.io/github/actions/workflow/status/dengxiaoning/cesium_dev_kit/project-build.yml?branch=main&logo=github
 [repo-stars]: https://img.shields.io/github/stars/dengxiaoning/cesium_dev_kit?style=plastic&logo=github
-[forkers-url]: https://bytecrank.com/nastyox/reporoster/php/forkersSVG.php?user=dengxiaoning&repo=cesium_dev_kit
-[forkers-link]: https://github.com/dengxiaoning/cesium_dev_kit/network/members
-[stargazers-url]: https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?user=dengxiaoning&repo=cesium_dev_kit
-[stargazers-link]: https://github.com/dengxiaoning/cesium_dev_kit/stargazers
 [star-chart]: https://api.star-history.com/svg?repos=dengxiaoning/cesium_dev_kit&type=Date

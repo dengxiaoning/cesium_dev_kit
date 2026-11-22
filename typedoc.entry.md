@@ -22,6 +22,18 @@ npm install three
 > 需要 Cesium `>=1.105`。`three`、`echarts`、`dat.gui`、`libgif` 均为可选 peer 依赖，
 > 只在使用对应能力时才需要安装。
 
+## Cesium 静态资源（必读）
+
+本套件不包含 Cesium 自身的运行资源。首次渲染前，`Assets/`、`Workers/`、`ThirdParty/` 和
+`Widgets/widgets.css` 必须可访问，否则会出现地球不显示、瓦片加载失败、控件无样式。
+
+- **Vite**：`npm i -D vite-plugin-cesium`，然后在 `vite.config.ts` 里 `plugins: [cesium()]`。
+- **手动**：把 `node_modules/cesium/Build/Cesium/{Assets,Workers,ThirdParty,Widgets}` 拷到
+  `public/cesium/`，引入 Cesium 之前设置 `window.CESIUM_BASE_URL = '/cesium/'`，并
+  `import 'cesium/Build/Cesium/Widgets/widgets.css'`。
+- 容器必须有明确高度（`width/height: 100%`），否则画布高度为 0。
+- 记得设置 `Cesium.Ion.defaultAccessToken`。
+
 ## 快速开始
 
 ```ts
