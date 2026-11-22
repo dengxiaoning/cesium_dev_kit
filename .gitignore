@@ -18,3 +18,6 @@ yarn.lock
 docs
 # TypeDoc 用的声明桩，由 scripts/gen-api-stubs.mjs 生成
 src/utils/cesiumPluginsExtends/api
+
+# release.yml 从 CHANGELOG 提取的发布说明（构建产物，不提交）
+.release-notes.md

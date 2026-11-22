@@ -33,9 +33,9 @@ npm run docs:serve       # 本地预览 http://localhost:5174
 
 ## 功能展示
 
-| ![material](src/assets/image/preview/material.gif) |        ![analysis](src/assets/image/preview/analysis.gif)        |       ![plot](src/assets/image/preview/plot.gif)       |
+| ![terrainEdit](src/assets/image/preview/terrainEdit.png) |        ![analysis](src/assets/image/preview/analysis.gif)        |       ![plot](src/assets/image/preview/plot.gif)       |
 | :---------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------: |
-|                                                    材质                                                     |                                                           分析                                                            |                                                      标绘                                                       |
+|                地形编辑               |                                                           分析                                                            |                                                      标绘                                                       |
 | ![dnyRiver](src/assets/image/preview/dnyRiver.gif) |         ![extrude](src/assets/image/preview/extrude.gif)         |     ![effect](src/assets/image/preview/effect.gif)     |
 |                                                    河流                                                     |                                                         图形挤压                                                          |                                                      特效                                                       |
 |    ![radar](src/assets/image/preview/radar.gif)    |        ![roaming](src/assets/image/preview/pathRoam.gif)         |       ![drag](src/assets/image/preview/drag.gif)       |

@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+### 变更（Changed）
+- **发布流程补上 GitHub Release**：`release.yml` 在 npm 发布成功后，用 `CHANGELOG.md` 里对应版本的
+  小节创建 / 更新 GitHub Release（新增 `scripts/release-notes.mjs`）；取不到小节时退回
+  `--generate-notes`。另外 npm 上已存在该版本时跳过发布，便于 tag 重跑时只补建 Release。
+
 ## [1.2.1] - 2026-11-22
 
 ### 修复（Fixed）

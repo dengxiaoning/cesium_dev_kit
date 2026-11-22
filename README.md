@@ -35,9 +35,9 @@ Pushing to `main` triggers `.github/workflows/docs.yml`, which builds both and d
 
 ## Features
 
-|   ![material](src/assets/image/preview/material.gif)   |        ![analysis](src/assets/image/preview/analysis.gif)        |         ![plot](src/assets/image/preview/plot.gif)         |
+|   ![terrainEdit](src/assets/image/preview/terrainEdit.png)   |        ![analysis](src/assets/image/preview/analysis.gif)        |         ![plot](src/assets/image/preview/plot.gif)         |
 | :-------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------: |
-|                                                    material                                                     |                                                         analysis                                                          |                                                        plot                                                         |
+|                                                    terrainEdit                                                     |                                                         analysis                                                          |                                                        plot                                                         |
 | ![dynamicRiver](src/assets/image/preview/dnyRiver.gif) |         ![extrude](src/assets/image/preview/extrude.gif)         |       ![effect](src/assets/image/preview/effect.gif)       |
 |                                                  dynamicRiver                                                   |                                                          extrude                                                          |                                                       effect                                                        |
 |      ![radar](src/assets/image/preview/radar.gif)      |        ![roaming](src/assets/image/preview/pathRoam.gif)         |         ![drag](src/assets/image/preview/drag.gif)         |
