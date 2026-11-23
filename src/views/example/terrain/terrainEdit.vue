@@ -166,7 +166,7 @@ export default {
         window.THREE = THREE
       }
 
-      const { scene } = kit.threeJs.initThree({ center: DEFAULT_CENTER, threeHabit: false })
+      const { scene } = kit.threeJs.initThree({ center: DEFAULT_CENTER, threeHabit: false, fusion: 'single-context', depth: 'canvas-blit' })
       this.scene = scene
       // 单帧循环交给 three 统一驱动：先渲染 cesium，再用同一帧的相机矩阵渲染 three
       kit.threeJs.loop(() => this.scene.update())

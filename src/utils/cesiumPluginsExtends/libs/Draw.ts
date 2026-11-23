@@ -2,6 +2,7 @@ import { Base } from "./Base";
 import { Graphics } from "./Graphics";
 import { TooltipUtil } from './TooltipUtil'
 import type { CesiumGlobal, StaticResourceConf, WGS84Type } from './Base'
+import type { Cartesian2, Cartesian3 } from 'cesium'
 import { asProperty, mixinPrototype, attachDestroy, registerCleanup, disposeModule } from './Base'
 import type { GraphicsInstance } from './Graphics'
 import { createScopedConstructor } from './Base'
@@ -26,29 +27,51 @@ export interface PolylineStyleType {
   [key: string]: unknown
 }
 
-/** Draw 各方法的通用参数 */
+/** Draw 各方法的通用参数（不同方法只用到其中一部分，逐项见下） */
 export interface DrawOptions {
+  /** 图形样式（Cesium 实体属性子集：width / material / clampToGround / granularity / arcType 等）；不传时各方法自带默认样式 */
   style?: PolylineStyleType
+  /** 绘制完成回调。回调参数随方法不同：画线/画矩形为 `(positions, entity)`，画圆为 `({ center, radius }, entity)` */
   callback?: (...args: any[]) => void
+  /** 是否开启量算：画线时实时测距、画面时实时测面积 */
   measure?: boolean
+  /** 宽度（米）：画走廊时的走廊宽度，默认 100 */
   width?: number
+  /** 高度（米）：画矩形的挤出高度、画走廊时的走廊高度，默认 1 */
   height?: number
-  material?: any | any | string
+  /** 材质，覆盖 `style.material` */
+  material?: any
+  /** 是否贴地 */
   clampToGround?: boolean
+  /** 是否贴合 S3M 倾斜模型表面 */
   clampToS3M?: boolean
+  /** 采样粒度（弧度），默认 `Cesium.Math.RADIANS_PER_DEGREE` */
   granularity?: number
+  /** 线类型，默认 `Cesium.ArcType.GEODESIC` */
   arcType?: any
+  /** 绘制子类型，如 `straightLine` 表示三点直线量测 */
   type?: string
+  /** 圆柱 / 圆锥顶面半径（米） */
   topRadius?: number
+  /** 圆柱 / 圆锥底面半径（米） */
   bottomRadius?: number
+  /** 圆柱 / 圆锥长度（米），不传时按绘制圆量出的半径推算 */
   length?: number
+  /** 挤出高度（米） */
   extrudedHeight?: number
+  /** 材质颜色，如画管道，默认 `Cesium.Color.RED` */
   color?: any
+  /** 星形截面外半径（像素），默认 150 */
   rOuter?: number
+  /** 星形截面内半径（像素），默认 75 */
   rInner?: number
+  /** 星形截面角数，默认 7 */
   arms?: number
+  /** 圆形截面半径（像素），默认 20 */
   circleRadius?: number
+  /** 管道截面形状：`fivePoint` 为五角星，其余为圆形 */
   shape?: string
+  /** 其它自定义字段 */
   [key: string]: unknown
 }
 
@@ -91,9 +114,9 @@ export interface DrawInstance {
   destroy(): void,
   getDfSt: (attrArr: string[]) => string | undefined
   _viewer: any
-  getCatesian3FromPX: (px: any) => boolean | any | null | undefined
-  transformCartesianArrayToWGS84Array: (cartesianArr: any[]) => (WGS84Type | undefined)[] | undefined
-  transformWGS84ArrayToCartesianArray: (wgs84Arr: any[], alt?: number) => any[]
+  getCatesian3FromPX: (px: Cartesian2) => Cartesian3 | boolean | null | undefined
+  transformCartesianArrayToWGS84Array: (cartesianArr: Cartesian3[]) => (WGS84Type | undefined)[] | undefined
+  transformWGS84ArrayToCartesianArray: (wgs84Arr: WGS84Type[], alt?: number) => Cartesian3[]
   getPositionDistance: (positions: WGS84Type[]) => number
   getPositionsArea: (positions: WGS84Type[]) => number
   createGraphics: () => any

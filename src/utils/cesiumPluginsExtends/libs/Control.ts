@@ -1,5 +1,6 @@
 import { loadDatGui } from './lazyLoad'
 import type { BindHandleEventOptions } from './Base'
+import type { Entity, ImageryLayer } from 'cesium'
 import { createScopedConstructor, attachDestroy } from './Base'
 
 /** 带场景特效扩展（colorCorrection/bloomEffect/hdrEnabled/lightSource）的 Viewer */
@@ -23,6 +24,14 @@ export interface LayerParam {
   [key: string]: unknown
 }
 
+/** definedMouseEvent 的参数 */
+export interface DefinedMouseEventOptions {
+  /** 要拖拽/编辑的目标实体 */
+  targetEntity?: Entity
+  /** 拖拽状态标识，一般传 `{ selected: false, leftDown: false }` */
+  ctrlFlag?: ctrlManualFlag
+}
+
 /** Control 实例类型 */
 export interface ControlInstance {
   _viewer: any
@@ -35,15 +44,15 @@ export interface ControlInstance {
   /** 模型，3ditiles等实体位置调整面板， */
   showPrimitiveMatrixPanel(param?: Record<string, unknown>): Promise<unknown>,
   /** 图层参数调整 */
-  showLayerParamPanel(layer: any, param?: Record<string, unknown>): Promise<void>,
+  showLayerParamPanel(layer: ImageryLayer, param?: Record<string, unknown>): Promise<void>,
   /** 图层切换 */
-  showLayerSwitchPanel(layers?: any[], param?: Record<string, unknown>, cb?: () => void): Promise<void>,
+  showLayerSwitchPanel(layers?: ImageryLayer[], param?: Record<string, unknown>, cb?: () => void): Promise<void>,
   /** 场景效果调整面板 */
   showSceneEffectEditPanel(options?: Record<string, unknown>): Promise<void>,
   /** 实体位置、角度编辑面板 */
   showEntityOrientationEditPanel(param?: Record<string, unknown>): Promise<void>,
   /** 定义事件 */
-  definedMouseEvent(targetEntity: any, ctrlFlag: ctrlManualFlag): void,
+  definedMouseEvent(options?: DefinedMouseEventOptions): void,
   defMouseMove(movement?: unknown): unknown,
   defLeftDown(movement?: unknown): void,
   defMouseWheel(movement?: unknown): unknown,
@@ -1201,9 +1210,10 @@ Control.prototype = {
   },
 
   /**
-   * 定义事件
-   * @param {Entity} targetEntity - 操作的目标实体
-   * @param {ctrlManualFlag} ctrlFlag - 操作常量定义
+   * 定义事件（拖拽 / 旋转 / 缩放）
+   * @param {object} options
+   * @param {Entity} options.targetEntity - 操作的目标实体
+   * @param {ctrlManualFlag} options.ctrlFlag - 操作状态标识，如 `{ selected: false, leftDown: false }`
    * @example
    * import { Control } from 'cesium_dev_kit'
    * const {control} = new Control({
@@ -1218,9 +1228,9 @@ Control.prototype = {
       const entity = control.createGraphics()
    * control.definedMouseEvent({ targetEntity: entity, ctrlFlag: ctrlManualFlag })
    */
-  definedMouseEvent(this: ControlInstance, { targetEntity, ctrlFlag }: any) {
+  definedMouseEvent(this: ControlInstance, { targetEntity, ctrlFlag }: DefinedMouseEventOptions = {}) {
     dragEntity = targetEntity;
-    currManualFlag = ctrlFlag;
+    currManualFlag = ctrlFlag || {};
     this.bindHandleEvent({
       leftDown: this.defLeftDown,
       mouseMove: this.defMouseMove,

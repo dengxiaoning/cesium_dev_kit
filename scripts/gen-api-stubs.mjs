@@ -57,26 +57,53 @@ const DROP_TAG_RE =
  * 把 `@param {object} options.color - 点颜色` 这类「参数对象字段」折叠成
  * `options` 参数下的一个列表，既消掉 TypeDoc 的 @param 告警，也让文档里能直接
  * 看到每个字段的含义，不用再点进 Options 接口。
+ *
+ * 同时支持 JSDoc 的可选参数写法：`@param {number} [options.fov=45] - 视角`，
+ * 默认值会拼到说明末尾（`默认 \`45\``）。旧正则会漏掉带方括号的行，
+ * 导致这些字段在文档里整段消失。
  */
+const PARAM_BRACKET_RE =
+  /^\s*@param\s*(?:\{([^}]*)\}\s*)?\[([A-Za-z_$][\w$.[\]]*?)\s*(?:=\s*(.*))?\]\s*(?:-\s*)?(.*)$/
+const PARAM_PLAIN_RE = /^\s*@param\s*(?:\{([^}]*)\}\s*)?([A-Za-z_$][\w$.[\]]*)\s*(?:-\s*)?(.*)$/
+
+/** 解析一条 @param，兼容 `[name=default]` 写法 */
+function parseParam(line) {
+  const bracket = line.match(PARAM_BRACKET_RE)
+  if (bracket) {
+    return {
+      type: (bracket[1] || '').trim(),
+      name: bracket[2],
+      def: (bracket[3] || '').trim(),
+      desc: (bracket[4] || '').trim()
+    }
+  }
+  const plain = line.match(PARAM_PLAIN_RE)
+  if (!plain) return null
+  return {
+    type: (plain[1] || '').trim(),
+    name: plain[2],
+    def: '',
+    desc: (plain[3] || '').trim()
+  }
+}
+
 function foldNestedParams(lines) {
   const nested = new Map()
   const top = []
   for (const line of lines) {
-    const m = line.match(/^\s*@param\s*(?:\{([^}]*)\}\s*)?([A-Za-z_$][\w$.[\]]*)\s*(?:-\s*)?(.*)$/)
-    if (!m) {
+    const parsed = parseParam(line)
+    if (!parsed || !parsed.name) {
       top.push(line)
       continue
     }
-    const type = (m[1] || '').trim()
-    const name = m[2]
-    const desc = (m[3] || '').trim()
+    const { type, name, def, desc } = parsed
     if (!name.includes('.')) {
       top.push(`@param ${name}${desc ? ` ${desc}` : ''}`)
       continue
     }
     const [parent, ...rest] = name.split('.')
     if (!nested.has(parent)) nested.set(parent, [])
-    nested.get(parent).push({ name: rest.join('.'), type, desc })
+    nested.get(parent).push({ name: rest.join('.'), type, def, desc })
   }
   if (!nested.size) return top
 
@@ -91,7 +118,8 @@ function foldNestedParams(lines) {
     for (const field of fields) {
       const typed = field.type && !/^(object|any|\*|Array|array|function)$/i.test(field.type)
       const suffix = field.desc ? `：${field.desc}` : ''
-      result.push(`- \`${field.name}\`${typed ? `（\`${field.type}\`）` : ''}${suffix}`)
+      const def = field.def ? ` 默认 \`${field.def}\`` : ''
+      result.push(`- \`${field.name}\`${typed ? `（\`${field.type}\`）` : ''}${suffix}${def}`)
     }
   }
   return result
@@ -457,7 +485,9 @@ function interfaceFields(sf, typeName, text) {
       desc: cleanDesc
     })
   }
-  return fields.slice(0, 15)
+  // 上限放宽到 40：DrawOptions 这类通用参数接口有 20+ 个带注释的字段，
+  // 截断会让方法页上少一半参数说明
+  return fields.slice(0, 40)
 }
 
 /** 把字段表插到 `@param options` 之后（没有则插在描述末尾、标签之前） */

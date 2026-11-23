@@ -1,4 +1,10 @@
-import type { Viewer as CesiumViewer } from 'cesium'
+import type {
+  Cartesian2,
+  Cartesian3,
+  PostProcessStage,
+  ScreenSpaceEventHandler,
+  Viewer as CesiumViewer
+} from 'cesium'
 import { createDefaultStatic, joinStaticUrl } from '../defaultStatic'
 import localDefaultValue from './defaultValue'
 
@@ -228,18 +234,32 @@ export interface TDTStyleType {
 }
 
 /** 屏幕事件回调收到的 movement 数据 */
-export type ScreenSpaceEventMovement = any
+export interface ScreenSpaceEventMovement {
+  /** 事件发生时的屏幕二维坐标（像素） */
+  position: Cartesian2
+  /** 鼠标移动时的结束位置，仅 MOUSE_MOVE 事件有 */
+  endPosition?: Cartesian2
+}
 
-/** 鼠标事件回调 */
-export type MouseEventHandler = (event: ScreenSpaceEventMovement, handlers: any) => void
+/** 鼠标事件回调：`event` 为屏幕事件数据，`handlers` 为当前的 ScreenSpaceEventHandler 实例 */
+export type MouseEventHandler = (
+  event: ScreenSpaceEventMovement,
+  handlers: ScreenSpaceEventHandler
+) => void
 
-/** bindHandleEvent 支持注册的鼠标事件 */
+/** bindHandleEvent 支持注册的鼠标事件，key 是事件名，value 是回调函数 */
 export interface BindHandleEventOptions {
+  /** 左键单击 */
   leftClick?: MouseEventHandler
+  /** 鼠标移动 */
   mouseMove?: MouseEventHandler
+  /** 左键双击 */
   doubleClick?: MouseEventHandler
+  /** 左键按下 */
   leftDown?: MouseEventHandler
+  /** 滚轮滚动 */
   mouseWheel?: MouseEventHandler
+  /** 左键抬起 */
   leftUp?: MouseEventHandler
 }
 
@@ -248,12 +268,49 @@ export type BindHandelEventOptions = BindHandleEventOptions
 
 /** setView / flyTo 的相机参数 */
 export interface CameraSetOptions {
-  position: any
+  /** 目标位置（笛卡尔坐标），必填 —— 为空时方法直接返回不执行 */
+  position: Cartesian3
+  /** 相机与目标点的距离（米），传入时会在 position 基础上做偏移 */
   distance?: number
-  orientation?: { heading: number; pitch: number; roll?: number }
+  /** 相机姿态，角度单位为弧度 */
+  orientation?: {
+    /** 朝向 */
+    heading: number
+    /** 倾斜角 */
+    pitch: number
+    /** 翻滚角 */
+    roll?: number
+  }
+  /** 飞行时长（秒），仅 flyTo 生效，默认 3 */
   duration?: number
+  /** 飞行插值方式，如 `Cesium.EasingFunction.QUADRATIC_IN_OUT`，仅 flyTo 生效 */
   easingFunction?: any
+  /** 飞行完成后的回调，仅 flyTo 生效 */
   callback?: () => void
+}
+
+/** setDarkEffect（黑夜特效）的参数 */
+export interface DarkEffectOptions {
+  /** 颜色偏移量，默认 `Cesium.Cartesian3(0.1, 0.2, 0.3)` */
+  offset?: Cartesian3
+}
+
+/** setBlurBloom（场景蓝光/泛光）的参数 */
+export interface BlurBloomOptions {
+  /** 曝光区域宽度（像素） */
+  width?: number
+  /** 曝光区域高度（像素） */
+  height?: number
+}
+
+/** setCameraEotateHeading（相机绕点环绕飞行）的参数 */
+export interface CameraRotateHeadingOptions {
+  /** 环绕中心经度（度） */
+  lng: number
+  /** 环绕中心纬度（度） */
+  lat: number
+  /** 环绕中心高度（米） */
+  height: number
 }
 
 /** 影像服务提供者构造参数 */
@@ -423,7 +480,7 @@ class Base {
   _objHasOwnProperty(obj: any, field: any, defVal: any) {
     return obj.hasOwnProperty(field) ? obj[field] : defVal
   }
-  getDfSt(attrArr: any) {
+  getDfSt(attrArr: string[]) {
     if (!dfSt) return undefined
     const conf = dfSt
     const res = attrArr.reduce((pre: any, curr: any) => {
@@ -672,7 +729,7 @@ class Base {
    * baseObj.base.setDarkEffect({offset:new Cesium.Cartesian3(0.1, 0.2, 0.3)})
    * @returns {postProcessStages} postProcessStages 实例
    */
-  setDarkEffect(options: any) {
+  setDarkEffect(options?: DarkEffectOptions) {
     options = options || {}
     var fs =
       'uniform sampler2D colorTexture;\n' +
@@ -711,7 +768,7 @@ class Base {
    * baseObj.base.setBlurBloom({width:80,height:97})
    * @returns {postProcessStages} postProcessStages 实例
    */
-  setBlurBloom(options: any) {
+  setBlurBloom(options?: BlurBloomOptions) {
     if (this._viewer && options) {
       var fs =
         'uniform float height;\n' +
@@ -972,7 +1029,7 @@ class Base {
    * @function
    * @param {Array} stage -后置场景对象数组
    */
-  removePostProcessStage(stage: any) {
+  removePostProcessStage(stage?: PostProcessStage | PostProcessStage[]) {
     if (stage) {
       if (Array.isArray(stage)) {
         stage.forEach((e: any) => {
@@ -1009,7 +1066,7 @@ class Base {
       },
     });
    */
-  setView(options: any) {
+  setView(options?: CameraSetOptions) {
     if (this._viewer && options && options.position) {
       if (options.distance) {
         //距离
@@ -1061,7 +1118,7 @@ class Base {
         duration:3
       })
    */
-  flyTo(options: any) {
+  flyTo(options?: CameraSetOptions) {
     if (this._viewer && options && options.position) {
       if (options.distance) {
         //距离
@@ -1101,14 +1158,15 @@ class Base {
    * @returns {WGS84Type}  转换后wgs84坐标对象
    *
    */
-  transformCartesianToWGS84(cartesian: any) {
+  transformCartesianToWGS84(cartesian?: Cartesian3 | WGS84Type) {
     if (this._viewer && cartesian) {
+      const input = cartesian as any
       // 已经是 WGS84 写法时直接返回，保证本方法可重复调用（幂等）
-      if (cartesian.x === undefined && (cartesian.lng !== undefined || cartesian.lon !== undefined)) {
+      if (input.x === undefined && (input.lng !== undefined || input.lon !== undefined)) {
         return {
-          lng: Number(cartesian.lng ?? cartesian.lon),
-          lat: Number(cartesian.lat),
-          alt: Number(cartesian.alt ?? cartesian.height ?? 0),
+          lng: Number(input.lng ?? input.lon),
+          lat: Number(input.lat),
+          alt: Number(input.alt ?? input.height ?? 0),
         }
       }
       // 从笛卡尔坐标获取经纬度
@@ -1135,7 +1193,7 @@ class Base {
    * baseObj.base.transformWGS84ArrayToCartesianArray([{lng:110.16018735617934, lat:31.036076859828338, alt:0 }])
    * @returns {Array<Cartesian3>} 转换后的笛卡尔积数组
    */
-  transformWGS84ArrayToCartesianArray(WSG84Arr: any, alt: any) {
+  transformWGS84ArrayToCartesianArray(WSG84Arr: WGS84Type[], alt?: number) {
     if (this._viewer && WSG84Arr) {
       var $this = this
       return WSG84Arr
@@ -1162,7 +1220,7 @@ class Base {
    * baseObj.base.transformWGS84ToCartesian({lng:110.16018735617934, lat:31.036076859828338, alt:0 },30)
    * @returns {Cartesian3} 转换后的笛卡尔积数组
    */
-  transformWGS84ToCartesian(position: any, alt?: any) {
+  transformWGS84ToCartesian(position?: WGS84Type, alt?: number) {
     if (this._viewer) {
       return position
         ? Cesium.Cartesian3.fromDegrees(
@@ -1187,7 +1245,7 @@ class Base {
    * baseObj.base.transformCartesianArrayToWGS84Array(Cesium.Cartesian3.fromDegreesArray( 110.16018735617934, 31.036076859828338, 110.17845812703679,31.033686527335444))
    * @returns {Array<WGS84Type>} 转换后的笛卡尔积数组
    */
-  transformCartesianArrayToWGS84Array(cartesianArr: any) {
+  transformCartesianArrayToWGS84Array(cartesianArr: Cartesian3[]) {
     if (this._viewer) {
       var $this = this
       if (!cartesianArr) return []
@@ -1222,7 +1280,7 @@ class Base {
    * @returns {CartographicType} 地理坐标
    *
    */
-    transformWGS84ToCartographic(position: any) {
+    transformWGS84ToCartographic(position: WGS84Type) {
       return position
         ? Cesium.Cartographic.fromDegrees(
             position.lng || position.lon,
@@ -1243,7 +1301,7 @@ class Base {
     * baseObj.base.lnglatArrayToCartesians([[117,40],[118.41]])
    * @returns {Cartesian3[]} cartesians -  笛卡尔积世界坐标数组
    */
-  lnglatArrayToCartesians(lnglats: any) {
+  lnglatArrayToCartesians(lnglats: number[][]) {
     if (!lnglats || lnglats.length < 1) return [];
     let cartArr: any[] = [];
   
@@ -1273,7 +1331,7 @@ class Base {
                 height: 15.8
             })
    */
-  setCameraEotateHeading(options: any) {
+  setCameraEotateHeading(options: CameraRotateHeadingOptions) {
     if (options) {
       let viewer = this._viewer
       let position = Cesium.Cartesian3.fromDegrees(
@@ -1343,7 +1401,7 @@ class Base {
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
    * @returns  {boolean|Cartesian3}
    */
-  getCatesian3FromPX(px: any) {
+  getCatesian3FromPX(px: Cartesian2) {
     if (this._viewer && px) {
       var picks = this._viewer.scene.pick(px)
       var cartesian = null
@@ -1501,7 +1559,7 @@ class Base {
    *     })
    * @returns {boolean|Cartesian3}
    */
-  pickUpPosition(e: any) {
+  pickUpPosition(e: ScreenSpaceEventMovement) {
     const cartesian3 = this.getCatesian3FromPX(e.position);
     return cartesian3;
   }
@@ -1524,7 +1582,7 @@ class Base {
    *     })
    * @returns {clickPositionType}
    */
-  getHandlerClickPosition(e: any) {
+  getHandlerClickPosition(e: ScreenSpaceEventMovement) {
     if (this._viewer) {
       let scene = this._viewer.scene
       let viewer = this._viewer
@@ -1560,7 +1618,7 @@ class Base {
     }
   }
   //修改相机状态
-  updateCameraState(flag: any) {
+  updateCameraState(flag: boolean) {
     this._viewer.scene._screenSpaceCameraController.enableRotate = flag
     this._viewer.scene._screenSpaceCameraController.enableTranslate = flag
     this._viewer.scene._screenSpaceCameraController.enableZoom = flag
@@ -1572,12 +1630,12 @@ class Base {
    * 鼠标事件注册
    * @function
    * @param {object} options
-   * @param {string} options.leftClick - 左键点击
-   * @param {object} options.mouseMove - 移动
-   * @param {object} options.dubleClick - 双击
-   * @param {object} options.leftDown - 左键按下
-   * @param {object} options.mouseWheel - 鼠标滚动
-   * @param {object} options.leftUp - 左键弹起
+   * @param {Function} options.leftClick - 左键点击，回调签名 `(event, handlers)`
+   * @param {Function} options.mouseMove - 鼠标移动
+   * @param {Function} options.doubleClick - 左键双击
+   * @param {Function} options.leftDown - 左键按下
+   * @param {Function} options.mouseWheel - 鼠标滚动
+   * @param {Function} options.leftUp - 左键弹起
    * @example
    * import { Base } from 'cesium_dev_kit'
    * const {base} = new Base({
@@ -1600,7 +1658,7 @@ class Base {
     leftDown: _mouseLeftDownHandler,
     mouseWheel: _mouseWheelHandler,
     leftUp: _mouseLeftUpHandler
-  }: any) {
+  }: BindHandleEventOptions = {}) {
     if (this._viewer) {
       var _handlers = new Cesium.ScreenSpaceEventHandler(this._viewer.canvas)
       registerCleanup(this, () => {
@@ -1654,7 +1712,7 @@ class Base {
    * })
    * base.getHandlePosition(res=>{console.log(res)})
    */
-  getHandlePosition(callback: any) {
+  getHandlePosition(callback: (position: WGS84Type | undefined, handler: ScreenSpaceEventHandler) => void) {
     if (this._viewer) {
       var _handler = new Cesium.ScreenSpaceEventHandler(
           this._viewer.scene.canvas
@@ -1678,7 +1736,7 @@ class Base {
   /**
    * @deprecated 拼写有误，请使用 {@link getHandlePosition}
    */
-  getHandelPosition(callback: any) {
+  getHandelPosition(callback: (position: WGS84Type | undefined, handler: ScreenSpaceEventHandler) => void) {
     return this.getHandlePosition(callback)
   }
   /**
@@ -2294,7 +2352,7 @@ class Base {
    *@function
    * @param {Array} eventNameArr  handler名称数组，如['LEFT_CLICK','MOUSE_MOVE']
    */
-  removeHandlerByName(eventNameArr: any = []) {
+  removeHandlerByName(eventNameArr: string[] = []) {
     eventNameArr.forEach((eHandler: any) => {
       this._viewer.screenSpaceEventHandler.removeInputAction(
         Cesium.ScreenSpaceEventType[eHandler]

@@ -1,6 +1,7 @@
 import { BasePlot } from "./BasePlot";
 import type { CesiumGlobal } from '../Base'
 import type { XpAlgorithm } from './algorithm'
+import type { Cartesian3, Entity } from 'cesium'
 import { TooltipUtil } from '../TooltipUtil'
 /**
  * 标会（攻击箭头）模块
@@ -276,7 +277,7 @@ AttackArrow.prototype = {
     //获取直角箭头中的控制点 世界坐标
     return this.positions;
   },
-  creatPoint: function (this: AttackArrowInstance, cartesian?: any) {
+  creatPoint: function (this: AttackArrowInstance, cartesian?: Cartesian3) {
     var Cesium = this._Cesium
     var point = this.viewer.entities.add({
       position: cartesian,
@@ -317,7 +318,7 @@ AttackArrow.prototype = {
       }),
     });
   },
-  cartesianToLatlng: function (this: AttackArrowInstance, cartesian?: any) {
+  cartesianToLatlng: function (this: AttackArrowInstance, cartesian?: Cartesian3) {
     var Cesium = this._Cesium
     var latlng = this.viewer.scene.globe.ellipsoid.cartesianToCartographic(cartesian);
     var lat = Cesium.Math.toDegrees(latlng.latitude);
@@ -342,9 +343,9 @@ export interface AttackArrowInstance {
   getLnglats(): number[][],
   /** 获取攻击箭头中的关键点 世界坐标 */
   getPositions(): any[],
-  creatPoint(cartesian?: any): any & { wz?: number; attr?: string },
-  showArrowOnMap(positions?: any[]): any,
-  cartesianToLatlng(cartesian?: any): number[],
+  creatPoint(cartesian?: Cartesian3): Entity & { wz?: number; attr?: string },
+  showArrowOnMap(positions?: Cartesian3[]): any,
+  cartesianToLatlng(cartesian?: Cartesian3): number[],
   constructor(): void
   _Cesium: any
   positions: any[]

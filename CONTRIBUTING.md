@@ -19,7 +19,10 @@ This project exists thanks to all the people who contribute.<br/>
 5. Let's develop!
 6. Submit your changes: `git commit -am 'feat(function): add xxxxx'`
 7. Push your branch: `git push origin feat/xxxx`
-8. Make a new `pull request` in [cesium_dev_kit](https://github.com/dengxiaoning/cesium_dev_kit) repository.
+8. Add a changeset if library users can notice the change (`npm run changeset`, commit the generated
+   `.changeset/*.md`). Pure docs / CI changes don't need one — see [RELEASING.md](RELEASING.md) for how to
+   pick `patch` / `minor` / `major`.
+9. Make a new `pull request` in [cesium_dev_kit](https://github.com/dengxiaoning/cesium_dev_kit) repository.
 
 ## Git Contribution submission specification
 

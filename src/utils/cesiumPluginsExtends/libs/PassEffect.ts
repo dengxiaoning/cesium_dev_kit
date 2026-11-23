@@ -1,6 +1,102 @@
 import { Base, mixinPrototype } from "./Base";
 import { Graphics } from './Graphics'
 import { createScopedConstructor, attachDestroy, registerCleanup, disposeModule } from './Base'
+import type { WGS84Type } from './Base'
+import type { Cartesian3, Color, Entity, Viewer } from 'cesium'
+
+/** 圆形扩散效果的参数 */
+export interface CircleScanEffectOptions {
+  /** 扫描圆心坐标 */
+  position?: Cartesian3
+  /** 实体 id，便于后续按 id 查找/删除 */
+  id?: string
+  /** 扫描半径（米） */
+  radius?: number
+  /** 扫描颜色 */
+  color?: Color
+  /** 单次扫描时长（秒） */
+  duration?: number
+  /** 扫描类型，默认 `CircleScan`（圆环扫描） */
+  circleMode?: string
+  /** 圆环边框宽度 */
+  border?: number
+}
+
+/** 雷达扫描的参数 */
+export interface RadarScanEffectOptions {
+  /** 雷达位置 */
+  position?: Cartesian3
+  /** 实体 id */
+  id?: string
+  /** 扫描半径（米） */
+  radius?: number
+  /** 扫描颜色 */
+  color?: Color
+  /** 单次扫描时长（秒） */
+  duration?: number
+  /** 扫描边框宽度 */
+  border?: number
+}
+
+/** 卫星扫描的参数 */
+export interface SatelliteScanOptions {
+  /** 卫星位置 */
+  position?: Cartesian3
+  /** 扫描重复比例，取值 10~60 */
+  repeat?: number
+  /** 扫描颜色 */
+  color?: Color
+  /** 光柱高度（米） */
+  length?: number
+  /** 光柱边厚度，取值 0.1~0.9 */
+  thickness?: number
+}
+
+/** 光锥扫描的参数 */
+export interface LightCentrumScanData {
+  /** 扫描参数数组 `[半径, 圆心x, 圆心y, 分段数]`，`0.003` 表示半径 */
+  circle?: number[]
+  /** 坐标数组（类似 polygon，需要闭合） */
+  positionList?: Cartesian3[] | number[][]
+  /** 材质，可传颜色或 MaterialProperty */
+  material?: any
+  /** 扫描比例，数字越小速度越快 */
+  number?: number
+  /** 观察点，也就是光源点 */
+  observer?: Cartesian3
+}
+
+/** 火焰粒子的参数 */
+export interface FireParticleSystemOptions {
+  /** 粒子显示位置 */
+  position?: Cartesian3
+  /** 粒子图片地址（可配合 defaultStatic 使用相对路径） */
+  fireImage?: string
+  /** 粒子出生时的比例（相对原始大小） */
+  startScale?: number
+  /** 粒子死亡时的比例 */
+  endScale?: number
+  /** 粒子寿命下限（秒），实际寿命在上下限之间随机 */
+  minimumParticleLife?: number
+  /** 粒子寿命上限（秒） */
+  maximumParticleLife?: number
+  /** 粒子速度下限（米/秒） */
+  minimumSpeed?: number
+  /** 粒子速度上限（米/秒） */
+  maximumSpeed?: number
+  /** 粒子贴图缩放尺寸（像素） */
+  particleSize?: number
+  /** 每秒发射的粒子数 */
+  emissionRate?: number
+  /** 粒子出生颜色 */
+  startColor?: Color
+  /** 粒子死亡颜色 */
+  endColor?: Color
+  /** 粒子发射器，如 `new Cesium.ConeEmitter(...)` / `Cesium.CircleEmitter` */
+  emitter?: any
+  /** 其它透传给 Cesium.ParticleSystem 的字段 */
+  [key: string]: unknown
+}
 
 /** PassEffect 实例类型 */
 export interface PassEffectInstance {
@@ -9,20 +105,20 @@ export interface PassEffectInstance {
   /** 释放当前模块持有的监听器 / DataSource（幂等） */
   destroy(): void
   /** 圆形扩散效果 */
-  setCircleScanEffect(options?: any): any,
+  setCircleScanEffect(options?: CircleScanEffectOptions): any,
   /** 雷达扫描 */
-  setRadarScanEffect(options?: any): any,
+  setRadarScanEffect(options?: RadarScanEffectOptions): any,
   /** 卫星扫描 */
-  satelliteScan(options?: any): any,
+  satelliteScan(options?: SatelliteScanOptions): any,
   /** 光锥扫描 */
-  lighitCentrumScanEffect(data?: any): any[],
-  createLightScan_getCirclePoints(r?: any, ox?: any, oy?: any, count?: any): any,
-  createLightScan_changeOnePosition(data?: any, entity?: any, arr?: any): any,
-  createLightScan_entityCList(viewer?: any, point?: any, data?: any): any,
+  lighitCentrumScanEffect(data?: LightCentrumScanData): any[],
+  createLightScan_getCirclePoints(r?: number, ox?: number, oy?: number, count?: number): { x: number; y: number }[],
+  createLightScan_changeOnePosition(data?: LightCentrumScanData, entity?: Entity, arr?: number[]): any,
+  createLightScan_entityCList(viewer?: Viewer, point?: { x: number; y: number }[], data?: LightCentrumScanData): any,
   /** 创建火焰粒子 */
-  createFireParticleSystem(options?: any): any,
-  transformCartesianToWGS84: any
-  transformWGS84ToCartesian: any
+  createFireParticleSystem(options?: FireParticleSystemOptions): any,
+  transformCartesianToWGS84: (cartesian?: Cartesian3 | WGS84Type) => WGS84Type
+  transformWGS84ToCartesian: (position?: WGS84Type, alt?: number) => Cartesian3
   _getCircleScanShader: any
   _getRadarScanShader: any
 }
@@ -112,7 +208,7 @@ PassEffect.prototype = {
       var cartesian3Center1 = this.transformWGS84ToCartesian({
         lng: position.lng,
         lat: position.lat,
-        alt: position.alt + 500
+        alt: (position.alt ?? 0) + 500
       })
       var cartesian4Center1 = new Cesium.Cartesian4(
         cartesian3Center1.x,
@@ -225,7 +321,7 @@ PassEffect.prototype = {
       var cartesian3Center1 = this.transformWGS84ToCartesian({
         lng: position.lng,
         lat: position.lat,
-        alt: position.alt + 500
+        alt: (position.alt ?? 0) + 500
       })
       var cartesian4Center1 = new Cesium.Cartesian4(
         cartesian3Center1.x,

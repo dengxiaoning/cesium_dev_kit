@@ -1,5 +1,6 @@
 import { loadLibgif } from './lazyLoad'
 import { asProperty } from './Base'
+import type { Cartesian3, Cartographic } from 'cesium'
 import type { CesiumGlobal, StaticResourceConf, WGS84Type } from './Base'
 import { createScopedConstructor, attachDestroy, registerCleanup } from './Base'
 import { createDefaultStatic } from '../defaultStatic'
@@ -566,10 +567,10 @@ class Graphics {
   /** 释放当前模块持有的监听器 / DataSource（幂等） */
   destroy!: () => void
   getDfSt!: (attrArr: string[]) => string | undefined
-  transformCartesianToWGS84!: (cartesian: any) => WGS84Type | undefined
+  transformCartesianToWGS84!: (cartesian?: Cartesian3 | WGS84Type) => WGS84Type | undefined
   transformWGS84ToCartesian!: (position: WGS84Type, alt?: number) => any | undefined
-  transformCartesianArrayToWGS84Array!: (cartesianArr: any[]) => (WGS84Type | undefined)[] | undefined
-  transformWGS84ArrayToCartesianArray!: (WSG84Arr: WGS84Type[], alt: number) => any[] | undefined
+  transformCartesianArrayToWGS84Array!: (cartesianArr: Cartesian3[]) => (WGS84Type | undefined)[] | undefined
+  transformWGS84ArrayToCartesianArray!: (WSG84Arr: WGS84Type[], alt?: number) => Cartesian3[] | undefined
 
   constructor(viewer?: any, cesiumGlobal?: CesiumGlobal, defaultStatic?: StaticResourceConf) {
   if (viewer) {

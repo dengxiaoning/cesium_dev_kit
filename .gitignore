@@ -21,3 +21,5 @@ src/utils/cesiumPluginsExtends/api
 
 # release.yml 从 CHANGELOG 提取的发布说明（构建产物，不提交）
 .release-notes.md
+
+research

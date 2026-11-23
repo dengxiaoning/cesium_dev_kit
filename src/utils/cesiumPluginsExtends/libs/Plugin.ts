@@ -1,5 +1,6 @@
 
 import type { StaticResourceConf } from './Base'
+import type { Cartesian3 } from 'cesium'
 import { createScopedConstructor, attachDestroy, registerCleanup, disposeModule } from './Base'
 import { createDefaultStatic } from '../defaultStatic'
 import { CesiumDevKitError, reportError } from './errors'
@@ -182,7 +183,7 @@ export interface PluginInstance {
   bottomImg: string
   wallImg: string
   splitNum: number
-  updateData: (positions: any[]) => void
+  updateData: (positions: Cartesian3[]) => void
   _show: boolean
   _switchExcavate: (flag: boolean) => void
   _updateExcavateDepth: (depth: number) => void

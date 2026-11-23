@@ -2,14 +2,11 @@
 
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 规范。
 
-## [Unreleased]
+`1.2.1` 及之前的条目为手工维护；`1.3.0` 起由 [changesets](https://github.com/changesets/changesets)
+在发版时生成 —— 尚未发版的改动记录在 `.changeset/` 目录，而不是写在这里。
+版本号怎么判定、多久发一次，见 [RELEASING.md](RELEASING.md)。
 
-### 变更（Changed）
-- **发布流程补上 GitHub Release**：`release.yml` 在 npm 发布成功后，用 `CHANGELOG.md` 里对应版本的
-  小节创建 / 更新 GitHub Release（新增 `scripts/release-notes.mjs`）；取不到小节时退回
-  `--generate-notes`。另外 npm 上已存在该版本时跳过发布，便于 tag 重跑时只补建 Release。
-
-## [1.2.1] - 2026-11-22
+## 1.2.1 - 2026-11-22
 
 ### 修复（Fixed）
 - **笔刷圈外的地形不再被改动**：`applyBrush` 的塌方坡（`relaxTalus`）以前按「深度 ÷ tan(安息角)」往外铺、上限 3 倍半径，小半径笔刷（如 30m）会把圈外近百米的地形一起削平。现在 `radius` 是硬边界：塌方坡只铺在圈内，边缘噪声也只往圈内揉。`radius` 的文档同步改为「圈外不会被这一笔改动」。
@@ -19,7 +16,7 @@
 ### 变更（Changed）
 - **程序化岩土材质改为默认开启**：陡壁上的卫星影像是平面俯视图，无论怎么投影都容易发虚 / 折叠；现在默认按「坡度 + 挖填深度」在影像上叠一层 3D 噪声岩土，近垂直立面看起来像真实土石断面，缓坡仍以影像为主。需要完全保留影像时调用 `setCutSurfaceEnabled(false)` 或 `setArea({ cutSurface: false })`。
 
-## [1.2.0] - 2026-11-21
+## 1.2.0 - 2026-11-21
 
 ### 新增（Added）
 - 地形编辑新增**数据导出 / 载入**，用来保存编辑结果并支持二次编辑：
@@ -38,7 +35,7 @@
 ### 修复（Fixed）
 - 修复 `setArea()` 之后改用 `setPolygon()` 时**范围边框不显示**：`_areaMode` 一直留在 `true`，而边框渲染会因区域模式直接跳过。现在 `setPolygon()` 会把范围重新标记为「手绘」，`_renderBoundary()` 也会先拆掉旧边框再决定是否重画；`setArea()` 在内部调用完 `setPolygon()` 后再标回区域模式。
 
-## [1.1.24] - 2026-11-21
+## 1.1.24 - 2026-11-21
 
 ### 新增（Added）
 - 示例页新增**源码面板**：每个 Demo 右下角多了一个 `</>` 图标，点开即在右侧展开与窗口等高的代码抽屉，顶部按目录展示当前示例的文件路径（如 `src/views/example/terrain/terrainEdit.vue`）、语言与行数，正文带行号与语法高亮（关键字、方法名、类名、变量、字符串、数字、注释分色），并支持一键复制全文；面板宽度可拖拽、`Esc` 关闭，首页 / 系统管理等非示例页面不显示入口。源码通过 `import.meta.glob('src/views/example/**/*.vue', { as: 'raw' })` 收集，新增示例无需维护映射表。
@@ -115,6 +112,6 @@
 - 为 `cesiumPluginsExtends` 下所有模块补齐 `XxxInstance` / `XxxConstructor` 接口与各方法 options 类型，消除约 1600 处 `any`。
 - 集中 Cesium 类型引用：各模块不再各自 `import 'cesium'`，统一通过 `cesiumGlobal` 传入的 Cesium 对象，`CesiumGlobal` / `Viewer` 等类型由 `libs/Base.ts` 统一导出。
 
-## [1.1.23]
+## 1.1.23
 
 - 历史版本。详见 [GitHub releases](https://github.com/dengxiaoning/cesium_dev_kit/releases)。

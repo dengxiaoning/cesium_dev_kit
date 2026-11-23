@@ -1,6 +1,7 @@
 import { Graphics } from "./Graphics";
 import type { GraphicsInstance } from "./Graphics";
 import type { Viewer } from './Base'
+import type { Cartesian2, Cartesian3 } from 'cesium'
 import { createScopedConstructor, attachDestroy, registerCleanup, disposeModule } from './Base'
 
 
@@ -54,11 +55,11 @@ class TooltipUtil {
       this.isInit = true;
   }
 
-  setVisible (visible: any) {
+  setVisible (visible: boolean) {
       if (!this.isInit) { return; }
       this._labelEntity.show = visible ? true : false;
   }
-  showAt (position: any, message: any) {
+  showAt (position: Cartesian2, message: string) {
       if (!this.isInit) { return; }
       if (position && message) {
         this._labelEntity.show = true;
@@ -72,7 +73,7 @@ class TooltipUtil {
           }
       }
   }
-  showAtCartesian (cartesian: any, message: any) {
+  showAtCartesian (cartesian: Cartesian3, message: string) {
       if (!this.isInit) { return; }
     if (cartesian && message) {
         this._labelEntity.show = true;

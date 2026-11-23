@@ -208,7 +208,7 @@
     "build:lib": "tsup",
     "typecheck": "tsc --noEmit",
     "strictbuild": "vue-tsc --noEmit && vite build",
-    "test": "tsx tests/plotUtil.test.ts && tsx tests/math2d.test.ts && tsx tests/dispose.test.ts && tsx tests/scope.test.ts && tsx tests/plot.test.ts && tsx tests/defaultStatic.test.ts && tsx tests/api.test.ts && tsx tests/pathRoaming.test.ts && tsx tests/roaming.test.ts && tsx tests/terrainGrid.test.ts && tsx tests/terrainData.test.ts && tsx tests/terrainTexture.test.ts",
+    "test": "tsx tests/plotUtil.test.ts && tsx tests/math2d.test.ts && tsx tests/dispose.test.ts && tsx tests/scope.test.ts && tsx tests/plot.test.ts && tsx tests/defaultStatic.test.ts && tsx tests/api.test.ts && tsx tests/pathRoaming.test.ts && tsx tests/roaming.test.ts && tsx tests/terrainGrid.test.ts && tsx tests/terrainData.test.ts && tsx tests/terrainTexture.test.ts && tsx tests/threeFusion.test.ts",
     "serve": "vite preview",
     "check:exports": "node scripts/check-exports.mjs",
     "check:publint": "publint",
@@ -217,7 +217,9 @@
     "docs": "node scripts/gen-api-stubs.mjs && typedoc --options typedoc.json",
     "docs:serve": "node scripts/serve-docs.mjs",
     "build:demo:pages": "vite build --outDir docs/demo --emptyOutDir",
-    "prepack": "npm run build:lib"
+    "prepack": "npm run build:lib",
+    "changeset": "changeset",
+    "release:version": "changeset version && node scripts/changelog-zh.mjs"
   },
   "peerDependencies": {
     "cesium": ">=1.105.0",

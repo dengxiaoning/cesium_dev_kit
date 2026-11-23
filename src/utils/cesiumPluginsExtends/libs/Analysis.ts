@@ -3,6 +3,7 @@ import { Base } from "./Base";
 import { Math3d } from "./Math3d";
 import { Graphics } from "./Graphics";
 import type { BaseInstance, BindHandleEventOptions, CesiumGlobal, MouseEventHandler, StaticResourceConf } from './Base'
+import type { Cartographic } from 'cesium'
 import { asProperty, mixinPrototype, attachDestroy, registerCleanup, disposeModule } from './Base'
 import type { Math3dInstance } from './Math3d'
 import type { GraphicsInstance } from './Graphics'
@@ -108,8 +109,8 @@ export interface AnalysisSharedInstance {
     _Delta?: number
   ): any[] | null
   computeCartographicPointsTerrainData(
-    Cartographics: any[],
-    callback?: (result: any[]) => void
+    Cartographics: Cartographic[],
+    callback?: (result: Cartographic[]) => void
   ): void
   computeInterpolateIndexLineHeightCartographic(
     start?: { longitude: number; latitude: number; height?: number },

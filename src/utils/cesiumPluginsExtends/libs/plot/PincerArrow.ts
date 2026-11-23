@@ -1,5 +1,6 @@
 import { BasePlot } from "./BasePlot";
 import type { XpAlgorithm } from './algorithm'
+import type { Cartesian3, Entity } from 'cesium'
 import { TooltipUtil } from '../TooltipUtil'
 /**
  * 标会（钳击箭头）模块
@@ -294,7 +295,7 @@ PincerArrow.prototype = {
     //获取直角箭头中的关键点 世界坐标
     return this.positions;
   },
-  creatPoint: function (this: PincerArrowInstance, cartesian?: any) {
+  creatPoint: function (this: PincerArrowInstance, cartesian?: Cartesian3) {
     var Cesium = this._Cesium
     return this.viewer.entities.add({
       position: cartesian,
@@ -334,7 +335,7 @@ PincerArrow.prototype = {
       }),
     });
   },
-  cartesianToLatlng: function (this: PincerArrowInstance, cartesian?: any) {
+  cartesianToLatlng: function (this: PincerArrowInstance, cartesian?: Cartesian3) {
     var Cesium = this._Cesium
     var latlng = this.viewer.scene.globe.ellipsoid.cartesianToCartographic(cartesian);
     var lat = Cesium.Math.toDegrees(latlng.latitude);
@@ -360,9 +361,9 @@ export interface PincerArrowInstance {
   getLnglats(): number[][],
   /** 获取钳击箭头中的关键点 世界坐标 */
   getPositions(): any[],
-  creatPoint(cartesian?: any): any & { wz?: number; attr?: string },
-  showArrowOnMap(positions?: any[]): any,
-  cartesianToLatlng(cartesian?: any): number[],
+  creatPoint(cartesian?: Cartesian3): Entity & { wz?: number; attr?: string },
+  showArrowOnMap(positions?: Cartesian3[]): any,
+  cartesianToLatlng(cartesian?: Cartesian3): number[],
   constructor(): void
   _Cesium: any
   positions: any[]

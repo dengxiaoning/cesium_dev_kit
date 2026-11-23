@@ -28,6 +28,22 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
+      # 发布前的两条硬校验，防止「tag 打了、版本号没跟上」和「发了版但没有变更记录」。
+      # 历史上有 91 个版本里只有 4 个在 CHANGELOG 留了记录，导致使用者无法判断版本差异。
+      - name: Verify tag, version and changelog
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME 与 package.json 的 $version 不一致，先跑 npm run release:version 再打 tag"
+            exit 1
+          fi
+          node scripts/release-notes.mjs
+          if [ ! -s .release-notes.md ]; then
+            echo "::error::CHANGELOG.md 里没有 $version 的小节，先跑 npm run release:version"
+            exit 1
+          fi
+
       - name: Unit tests
         run: npm test
 
@@ -67,11 +83,7 @@ jobs:
 
       # npm 发布成功后，同步建一条 GitHub Release。
       # 版本页是外部判断「这个项目还在维护吗」的第一入口，之前一直停在 v1.1.19。
-      # 正文优先取 CHANGELOG.md 的对应小节，取不到再退回自动生成的 commit 列表。
-      - name: Extract release notes
-        if: startsWith(github.ref, 'refs/tags/')
-        run: node scripts/release-notes.mjs
-
+      # 正文取自上面校验步骤生成的 .release-notes.md（来自 CHANGELOG.md 的对应小节）。
       - name: Create or update GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         env:

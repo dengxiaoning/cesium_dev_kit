@@ -1,5 +1,6 @@
 
 import type { CesiumGlobal, WGS84Type } from './Base'
+import type { Cartesian3, Cartographic } from 'cesium'
 import { createScopedConstructor } from './Base'
 
 /** 模块内部持有的 cesium 全局对象 */
@@ -123,7 +124,7 @@ class Math3d {
    * @param angularityFactor - 曲率
    * @param numOfSingleLine - 点集数量
    */
-  getLinkedPointList(startPoint: any, endPoint: any, angularityFactor: number, numOfSingleLine: number): any[] | undefined {
+  getLinkedPointList(startPoint: Cartesian3, endPoint: Cartesian3, angularityFactor: number, numOfSingleLine: number): any[] | undefined {
     if (this._viewer) {
       var result: any[] = [];
       var startPosition = Cesium.Cartographic.fromCartesian(startPoint);
@@ -287,7 +288,7 @@ class Math3d {
    * @param point1 - 坐标1
    * @param point2 - 坐标2
    */
-  getPointDistance(point1: any, point2: any): number | undefined {
+  getPointDistance(point1: Cartesian3, point2: Cartesian3): number | undefined {
     if (this._viewer) {
       var point1cartographic = Cesium.Cartographic.fromCartesian(point1),
         point2cartographic = Cesium.Cartographic.fromCartesian(point2);
@@ -328,7 +329,7 @@ class Math3d {
    * @param excludeArr - 排除对象数组
    * @param bDrillPick - 只pick首个物体
    */
-  getIntersectObj(startPos: any, endPos: any, excludeArr: unknown[] = [], bDrillPick: boolean = false): any[] | object[] | undefined {
+  getIntersectObj(startPos: Cartesian3, endPos: Cartesian3, excludeArr: unknown[] = [], bDrillPick: boolean = false): any[] | object[] | undefined {
     if (this._viewer) {
       var direction = Cesium.Cartesian3.normalize(
         Cesium.Cartesian3.subtract(endPos, startPos, new Cesium.Cartesian3()),
@@ -365,7 +366,7 @@ class Math3d {
    * @param unitPos - 中心坐标归一化
    * @param result - 椭圆坐标
    */
-  getPointOnEllipsoid(theta: number, rotation: number, northVec: any, eastVec: any, aSqr: number, ab: number, bSqr: number, mag: number, unitPos: any, result: any): any {
+  getPointOnEllipsoid(theta: number, rotation: number, northVec: Cartesian3, eastVec: Cartesian3, aSqr: number, ab: number, bSqr: number, mag: number, unitPos: Cartesian3, result: Cartesian3): any {
     if (this._viewer) {
       var rotAxis = new Cesium.Cartesian3();
       var tempVec = new Cesium.Cartesian3();
@@ -581,7 +582,7 @@ class Math3d {
    * @param Cartographics - 地理坐标数组
    * @param callback - 回调
    */
-  computeCartographicPointsTerrainData(Cartographics: any[], callback?: (result: any[]) => void): void {
+  computeCartographicPointsTerrainData(Cartographics: Cartographic[], callback?: (result: Cartographic[]) => void): void {
     if (this._viewer) {
       if (Cartographics.length <= 0) {
         return;

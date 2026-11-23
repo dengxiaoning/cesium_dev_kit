@@ -1,17 +1,101 @@
 import { initSensor } from "./Sensor/index";
 import { createScopedConstructor } from './Base'
+import type { Cartesian3, Color } from 'cesium'
+
+/** 伞形（矩形）传感器的参数 */
+export interface RectangularSensorOptions {
+  /** 传感器原点坐标 */
+  position?: Cartesian3
+  /** 是否显示 */
+  show?: boolean
+  /** 朝向（度） */
+  heading?: number
+  /** 倾斜度（度） */
+  pitch?: number
+  /** 翻滚角（度） */
+  roll?: number
+  /** 扇面的切分段数 */
+  slice?: number
+  /** 传感器半径（米） */
+  radius?: number
+  /** 材质，可传颜色或 MaterialProperty */
+  material?: any
+  /** 模型矩阵，用于整体位移/旋转 */
+  modelMatrix?: any
+  /** 是否显示扇面轮廓线 */
+  showSectorLines?: boolean
+  /** 轮廓线颜色 */
+  lineColor?: Color
+  /** 是否显示扫描面板 */
+  showScanPlane?: boolean
+  /** 扫描面板颜色 */
+  scanPlaneColor?: Color
+  /** 扫描面模式：`vertical`（垂直）/ `horizontal`（水平） */
+  scanPlaneMode?: string
+  /** 扫描速率 */
+  scanPlaneRate?: number
+  /** 是否显示侧面 */
+  showLateralSurfaces?: boolean
+  /** 水平半角（度） */
+  xHalfAngle?: number
+  /** 垂直半角（度） */
+  yHalfAngle?: number
+  /** 是否穿透地球 */
+  showThroughEllipsoid?: boolean
+}
+
+/** 卫星覆盖锥的参数 */
+export interface SatelliteCoverageOptions {
+  /** 卫星位置 */
+  position?: Cartesian3
+  /** 锥角（度） */
+  angle?: number
+  /** 覆盖半径（米） */
+  radius?: number
+  /** 朝向（度） */
+  heading?: number
+  /** 倾斜度（度） */
+  pitch?: number
+  /** 翻滚角（度） */
+  roll?: number
+  /** 覆盖区域颜色 */
+  color?: Color
+  /** 轮廓线颜色 */
+  lineColor?: Color
+}
+
+/** 锥形雷达的参数 */
+export interface RadarPrimitiveOptions {
+  /** 雷达位置 */
+  position?: Cartesian3
+  /** 锥角（度），默认 80 */
+  angle?: number
+  /** 半径（米），默认 700000 */
+  radius?: number
+  /** 朝向（度），默认 0 */
+  heading?: number
+  /** 倾斜度（度），默认 40 */
+  pitch?: number
+  /** 翻滚角（度），默认 0 */
+  roll?: number
+  /** 颜色，默认半透明红色 */
+  color?: Color
+  /** 轮廓线颜色，默认白色 */
+  lineColor?: Color
+}
 
 /** CustomCesiumPlugin 实例类型 */
 export interface CustomCesiumPluginInstance {
   _viewer: any
   _customPluginLayer: any
   /** 伞形传感器 */
-  createRectangularSensorGraphics(options?: any): any,
+  createRectangularSensorGraphics(options?: RectangularSensorOptions): any,
   /** 判断对象是否有某个属性 */
   _objHasOwnProperty(obj?: any, field?: any, defVal?: any): any,
-  createSatelliteCoverageSimulationGraphics(options?: any): any,
+  /** 卫星覆盖锥 */
+  createSatelliteCoverageSimulationGraphics(options?: SatelliteCoverageOptions): any,
   /** 锥形传感器 */
-  createRadarPrimitive(options?: any): any
+  createRadarPrimitive(options?: RadarPrimitiveOptions): any
 }
 
 /** CustomCesiumPlugin 构造函数类型 */
