@@ -242,6 +242,58 @@ Then load the generated file with a `<script>` tag. If you need an official UMD 
 please open an issue.
 
 
+## Three.js / Cesium fused rendering
+
+By default Three.js renders into its own canvas stacked above the Cesium canvas via CSS. That has three drawbacks for ground-level content: the depth buffer is not shared (objects cannot sink into terrain), the camera matrix lags a frame (objects appear to float as you orbit), and you pay for an extra full-screen composite.
+
+`fusion: 'single-context'` makes Three.js reuse Cesium's canvas and WebGL context, drawing directly into Cesium's frame against the same depth buffer:
+
+```ts
+import * as Cesium from 'cesium'
+import * as THREE from 'three'
+import { createKit } from 'cesium_dev_kit'
+
+const kit = createKit({
+  Cesium,
+  three: THREE,
+  containerId: 'cesiumContainer',
+  threeContainerId: 'threeContainer',
+  viewerConfig: {
+    // fused mode requires WebGL2
+    contextOptions: { requestWebgl2: true }
+  }
+})
+
+const { scene, camera } = kit.threeJs.initThree({
+  center: [104.08, 30.62],
+  fusion: 'single-context', // default 'overlay' keeps the original two-canvas behaviour
+  depth: 'canvas-blit',     // default when fusion is 'single-context'
+  precision: 'double'       // default
+})
+
+// Only update your animation each frame; no need to call renderer.render yourself
+kit.threeJs.loop(() => {
+  mixer && mixer.update(0.016)
+})
+```
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `fusion` | `'overlay'` | `'single-context'` reuses Cesium's canvas and WebGL context; omit it to keep the two-canvas behaviour |
+| `depth` | `'canvas-blit'` (single-context only) / `'none'` | Blits Cesium's depth onto the canvas so objects can be occluded by, and occlude, the terrain |
+| `precision` | `'double'` | Composes the view matrix in float64 and drops precision once; `'legacy'` restores the old path |
+
+Enabling it also does two things automatically: raises `scene.logarithmicDepthFarToNearRatio` to force a single frustum (multiple frustums clear depth between passes, leaving only the nearest slab), and skips the ECEF "fake occluder" spheres used by the old approach.
+
+Caveats:
+
+- WebGL2 is required. If the context is missing or not WebGL2, it logs the reason and falls back to two canvases without breaking rendering;
+- With `scene.msaaSamples > 1`, `blitFramebuffer` may fail; repeated failures disable depth sharing (the context is still shared). Set `scene.msaaSamples = 1` on the Cesium side to avoid it;
+- With OIT enabled the depth is not in a blit-able FBO, so it degrades to context sharing only;
+- Do not call `renderer.setSize()` in fused mode: assigning canvas width/height clears the drawing buffer (and wipes Cesium's frame). Size is driven by Cesium's canvas.
+
+To check whether occlusion is actually active, call `kit.threeJs.getFusionStatus()`; it reports frustum count, logarithmic depth, MSAA samples and the current depth source.
+
 ## Development
 
 ```shell

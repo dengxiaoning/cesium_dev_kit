@@ -6,6 +6,22 @@
 在发版时生成 —— 尚未发版的改动记录在 `.changeset/` 目录，而不是写在这里。
 版本号怎么判定、多久发一次，见 [RELEASING.md](RELEASING.md)。
 
+## 1.3.0 - 2026-11-23
+
+### 新增 / 变更（Added / Changed）
+
+- `threeJs.initThree()` 新增 `fusion: 'single-context'`：Three.js 不再叠一张独立 canvas，而是复用 Cesium 的 canvas 与 WebGL 上下文，直接画进 Cesium 的帧里，从根本上消除双 canvas 方案的深度冲突、坐标漂移与合成开销。
+  
+  - **新增 `fusion` / `depth` / `precision` 三个可选参数**。不传 `fusion`（默认 `'overlay'`）时行为与 1.2.x 完全一致，仍是双 canvas 叠加，旧代码不用改一行。融合模式开启后，Three.js 的绘制挂在 `scene.postRender`，与 Cesium 共用真实深度缓冲（`depth: 'canvas-blit'` 默认开启）：物体既能被地形遮挡，也能遮挡地形。`precision: 'double'` 在 float64 中合成「视图矩阵 × 场景→ECEF」只降一次精度，并逐元素复制 `frustum.projectionMatrix`（保住 near/far、offscreen offset、DPR），贴地物体随相机移动不再上下漂浮。
+  - **新增 `getFusionStatus()`**：返回当前视锥数量、是否对数深度、MSAA 采样数、深度来源等诊断信息，用来排查「遮挡没生效」到底卡在哪一环。
+  - **融合模式会自动收敛两处场景参数**：把 `scene.logarithmicDepthFarToNearRatio` 抬到单视锥（多视锥会在帧中执行 `clearDepth`，帧末只剩最近一段的深度，会漏遮挡；单段在日志深度下无精度损失），并跳过原来用于「伪造遮挡」的 ECEF 模拟球（`sphere` / `sphere3` 不再创建）。
+  - **失败降级而不是花屏**：开启 OIT 时深度不在可搬运的 FBO 上、MSAA 下 `blitFramebuffer` 失败，都会自动退回「仅共享上下文」并在控制台说明原因，不会把 Cesium 画面弄花；后者可设 `scene.msaaSamples = 1` 规避。
+  
+  此外修正一处类型声明：
+  
+  - **`Control.definedMouseEvent()` 的声明改为对象参数 `{ targetEntity, ctrlFlag }`**。运行时自 1.2.x 起就已是对象参数，旧声明与实现不符；按旧声明写的 `definedMouseEvent(entity, flag)` 实际从未生效（拖拽会静默不响应），升级后按新声明改写即可。
+  - **类型收窄**：`Base` / `Draw` / `PassEffect` / `Graphics` / `Math3d` / `Plot` 等模块把大量 `any` 换成精确的 Cesium 类型。`strict` 工程升级后可能出现新的类型报错，属于预期内的收窄，按提示补齐即可，运行时不受影响。
+
 ## 1.2.1 - 2026-11-22
 
 ### 修复（Fixed）

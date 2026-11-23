@@ -221,6 +221,58 @@ export default {
 
 生成的 js 用 `<script>` 引入即可。如果需要官方重新提供 UMD 构建，欢迎提 issue。
 
+## Three.js 与 Cesium 融合渲染
+
+默认情况下 Three.js 画在一张独立的 canvas 上，靠 CSS 叠在 Cesium 画布之上。贴地物体在这种方案下会暴露三个问题：深度不共享（埋不进地形）、相机矩阵滞后一帧（贴地物随视角上下漂浮）、多一层全屏合成。
+
+`fusion: 'single-context'` 让 Three.js 复用 Cesium 的 canvas 与 WebGL 上下文，直接画进 Cesium 的帧里，并与 Cesium 共享同一份深度缓冲：
+
+```ts
+import * as Cesium from 'cesium'
+import * as THREE from 'three'
+import { createKit } from 'cesium_dev_kit'
+
+const kit = createKit({
+  Cesium,
+  three: THREE,
+  containerId: 'cesiumContainer',
+  threeContainerId: 'threeContainer',
+  viewerConfig: {
+    // 融合模式需要 WebGL2
+    contextOptions: { requestWebgl2: true }
+  }
+})
+
+const { scene, camera } = kit.threeJs.initThree({
+  center: [104.08, 30.62],
+  fusion: 'single-context', // 默认 'overlay'，不传即保持原有双 canvas 行为
+  depth: 'canvas-blit',     // single-context 下的默认值
+  precision: 'double'       // 默认值
+})
+
+// 每帧只更新模型动画即可，不需要自己调用 renderer.render
+kit.threeJs.loop(() => {
+  mixer && mixer.update(0.016)
+})
+```
+
+| 参数 | 默认值 | 说明 |
+| --- | --- | --- |
+| `fusion` | `'overlay'` | `'single-context'` 复用 Cesium 的 canvas 与 WebGL 上下文；不传则保持原有双 canvas 行为 |
+| `depth` | `'canvas-blit'`（仅 single-context）/ `'none'` | 把 Cesium 的深度 blit 到画布，使物体能被地形遮挡、也能遮挡地形 |
+| `precision` | `'double'` | 在 float64 中合成视图矩阵、只降一次精度；`'legacy'` 可还原旧实现 |
+
+开启后会自动做两件事：把 `scene.logarithmicDepthFarToNearRatio` 抬到单视锥（多视锥会在帧之间清深度，导致帧末只剩最近一段有深度），并跳过旧方案里用于「伪造遮挡」的 ECEF 模拟球。
+
+需要注意的边界：
+
+- 需要 WebGL2。取不到上下文或上下文不是 WebGL2 时，会打印原因并自动回退到双 canvas，不会中断渲染；
+- `scene.msaaSamples > 1` 时 `blitFramebuffer` 可能失败，连续失败会自动关闭深度共享（仍共享上下文）；可在 Cesium 侧设 `scene.msaaSamples = 1` 规避；
+- 开启 OIT 后深度不在可搬运的 FBO 上，会自动降级为「仅共享上下文」；
+- 融合模式不要调用 `renderer.setSize()`：给 canvas 宽高赋值会清空绘制缓冲（连带擦掉 Cesium 的画面），尺寸由 Cesium 的画布决定。
+
+排查遮挡是否生效，用 `kit.threeJs.getFusionStatus()`，它会返回视锥数量、对数深度开关、MSAA 采样数与当前深度来源。
+
 ## 部署
 
 ```shell
