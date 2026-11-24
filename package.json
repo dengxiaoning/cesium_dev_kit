@@ -234,7 +234,7 @@
     "@iconify/vue": "^3.0.0",
     "@turf/turf": "^6.5.0",
     "@types/node": "^15.0.2",
-    "@vitejs/plugin-vue": "^1.9.3",
+    "@vitejs/plugin-vue": "^6.0.11",
     "@vitejs/plugin-vue-jsx": "^1.2.0",
     "@vue/compiler-sfc": "^3.4.32",
     "@vueup/vue-quill": "^1.2.0",
