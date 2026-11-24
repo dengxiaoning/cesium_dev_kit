@@ -206,7 +206,7 @@ ThreeJs.prototype = {
    * @param {'double'|'legacy'} [options.precision='double'] - 相机矩阵精度策略。
    *   `double` 复制 Cesium 投影矩阵并在 float64 里合成视图矩阵；`legacy` 为历史行为。
    * @example
-   * import { ThreeJs } from 'cesium_dev_kit'
+   * import { ThreeJs } from 'cesium_dev_kit/three'
    * const threeObj = new ThreeJs({
    *     cesiumGlobal: Cesium,
    *     threeGlobal: THREE,
@@ -456,7 +456,7 @@ ThreeJs.prototype = {
    * three对象销毁
    * @function
    * @example
-   * import { ThreeJs } from 'cesium_dev_kit'
+   * import { ThreeJs } from 'cesium_dev_kit/three'
    * const threeObj = new ThreeJs({
    *      cesiumGlobal: Cesium,
    *     threeGlobal: THREE,

@@ -3,6 +3,7 @@ import { Math3d } from '../src/utils/cesiumPluginsExtends/libs/Math3d'
 import { Base } from '../src/utils/cesiumPluginsExtends/libs/Base'
 import { Graphics as GraphicsCom } from '../src/utils/cesiumPluginsExtends/libs/Graphics'
 import { initSingleImportModule } from '../src/utils/cesiumPluginsExtends/singleImport/Base'
+import { getErrorHandler, setErrorHandler } from '../src/utils/cesiumPluginsExtends/libs/errors'
 
 /** 构造一个最小可用的 Cesium 全局对象 mock，用 marker 区分不同实例 */
 function makeCesium(marker: string) {
@@ -142,6 +143,45 @@ function makeViewer() {
   assert.equal(g.myname, 'BASE', 'Base 构造字段应拷贝到实例')
   const e = g.createGraphics()
   assert.equal(e.marker, 'single', '混入后的 Base 方法应使用已初始化的 Cesium 闭包')
+}
+
+// 4. singleImport 支持 `Cesium` / `three` 别名（与 createContext 行为一致）
+{
+  const cesium = makeCesium('alias')
+  const viewer = makeViewer()
+  const result: any = initSingleImportModule({
+    Cesium: cesium,
+    viewer,
+    baseExtendsCom: [Base],
+    extendsCom: GraphicsCom,
+    extendsComName: 'graphics'
+  })
+  const g = result.graphics
+  const e = g.createGraphics()
+  assert.equal(e.marker, 'alias', '只传 Cesium 别名时也应正常初始化，而不是抛 MISSING_CESIUM')
+}
+
+// 5. singleImport 与 createKit 参数对齐：assetsBaseUrl / onError 都应生效
+{
+  const cesium = makeCesium('opts')
+  const viewer = makeViewer()
+  const handler = () => {}
+  const result: any = initSingleImportModule({
+    Cesium: cesium,
+    viewer,
+    assetsBaseUrl: 'https://cdn.example.com/static/',
+    onError: handler,
+    baseExtendsCom: [Base],
+    extendsCom: GraphicsCom,
+    extendsComName: 'graphics'
+  })
+  assert.equal(getErrorHandler(), handler, 'onError 应被注册为错误处理器')
+  assert.equal(
+    result.graphics.getDfSt(['skyBox', 'one', 'positiveX']),
+    'https://cdn.example.com/static/static/data/images/SkyBox/00h+00.jpg',
+    'assetsBaseUrl 应作为静态资源前缀'
+  )
+  setErrorHandler(null)
 }
 
 console.log('✔ scope 闭包隔离测试通过')

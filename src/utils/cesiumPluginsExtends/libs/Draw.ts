@@ -286,7 +286,7 @@ Draw.prototype = {
       } else if (drawingMode === "polygon") {
         objEntity.polyline = options!.style as unknown as any;
 
-        objEntity.polyline['positions'] = asProperty(positionData);
+        objEntity.polyline!['positions'] = asProperty(positionData);
 
         objEntity.polygon = {
           hierarchy: positionDataPolygon,
@@ -555,8 +555,8 @@ Draw.prototype = {
 
       _rectangleEntity.rectangle = options.style as unknown as any;
 
-      if (options.height) _rectangleEntity.rectangle.extrudedHeight = asProperty(options.height);
-      _rectangleEntity.rectangle.coordinates = new Cesium.CallbackProperty(function () {
+      if (options.height) _rectangleEntity.rectangle!.extrudedHeight = asProperty(options.height);
+      _rectangleEntity.rectangle!.coordinates = new Cesium.CallbackProperty(function () {
         return _coordinates;
       }, false);
       rectangleObj = this._drawLayer.entities.add(_rectangleEntity);
@@ -606,10 +606,10 @@ Draw.prototype = {
       //
       const drawGraphics = function () {
         _circleEntity.ellipse = options.style as unknown as any;
-        _circleEntity.ellipse.semiMajorAxis = new Cesium.CallbackProperty(function () {
+        _circleEntity.ellipse!.semiMajorAxis = new Cesium.CallbackProperty(function () {
           return _radius;
         }, false);
-        _circleEntity.ellipse.semiMinorAxis = new Cesium.CallbackProperty(function () {
+        _circleEntity.ellipse!.semiMinorAxis = new Cesium.CallbackProperty(function () {
           return _radius;
         }, false);
         _circleEntity.position = asProperty(new Cesium.CallbackProperty(function () {
@@ -622,7 +622,7 @@ Draw.prototype = {
           outlineWidth: 3,
         });
 
-        if (options.height) _circleEntity.ellipse.extrudedHeight = asProperty(options.height);
+        if (options.height) _circleEntity.ellipse!.extrudedHeight = asProperty(options.height);
 
         circleObj = $this._drawLayer.entities.add(_circleEntity);
       };

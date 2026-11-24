@@ -2522,7 +2522,7 @@ Primitive.prototype = {
    * @param {number} params.height2 - 最终高度
    * @param {number} params.scale - 图元缩放比例
    * @example
-   * import { Primitive } from 'cesium_dev_kit'
+   * import { Primitive } from 'cesium_dev_kit/primitive'
    * const priObj = new Primitive({
    *    cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -2707,7 +2707,7 @@ Primitive.prototype = {
    * @param {number} [params.screenHeight=1080] - 屏幕高度
    * @param {number} [params.screenWidth=1920] - 屏幕宽度
    * @example
-   * import { Primitive } from 'cesium_dev_kit'
+   * import { Primitive } from 'cesium_dev_kit/primitive'
    * const priObj = new Primitive({
    *    cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'

@@ -171,7 +171,7 @@ PassEffect.prototype = {
    * @param {string} options.circleMode - 类型，默认CircleScan扫描
    * @param {number} options.border - 边框
    * @example
-   * import { PassEffect } from 'cesium_dev_kit'
+   * import { PassEffect } from 'cesium_dev_kit/pass-effect'
    * const passEffectObj = new PassEffect({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -283,7 +283,7 @@ PassEffect.prototype = {
    * @param {number} options.duration 持续时长
    * @param {number} options.border - 边框
    * @example
-   * import { PassEffect } from 'cesium_dev_kit'
+   * import { PassEffect } from 'cesium_dev_kit/pass-effect'
    * const passEffectObj = new PassEffect({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -454,7 +454,7 @@ PassEffect.prototype = {
    * @param {number} options.length - 雷达高度
    * @param {number} options.thickness - 雷达边厚度0.1~0.9
    * @example
-   * import { PassEffect } from 'cesium_dev_kit'
+   * import { PassEffect } from 'cesium_dev_kit/pass-effect'
    * const passEffectObj = new PassEffect({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -593,7 +593,7 @@ PassEffect.prototype = {
    * @param {number} data.number - 扫描比例（数字越小速度越快）
    * @param {Array} data.observer - 观察点，也就是光源点
    * @example
-   * import { PassEffect } from 'cesium_dev_kit'
+   * import { PassEffect } from 'cesium_dev_kit/pass-effect'
    * const passEffectObj = new PassEffect({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -775,7 +775,7 @@ PassEffect.prototype = {
    * @param {Color} options.endColor - 当粒子死亡时的颜色
    * @param {Color} options.emitter - 粒子发射器，可选[BoxEmitter,CircleEmitter,ConeEmitter,SphereEmitter]
    * @example
-   * import { PassEffect } from 'cesium_dev_kit'
+   * import { PassEffect } from 'cesium_dev_kit/pass-effect'
    * const passEffectObj = new PassEffect({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'

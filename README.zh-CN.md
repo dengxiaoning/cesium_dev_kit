@@ -322,9 +322,8 @@ npm run build        # 查看案例
 
 ## 项目不足与优化
 
-- 1、Cesium 相关类型暂以宽松（`any`）为主，以兼容通过 CDN / 全局 `window.Cesium` 引入的方式；若使用 npm 安装的 cesium，可自行扩展精确类型
-- 2、错误已统一为 `CesiumDevKitError`（稳定 code），非致命错误走 `setErrorHandler`；少数旧工具方法仍会静默吞掉异常
-- 3、单元测试覆盖纯算法层（12 个套件），浏览器 / DOM 级集成测试与 Cesium 版本矩阵仍缺失
+- 1、错误已统一为 `CesiumDevKitError`（稳定 code），非致命错误走 `setErrorHandler`；少数旧工具方法仍会静默吞掉异常
+- 2、单元测试覆盖纯算法层（12 个套件），浏览器 / DOM 级集成测试与 Cesium 版本矩阵仍缺失
 
 ## 如何贡献
 

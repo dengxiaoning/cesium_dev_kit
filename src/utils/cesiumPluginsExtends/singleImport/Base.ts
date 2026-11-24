@@ -1,7 +1,8 @@
-import { Controller } from '../initConf'
 import type { Viewer, CesiumGlobal } from '../libs/Base'
-import { disposeViewer, resolveScopedConstructor, transferCleanups, disposeModule } from '../libs/Base'
-import { CesiumDevKitError, reportError } from '../libs/errors'
+import { resolveScopedConstructor, transferCleanups, disposeModule } from '../libs/Base'
+import { reportError } from '../libs/errors'
+import { createContext, disposeContext } from '../libs/context'
+import type { CesiumContextOptions } from '../libs/context'
 
 /** cesium 全局命名空间对象 */
 export type { CesiumGlobal }
@@ -12,36 +13,13 @@ export type { CesiumGlobal }
  */
 export type SingleImportComponent = new (...args: any[]) => any
 
-/**
- * singleImport 下各模块的构造参数
- */
-export interface SingleImportOptions {
-  /** 全局 Cesium 对象（必传） */
-  cesiumGlobal?: CesiumGlobal
-  /** 全局 THREE 对象（使用 three 相关模块时传入） */
-  threeGlobal?: any
-  /** 挂载 viewer 的 dom id 或 dom 元素 */
-  containerId?: string | HTMLElement
-  /** 挂载 three 的 dom id */
-  threeContainerId?: string | HTMLElement
-  /** cesium viewer 配置 */
-  viewerConfig?: Record<string, any>
-  /** 其它额外配置 */
-  extraConfig?: Record<string, any>
-  /** 需要加载的影像图层配置 */
-  MapImageryList?: any[]
-  /** 静态资源配置 */
-  defaultStatic?: any
-  /** 外部传入已经实例化的 viewer */
-  viewer?: Viewer
-  /** 其它扩展参数 */
-  [key: string]: any
-}
+export type { CesiumContextOptions as SingleImportOptions }
+
 
 /**
  * 初始化模块的内部参数：在用户参数基础上追加本次要混入的模块信息
  */
-export interface SingleImportInitOptions extends SingleImportOptions {
+export interface SingleImportInitOptions extends CesiumContextOptions {
   /** 需要被混入（继承）的父模块，可传单个或数组 */
   baseExtendsCom?: SingleImportComponent | SingleImportComponent[]
   /** 本次要实例化的目标模块构造函数 */
@@ -65,7 +43,7 @@ export type SingleImportResult = Record<string, any> & Partial<Disposable>
  * @template T - new 之后返回的实例结构
  */
 export interface SingleImportConstructor<T> {
-  new (options: SingleImportOptions): T & Disposable
+  new(options: CesiumContextOptions): T & Disposable
   prototype: T
 }
 
@@ -132,7 +110,7 @@ export function prototypeExtends(
       const keys = Object.getOwnPropertyNames(cloneTarget.prototype)
       for (let i = 0, len = keys.length; i < len; i++) {
         if (keys[i] !== 'constructor') {
-          ;(targetCtor.prototype as any)[keys[i]] = (
+          ; (targetCtor.prototype as any)[keys[i]] = (
             cloneTarget.prototype as any
           )[keys[i]]
         }
@@ -150,61 +128,36 @@ export function prototypeExtends(
  * @param options - 初始化参数
  * @returns 组装后的模块对象，形如 `{ viewer, [extendsComName]: 模块实例 }`
  */
-export function initSingleImportModule({
-  cesiumGlobal,
-  threeGlobal,
-  containerId,
-  threeContainerId,
-  viewerConfig = {},
-  extraConfig = {},
-  MapImageryList = [],
-  defaultStatic,
-  baseExtendsCom = [],
-  extendsCom,
-  extendsComName,
-  viewer
-}: SingleImportInitOptions): SingleImportResult {
-  if (!cesiumGlobal) {
-    throw new CesiumDevKitError('MISSING_CESIUM', '缺少 Cesium 全局对象，请传入 cesiumGlobal（或别名 Cesium）。')
-  }
-  if (!containerId && !viewer) {
-    throw new CesiumDevKitError(
-      'MISSING_VIEWER',
-      '缺少 containerId 或 viewer：请传入挂载容器 id，或直接传入已创建的 viewer。'
-    )
-  }
-  const initCom = new Controller(cesiumGlobal)
-  const _viewer = initCom.init({
-    containerId,
-    viewerConfig,
-    extraConfig,
-    MapImageryList,
-    viewer
-  })
-  // 只有内部创建的 viewer 才由 kit 负责销毁；外部传入的 viewer 交给使用方管理
-  const ownsViewer = !viewer
+export function initSingleImportModule(options: SingleImportInitOptions): SingleImportResult {
+  const { baseExtendsCom = [], extendsCom, extendsComName } = options
+  // 与 createKit 复用同一套初始化逻辑：参数校验、Cesium/three 别名、
+  // defaultStatic / assetsBaseUrl、imageryProvider、onError、viewer 创建与错误包装
+  const ctx = createContext(options)
   // three 容器绑定优化
-  const threeConf = threeGlobal ? { threeGlobal, containerId, threeContainerId } : ''
+  const threeConf = ctx.three
+    ? { threeGlobal: ctx.three, containerId: ctx.containerId, threeContainerId: ctx.threeContainerId }
+    : ''
   // 合并对象，实现继承
-  const protoExtends = prototypeExtends(_viewer, cesiumGlobal, defaultStatic, threeConf)
+  const protoExtends = prototypeExtends(ctx.viewer, ctx.Cesium, ctx.defaultStatic, threeConf)
   const _tempName = protoExtends(baseExtendsCom, extendsCom as SingleImportComponent)
   let disposed = false
   return {
-    viewer: _viewer,
+    viewer: ctx.viewer,
     [extendsComName as string]: _tempName,
     dispose: () => {
       if (disposed) return
       disposed = true
       try {
         if (typeof (_tempName as any).destroy === 'function') {
-          ;(_tempName as any).destroy()
+          ; (_tempName as any).destroy()
         } else {
           disposeModule(_tempName)
         }
       } catch (err) {
         reportError(err, { scope: 'singleImport.dispose' })
       }
-      if (ownsViewer) disposeViewer(_viewer)
+      // 仅销毁 kit 自己创建的 viewer（disposeContext 内部按 ownsViewer 判断）
+      disposeContext(ctx)
     }
   }
 }
@@ -224,7 +177,7 @@ export function createSingleImport<T extends object>(
   extendsCom: SingleImportComponent,
   extendsComName: string
 ): SingleImportConstructor<T> {
-  function CreatedModule(obj: SingleImportOptions): T & Disposable {
+  function CreatedModule(obj: CesiumContextOptions): T & Disposable {
     return initSingleImportModule({
       ...obj,
       baseExtendsCom,

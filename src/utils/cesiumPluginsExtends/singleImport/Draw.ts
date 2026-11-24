@@ -38,9 +38,11 @@ const DrawTemp = createSingleImport<DrawTempApi>([Base, Math3d, Math2d], DrawCom
  */
 function createDraw(obj: SingleImportOptions): DrawExtendsApi {
   const res = new DrawTemp(obj)
-  const attackArrowObj = new AttackArrow(res.viewer, obj.cesiumGlobal)
-  const straightArrowObj = new StraightArrow(res.viewer, obj.cesiumGlobal)
-  const pincerArrowObj = new PincerArrow(res.viewer, obj.cesiumGlobal)
+  // 与 initSingleImportModule 一致：`Cesium` 是 `cesiumGlobal` 的别名
+  const cesiumGlobal = obj.cesiumGlobal ?? obj.Cesium
+  const attackArrowObj = new AttackArrow(res.viewer, cesiumGlobal)
+  const straightArrowObj = new StraightArrow(res.viewer, cesiumGlobal)
+  const pincerArrowObj = new PincerArrow(res.viewer, cesiumGlobal)
   return {
     ...res,
     attackArrowObj,

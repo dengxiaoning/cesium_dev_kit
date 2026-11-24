@@ -135,16 +135,7 @@ class Controller {
     // 如果外部传入viewer 将不再重新实例化viewer
 
     const _viewer: Viewer = viewer || new this.Cesium.Viewer(mapID as string, { ...vConfig, ...providerConf })
-    if (extraConfig && !extraConfig['logo']) {
-      const cC = _viewer.cesiumWidget.creditContainer as HTMLElement
-      cC.style.display = 'none' // 影藏logo
-    }
-
-    // 是否开启深度参数
-    if (extraConfig && extraConfig['depthTest']) {
-      // 设置开启深度检测
-      _viewer.scene.globe.depthTestAgainstTerrain = true
-    }
+    this.applyExtraConfig(_viewer, extraConfig)
 
     // 增加配置图层
     if (MapImageryList && MapImageryList.length > 0) {
@@ -171,6 +162,27 @@ class Controller {
 
     this.viewer = _viewer
     return _viewer
+  }
+
+  /**
+   * 把 extraConfig 中的通用选项应用到 viewer 上。
+   *
+   * 抽成独立方法，是为了让「kit 自己创建 viewer」与「外部传入 viewer」两条路径
+   * 行为一致：外部 viewer 同样支持 logo / depthTest。
+   * @param viewer - cesium viewer 实例
+   * @param extraConfig - 额外配置
+   */
+  applyExtraConfig(viewer: Viewer, extraConfig?: ExtraConfig): void {
+    if (!viewer || !extraConfig) return
+    if (!extraConfig['logo']) {
+      const cC = viewer.cesiumWidget.creditContainer as HTMLElement
+      cC.style.display = 'none' // 影藏logo
+    }
+    // 是否开启深度参数
+    if (extraConfig['depthTest']) {
+      // 设置开启深度检测
+      viewer.scene.globe.depthTestAgainstTerrain = true
+    }
   }
 
   /**

@@ -603,7 +603,7 @@ class Graphics {
    * @param {number} options.outlineColor  - 边线颜色
    * @param {number} options.outlineWidth - 边线宽
    * @example
-   *  import { Graphics } from 'cesium_dev_kit'
+   *  import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -636,7 +636,7 @@ class Graphics {
    * @param {number} options.width - 线宽
    * @param {boolean} options.clampToGround - 是否贴地
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -681,7 +681,7 @@ class Graphics {
    * @param {object} options.material - 配置线段材质
    * @param {boolean} options.clampToGround - 是否贴地
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -733,7 +733,7 @@ class Graphics {
    * @param {Cesium.Cartesian2} options.l_pixelOffset - 偏移
    * @param {Cesium.HeightReference} options.l_heightReference - 高程参照设置
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -788,7 +788,7 @@ class Graphics {
    * @param {Cesium.Cartesian2} options.b_eyeOffset - 视角偏移设置
    * @param {Cesium.HeightReference} options.b_heightReference - 高程参照设置
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -832,7 +832,7 @@ class Graphics {
    * @param {object} options.color - 颜色
    * @param {number} options.width - 宽度
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -868,7 +868,7 @@ class Graphics {
    * @param {number} options.m_scale - 缩放比例
    * @param {number} options.scale - 缩放比例
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -898,7 +898,7 @@ class Graphics {
    * @param {object} options.e_metarial - 材质
    * @param {boolean} options.e_outline - 是否显示外边线
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -938,7 +938,7 @@ class Graphics {
    * @param {boolean} options.fill - 是否填充
    * @param {boolean} options.material - 材质
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -992,7 +992,7 @@ class Graphics {
    * @param {boolean} options.fill - 是否填充
    * @param {boolean} options.material - 材质
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1030,7 +1030,7 @@ class Graphics {
    * @param {object} options.dimensions - 面板长宽高
    * @param {boolean} options.material - 材质
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1062,7 +1062,7 @@ class Graphics {
    * @param {boolean} options.material - 材质
    * @param {number} options.slices - 垂直分段数量
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1105,7 +1105,7 @@ class Graphics {
    * @param {object} options.label - 绘制label图形的参数
    * @see {@link module:Graphics#getLabelGraphics|getLabelGraphics}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1161,7 +1161,7 @@ class Graphics {
    * @param {object} options.label - 绘制label图形的参数
    * @see {@link module:Graphics#getLineGraphics|getLineGraphics}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1209,7 +1209,7 @@ class Graphics {
    * @param {boolean} options.clampToS3M - 是否贴s3m模型
    * @see {@link module:Graphics#getPolygonGraphics|getPolygonGraphics}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1258,7 +1258,7 @@ class Graphics {
    * @param {boolean} options.material - 材质
    * @see {@link module:Graphics#getBoxGraphics|getBoxGraphics}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1294,7 +1294,7 @@ class Graphics {
    * @param {number} options.scale - 缩放比例
    * @see {@link module:Graphics#getModelGraphics|getModelGraphics}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1328,7 +1328,7 @@ class Graphics {
    * @param {string} options.cornerType - 转角类型
    * @see {@link WarnLinkMaterialProperty|WarnLinkMaterialProperty}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1387,7 +1387,7 @@ class Graphics {
    * @param {number} options.width - 宽度
    * @param {boolean} options.clampToGround - 是否贴地
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1441,7 +1441,7 @@ class Graphics {
    * @param {boolean} options.clampToGround - 是否贴地
    * @see {@link module:Graphics#getCylinderGraphics|getCylinderGraphics}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1509,7 +1509,7 @@ class Graphics {
    * @see {@link module:Graphics#getCylinderGraphics|getCylinderGraphics}
    * @see {@link CircleFadeMaterialProperty|CircleFadeMaterialProperty}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1552,7 +1552,7 @@ class Graphics {
    * @param {object} options.material - 材质(与图片二选一)
    * @see {@link module:Graphics#setGraphicsRotate|setGraphicsRotate}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1618,7 +1618,7 @@ class Graphics {
    * @param {number} options.semiMinorAxis - 短半轴
    * @param {number} options.semiMajorAxis - 长半轴
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1678,7 +1678,7 @@ class Graphics {
    * @param {object} options.material - 材质(与图片二选一)
    * @see {@link module:Base#transformWGS84ToCartesian|transformWGS84ToCartesian}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1779,7 +1779,7 @@ class Graphics {
    * @param {object} options.color - 颜色
    * @param {string} options.img - 材质图片
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1850,7 +1850,7 @@ class Graphics {
     * @param {function} options.callback - 回调返回entity
    * @see {@link module:Graphics#getBillboardGraphics|getBillboardGraphics} 
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1925,7 +1925,7 @@ class Graphics {
    * @param {Cartesian2} options.dimensions - 长宽高
    * @param {string} options.image - 图片
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -1987,7 +1987,7 @@ class Graphics {
    * @param {HTMLElement} options.videoElement - video绑定dom
      * @param {Cartesian3} options.normal - 垂直方向
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -2025,7 +2025,7 @@ class Graphics {
    * @param {string} options.url - 图片
    * @param {Cartesian3} options.normal - 垂直方向
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -2099,7 +2099,7 @@ class Graphics {
    * @param {number} options.rotateAmount - 旋转比例
    * @see {@link module:Base#transformWGS84ToCartesian|transformWGS84ToCartesian}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -2170,7 +2170,7 @@ class Graphics {
    * @see {@link module:Base#transformCartesianArrayToWGS84Array|transformCartesianArrayToWGS84Array}
    * @see {@link module:Base#transformWGS84ArrayToCartesianArray|transformWGS84ArrayToCartesianArray}
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -2244,7 +2244,7 @@ class Graphics {
    * @param {number} options.cheight - 高度
    * @param {function} options.callback - 回调
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -2311,7 +2311,7 @@ class Graphics {
    * @param {Number} options.alt - 高度(z轴)
    * @param {String} options.direction - 扫描方向（"-"顺时针，"+"逆时针）
    * @example
-   * import { Graphics } from 'cesium_dev_kit'
+   * import { Graphics } from 'cesium_dev_kit/graphics'
    * const graphicObj = new Graphics({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'

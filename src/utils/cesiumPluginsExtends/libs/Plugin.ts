@@ -409,7 +409,7 @@ Plugin.prototype = {
      * @param {string} i.bottomImg - 底部贴图
      * @param {Cartesian3} i.positions - 裁剪位置信息
      * @example
-     * import { Draw } from 'cesium_dev_kit'
+     * import { Draw } from 'cesium_dev_kit/draw'
      * const {viewer,draw} = new Draw({
      *    cesiumGlobal: Cesium,
          containerId: 'cesiumContainer'

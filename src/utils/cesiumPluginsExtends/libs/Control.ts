@@ -351,7 +351,7 @@ Control.prototype = {
    * @param {string} param.elementId - gui 组件绑定的dom
    * @param {object} param.silhouetteColor - 轮廓颜色
    * @example
-   * import { Control } from 'cesium_dev_kit'
+   * import { Control } from 'cesium_dev_kit/control'
    * const {control} = new Control({
    *    cesiumGlobal: Cesium,
         containerId: 'cesiumContainer'
@@ -437,7 +437,7 @@ Control.prototype = {
    * @param {object} param
    * @param {string} param.elementId - gui 组件绑定的dom
    * @example
-   * import { Control } from 'cesium_dev_kit'
+   * import { Control } from 'cesium_dev_kit/control'
    * const {control} = new Control({
    *    cesiumGlobal: Cesium,
         containerId: 'cesiumContainer'
@@ -550,7 +550,7 @@ Control.prototype = {
    * @param {string} param.elementId - gui对象绑定的dom id
    * @param {function} param.cb - 回调函数，返回{modelTransformMatrix: [1,0,0,0,1],modelMatrix:[ -1.1639525282088383,-0.2919152481050832,0]}
    * @example
-   * import { Control } from 'cesium_dev_kit'
+   * import { Control } from 'cesium_dev_kit/control'
    * const {control,viewer} = new Control({
    *    cesiumGlobal: Cesium,
         containerId: 'cesiumContainer'
@@ -806,7 +806,7 @@ Control.prototype = {
    * @param {ImageryLayer} layer - ImageryLayer对象
    * @param {string} param.elementId - gui对象绑定的dom id
    * @example
-   * import { Control } from 'cesium_dev_kit'
+   * import { Control } from 'cesium_dev_kit/control'
    * const {viewer,control} = new Control({
    *    cesiumGlobal: Cesium,
         containerId: 'cesiumContainer'
@@ -977,7 +977,7 @@ Control.prototype = {
    * @param {number} options.contrast - 对比度
    * @param {number} options.hue - 色调
    * @example
-   * import { Control } from 'cesium_dev_kit'
+   * import { Control } from 'cesium_dev_kit/control'
    * const {control} = new Control({
    *    cesiumGlobal: Cesium,
         containerId: 'cesiumContainer'
@@ -1118,7 +1118,7 @@ Control.prototype = {
    * @param {string} param.elementId - gui 绑定的dom id
    * @param {function} param.cb - 回调函数
    * @example
-   * import { Control } from 'cesium_dev_kit'
+   * import { Control } from 'cesium_dev_kit/control'
    * const {control} = new Control({
    *    cesiumGlobal: Cesium,
         containerId: 'cesiumContainer'
@@ -1215,7 +1215,7 @@ Control.prototype = {
    * @param {Entity} options.targetEntity - 操作的目标实体
    * @param {ctrlManualFlag} options.ctrlFlag - 操作状态标识，如 `{ selected: false, leftDown: false }`
    * @example
-   * import { Control } from 'cesium_dev_kit'
+   * import { Control } from 'cesium_dev_kit/control'
    * const {control} = new Control({
    *    cesiumGlobal: Cesium,
         containerId: 'cesiumContainer'
@@ -1317,7 +1317,7 @@ Control.prototype = {
    * 平移模型
    * @param {string} modifyMode - 移动标识，可选['move','rotate','scale']
    * @example
-   * import { Control } from 'cesium_dev_kit'
+   * import { Control } from 'cesium_dev_kit/control'
    * const {control} = new Control({
    *    cesiumGlobal: Cesium,
         containerId: 'cesiumContainer'
@@ -1333,7 +1333,7 @@ Control.prototype = {
    *  旋转模型
    * @param {string} modifyMode - 移动标识，可选['move','rotate','scale']
    * @example
-   * import { Control } from 'cesium_dev_kit'
+   * import { Control } from 'cesium_dev_kit/control'
    * const {control} = new Control({
    *    cesiumGlobal: Cesium,
         containerId: 'cesiumContainer'
@@ -1349,7 +1349,7 @@ Control.prototype = {
    *  缩放模型
    * @param {string} modifyMode - 移动标识，可选['move','rotate','scale']
    * @example
-   * import { Control } from 'cesium_dev_kit'
+   * import { Control } from 'cesium_dev_kit/control'
    * const {control} = new Control({
    *    cesiumGlobal: Cesium,
         containerId: 'cesiumContainer'

@@ -343,9 +343,8 @@ This project includes but is not limited to the reference and reference of the a
 
 ## Project deficiency and optimization
 
-- 1、Cesium-related types are intentionally loose (`any`) to support CDN / global `window.Cesium` usage; precise types can be extended if you install cesium via npm
-- 2、Errors are normalized as `CesiumDevKitError` with stable codes, and non-fatal ones go through `setErrorHandler` (see above); a few legacy helpers still swallow errors silently
-- 3、Unit tests cover the pure algorithm layers (12 suites). Browser/DOM-level integration tests and a Cesium version matrix are still missing
+- 1、Errors are normalized as `CesiumDevKitError` with stable codes, and non-fatal ones go through `setErrorHandler` (see above); a few legacy helpers still swallow errors silently
+- 2、Unit tests cover the pure algorithm layers (12 suites). Browser/DOM-level integration tests and a Cesium version matrix are still missing
 
 ## How to contribute
 

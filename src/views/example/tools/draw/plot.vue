@@ -1,18 +1,13 @@
 <template>
   <div class="inner-page">
-    <div id="cesiumContainer"
-         class="map3d-contaner"></div>
+    <div id="cesiumContainer" class="map3d-contaner"></div>
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
           <span>绘制面板</span>
         </div>
       </template>
-      <el-tag v-for="(item, idx) in menuData"
-              :key="idx"
-              class="text item"
-              :class="activeId === item.value ? 'active' : ''"
-              @click="caldDistain(item)">
+      <el-tag v-for="(item, idx) in menuData" :key="idx" class="text item" :class="activeId === item.value ? 'active' : ''" @click="caldDistain(item)">
         {{ item.label }}
       </el-tag>
     </el-card>
@@ -138,7 +133,7 @@ export default {
       // var viewer = new Cesium.Viewer('cesiumContainer');
       // 导入 cesium_dev_kit Draw 模块 
       const drawObj = new Draw({
-        cesiumGlobal: Cesium,
+        Cesium,
         // viewer: viewer,
         containerId: 'cesiumContainer',
         viewerConfig: {

@@ -154,7 +154,7 @@ CustomCesiumPlugin.prototype = {
    * @param {number} options.yHalfAngle - 传感器垂直半角
    * @param {boolean} options.showThroughEllipsoid - 是否穿过地球
    * @example
-   * import { CustomCesiumPlugin } from 'cesium_dev_kit'
+   * import { CustomCesiumPlugin } from 'cesium_dev_kit/custom-cesium-plugin'
    * const {customCesiumPlugin} = new CustomCesiumPlugin({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'
@@ -245,7 +245,7 @@ CustomCesiumPlugin.prototype = {
    * @param {object} options.color - 颜色
    * @param {object} options.lineColor - 线条颜色
    * @example
-   * import { CustomCesiumPlugin } from 'cesium_dev_kit'
+   * import { CustomCesiumPlugin } from 'cesium_dev_kit/custom-cesium-plugin'
    * const {customCesiumPlugin} = new CustomCesiumPlugin({
    *     cesiumGlobal: Cesium,
    *     containerId: 'cesiumContainer'

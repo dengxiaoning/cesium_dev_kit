@@ -149,12 +149,16 @@ export function createContext(options: CesiumContextOptions): CesiumContext {
         MapImageryList: options.MapImageryList,
         imageryProvider: options.imageryProvider
       })
-    } else if (options.MapImageryList && options.MapImageryList.length > 0) {
-      // 外部 viewer：只追加图层，不重建 viewer
+    } else {
+      // 外部 viewer：只追加配置，不重建 viewer
       const controller = new Controller(Cesium)
-      options.MapImageryList.forEach((item) => {
-        controller.addImageryProvider(viewer, item.type, item.option || item.classConfig)
-      })
+      // 外部 viewer 同样支持 extraConfig（logo / depthTest），与 kit 自建 viewer 保持一致
+      controller.applyExtraConfig(viewer, options.extraConfig)
+      if (options.MapImageryList && options.MapImageryList.length > 0) {
+        options.MapImageryList.forEach((item) => {
+          controller.addImageryProvider(viewer, item.type, item.option || item.classConfig)
+        })
+      }
     }
   } catch (err) {
     if (isCesiumDevKitError(err)) throw err

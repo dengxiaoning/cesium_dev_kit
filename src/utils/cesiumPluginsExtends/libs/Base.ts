@@ -1,6 +1,7 @@
 import type {
   Cartesian2,
   Cartesian3,
+  Cartographic,
   PostProcessStage,
   ScreenSpaceEventHandler,
   Viewer as CesiumViewer
@@ -11,8 +12,33 @@ import localDefaultValue from './defaultValue'
 /** cesium Viewer 实例类型（来自 `cesium` 包，仅类型引用，不影响打包体积） */
 export type Viewer = CesiumViewer
 
-/** cesium 全局对象类型（宽松：具体成员类型由使用方传入的 cesiumGlobal 决定） */
-export type CesiumGlobal = Record<string, any>
+/**
+ * Cesium 未在公开类型里声明、但本库运行时会读写的 Scene 成员。
+ * 集中在这里补充，避免为了几个私有字段把整个 viewer 退回 `any`。
+ */
+type ViewerScene = CesiumViewer['scene'] & {
+  /** 旧版 FXAA 开关（新版迁移到 `postProcessStages.fxaa`） */
+  fxaa?: boolean
+  /** 地下模式开关（公开类型未声明） */
+  undergroundMode?: boolean
+}
+
+/** 相机私有成员（`_direction` 为未归一化的原始方向） */
+type ViewerCamera = CesiumViewer['camera'] & {
+  _direction: Cartesian3
+}
+
+/**
+ * cesium 全局对象类型。
+ *
+ * 已知成员（`Cesium.Cartesian3`、`Cesium.Viewer` 等）直接取 `cesium` 包的真实类型，
+ * 只有本库运行时补丁上去的成员（`Cesium.Scene` 上的影像服务提供者、近景天空盒、
+ * 材质属性，以及 Cesium 未导出的私有类）才回退到 `any`。
+ */
+export type CesiumGlobal = typeof import('cesium') & {
+  /** 本库会在运行时扩展 `Cesium.Scene`（`AmapImageryProvider`、`GroundSkyBox` 等） */
+  Scene: typeof import('cesium').Scene & Record<string, any>
+} & Record<string, any>
 
 /** 模块内部持有的 cesium 全局对象 */
 
@@ -197,16 +223,16 @@ export interface cameraPosType {
   heading: number
   pitch: number
   roll: number
-  position: any
+  position: Cartesian3
   cameraHeading: number
   cameraPitch: number
   cameraRoll: number
   center: { x: number; y: number }
-  direction: any
+  direction: Cartesian3
 }
 
 /** WGS84 地理坐标（弧度） */
-export type CartographicType = any
+export type CartographicType = Cartographic
 
 /** 84 坐标信息 */
 export interface WGS84Type {
@@ -220,7 +246,7 @@ export interface WGS84Type {
 export interface clickPositionType {
   wgs84Coor: WGS84Type
   graphicCoor: { height: number; latitude: number; longitude: number }
-  cameraPosition: { cameraPosistion: any; heading: number; pitch: number; roll: number }
+  cameraPosition: { cameraPosistion: Cartesian3; heading: number; pitch: number; roll: number }
 }
 
 /** 天地图图层样式类型 */
@@ -402,7 +428,7 @@ export function createBaseModule() {
   let dfSt: StaticResourceConf | undefined = undefined
 
 class Base {
-  _viewer!: any
+  _viewer!: CesiumViewer
   _drawLayer!: any
   /** 模块标识，如 'base' */
   type!: string
@@ -459,12 +485,12 @@ class Base {
    * @function
    * @returns {Entity} Entity
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   *  const entity = baseObj.base.createGraphics()
+   *  const entity = kit.base.createGraphics()
    */
   createGraphics() {
     return new Cesium.Entity()
@@ -500,12 +526,12 @@ class Base {
    *  @function
    * @returns {SkyBox} SkyBox
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setOneSkyBox()
+   * kit.base.setOneSkyBox()
    */
   setOneSkyBox() {
     return new Cesium.SkyBox({
@@ -537,12 +563,12 @@ class Base {
    *  @function
    * @returns {SkyBox} SkyBox
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setTwoSkyBox()
+   * kit.base.setTwoSkyBox()
    */
   setTwoSkyBox() {
     return new Cesium.SkyBox({
@@ -573,12 +599,12 @@ class Base {
    *  @function
    * @returns {SkyBox} SkyBox
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setThreeSkyBox()
+   * kit.base.setThreeSkyBox()
    */
   setThreeSkyBox() {
     return new Cesium.SkyBox({
@@ -610,12 +636,12 @@ class Base {
    * @returns {GroundSkyBox} SkyBox
    * @see {@link module:Base#SkyBoxOnGround|SkyBoxOnGround}
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setOneGroundSkyBox()
+   * kit.base.setOneGroundSkyBox()
    */
   setOneGroundSkyBox() {
     return new Cesium.Scene.GroundSkyBox({
@@ -647,12 +673,12 @@ class Base {
    * @returns {GroundSkyBox} SkyBox
    * @see {@link module:Base#SkyBoxOnGround|SkyBoxOnGround}
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setTwoGroundSkyBox()
+   * kit.base.setTwoGroundSkyBox()
    */
   setTwoGroundSkyBox() {
     return new Cesium.Scene.GroundSkyBox({
@@ -684,12 +710,12 @@ class Base {
    * @returns {GroundSkyBox} SkyBox
    * @see {@link module:Base#SkyBoxOnGround|SkyBoxOnGround}
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setThreeGroundSkyBox()
+   * kit.base.setThreeGroundSkyBox()
    */
   setThreeGroundSkyBox() {
     return new Cesium.Scene.GroundSkyBox({
@@ -721,12 +747,12 @@ class Base {
    * @param {object} options
    * @param {Cartesian3} options.offset - 偏移
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setDarkEffect({offset:new Cesium.Cartesian3(0.1, 0.2, 0.3)})
+   * kit.base.setDarkEffect({offset:new Cesium.Cartesian3(0.1, 0.2, 0.3)})
    * @returns {postProcessStages} postProcessStages 实例
    */
   setDarkEffect(options?: DarkEffectOptions) {
@@ -760,12 +786,12 @@ class Base {
    * @param {number} options.width - 曝光区域宽度
    * @param {number} options.height - 曝光区域高度
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setBlurBloom({width:80,height:97})
+   * kit.base.setBlurBloom({width:80,height:97})
    * @returns {postProcessStages} postProcessStages 实例
    */
   setBlurBloom(options?: BlurBloomOptions) {
@@ -813,12 +839,12 @@ class Base {
    * 雨天特效
    * @function
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setRainEffect()
+   * kit.base.setRainEffect()
    * @returns {postProcessStages} postProcessStages 实例
    */
   setRainEffect() {
@@ -858,12 +884,12 @@ class Base {
    * 雪天特效
    * @function
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setSnowEffect()
+   * kit.base.setSnowEffect()
    * @returns {postProcessStages} postProcessStages 实例
    */
   setSnowEffect() {
@@ -917,12 +943,12 @@ class Base {
    *  雾天
    * @function
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setFogEffect()
+   * kit.base.setFogEffect()
    * @returns {postProcessStages} postProcessStages 实例
    */
   setFogEffect() {
@@ -979,38 +1005,43 @@ class Base {
    * 默认场景配置
    * @function
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setDefSceneConfig()
+   * kit.base.setDefSceneConfig()
    */
   setDefSceneConfig() {
     if (this._viewer) {
-      this._viewer.scene.sun.show = false
-      this._viewer.scene.moon.show = false
-      this._viewer.scene.fxaa = true
-      this._viewer.scene.globe.depthTestAgainstTerrain = true
-      this._viewer.scene.undergroundMode = false
-      this._viewer.scene.terrainProvider.isCreateSkirt = false
-      this._viewer.scene.skyAtmosphere.show = false
-      this._viewer.scene.globe.showGroundAtmosphere = false
-      this._viewer.scene.globe.enableLighting = true
-      this._viewer.scene.fog.enabled = false
-      this._viewer.cesiumWidget.creditContainer.style.display = 'none'
+      const scene = this._viewer.scene as ViewerScene
+      const terrainProvider = scene.terrainProvider as typeof scene.terrainProvider & {
+        /** 关闭地形裙边（部分 Cesium 版本私有字段） */
+        isCreateSkirt?: boolean
+      }
+      scene.sun.show = false
+      scene.moon.show = false
+      scene.fxaa = true
+      scene.globe.depthTestAgainstTerrain = true
+      scene.undergroundMode = false
+      terrainProvider.isCreateSkirt = false
+      scene.skyAtmosphere.show = false
+      scene.globe.showGroundAtmosphere = false
+      scene.globe.enableLighting = true
+      scene.fog.enabled = false
+      ;(this._viewer.cesiumWidget.creditContainer as HTMLElement).style.display = 'none'
     }
   }
   /**
    * 场景泛光
    * @function
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setBloomLightScene()
+   * kit.base.setBloomLightScene()
    */
   setBloomLightScene() {
     if (this._viewer) {
@@ -1052,12 +1083,12 @@ class Base {
    * @param {number} options.distance - 距离
    * @param {object} options.orientation - 方位，包含[朝向|倾斜角|翻滚角]
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.setView({
+   * kit.base.setView({
       position: new Cesium.Cartesian3(-1337035.7496454942, 5285202.940044943, 3305373.990594733),
       orientation: {
         heading: 6.108097731064569,
@@ -1102,12 +1133,12 @@ class Base {
    * @param {object} options.easingFunction - 飞行中在duration时间内插值方式
    * @param {Function} options.callback - 操作完成后的回调
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.flyTo({
+   * kit.base.flyTo({
         position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
         orientation: {
           heading: Cesium.Math.toRadians(1.0114629015290062),
@@ -1149,12 +1180,12 @@ class Base {
    *笛卡尔转坐标WGS84
    * @param {Cartesian3} cartesian -  笛卡尔积坐标数组
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.transformCartesianToWGS84(Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338))
+   * kit.base.transformCartesianToWGS84(Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338))
    * @returns {WGS84Type}  转换后wgs84坐标对象
    *
    */
@@ -1170,7 +1201,7 @@ class Base {
         }
       }
       // 从笛卡尔坐标获取经纬度
-      const cartographicEntity =Cesium.Cartographic.fromCartesian(cartesian);
+      const cartographicEntity = Cesium.Cartographic.fromCartesian(cartesian as Cartesian3);
      return  {
         lng: Cesium.Math.toDegrees(cartographicEntity.longitude),
         lat: Cesium.Math.toDegrees(cartographicEntity.latitude),
@@ -1185,12 +1216,12 @@ class Base {
    * @param {number} alt - z轴高层
    * @see {@link module:Base#transformWGS84ToCartesian|transformWGS84ToCartesian}
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.transformWGS84ArrayToCartesianArray([{lng:110.16018735617934, lat:31.036076859828338, alt:0 }])
+   * kit.base.transformWGS84ArrayToCartesianArray([{lng:110.16018735617934, lat:31.036076859828338, alt:0 }])
    * @returns {Array<Cartesian3>} 转换后的笛卡尔积数组
    */
   transformWGS84ArrayToCartesianArray(WSG84Arr: WGS84Type[], alt?: number) {
@@ -1212,19 +1243,19 @@ class Base {
    * @param {number} position.lat  - z轴
    * @param {number} alt - 高层
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.transformWGS84ToCartesian({lng:110.16018735617934, lat:31.036076859828338, alt:0 },30)
+   * kit.base.transformWGS84ToCartesian({lng:110.16018735617934, lat:31.036076859828338, alt:0 },30)
    * @returns {Cartesian3} 转换后的笛卡尔积数组
    */
   transformWGS84ToCartesian(position?: WGS84Type, alt?: number) {
     if (this._viewer) {
       return position
         ? Cesium.Cartesian3.fromDegrees(
-            position.lng || position.lon,
+            (position.lng ?? position.lon)!,
             position.lat,
             (position.alt = alt || position.alt),
             Cesium.Ellipsoid.WGS84
@@ -1237,12 +1268,12 @@ class Base {
    * @param {Array<Cartesian3>} cartesianArr
    * @see {@link module:Base#transformCartesianToWGS84|transformCartesianToWGS84}
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * baseObj.base.transformCartesianArrayToWGS84Array(Cesium.Cartesian3.fromDegreesArray( 110.16018735617934, 31.036076859828338, 110.17845812703679,31.033686527335444))
+   * kit.base.transformCartesianArrayToWGS84Array(Cesium.Cartesian3.fromDegreesArray( 110.16018735617934, 31.036076859828338, 110.17845812703679,31.033686527335444))
    * @returns {Array<WGS84Type>} 转换后的笛卡尔积数组
    */
   transformCartesianArrayToWGS84Array(cartesianArr: Cartesian3[]) {
@@ -1268,22 +1299,22 @@ class Base {
    * @param {number} position.alt  - z轴
    * @see {@link module:Base#transformCartesianToWGS84|transformCartesianToWGS84}
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
-   * const wgs84 =  baseObj.base.transformCartesianToWGS84(Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338));
-   * const cartographic = baseObj.base.transformWGS84ToCartographic(wgs84)
+   * const wgs84 =  kit.base.transformCartesianToWGS84(Cesium.Cartesian3.fromDegrees(110.16018735617934, 31.036076859828338));
+   * const cartographic = kit.base.transformWGS84ToCartographic(wgs84)
    * // or
-   * const cartographic2 = baseObj.base.transformWGS84ToCartographic({lng:110.16018735617934, lat:31.036076859828338, alt:0 });
+   * const cartographic2 = kit.base.transformWGS84ToCartographic({lng:110.16018735617934, lat:31.036076859828338, alt:0 });
    * @returns {CartographicType} 地理坐标
    *
    */
     transformWGS84ToCartographic(position: WGS84Type) {
       return position
         ? Cesium.Cartographic.fromDegrees(
-            position.lng || position.lon,
+            (position.lng ?? position.lon)!,
             position.lat,
             position.alt
           )
@@ -1293,12 +1324,12 @@ class Base {
    * 经纬度坐标数组转笛卡尔积世界坐标数组
    * @param {Array[]} lnglats - 经纬度坐标数组
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const baseObj = new Base({
-    *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+    *     Cesium,
     *     containerId: 'cesiumContainer'
     * })
-    * baseObj.base.lnglatArrayToCartesians([[117,40],[118.41]])
+    * kit.base.lnglatArrayToCartesians([[117,40],[118.41]])
    * @returns {Cartesian3[]} cartesians -  笛卡尔积世界坐标数组
    */
   lnglatArrayToCartesians(lnglats: number[][]) {
@@ -1320,12 +1351,12 @@ class Base {
    * @param {number} options.lat - 纬度
    * @param {number} options.height - z轴高度
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const BaseObj = new Base({
-   *    cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const kit = createKit({
+   *    Cesium,
         containerId: 'cesiumContainer'
       })
-   * BaseObj.base.setCameraEotateHeading({
+   * kit.base.setCameraEotateHeading({
                 lng: 117.1423291616,
                 lat: 39.0645831633,
                 height: 15.8
@@ -1389,9 +1420,9 @@ class Base {
    * @see {@link module:Base#transformWGS84ToCartesian|transformWGS84ToCartesian}
    * @see {@link module:Base#transformCartesianToWGS84|transformCartesianToWGS84}
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const {viewer,base} = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const { viewer, base } = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
    *  const _handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
@@ -1474,9 +1505,9 @@ class Base {
    * @function
    * @returns {cameraPosType} 相机位置信息
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const {base} = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const { base } = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
    *
@@ -1502,7 +1533,7 @@ class Base {
           lon = (curPosition.longitude * 180) / Math.PI,
           lat = (curPosition.latitude * 180) / Math.PI
 
-        var direction = this._viewer.camera._direction,
+        var direction = (this._viewer.camera as ViewerCamera)._direction,
           x = Cesium.Math.toDegrees(direction.x),
           y = Cesium.Math.toDegrees(direction.y),
           z = Cesium.Math.toDegrees(direction.z),
@@ -1511,8 +1542,10 @@ class Base {
           pitch = Cesium.Math.toDegrees(this._viewer.camera.pitch),
           roll = Cesium.Math.toDegrees(this._viewer.camera.roll)
 
-        var rectangle = this._viewer.camera.computeViewRectangle(),
-          west = (rectangle.west / Math.PI) * 180,
+        // 相机看向太空时无法计算视图范围
+        var rectangle = this._viewer.camera.computeViewRectangle()
+        if (!rectangle) return undefined
+        var west = (rectangle.west / Math.PI) * 180,
           north = (rectangle.north / Math.PI) * 180,
           east = (rectangle.east / Math.PI) * 180,
           south = (rectangle.south / Math.PI) * 180,
@@ -1545,9 +1578,9 @@ class Base {
    * @function
    * @param {Cesium.Event} e - 监听的事件对象
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const {base} = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const { base } = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
    *
@@ -1568,9 +1601,9 @@ class Base {
    * @function
    * @param {Cesium.Event} e - 监听的事件对象
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const {base} = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const { base } = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
    *
@@ -1586,7 +1619,9 @@ class Base {
     if (this._viewer) {
       let scene = this._viewer.scene
       let viewer = this._viewer
-      let pickPositionElliposid = scene.camera.pickEllipsoid(e.position, scene.globe.elliposid);
+      let pickPositionElliposid = scene.camera.pickEllipsoid(e.position, scene.globe.ellipsoid);
+      // 点击到地球外（太空/天空盒）时无法得到交点
+      if (!pickPositionElliposid) return undefined
       let cameraPosition = {
         cameraPosistion: viewer.camera.position,
         heading: viewer.camera.heading,
@@ -1619,11 +1654,12 @@ class Base {
   }
   //修改相机状态
   updateCameraState(flag: boolean) {
-    this._viewer.scene._screenSpaceCameraController.enableRotate = flag
-    this._viewer.scene._screenSpaceCameraController.enableTranslate = flag
-    this._viewer.scene._screenSpaceCameraController.enableZoom = flag
-    this._viewer.scene._screenSpaceCameraController.enableTilt = flag
-    this._viewer.scene._screenSpaceCameraController.enableLook = flag
+    const controller = this._viewer.scene.screenSpaceCameraController
+    controller.enableRotate = flag
+    controller.enableTranslate = flag
+    controller.enableZoom = flag
+    controller.enableTilt = flag
+    controller.enableLook = flag
   }
 
   /**
@@ -1637,9 +1673,9 @@ class Base {
    * @param {Function} options.mouseWheel - 鼠标滚动
    * @param {Function} options.leftUp - 左键弹起
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const {base} = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const { base } = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
    *  base.bindHandleEvent({
@@ -1705,9 +1741,9 @@ class Base {
    * 获取鼠标信息
    * @param {function} callback
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const {base} = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const { base } = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
    * base.getHandlePosition(res=>{console.log(res)})
@@ -1742,9 +1778,9 @@ class Base {
   /**
    * 保存当前场景png
    * @example
-   * import { Base } from 'cesium_dev_kit'
-   * const {base} = new Base({
-   *     cesiumGlobal: Cesium,
+   * import { createKit } from 'cesium_dev_kit'
+   * const { base } = createKit({
+   *     Cesium,
    *     containerId: 'cesiumContainer'
    * })
    * base.saveSceneImages()
@@ -2298,7 +2334,7 @@ class Base {
           })
         )
         var attributeLocations = (this._attributeLocations = GeometryPipeline.createAttributeLocations(
-          geometry
+          geometry!
         ))
 
         command.vertexArray = VertexArray.fromGeometry({
@@ -2353,9 +2389,9 @@ class Base {
    * @param {Array} eventNameArr  handler名称数组，如['LEFT_CLICK','MOUSE_MOVE']
    */
   removeHandlerByName(eventNameArr: string[] = []) {
-    eventNameArr.forEach((eHandler: any) => {
+    eventNameArr.forEach((eHandler: string) => {
       this._viewer.screenSpaceEventHandler.removeInputAction(
-        Cesium.ScreenSpaceEventType[eHandler]
+        Cesium.ScreenSpaceEventType[eHandler as keyof typeof Cesium.ScreenSpaceEventType]
       )
     })
   }
