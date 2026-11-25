@@ -1,0 +1,39 @@
+{
+  "name": "cesium-dev-kit-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that lets AI assistants (Claude, Cursor, Copilot…) look up the cesium_dev_kit API, class docs and examples.",
+  "type": "module",
+  "bin": {
+    "cesium-dev-kit-mcp": "./src/index.mjs"
+  },
+  "files": [
+    "src",
+    "assets",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "node src/index.mjs",
+    "prepublishOnly": "node scripts/download-index.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "cesium",
+    "cesiumjs",
+    "cesium_dev_kit",
+    "ai",
+    "model-context-protocol"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dengxiaoning/cesium_dev_kit.git",
+    "directory": "mcp"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.8"
+  }
+}

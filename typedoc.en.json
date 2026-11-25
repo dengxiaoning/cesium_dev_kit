@@ -1,0 +1,54 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "cesium_dev_kit",
+  "entryPoints": [
+    "src/utils/cesiumPluginsExtends/api/index.ts"
+  ],
+  "exclude": [
+    "**/glsl/**",
+    "**/*.d.ts"
+  ],
+  "tsconfig": "tsconfig.docs.json",
+  "out": "docs/en",
+  "readme": "typedoc.entry.en.md",
+  "lang": "en",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "cleanOutputDir": true,
+  "githubPages": true,
+  "searchInComments": true,
+  "commentStyle": "jsdoc",
+  "disableSources": true,
+  "categorizeByGroup": true,
+  "defaultCategory": "Other",
+  "categoryOrder": [
+    "Entity Graphics",
+    "Interactive Drawing",
+    "Plot Arrows",
+    "Primitives & Analysis",
+    "Spatial Analysis",
+    "Materials",
+    "Scene Plugins",
+    "Layers & Controls",
+    "Post-processing Effects",
+    "Math",
+    "Three.js Integration",
+    "Terrain Editing",
+    "DOM & Tooltips",
+    "Infrastructure",
+    "Extensions",
+    "Other"
+  ],
+  "sourceLinkTemplate": "https://github.com/dengxiaoning/cesium_dev_kit/blob/main/{path}#L{line}",
+  "navigationLinks": {
+    "GitHub": "https://github.com/dengxiaoning/cesium_dev_kit",
+    "Examples": "/cesium_dev_kit/examples/",
+    "Live Demo": "/cesium_dev_kit/demo/?auto=1",
+    "中文": "/cesium_dev_kit/"
+  },
+  "customCss": "scripts/docs-theme.css",
+  "customJs": "scripts/docs-custom.js",
+  "favicon": "public/favicon.ico"
+}

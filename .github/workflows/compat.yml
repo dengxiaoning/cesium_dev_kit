@@ -1,0 +1,45 @@
+name: Cesium Compat
+
+# 跨 Cesium 版本的类型 + 单元测试矩阵。
+#
+# 库声明 peer 依赖 cesium >=1.105.0，这里用「最低支持版本 / 当前锁定版本 / latest」三档
+# 跑 typecheck 与单测，尽早发现用了高于最低版本才有的 API 或某个版本引入的破坏性变更。
+#
+# 先按「定时 + 手动」跑，确认全绿后再决定要不要挂到 PR 门禁上。
+on:
+  schedule:
+    - cron: '0 3 * * 1' # 每周一 UTC 03:00
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/utils/cesiumPluginsExtends/**'
+      - 'package.json'
+      - '.github/workflows/compat.yml'
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cesium: ['1.105.0', '1.122.0', 'latest']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Cesium ${{ matrix.cesium }}
+        run: npm install --no-save --no-audit --no-fund cesium@${{ matrix.cesium }}
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "src/utils/cesiumPluginsExtends/**/*.ts",
+    "src/utils/cesiumPluginsExtends/**/*.d.ts",
+    "types/**/*.d.ts"
+  ]
+}
