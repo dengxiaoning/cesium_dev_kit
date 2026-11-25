@@ -342,7 +342,7 @@
     "axios": "^0.21.1",
     "cesium": "^1.105.0",
     "dat.gui": "^0.7.9",
-    "echarts": "4.2.1",
+    "echarts": "6.1.0",
     "element-plus": "^2.7.6",
     "flatted": "^3.2.2",
     "js-cookie": "2.2.0",
