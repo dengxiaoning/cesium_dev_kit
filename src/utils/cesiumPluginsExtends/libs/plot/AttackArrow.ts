@@ -4,7 +4,7 @@ import type { XpAlgorithm } from './algorithm'
 import type { Cartesian3, Entity } from 'cesium'
 import { TooltipUtil } from '../TooltipUtil'
 /**
- * 标会（攻击箭头）模块
+ * 标绘（攻击箭头）模块
  * @class
  * @param {object} viewer - cesium 实例
  * @param {object}  cesiumGlobal - cesium 全局对象
@@ -51,20 +51,20 @@ AttackArrow.prototype = {
     }
     this.clickStep = 0;
   },
-   /**
-   * 开始绘制攻击箭头
-   * @function
-  * @param {object|function} options - 兼容老版本(可以是回调函数callback(),也可以为参数对象{fillMaterial:object(),callback:function()})
-  * @param {function} options.callback - 回调函数
-  * @param {Material} options.fillMaterial - 填充材质
-  * @example
-   * import { AttackArrow } from 'cesium_dev_kit'
-  * const attackArrowObj = new AttackArrow(viewer, Cesium)
-  * attackArrowObj.startDraw({fillMaterial: Cesium.Color.DARKKHAKI.withAlpha(0.8),callback:(res)=>{console.log(res)})
-  */
-   startDraw: function (this: AttackArrowInstance, options: any | any) {
+  /**
+  * 开始绘制攻击箭头
+  * @function
+ * @param {object|function} options - 兼容老版本(可以是回调函数callback(),也可以为参数对象{fillMaterial:object(),callback:function()})
+ * @param {function} options.callback - 回调函数
+ * @param {Material} options.fillMaterial - 填充材质
+ * @example
+  * import { AttackArrow } from 'cesium_dev_kit'
+ * const attackArrowObj = new AttackArrow(viewer, Cesium)
+ * attackArrowObj.startDraw({fillMaterial: Cesium.Color.DARKKHAKI.withAlpha(0.8),callback:(res)=>{console.log(res)})
+ */
+  startDraw: function (this: AttackArrowInstance, options: any | any) {
     var Cesium = this._Cesium
-    let cb: any=null;
+    let cb: any = null;
     if (typeof (options) === "object") {
       this.fillMaterial = options.fillMaterial;
       cb = options.callback;
@@ -107,7 +107,7 @@ AttackArrow.prototype = {
       var cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
       if (!cartesian) return;
       $this.floatPoint.position.setValue(cartesian);
-      $this.tooltip.showAtCartesian(cartesian,'右键结束!')
+      $this.tooltip.showAtCartesian(cartesian, '右键结束!')
       if ($this.positions.length >= 2) {
         if (!Cesium.defined($this.arrowEntity)) {
           $this.positions.push(cartesian);
@@ -145,21 +145,23 @@ AttackArrow.prototype = {
       $this.arrowEntity = null;
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
   },
-   /**
-   * 通过数据 绘制攻击箭头
-   * @function
-   * @param {Array} data  - 绘制箭头的数据
-   * @example
-   * import { AttackArrow } from 'cesium_dev_kit'
-   * const attackArrowObj = new AttackArrow(viewer, Cesium)
-   * attackArrowObj.createByData([
-   * [110.16018735617934, 31.036076859828338],
-   * [ 104.10758419863926,30.64592470850288],
-   * [ 104.09351691196979, 30.652434826507452],
-   * [104.09816110606057,30.659821965447698]])
-   */
+  /**
+  * 通过数据 绘制攻击箭头
+  * @function
+  * @param {Array} data  - 绘制箭头的数据
+  * @example
+  * import { AttackArrow } from 'cesium_dev_kit'
+  * const attackArrowObj = new AttackArrow(viewer, Cesium)
+  * attackArrowObj.createByData([
+  * [110.16018735617934, 31.036076859828338],
+  * [ 104.10758419863926,30.64592470850288],
+  * [ 104.09351691196979, 30.652434826507452],
+  * [104.09816110606057,30.659821965447698]])
+  */
   createByData: function (this: AttackArrowInstance, data: any[]) {
     var Cesium = this._Cesium
+    // 从数据还原时没有经过 startDraw，这里补一个 objId，保证 entity 可被追踪
+    if (!this.objId) this.objId = Number(new Date().getTime() + "" + Number(Math.random() * 1000).toFixed(0));
     //根据传入的数据构建箭头
     this.positions = []; //控制点
     this.state = -1; //state用于区分当前的状态 0 为删除 1为添加 2为编辑
@@ -184,14 +186,14 @@ AttackArrow.prototype = {
     this.arrowEntity = this.showArrowOnMap(this.positions);
     this.arrowEntity.objId = this.objId;
   },
-    /**
-   * 攻击箭头 - 编辑
-   * @function
-   * @example
-   * import { AttackArrow } from 'cesium_dev_kit'
-   * const attackArrowObj = new AttackArrow(viewer, Cesium)
-   * attackArrowObj.startModify((res)=>{console.log(res))
-   */
+  /**
+ * 攻击箭头 - 编辑
+ * @function
+ * @example
+ * import { AttackArrow } from 'cesium_dev_kit'
+ * const attackArrowObj = new AttackArrow(viewer, Cesium)
+ * attackArrowObj.startModify((res)=>{console.log(res))
+ */
   startModify: function (this: AttackArrowInstance) {
     var Cesium = this._Cesium
     //修改箭头
@@ -236,9 +238,9 @@ AttackArrow.prototype = {
       // var ray = $this.viewer.camera.getPickRay(evt.endPosition);
       // if (!ray) return;
       // var cartesian = $this.viewer.scene.globe.pick(ray, $this.viewer.scene);
-      var cartesian= getCatesian3FromPX(evt.endPosition, $this.viewer);
+      var cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
       if (!cartesian) return;
-      $this.tooltip.showAtCartesian(cartesian,'左键选取圆点开始修改，单击停止修改，点击图形之外结束!')
+      $this.tooltip.showAtCartesian(cartesian, '左键选取圆点开始修改，单击停止修改，点击图形之外结束!')
       if ($this.selectPoint) {
         $this.selectPoint.position.setValue(cartesian);
         $this.positions[$this.selectPoint.wz - 1] = cartesian; //上方的wz用于此处辨识修改positions数组里的哪个元素
@@ -247,15 +249,15 @@ AttackArrow.prototype = {
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
   },
-   /**
-   *获取攻击中的关键点 经纬度 
-   * @function
-   * @example
-   * import { AttackArrow } from 'cesium_dev_kit'
-   * const attackArrowObj = new AttackArrow(viewer, Cesium)
-   *  const res = attackArrowObj.getLnglats()
-   * @returns {Array}
-   */
+  /**
+  *获取攻击中的关键点 经纬度 
+  * @function
+  * @example
+  * import { AttackArrow } from 'cesium_dev_kit'
+  * const attackArrowObj = new AttackArrow(viewer, Cesium)
+  *  const res = attackArrowObj.getLnglats()
+  * @returns {Array}
+  */
   getLnglats: function (this: AttackArrowInstance) {
     var arr: any[] = [];
     for (var i = 0; i < this.positions.length; i++) {
@@ -373,7 +375,7 @@ export interface AttackArrowStartDrawOptions {
 
 /** AttackArrow 构造函数类型 */
 export interface AttackArrowConstructor {
-  new (...args: any[]): AttackArrowInstance
+  new(...args: any[]): AttackArrowInstance
   prototype: AttackArrowInstance
 }
 

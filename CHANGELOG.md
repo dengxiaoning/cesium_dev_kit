@@ -6,6 +6,35 @@
 在发版时生成 —— 尚未发版的改动记录在 `.changeset/` 目录，而不是写在这里。
 版本号怎么判定、多久发一次，见 [RELEASING.md](RELEASING.md)。
 
+## 1.4.0 - 2026-11-25
+
+### 新增 / 变更（Added / Changed）
+
+- 新增多个子路径模块与空间分析能力：
+  
+  - 新增 `cesium_dev_kit/history`：通用撤销 / 重做栈 `CommandHistory`（`execute` / `record` / `undo` / `redo` / `subscribe`，支持 `maxSize` 与撤销失败回滚）。
+  - 新增 `cesium_dev_kit/annotation`：标注数据模型 `AnnotationStore`（增删改、撤销重做、JSON 导入导出）与 Cesium 绑定层 `AnnotationLayer`（把标注同步为 entity，删除 / 变更时彻底清理 handler 与 tooltip）。
+  - 新增 `cesium_dev_kit/web-components`：框架无关的 `<cesium-draw-toolbar>` 自定义元素与 `defineDrawToolbar` / `bindDrawToolbar`，对 SSR 安全。
+  - 新增 `cesium_dev_kit/plot`：标绘序列化 `PlotStore` + `PlotLayer`，并重新导出 `AttackArrow` / `PincerArrow` / `StraightArrow`。
+  - `Analysis` 新增 `createProfileAnalysis()`（剖面分析）：沿一条线采样地形，输出高程剖面图与统计（最高 / 最低 / 平均 / 累计爬升下降）；纯计算部分 `computeProfileStats` / `buildProfileChartData` / `interpolateLngLat` 从 `cesium_dev_kit/analysis` 导出。
+  - 修复标绘 `createByData()` 从数据还原时 `objId` 未生成、entity 无法被追踪的问题。
+- 新增框架适配层：
+  
+  - 新增 `cesium_dev_kit/vue`：Vue 3 组合式 API `useCesiumKit` / `provideCesiumKit` / `useCesiumKitShared`，把 kit 的创建 / 销毁接到组件生命周期上。
+  - 新增 `cesium_dev_kit/react`：React Hook `useCesiumKit` 与 `CesiumKitContext` / `CesiumKitProvider` / `useCesiumKitShared`，挂载创建、卸载自动 `dispose()`。
+  - `vue` / `react` 均为可选 peer 依赖，不用对应框架完全不受影响。
+
+### 修复（Fixed）
+
+- 修复文档中按需引入的错误示例，将singleImport与createKit初始化走统一逻辑。
+- 工程化与文档：
+  
+  - 测试体系迁移到 Vitest（`npm test`），旧断言脚本改名为 `tests/*.legacy.ts`；新增 `CommandHistory` / `AnnotationStore` / `PlotStore` / 剖面计算 / 工具条解析等单测。
+  - 新增 Playwright 文档站冒烟测试（`test:e2e`）与覆盖率（`test:coverage`）。
+  - 新增 Cesium 版本矩阵 CI（1.105 / 1.122 / latest）与 E2E 工作流。
+  - 新增英文文档站（`README.en.US.md` + `typedoc.en.json`）与版本化文档（`versions.json` + `scripts/archive-version.mjs`）。
+  - 库与演示站拆分为两个 tsc 程序（`tsconfig.lib.json`），避免 Vue JSX 与 React 类型声明冲突。
+
 ## 1.3.0 - 2026-11-23
 
 ### 新增 / 变更（Added / Changed）

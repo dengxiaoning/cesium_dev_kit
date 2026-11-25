@@ -733,7 +733,7 @@ function parseImport(line) {
 }
 
 /** 文档里的分类：让所有类按能力分组，而不是一长串字母序 */
-const CATEGORIES = {
+const CATEGORIES_ZH = {
   Graphics: '实体图形',
   Draw: '交互绘制',
   AttackArrow: '标绘箭头',
@@ -755,6 +755,33 @@ const CATEGORIES = {
   CustomCesiumPlugin: '扩展',
   Base: '基础设施'
 }
+
+/** 英文分类（`DOC_LANG=en` 时启用）：文档站 UI 与分类走英文，方法说明仍保留源码 JSDoc 的中文原文 */
+const CATEGORIES_EN = {
+  Graphics: 'Entity Graphics',
+  Draw: 'Interactive Drawing',
+  AttackArrow: 'Plot Arrows',
+  PincerArrow: 'Plot Arrows',
+  StraightArrow: 'Plot Arrows',
+  BasePlot: 'Plot Arrows',
+  Primitive: 'Primitives & Analysis',
+  Analysis: 'Spatial Analysis',
+  Material: 'Materials',
+  Math2d: 'Math',
+  Math3d: 'Math',
+  PassEffect: 'Post-processing Effects',
+  ThreeJs: 'Three.js Integration',
+  TerrainEdit: 'Terrain Editing',
+  Plugin: 'Scene Plugins',
+  Control: 'Layers & Controls',
+  DomUtil: 'DOM & Tooltips',
+  TooltipUtil: 'DOM & Tooltips',
+  CustomCesiumPlugin: 'Extensions',
+  Base: 'Infrastructure'
+}
+
+const CATEGORIES =
+  process.env.DOC_LANG === 'en' || process.argv.includes('--en') ? CATEGORIES_EN : CATEGORIES_ZH
 
 /** 入口文件里类的排列顺序（侧边栏顺序跟着这个走） */
 const CLASS_ORDER = [

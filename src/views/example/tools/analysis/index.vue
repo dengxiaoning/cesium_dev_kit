@@ -15,6 +15,7 @@
         <el-button size="mini" @click="submergedAnalysis">淹没分析</el-button>
         <el-button size="mini" @click="slopeAnalysis">坡度分析</el-button>
         <el-button size="mini" @click="cutVolumeAnalysis"> 方量分析</el-button>
+        <el-button size="mini" @click="profileAnalysis">剖面分析</el-button>
       </div>
     </el-card>
   </div>
@@ -89,7 +90,8 @@ export default {
     clipPlanAnalysis () { this.analysis.createClipPlanAnalysis(); },
     submergedAnalysis () { this.analysis.createSubmergedAnalysis(); },
     slopeAnalysis () { this.analysis.createSlopeAnalysis(); },
-    cutVolumeAnalysis () { this.analysis.createCutVolumeAnalysis(); }
+    cutVolumeAnalysis () { this.analysis.createCutVolumeAnalysis(); },
+    profileAnalysis () { this.analysis.createProfileAnalysis(); }
   },
   beforeUnmount () {
     this.c_viewer = null;

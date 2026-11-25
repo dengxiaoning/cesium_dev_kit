@@ -11,6 +11,7 @@
   "tsconfig": "tsconfig.docs.json",
   "out": "docs",
   "readme": "typedoc.entry.md",
+  "lang": "zh",
   "includeVersion": true,
   "excludePrivate": true,
   "excludeInternal": true,
@@ -42,8 +43,11 @@
   "sourceLinkTemplate": "https://github.com/dengxiaoning/cesium_dev_kit/blob/main/{path}#L{line}",
   "navigationLinks": {
     "GitHub": "https://github.com/dengxiaoning/cesium_dev_kit",
-    "在线 Demo": "/cesium_dev_kit/demo/?auto=1"
+    "示例": "/cesium_dev_kit/examples/",
+    "在线 Demo": "/cesium_dev_kit/demo/?auto=1",
+    "English": "/cesium_dev_kit/en/"
   },
   "customCss": "scripts/docs-theme.css",
+  "customJs": "scripts/docs-custom.js",
   "favicon": "public/favicon.ico"
 }

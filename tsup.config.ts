@@ -26,7 +26,13 @@ export default defineConfig({
     control: 'src/utils/cesiumPluginsExtends/singleImport/Control.ts',
     three: 'src/utils/cesiumPluginsExtends/singleImport/ThreeJs.ts',
     'custom-cesium-plugin': 'src/utils/cesiumPluginsExtends/singleImport/CustomCesiumPlugin.ts',
-    'default-static': 'src/utils/cesiumPluginsExtends/defaultStatic.ts'
+    'default-static': 'src/utils/cesiumPluginsExtends/defaultStatic.ts',
+    vue: 'src/utils/cesiumPluginsExtends/vue/index.ts',
+    react: 'src/utils/cesiumPluginsExtends/react/index.ts',
+    plot: 'src/utils/cesiumPluginsExtends/plot/index.ts',
+    history: 'src/utils/cesiumPluginsExtends/history/index.ts',
+    annotation: 'src/utils/cesiumPluginsExtends/annotation/index.ts',
+    'web-components': 'src/utils/cesiumPluginsExtends/web-components/index.ts'
   },
   format: ['esm', 'cjs'],
   dts: true,
@@ -44,6 +50,9 @@ export default defineConfig({
   external: [
     'cesium',
     'three',
+    'vue',
+    'react',
+    'react/jsx-runtime',
     'echarts',
     'dat.gui',
     'libgif',

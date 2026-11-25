@@ -3,7 +3,7 @@ import type { XpAlgorithm } from './algorithm'
 import type { Cartesian3, Entity } from 'cesium'
 import { TooltipUtil } from '../TooltipUtil'
 /**
- * 标会（钳击箭头）模块
+ * 标绘（钳击箭头）模块
  * @class
  * @param {object} viewer - cesium 实例
  * @param {object}  cesiumGlobal - cesium 全局对象
@@ -51,20 +51,20 @@ PincerArrow.prototype = {
     }
     this.clickStep = 0;
   },
-   /**
-   * 开始绘制钳击箭头
-   * @function
-  * @param {object|function} options - 兼容老版本(可以是回调函数callback(),也可以为参数对象{fillMaterial:object(),callback:function()})
-  * @param {function} options.callback - 回调函数
-  * @param {Material} options.fillMaterial - 填充材质
-  * @example
-  * import { PincerArrow } from 'cesium_dev_kit'
-  * const pincerArrowObj = new PincerArrow(viewer, Cesium)
-  * pincerArrowObj.startDraw({fillMaterial: Cesium.Color.DARKKHAKI.withAlpha(0.8),callback:(res)=>{console.log(res)})
-  */
+  /**
+  * 开始绘制钳击箭头
+  * @function
+ * @param {object|function} options - 兼容老版本(可以是回调函数callback(),也可以为参数对象{fillMaterial:object(),callback:function()})
+ * @param {function} options.callback - 回调函数
+ * @param {Material} options.fillMaterial - 填充材质
+ * @example
+ * import { PincerArrow } from 'cesium_dev_kit'
+ * const pincerArrowObj = new PincerArrow(viewer, Cesium)
+ * pincerArrowObj.startDraw({fillMaterial: Cesium.Color.DARKKHAKI.withAlpha(0.8),callback:(res)=>{console.log(res)})
+ */
   startDraw: function (this: PincerArrowInstance, options: any | any) {
     var Cesium = this._Cesium
-    let cb: any=null;
+    let cb: any = null;
     if (typeof (options) === "object") {
       this.fillMaterial = options.fillMaterial;
       cb = options.callback;
@@ -81,7 +81,7 @@ PincerArrow.prototype = {
     }
     this.handler.setInputAction(function (evt: any) {
       //单机开始绘制
-      var cartesian= getCatesian3FromPX(evt.position, $this.viewer);
+      var cartesian = getCatesian3FromPX(evt.position, $this.viewer);
       if (!cartesian) return;
 
       if ($this.positions.length == 0) {
@@ -123,10 +123,10 @@ PincerArrow.prototype = {
       // var ray = viewer.camera.getPickRay(evt.endPosition);
       // if (!ray) return;
       // var cartesian = viewer.scene.globe.pick(ray, $this.viewer.scene);
-      var cartesian= getCatesian3FromPX(evt.endPosition, $this.viewer);
+      var cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
       if (!cartesian) return;
       $this.floatPoint.position.setValue(cartesian);
-      $this.tooltip.showAtCartesian(cartesian,'右键单击结束!')
+      $this.tooltip.showAtCartesian(cartesian, '右键单击结束!')
       if ($this.positions.length >= 2) {
         if (!Cesium.defined($this.arrowEntity)) {
           $this.positions.push(cartesian);
@@ -148,7 +148,7 @@ PincerArrow.prototype = {
         for (var i = 0; i < $this.pointArr.length; i++) {
           $this.pointArr[i].show = false;
         }
-       if( $this.floatPoint) {$this.floatPoint.show = false;}
+        if ($this.floatPoint) { $this.floatPoint.show = false; }
         $this.viewer.entities.remove($this.floatPoint);
         $this.floatPoint = null;
         var point = $this.creatPoint(cartesian);
@@ -164,21 +164,23 @@ PincerArrow.prototype = {
       }
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
   },
-    /**
-   * 通过数据 绘制钳击箭头
-   * @function
-   * @param {Array} data  - 绘制箭头的数据
-   * @example
-   * import { PincerArrow } from 'cesium_dev_kit'
-   * const pincerArrowObj = new PincerArrow(viewer, Cesium)
-   * pincerArrowObj.createByData([
-   * [110.16018735617934, 31.036076859828338],
-   * [ 104.10758419863926,30.64592470850288],
-   * [ 104.09351691196979, 30.652434826507452],
-   * [104.09816110606057,30.659821965447698]])
-   */
+  /**
+ * 通过数据 绘制钳击箭头
+ * @function
+ * @param {Array} data  - 绘制箭头的数据
+ * @example
+ * import { PincerArrow } from 'cesium_dev_kit'
+ * const pincerArrowObj = new PincerArrow(viewer, Cesium)
+ * pincerArrowObj.createByData([
+ * [110.16018735617934, 31.036076859828338],
+ * [ 104.10758419863926,30.64592470850288],
+ * [ 104.09351691196979, 30.652434826507452],
+ * [104.09816110606057,30.659821965447698]])
+ */
   createByData: function (this: PincerArrowInstance, data: any[]) {
     var Cesium = this._Cesium
+    // 从数据还原时没有经过 startDraw，这里补一个 objId，保证 entity 可被追踪
+    if (!this.objId) this.objId = Number(new Date().getTime() + "" + Number(Math.random() * 1000).toFixed(0));
     //根据传入的数据构建箭头
     this.positions = []; //控制点
     this.state = -1; //state用于区分当前的状态 0 为删除 1为添加 2为编辑
@@ -255,7 +257,7 @@ PincerArrow.prototype = {
       // var cartesian = $this.viewer.scene.globe.pick(ray, $this.viewer.scene);
       var cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
       if (!cartesian) return;
-      $this.tooltip.showAtCartesian(cartesian,'左键选取圆点开始修改，单击停止修改，点击图形之外结束!')
+      $this.tooltip.showAtCartesian(cartesian, '左键选取圆点开始修改，单击停止修改，点击图形之外结束!')
       if ($this.selectPoint) {
         $this.selectPoint.position.setValue(cartesian);
         $this.positions[$this.selectPoint.wz - 1] = cartesian; //上方的wz用于此处辨识修改positions数组里的哪个元素
@@ -264,15 +266,15 @@ PincerArrow.prototype = {
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
   },
- /**
-   *获取钳击箭头中的关键点 经纬度 
-   * @function
-   * @example
-   * import { PincerArrow } from 'cesium_dev_kit'
-   * const pincerArrowObj = new PincerArrow(viewer, Cesium)
-   *  const res = pincerArrowObj.getLnglats()
-   * @returns {Array}
-   */
+  /**
+    *获取钳击箭头中的关键点 经纬度 
+    * @function
+    * @example
+    * import { PincerArrow } from 'cesium_dev_kit'
+    * const pincerArrowObj = new PincerArrow(viewer, Cesium)
+    *  const res = pincerArrowObj.getLnglats()
+    * @returns {Array}
+    */
   getLnglats: function (this: PincerArrowInstance) {
     //获取直角箭头中的关键点 经纬度
     var arr: any[] = [];
@@ -282,15 +284,15 @@ PincerArrow.prototype = {
     }
     return arr;
   },
-   /**
-   * 获取钳击箭头中的关键点 世界坐标
-   * @function
-   * @example
-   * import { PincerArrow } from 'cesium_dev_kit'
-   * const pincerArrowObj = new PincerArrow(viewer, Cesium)
-   *  const res = pincerArrowObj.getPositions()
-   * @returns {Array}
-   */
+  /**
+  * 获取钳击箭头中的关键点 世界坐标
+  * @function
+  * @example
+  * import { PincerArrow } from 'cesium_dev_kit'
+  * const pincerArrowObj = new PincerArrow(viewer, Cesium)
+  *  const res = pincerArrowObj.getPositions()
+  * @returns {Array}
+  */
   getPositions: function (this: PincerArrowInstance) {
     //获取直角箭头中的关键点 世界坐标
     return this.positions;
@@ -303,7 +305,7 @@ PincerArrow.prototype = {
         pixelSize: 10,
         color: Cesium.Color.RED,
       },
-      show:true
+      show: true
     });
   },
   showArrowOnMap: function (this: PincerArrowInstance, positions?: any) {
@@ -391,7 +393,7 @@ export interface PincerArrowStartDrawOptions {
 
 /** PincerArrow 构造函数类型 */
 export interface PincerArrowConstructor {
-  new (...args: any[]): PincerArrowInstance
+  new(...args: any[]): PincerArrowInstance
   prototype: PincerArrowInstance
 }
 

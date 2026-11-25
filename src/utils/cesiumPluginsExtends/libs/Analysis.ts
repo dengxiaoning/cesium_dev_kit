@@ -10,6 +10,8 @@ import type { GraphicsInstance } from './Graphics'
 import { createScopedConstructor } from './Base'
 import { createDefaultStatic } from '../defaultStatic'
 import { wgs84ArrayToDegreesArrayHeights } from './pathUtils'
+import { computeProfileStats, buildProfileChartData } from './analysis/profile'
+import type { ProfileSample, ProfileStats } from './analysis/profile'
 
 /** 模块内部持有的 cesium 全局对象 */
 
@@ -78,6 +80,32 @@ export interface CutVolumeAnalysisOptions {
   callback?: (result: AnalysisResultInstance) => void
 }
 
+/** 剖面分析参数 */
+export interface ProfileAnalysisOptions {
+  /**
+   * 直接给定剖面线（[lng, lat] 或 [lng, lat, height]）。
+   * 不传则在地图上交互绘制一条直线。
+   */
+  positions?: Array<[number, number, number?]>
+  /** 采样点数量，默认 100（越大曲线越平滑，开销也越大） */
+  samples?: number
+  /** 是否绘制剖面图，默认 true */
+  chart?: boolean
+  callback?: (result: ProfileAnalysisResult) => void
+}
+
+/** 剖面分析结果 */
+export interface ProfileAnalysisResult {
+  /** 采样点（距离 / 高程 / 经纬度） */
+  samples: ProfileSample[]
+  /** 统计结果（最高 / 最低 / 平均 / 累计爬升下降） */
+  stats: ProfileStats
+  /** echarts 实例；chart: false 或 echarts 未就绪时为 null */
+  chart: any | null
+  /** 移除剖面图 */
+  remove(): void
+}
+
 /** 分析模块内部使用的公共实例（由 Base / Draw / Math3d / Graphics 混入） */
 export interface AnalysisSharedInstance {
   _viewer: any
@@ -138,6 +166,8 @@ export interface AnalysisInstance extends AnalysisSharedInstance {
   createSlopeAnalysis(options?: SlopeAnalysisOptions): boolean | void,
   /** 方量分析 */
   createCutVolumeAnalysis(options?: CutVolumeAnalysisOptions): void,
+  /** 剖面分析（沿一条线采样地形，输出高程剖面图与统计） */
+  createProfileAnalysis(options?: ProfileAnalysisOptions): void,
 }
 
 /** Analysis 构造函数类型 */
@@ -496,7 +526,191 @@ Analysis.prototype = {
       });
     }
   },
+  /**
+   * 剖面分析
+   * @function
+   * @param {object} options
+   * @param {Array} [options.positions] - 剖面线坐标（不传则交互绘制）
+   * @param {number} [options.samples] - 采样点数量，默认 100
+   * @param {boolean} [options.chart] - 是否绘制剖面图，默认 true
+   * @param {function} options.callback - 回调，参数含 samples / stats / chart / remove
+   * @example
+   * const analysis = new Analysis({ cesiumGlobal: Cesium, containerId: 'cesiumContainer' })
+   * // 交互：在地图上点两个点，自动生成高程剖面图
+   * analysis.createProfileAnalysis({
+   *   callback: (result) => console.log('剖面统计', result.stats)
+   * })
+   *
+   * // 也可以直接给定一条线
+   * analysis.createProfileAnalysis({
+   *   positions: [[104.09, 30.65], [104.11, 30.68]],
+   *   samples: 200
+   * })
+   */
+  createProfileAnalysis: function (this: AnalysisInstance, options?: ProfileAnalysisOptions) {
+    options = options || {};
+    var $this = this;
+    if (!$this._viewer) return;
+    var opts = options;
+    var sampleCount = opts.samples && opts.samples > 1 ? Math.floor(opts.samples) : 100;
+
+    var run = async function (positions: any[]) {
+      var built = buildProfileSamples($this, positions, sampleCount);
+      var chart: any = null;
+      if (opts.chart !== false) {
+        await ensureEcharts();
+        chart = renderProfileChart($this, built.samples);
+      }
+      var result: ProfileAnalysisResult = {
+        samples: built.samples,
+        stats: built.stats,
+        chart: chart,
+        remove: function () {
+          if (chart && typeof chart.dispose === "function") {
+            chart.dispose();
+          }
+          if (chart && chart.__cdkContainer && chart.__cdkContainer.parentNode) {
+            chart.__cdkContainer.parentNode.removeChild(chart.__cdkContainer);
+          }
+        },
+      };
+      if (typeof opts.callback === "function") opts.callback(result);
+    };
+
+    if (opts.positions && opts.positions.length >= 2) {
+      var pts = opts.positions;
+      var hasHeight = pts.some(function (p) {
+        return p.length >= 3;
+      });
+      var flat: number[] = [];
+      pts.forEach(function (p) {
+        flat.push(p[0], p[1]);
+        if (hasHeight) flat.push(p[2] ?? 0);
+      });
+      var cartesians = hasHeight
+        ? Cesium.Cartesian3.fromDegreesArrayHeights(flat)
+        : Cesium.Cartesian3.fromDegreesArray(flat);
+      void run(cartesians);
+    } else {
+      $this.drawLineGraphics({
+        type: "straightLine",
+        clampToGround: false,
+        callback: function (line: unknown, lineObj: unknown) {
+          if ($this._graphicsLayer) $this._graphicsLayer.entities.remove(lineObj as any);
+          void run(line as any[]);
+        },
+      });
+    }
+  },
 } as unknown as AnalysisInstance;
+
+/**
+ * 沿一条线段采样地形，得到剖面点与统计（内部使用）
+ * @param that - Analysis 实例（提供 viewer）
+ * @param positions - Cartesian3 数组（至少首尾两点）
+ * @param sampleCount - 采样段数
+ */
+function buildProfileSamples(
+  that: AnalysisInstance,
+  positions: any[],
+  sampleCount: number
+): { samples: ProfileSample[]; stats: ProfileStats } {
+  var start = positions[0];
+  var end = positions[positions.length - 1];
+  var samples: ProfileSample[] = [];
+  var total = 0;
+  var prevCarto: any = null;
+  var lerp = new Cesium.Cartesian3();
+  for (var i = 0; i <= sampleCount; i++) {
+    var t = i / sampleCount;
+    Cesium.Cartesian3.lerp(start, end, t, lerp);
+    var carto = Cesium.Cartographic.fromCartesian(lerp);
+    var height = that._viewer.scene.globe.getHeight(carto);
+    if (typeof height !== "number") height = 0;
+    if (prevCarto) {
+      // 用椭球测地线算水平距离，避免把高差算进 x 轴
+      var geodesic = new Cesium.EllipsoidGeodesic(prevCarto, carto);
+      total += geodesic.surfaceDistance;
+    }
+    samples.push({
+      distance: total,
+      height: height,
+      lng: Cesium.Math.toDegrees(carto.longitude),
+      lat: Cesium.Math.toDegrees(carto.latitude),
+    });
+    prevCarto = carto;
+  }
+  return { samples: samples, stats: computeProfileStats(samples) };
+}
+
+/**
+ * 渲染剖面高程图（内部使用）
+ * @param that - Analysis 实例
+ * @param samples - 剖面采样点
+ */
+function renderProfileChart(that: AnalysisInstance, samples: ProfileSample[]): any {
+  var data = buildProfileChartData(samples);
+  var container = document.createElement("div");
+  container.className = "echart-viewer";
+  that._viewer.container.appendChild(container);
+  container.style.position = "absolute";
+  container.style.left = "20px";
+  container.style.bottom = "20px";
+  container.style.height = "300px";
+  container.style.width = "640px";
+  container.style.overflow = "hidden";
+  container.style.zIndex = "9999";
+  container.style.opacity = "0.9";
+  var chart = echartsMod.init(container);
+  chart.setOption({
+    title: {
+      text: "剖面分析",
+      left: "center",
+      textStyle: { color: "white", fontSize: 15 },
+    },
+    tooltip: { trigger: "axis" },
+    grid: { left: 60, right: 30, top: 50, bottom: 50 },
+    xAxis: [
+      {
+        type: "category",
+        name: "距离(米)",
+        boundaryGap: false,
+        data: data.distance.map(function (d) {
+          return d.toFixed(1);
+        }),
+        axisLabel: { textStyle: { color: "white" } },
+        axisLine: { lineStyle: { color: "white" } },
+      },
+    ],
+    yAxis: [
+      {
+        type: "value",
+        name: "高程(米)",
+        axisLabel: { textStyle: { color: "white" } },
+        axisLine: { lineStyle: { color: "white" } },
+        splitLine: { lineStyle: { color: "rgba(255,255,255,0.15)" } },
+      },
+    ],
+    series: [
+      {
+        name: "高程",
+        type: "line",
+        smooth: true,
+        areaStyle: {},
+        data: data.height,
+        markPoint: {
+          data: [
+            { type: "max", name: "最高点" },
+            { type: "min", name: "最低点" },
+          ],
+        },
+        markLine: { data: [{ type: "average", name: "平均" }] },
+      },
+    ],
+  });
+  chart.__cdkContainer = container;
+  return chart;
+}
 
 /** 通视分析参数 */
 interface VisibilityAnalysisParams {

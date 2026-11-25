@@ -150,3 +150,14 @@ npm deprecate "cesium_dev_kit@<1.1.0" ""
 - 打 `v*` tag：测试 → 构建 → `npm publish` → 建 GitHub Release
 
 也就是说"合并代码"和"发版"彻底解耦，攒批不会阻塞任何人。
+
+## 文档站版本化
+
+文档站（`docs/`）带一个版本切换下拉框（见 `scripts/docs-custom.js`），数据来自根目录的
+`versions.json`。latest 永远在站点根路径 `/`，旧版本放在 `/vX.Y.Z/` 下：
+
+- `versions.json` 由 `docs:extras` 在构建时生成，自动扫描 `docs/` 里所有 `v<semver>` 目录；
+- 给旧版本归档：切到旧 tag 的 worktree，构建后执行 `node scripts/archive-version.mjs X.Y.Z`，
+  把 `docs/` 快照成 `docs/vX.Y.Z/`，随下一次站点发布一起上线；
+- 中英文文档：中文在根路径，英文在 `/en/`（`npm run docs:en` 单独构建英文 UI，方法说明仍为源码中文原文，
+  待 JSDoc 逐条翻译后补齐）。

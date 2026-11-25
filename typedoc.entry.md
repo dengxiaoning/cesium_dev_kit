@@ -178,5 +178,7 @@ kit.dispose() // 释放监听器 / DataSource；外部传入的 viewer 不会被
 ## 链接
 
 - [GitHub 仓库](https://github.com/dengxiaoning/cesium_dev_kit)
-- [在线示例](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
-- [English README](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/README.md)
+- [示例索引](https://dengxiaoning.github.io/cesium_dev_kit/examples/)：每个示例一个静态页，含源码与在线运行入口
+- [在线 Demo](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
+- [机器可读 API 索引](https://dengxiaoning.github.io/cesium_dev_kit/api-index.json) / [llms.txt](https://dengxiaoning.github.io/cesium_dev_kit/llms.txt)
+- [English README](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/README.en.US.md)

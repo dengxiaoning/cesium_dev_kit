@@ -21,3 +21,8 @@ export const Analysis = createSingleImport<AnalysisExtendsApi>(
   AnalysisCom,
   'analysis'
 ) as SingleImportConstructor<AnalysisExtendsApi>
+
+/** 剖面分析的纯计算工具（无需 viewer 即可使用） */
+export { computeProfileStats, buildProfileChartData, interpolateLngLat } from '../libs/analysis/profile'
+export type { ProfileSample, ProfileStats } from '../libs/analysis/profile'
+export type { ProfileAnalysisOptions, ProfileAnalysisResult } from '../libs/Analysis'

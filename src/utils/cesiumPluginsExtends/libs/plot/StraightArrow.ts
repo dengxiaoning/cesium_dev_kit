@@ -3,7 +3,7 @@ import type { XpAlgorithm } from './algorithm'
 import type { Cartesian3, Entity } from 'cesium'
 import { TooltipUtil } from '../TooltipUtil'
 /**
- * 标会（直线箭头）模块
+ * 标绘（直线箭头）模块
  * @class
  * @param {object} viewer - cesium 实例
  * @param {object}  cesiumGlobal - cesium 全局对象
@@ -63,7 +63,7 @@ StraightArrow.prototype = {
    */
   startDraw: function (this: StraightArrowInstance, options: any | any) {
     var Cesium = this._Cesium
-    let cb: any=null;
+    let cb: any = null;
     if (typeof (options) === "object") {
       this.fillMaterial = options.fillMaterial;
       cb = options.callback;
@@ -91,9 +91,9 @@ StraightArrow.prototype = {
         $this.firstPoint.position.setValue(cartesian);
         $this.firstPoint.show = true;
       }
-      
-  
-    
+
+
+
       if ($this.positions && $this.positions.length == 3) {
         $this.firstPoint.show = false;
         $this.floatPoint.show = false;
@@ -105,20 +105,20 @@ StraightArrow.prototype = {
         // $this.pointArr = [];
         $this.arrowEntity = null;
       }
-        // 增加最后一个光标点
-        $this.positions.push(cartesian.clone());
+      // 增加最后一个光标点
+      $this.positions.push(cartesian.clone());
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     this.handler.setInputAction(function (evt: any) {
       //移动时绘制面
       if ($this.positions.length < 1) return;
-      var cartesian  = getCatesian3FromPX(evt.endPosition, $this.viewer);
+      var cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
       if (!cartesian) return;
-      $this.tooltip.showAtCartesian(cartesian,'左键单击结束!')
+      $this.tooltip.showAtCartesian(cartesian, '左键单击结束!')
       // 修改浮动光标位置
       $this.floatPoint.position.setValue(cartesian);
       if ($this.positions.length >= 2) {
         if (!Cesium.defined($this.arrowEntity)) {
-           // 删除最后一个点，确保最后一个点是最后的位置
+          // 删除最后一个点，确保最后一个点是最后的位置
           // $this.positions.pop();
           $this.positions.push(cartesian);
           $this.arrowEntity = $this.showArrowOnMap($this.positions);
@@ -130,14 +130,14 @@ StraightArrow.prototype = {
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
   },
-    /**
-   * 直线箭头 - 编辑
-   * @function
-   * @example
-   * import { StraightArrow } from 'cesium_dev_kit'
-   * const straightArrow = new StraightArrow(viewer, Cesium)
-   * straightArrow.startModify()
-   */
+  /**
+ * 直线箭头 - 编辑
+ * @function
+ * @example
+ * import { StraightArrow } from 'cesium_dev_kit'
+ * const straightArrow = new StraightArrow(viewer, Cesium)
+ * straightArrow.startModify()
+ */
   startModify: function (this: StraightArrowInstance) {
     var Cesium = this._Cesium
     //修改箭头
@@ -168,7 +168,7 @@ StraightArrow.prototype = {
         $this.clickStep = 0;
         var cartesian = getCatesian3FromPX(evt.position, $this.viewer);
         if (!cartesian) return;
-        if ($this.selectPoint&&$this.selectPoint.position) {
+        if ($this.selectPoint && $this.selectPoint.position) {
           $this.selectPoint.position.setValue(cartesian);
           $this.selectPoint = null;
         }
@@ -177,8 +177,8 @@ StraightArrow.prototype = {
     this.modifyHandler.setInputAction(function (evt: any) {
       var cartesian = getCatesian3FromPX(evt.endPosition, $this.viewer);
       if (!cartesian) return;
-      $this.tooltip.showAtCartesian(cartesian,'左键选取圆点开始修改，单击停止修改，点击图形之外结束!')
-      if ($this.selectPoint&&$this.selectPoint.position) {
+      $this.tooltip.showAtCartesian(cartesian, '左键选取圆点开始修改，单击停止修改，点击图形之外结束!')
+      if ($this.selectPoint && $this.selectPoint.position) {
         $this.selectPoint.position.setValue(cartesian);
         if ($this.selectPoint.type == "firstPoint") {
           $this.positions[1] = cartesian;
@@ -206,6 +206,8 @@ StraightArrow.prototype = {
    */
   createByData: function (this: StraightArrowInstance, data: any[]) {
     var Cesium = this._Cesium
+    // 从数据还原时没有经过 startDraw，这里补一个 objId，保证 entity 可被追踪
+    if (!this.objId) this.objId = Number(new Date().getTime() + "" + Number(Math.random() * 1000).toFixed(0));
     //通过传入的经纬度数组 构建箭头
     this.state = -1;
     this.positions = [];
@@ -224,15 +226,15 @@ StraightArrow.prototype = {
     this.floatPoint.show = false;
     this.arrowEntity.objId = this.objId;
   },
-   /**
-   *获取直线箭头中的关键点 经纬度 
-   * @function
-   * @example
-   * import { StraightArrow } from 'cesium_dev_kit'
-   * const straightArrow = new StraightArrow(viewer, Cesium)
-   *  const res = straightArrow.getLnglats()
-   * @returns {Array}
-   */
+  /**
+  *获取直线箭头中的关键点 经纬度 
+  * @function
+  * @example
+  * import { StraightArrow } from 'cesium_dev_kit'
+  * const straightArrow = new StraightArrow(viewer, Cesium)
+  *  const res = straightArrow.getLnglats()
+  * @returns {Array}
+  */
   getLnglats: function (this: StraightArrowInstance) {
     var arr: any[] = [];
     for (var i = 0; i < this.positions.length; i++) {
@@ -353,7 +355,7 @@ export interface StraightArrowStartDrawOptions {
 
 /** StraightArrow 构造函数类型 */
 export interface StraightArrowConstructor {
-  new (...args: any[]): StraightArrowInstance
+  new(...args: any[]): StraightArrowInstance
   prototype: StraightArrowInstance
 }
 

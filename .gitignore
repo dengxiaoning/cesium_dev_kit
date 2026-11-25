@@ -8,6 +8,10 @@ dist-ssr
 *.tgz
 cesiumDevKit
 .workbuddy
+coverage
+playwright-report
+test-results
+mcp/assets
 
 # package-lock.json 纳入版本管理（CI 用 npm ci 才能可复现构建），
 # 这里只挡其他包管理器的 lock，避免同一个仓库出现多份依赖快照
@@ -23,3 +27,4 @@ src/utils/cesiumPluginsExtends/api
 .release-notes.md
 
 research
+

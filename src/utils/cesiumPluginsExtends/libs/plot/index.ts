@@ -25,3 +25,20 @@ function initPlot(viewer: any, cesiumGlobal: any) {
 export {
   initPlot
 }
+
+export { AttackArrow } from './AttackArrow'
+export { PincerArrow } from './PincerArrow'
+export { StraightArrow } from './StraightArrow'
+export { PlotStore, PLOT_MIN_POINTS } from './PlotStore'
+export { PlotLayer } from './PlotLayer'
+export type {
+  PlotItem,
+  PlotInput,
+  PlotSnapshot,
+  PlotStoreOptions,
+  PlotStoreState,
+  PlotStoreListener,
+  PlotType,
+  PlotPosition
+} from './PlotStore'
+export type { PlotLayerOptions } from './PlotLayer'

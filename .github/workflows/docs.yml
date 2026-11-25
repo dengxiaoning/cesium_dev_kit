@@ -10,10 +10,11 @@ on:
       - 'public/**'
       - 'index.html'
       - 'vite.config.ts'
-      - 'scripts/gen-api-stubs.mjs'
-      - 'scripts/docs-theme.css'
+      - 'scripts/**'
       - 'typedoc.json'
+      - 'typedoc.en.json'
       - 'typedoc.entry.md'
+      - 'typedoc.entry.en.md'
       - 'tsconfig.docs.json'
       - 'package.json'
       - '.github/workflows/docs.yml'
@@ -44,13 +45,21 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build API docs (typedoc + JSDoc comments)
-        run: npm run docs
+      - name: Build API docs (TypeDoc + JSDoc, 中文)
+        run: npm run docs:typedoc
+
+      - name: Build API docs (English UI)
+        run: npm run docs:typedoc:en
 
       # Demo 站点发布到同一个 Pages 站点下的 /demo/，文档页顶部的「在线 Demo」就指向它。
       # 必须放在 docs 之后：typedoc 会先清空 docs/，再往里写 demo 才能保留下来。
       - name: Build demo site into docs/demo
         run: npm run build:demo:pages
+
+      # 最后生成示例静态页 / sitemap / robots / llms.txt / api-index.json / versions.json，
+      # 此时 docs/ 与 docs/en/ 都已就绪，sitemap 才能把中英文页面一起收进去。
+      - name: Build site extras (examples / sitemap / llms / versions)
+        run: npm run docs:extras
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

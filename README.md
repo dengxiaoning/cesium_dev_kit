@@ -2,74 +2,110 @@
 
 [![Build Status][build-main]][build-status]
 [![NPM Package][npm]][npm-url]
-[![NPM Downloads][npm-download]][npmtrends-url]
+[![NPM 下载量][npm-download]][npmtrends-url]
 [![Build Size][build-size]][build-size-url]
 [![GitHub Repo stars][repo-stars]][star-chart]
 [![license][license-uri]][license-link]
 
-**English** | [中文](./README.zh-CN.md)
+[English](./README.en.US.md) | **中文**
 
-## Introduction
+> 面向业务开发的 Cesium 工具包：标绘、量算、空间分析、自定义材质 / 图元、传感器、后处理特效、地形编辑，以及与 Three.js 的单上下文深度融合。按需引入，不绑定任何前端框架。
 
-&emsp;This is a Cesium development kit that includes functionalities such as layer loading, coordinate conversion, coordinate picking, camera control, measurement, plotting, model loading and manipulation (translation, rotation scaling), 3Dtiles view position adjustment, weather effects (rain, snow, fog), scene rendering with radar scan and information box display capabilities. It also provides features for flow line visualization, lighting effects including dynamic wall and other luminous materials rendering.
-Additionally it supports Post effects, visibility analysis tools for perspective analysis and slope analysis. Furthermore it offers Inundation analysis as well as volume analysis capabilities and terrain excavation functionality.
+<img src="src/assets/image/preview/terrainEdit.png" alt="cesium_dev_kit 地形编辑：开挖、台阶与影像贴图" width="100%" />
 
-## API documentation & live demo
+### 为什么选它
 
-- API docs: [:bookmark_tabs: https://dengxiaoning.github.io/cesium_dev_kit/](https://dengxiaoning.github.io/cesium_dev_kit/)
-- Live demo: [:rocket: https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
+- **按需引入**：17 个子路径（`/graphics`、`/analysis`、`/three`……），用哪个装哪个，不会连带引入 `echarts` / `dat.gui`。
+- **稀缺能力**：地形编辑（开挖 / 堆高 / 台阶 / 水面 / 土方统计）和 Three.js 单上下文深度融合（共享 Cesium 的 canvas 与深度缓冲），在 Cesium 生态里都不常见。
+- **无框架绑定**：原生 API，React / Vue / 原生页面都能用；`createKit()` 生命周期清晰，`dispose()` 幂等。
+- **可维护**：TypeScript 类型、稳定错误码、477 个 API、70+ 在线示例，文档与 Demo 一一对应。
 
-Both live on the same GitHub Pages site: docs at the root, the demo under `/demo/`. The demo logs
-in with a mock account (`?auto=1`), and its sidebar lists every example, matching the classes in
-the docs one by one.
-
-The docs are generated from the JSDoc comments under `src/utils/cesiumPluginsExtends` (TypeDoc):
+### 30 秒上手
 
 ```bash
-npm run docs             # build API docs into docs/
-npm run build:demo:pages # build the demo into docs/demo/
-npm run docs:serve       # local preview at http://localhost:5174
+npm install cesium_dev_kit cesium
 ```
 
-Pushing to `main` triggers `.github/workflows/docs.yml`, which builds both and deploys to GitHub Pages.
+```ts
+import * as Cesium from 'cesium'
+import { createKit } from 'cesium_dev_kit'
 
-## Features
+const kit = createKit({
+  Cesium,
+  containerId: 'cesiumContainer'
+})
 
-|   ![terrainEdit](src/assets/image/preview/terrainEdit.png)   |        ![analysis](src/assets/image/preview/analysis.gif)        |         ![plot](src/assets/image/preview/plot.gif)         |
-| :-------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------: |
-|                                                    terrainEdit                                                     |                                                         analysis                                                          |                                                        plot                                                         |
-| ![dynamicRiver](src/assets/image/preview/dnyRiver.gif) |         ![extrude](src/assets/image/preview/extrude.gif)         |       ![effect](src/assets/image/preview/effect.gif)       |
-|                                                  dynamicRiver                                                   |                                                          extrude                                                          |                                                       effect                                                        |
-|      ![radar](src/assets/image/preview/radar.gif)      |        ![roaming](src/assets/image/preview/pathRoam.gif)         |         ![drag](src/assets/image/preview/drag.gif)         |
-|                                                      radar                                                      |                                                          roaming                                                          |                                                        drag                                                         |
-|    ![rayCast](src/assets/image/preview/rayCast.gif)    | ![fireworksEffect](src/assets/image/preview/fireworksEffect.gif) |   ![aniSoldier](src/assets/image/preview/aniSoldier.gif)   |
-|                                                     rayCast                                                     |                                                      fireworksEffect                                                      |                                                     aniSoldier                                                      |
-|   ![pathPlan](src/assets/image/preview/pathPlan.gif)   |  ![customPrimitive](src/assets/image/preview/custPrimitive.gif)  | ![clusterLayer](src/assets/image/preview/clusterLayer.gif) |
-|                                                    pathPlan                                                     |                                                      customPrimitive                                                      |                                                    clusterLayer                                                     |
-|      ![bar3D](src/assets/image/preview/bar3d.gif)      |     ![rollerBlind](src/assets/image/preview/rollerBlind.gif)     |    ![heatmap3d](src/assets/image/preview/heatmap3d.gif)    |
-|                                                      bar3D                                                      |                                                        rollerBlind                                                        |                                                      heatmap3d                                                      |
+kit.graphics.createPolygonGraphics({
+  positions: Cesium.Cartesian3.fromDegreesArray([
+    104.09, 30.65, 104.11, 30.65, 104.10, 30.63
+  ]),
+  material: Cesium.Color.RED.withAlpha(0.3),
+  clampToGround: true
+})
 
-[More>>](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
+// 页面卸载时释放（幂等）
+kit.dispose()
+```
 
-## Install
+> 需要 Cesium `>=1.105`；`three`、`echarts`、`dat.gui`、`libgif` 均为可选 peer 依赖，只在使用对应功能时安装。
+> 库内不再内置 Cesium Ion token，请通过 `extraConfig.AccessToken` 传入，或在应用入口设置 `Cesium.Ion.defaultAccessToken`。
+
+**文档入口**：[API 文档](https://dengxiaoning.github.io/cesium_dev_kit/) ·
+[示例大全（70+）](https://dengxiaoning.github.io/cesium_dev_kit/examples/) ·
+[在线 Demo](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1) ·
+[English](./README.en.US.md)
+
+## API 文档与在线 Demo
+
+- API 文档：[:bookmark_tabs: https://dengxiaoning.github.io/cesium_dev_kit/](https://dengxiaoning.github.io/cesium_dev_kit/)
+- 示例大全：[:jigsaw: https://dengxiaoning.github.io/cesium_dev_kit/examples/](https://dengxiaoning.github.io/cesium_dev_kit/examples/)
+- 在线 Demo：[:rocket: https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1](https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1)
+- AI索引：[llms.txt](https://dengxiaoning.github.io/cesium_dev_kit/llms.txt) · [api-index.json](https://dengxiaoning.github.io/cesium_dev_kit/api-index.json)
+
+三者同属一个 GitHub Pages 站点：文档在根路径，示例静态页在 `/examples/`，Demo 在 `/demo/`。
+Demo 用模拟账号自动登录（`?auto=1`），左侧菜单就是全部示例，和文档里的类一一对应。
+
+文档由 `src/utils/cesiumPluginsExtends` 下的 JSDoc 注释生成（TypeDoc）：
+
+```bash
+npm run docs             # 生成 API 文档到 docs/
+npm run build:demo:pages # 把 Demo 构建到 docs/demo/
+npm run docs:serve       # 本地预览 http://localhost:5174
+```
+
+推送到 `main` 后由 `.github/workflows/docs.yml` 依次构建文档与 Demo，并发布到 GitHub Pages。
+
+## 功能展示
+
+|![terrainEdit](src/assets/image/preview/terrainEdit.png) |![analysis](src/assets/image/preview/analysis.png)|![plot](src/assets/image/preview/plot.png)|
+| :----------------------------------------------------: |:----------------------------------------------------:|:-------------------------------------: | 
+|                地形编辑               |                         分析    |                                                   标绘   |
+| ![heatmap3d](src/assets/image/preview/heatmap3d.png) | ![extrude](src/assets/image/preview/extrude.png)  | ![fireworksEffect](src/assets/image/preview/fireworksEffect.png) |
+|                                    三维热力 |                 图形挤压         |           烟花      |
+|![radar](src/assets/image/preview/radar.png)|![roaming](src/assets/image/preview/pathRoam.png) |![自定义图元](src/assets/image/preview/custPrimitive.png) |
+|                雷达案例          |                            第一人称漫              |                  自定义图元          |
+
+[更多示例（含源码）>>](https://dengxiaoning.github.io/cesium_dev_kit/examples/)
+
+## 安装
+
+主包只需要 Cesium；Three.js、ECharts、dat.gui、libgif 都是可选依赖：
 
 ```shell
 npm install cesium_dev_kit cesium
-# optional: only needed for the Three.js integration
-npm install three
+npm install three   # 仅 Three.js 集成 / 地形编辑需要
 ```
 
-> Requires Cesium `>=1.105`. `three`, `echarts`, `dat.gui` and `libgif` are optional peer dependencies (installed only when their features are used).
-> The library no longer ships a Cesium Ion token. Pass your own token via
-> `extraConfig.AccessToken` or set `Cesium.Ion.defaultAccessToken` before creating the viewer.
+> 需要 Cesium `>=1.105`。`three`、`echarts`、`dat.gui`、`libgif` 均为可选 peer 依赖（仅在使用对应功能时安装）。
+> 库内不再内置 Cesium Ion token，请通过 `extraConfig.AccessToken` 传入，或在应用入口设置 `Cesium.Ion.defaultAccessToken`。
 
-## Cesium static assets (required)
+## Cesium 静态资源（必读）
 
-`cesium_dev_kit` draws on top of Cesium but does not ship Cesium's own runtime assets. Before the
-first render, `Assets/`, `Workers/`, `ThirdParty/` and `Widgets/widgets.css` must be reachable —
-otherwise you get a blank globe, missing terrain/imagery workers, or unstyled widgets.
+`cesium_dev_kit` 只负责在 Cesium 之上扩展能力，**不包含 Cesium 自身的运行资源**。首次渲染前，
+`Assets/`、`Workers/`、`ThirdParty/` 和 `Widgets/widgets.css` 必须可访问，否则会出现
+地球不显示、地形/影像瓦片加载失败、控件没有样式等问题。
 
-**Vite (recommended)** — one plugin does the copying for you:
+**Vite（推荐）**：用插件自动拷贝，不用手写配置。
 
 ```bash
 npm i -D vite-plugin-cesium
@@ -83,14 +119,13 @@ import cesium from 'vite-plugin-cesium'
 export default defineConfig({ plugins: [cesium()] })
 ```
 
-**Manual (webpack / Rspack / Rollup)**
+**手动配置（webpack / Rspack / Rollup）**
 
-1. Copy `node_modules/cesium/Build/Cesium/{Assets,Workers,ThirdParty,Widgets}` into your public
-   directory, e.g. `public/cesium/`.
-2. Point Cesium at it **before** Cesium is imported: `window.CESIUM_BASE_URL = '/cesium/'`.
-3. Import the widget styles: `import 'cesium/Build/Cesium/Widgets/widgets.css'`.
+1. 把 `node_modules/cesium/Build/Cesium/{Assets,Workers,ThirdParty,Widgets}` 拷到静态目录，例如 `public/cesium/`；
+2. 在**引入 Cesium 之前**设置 `window.CESIUM_BASE_URL = '/cesium/'`；
+3. 引入控件样式：`import 'cesium/Build/Cesium/Widgets/widgets.css'`。
 
-Give the container an explicit size, or the canvas collapses to 0px:
+容器必须给明确高度，否则画布高度为 0、页面一片空白：
 
 ```css
 #cesiumContainer {
@@ -99,17 +134,15 @@ Give the container an explicit size, or the canvas collapses to 0px:
 }
 ```
 
-Also make sure `Cesium.Ion.defaultAccessToken` is set, or pass `extraConfig.AccessToken`.
+另外别忘了设置 `Cesium.Ion.defaultAccessToken`，或者通过 `extraConfig.AccessToken` 传入。
 
-## Quick start
-
-### Import only what you need (recommended)
+## 快速开始（推荐按需引入）
 
 ```ts
 import * as Cesium from 'cesium'
 import { Graphics } from 'cesium_dev_kit/graphics'
 
-// Your own token, e.g. from an environment variable
+// 使用自己的 token，例如从环境变量读取
 Cesium.Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION_TOKEN
 
 const { viewer, graphics, dispose } = Graphics({
@@ -117,40 +150,32 @@ const { viewer, graphics, dispose } = Graphics({
   containerId: 'cesiumContainer'
 })
 
-graphics.flyTo({
-  position: { x: -1337132, y: 5330611, z: 3228680 }
-})
-
-// Call this when the page / route is unmounted
+// 页面 / 路由卸载时释放 kit 自己创建的 viewer
 dispose()
 ```
 
-Each subpath only bundles its own dependency graph. For example
-`cesium_dev_kit/graphics` does not pull in `echarts` or `dat.gui`.
-Available subpaths: `/graphics`, `/material`, `/primitive`, `/draw`, `/analysis`,
-`/plugin`, `/pass-effect`, `/control`, `/three`, `/custom-cesium-plugin`,
-`/default-static`.
+`cesium_dev_kit/graphics` 不会连带引入 `echarts` / `dat.gui`。可用子路径：
+`/graphics`、`/material`、`/primitive`、`/draw`、`/analysis`、`/plugin`、
+`/pass-effect`、`/control`、`/three`、`/vue`、`/custom-cesium-plugin`、`/default-static`。
 
-### Default images and assets
+### 默认图片与静态资源
 
-Many helpers (sky box, point icon, light cone, water, analysis textures) fall
-back to a small set of default images. If you do not pass `defaultStatic`, the
-kit uses its built-in CDN config so that a fresh install works without 404s:
+天空盒、点图标、光锥、水面、分析贴图等功能会用到一组默认图片。不传
+`defaultStatic` 时，库会使用内置 CDN 配置，保证新项目安装后不会出现 404：
 
 ```ts
 import { defaultStatic, createDefaultStatic } from 'cesium_dev_kit/default-static'
 
-// 1. Use the built-in CDN (default)
-// 2. Use your own CDN
+// 1. 使用内置 CDN（默认）
+// 2. 换成自己的 CDN
 const myStatic = createDefaultStatic('https://cdn.example.com/')
-// 3. Use relative paths and self-host ./public/static from this repo
+// 3. 使用相对路径，并把本仓库的 ./public/static 自托管到你的站点
 const localStatic = createDefaultStatic('')
 ```
 
-### Import all modules
+完整引入：
 
 ```ts
-import * as Cesium from 'cesium'
 import { initCesium } from 'cesium_dev_kit'
 
 const kit = initCesium({
@@ -159,45 +184,41 @@ const kit = initCesium({
   extraConfig: { AccessToken: 'YOUR_CESIUM_ION_TOKEN' }
 })
 
-const { viewer, graphics, primitive, analysis } = kit
 // ...
-
-// Destroys the viewer created by the kit.
-// If you passed an existing `viewer`, the kit will not destroy it.
 kit.dispose()
 ```
 
-### Recommended entry: `createKit`
+### 推荐入口：createKit
 
-`createKit` takes the same options as `initCesium` but returns an explicit context and has a clearer `dispose()` contract:
+`createKit` 与 `initCesium` 参数一致，但返回显式上下文，`dispose()` 的边界也更清楚：
 
 ```ts
 import * as Cesium from 'cesium'
 import { createKit } from 'cesium_dev_kit'
 
 const kit = createKit({
-  Cesium,                     // `cesiumGlobal` also works
+  Cesium,                     // 也可以写 cesiumGlobal
   containerId: 'cesiumContainer',
-  assetsBaseUrl: '/static/',  // same as createDefaultStatic('/static/')
+  assetsBaseUrl: '/static/',  // 等价于 createDefaultStatic('/static/')
   extraConfig: { AccessToken: import.meta.env.VITE_CESIUM_ION_TOKEN },
-  onError: (err, ctx) => console.warn(ctx?.scope, err)
+  onError: (err, ctx) => console.warn(ctx?.scope, err) // 接管非致命错误
 })
 
-kit.context.viewer // identical to kit.viewer
+kit.context.viewer // 与 kit.viewer 相同
 kit.graphics.createDynamicCircleGraphics({ /* ... */ })
-kit.dispose() // idempotent; kit.isDisposed() reports the state
+kit.dispose() // 幂等；kit.isDisposed() 可查询状态
 ```
 
-Contract:
+约定：
 
-- If the kit created the viewer, `dispose()` calls `viewer.destroy()`;
-- If you passed your own viewer, `dispose()` only removes DataSources/listeners added by the kit and never destroys your viewer;
-- Multiple kits can coexist on one page — modules no longer share module-level `Cesium` / `dfSt` state;
-- The legacy `new initCesium({...})` form still works but is a compatibility entry; prefer `createKit` for new code.
+- viewer 由 kit 创建时，`dispose()` 会 `viewer.destroy()`；
+- viewer 由调用方传入时，`dispose()` 只清理 kit 自己添加的 DataSource / 监听，不销毁 viewer；
+- 同一页面可以创建多个 kit：模块内部不再共享模块级 `Cesium` / `dfSt` 状态；
+- 旧写法 `new initCesium({...})` 仍然可用，但已标记为兼容入口，新代码建议用 `createKit`。
 
-### Error handling
+### 错误处理
 
-Errors thrown by the library are `CesiumDevKitError` with a stable `code`:
+库内主动抛出的错误统一为 `CesiumDevKitError`，带稳定的 `code`：
 
 ```ts
 import { isCesiumDevKitError, setErrorHandler } from 'cesium_dev_kit'
@@ -206,27 +227,26 @@ try {
   const kit = createKit({ Cesium, containerId: 'cesiumContainer' })
 } catch (err) {
   if (isCesiumDevKitError(err) && err.code === 'MISSING_VIEWER') {
-    // provide a container
+    // 自己补一个容器
   }
 }
 
-// Non-fatal errors caught internally default to console.warn
+// 库内被 catch 掉的非致命错误（销毁失败、可选依赖缺失等）默认 console.warn
 setErrorHandler((err, ctx) => console.warn(ctx?.scope, err))
 ```
 
-Codes: `MISSING_CESIUM`, `MISSING_VIEWER`, `INVALID_ARGUMENT`, `IMAGERY_FAILED`,
-`OPTIONAL_DEPENDENCY_MISSING`, `UNSUPPORTED_ENVIRONMENT`, `UNSUPPORTED_CESIUM_VERSION`, `INTERNAL`.
+错误码：`MISSING_CESIUM`、`MISSING_VIEWER`、`INVALID_ARGUMENT`、`IMAGERY_FAILED`、
+`OPTIONAL_DEPENDENCY_MISSING`、`UNSUPPORTED_ENVIRONMENT`、`UNSUPPORTED_CESIUM_VERSION`、`INTERNAL`。
 
-> Naming: `craete*` methods now have canonical `create*` names (e.g. `craeteDynamicCricleGraphics` →
-> `createDynamicCircleGraphics`). The old names remain and are marked `@deprecated`.
+> 命名修正：`craete*` 系列方法已提供正式名 `create*`（如 `craeteDynamicCricleGraphics` →
+> `createDynamicCircleGraphics`），旧名保留并标记 `@deprecated`。
 
 
-### Script tag / no bundler
+### 不用打包器 / script 标签直引
 
-Current releases ship only ESM (`dist/*.mjs`) and CJS (`dist/*.cjs`) builds. `index.umd.js` and the
-`window.cesium_dev_kit` global are **no longer published**, so the old
-`<script src="index.umd.js">` snippet will 404. For a plain HTML page, bundle a small entry with
-Vite in `iife` format:
+当前发布物只包含 ESM（`dist/*.mjs`）和 CJS（`dist/*.cjs`），**不再发布 `index.umd.js`**，
+`window.cesium_dev_kit` 这个全局变量也随之取消 —— 老的
+`<script src="index.umd.js">` 写法会 404。如果页面不能上打包器，用 Vite 打一个 `iife` 包再引：
 
 ```ts
 // vite.config.ts
@@ -238,15 +258,13 @@ export default {
 }
 ```
 
-Then load the generated file with a `<script>` tag. If you need an official UMD build back,
-please open an issue.
+生成的 js 用 `<script>` 引入即可。如果需要官方重新提供 UMD 构建，欢迎提 issue。
 
+## Three.js 与 Cesium 融合渲染
 
-## Three.js / Cesium fused rendering
+默认情况下 Three.js 画在一张独立的 canvas 上，靠 CSS 叠在 Cesium 画布之上。贴地物体在这种方案下会暴露三个问题：深度不共享（埋不进地形）、相机矩阵滞后一帧（贴地物随视角上下漂浮）、多一层全屏合成。
 
-By default Three.js renders into its own canvas stacked above the Cesium canvas via CSS. That has three drawbacks for ground-level content: the depth buffer is not shared (objects cannot sink into terrain), the camera matrix lags a frame (objects appear to float as you orbit), and you pay for an extra full-screen composite.
-
-`fusion: 'single-context'` makes Three.js reuse Cesium's canvas and WebGL context, drawing directly into Cesium's frame against the same depth buffer:
+`fusion: 'single-context'` 让 Three.js 复用 Cesium 的 canvas 与 WebGL 上下文，直接画进 Cesium 的帧里，并与 Cesium 共享同一份深度缓冲：
 
 ```ts
 import * as Cesium from 'cesium'
@@ -259,67 +277,231 @@ const kit = createKit({
   containerId: 'cesiumContainer',
   threeContainerId: 'threeContainer',
   viewerConfig: {
-    // fused mode requires WebGL2
+    // 融合模式需要 WebGL2
     contextOptions: { requestWebgl2: true }
   }
 })
 
 const { scene, camera } = kit.threeJs.initThree({
   center: [104.08, 30.62],
-  fusion: 'single-context', // default 'overlay' keeps the original two-canvas behaviour
-  depth: 'canvas-blit',     // default when fusion is 'single-context'
-  precision: 'double'       // default
+  fusion: 'single-context', // 默认 'overlay'，不传即保持原有双 canvas 行为
+  depth: 'canvas-blit',     // single-context 下的默认值
+  precision: 'double'       // 默认值
 })
 
-// Only update your animation each frame; no need to call renderer.render yourself
+// 每帧只更新模型动画即可，不需要自己调用 renderer.render
 kit.threeJs.loop(() => {
   mixer && mixer.update(0.016)
 })
 ```
 
-| Option | Default | Description |
+| 参数 | 默认值 | 说明 |
 | --- | --- | --- |
-| `fusion` | `'overlay'` | `'single-context'` reuses Cesium's canvas and WebGL context; omit it to keep the two-canvas behaviour |
-| `depth` | `'canvas-blit'` (single-context only) / `'none'` | Blits Cesium's depth onto the canvas so objects can be occluded by, and occlude, the terrain |
-| `precision` | `'double'` | Composes the view matrix in float64 and drops precision once; `'legacy'` restores the old path |
+| `fusion` | `'overlay'` | `'single-context'` 复用 Cesium 的 canvas 与 WebGL 上下文；不传则保持原有双 canvas 行为 |
+| `depth` | `'canvas-blit'`（仅 single-context）/ `'none'` | 把 Cesium 的深度 blit 到画布，使物体能被地形遮挡、也能遮挡地形 |
+| `precision` | `'double'` | 在 float64 中合成视图矩阵、只降一次精度；`'legacy'` 可还原旧实现 |
 
-Enabling it also does two things automatically: raises `scene.logarithmicDepthFarToNearRatio` to force a single frustum (multiple frustums clear depth between passes, leaving only the nearest slab), and skips the ECEF "fake occluder" spheres used by the old approach.
+开启后会自动做两件事：把 `scene.logarithmicDepthFarToNearRatio` 抬到单视锥（多视锥会在帧之间清深度，导致帧末只剩最近一段有深度），并跳过旧方案里用于「伪造遮挡」的 ECEF 模拟球。
 
-Caveats:
+需要注意的边界：
 
-- WebGL2 is required. If the context is missing or not WebGL2, it logs the reason and falls back to two canvases without breaking rendering;
-- With `scene.msaaSamples > 1`, `blitFramebuffer` may fail; repeated failures disable depth sharing (the context is still shared). Set `scene.msaaSamples = 1` on the Cesium side to avoid it;
-- With OIT enabled the depth is not in a blit-able FBO, so it degrades to context sharing only;
-- Do not call `renderer.setSize()` in fused mode: assigning canvas width/height clears the drawing buffer (and wipes Cesium's frame). Size is driven by Cesium's canvas.
+- 需要 WebGL2。取不到上下文或上下文不是 WebGL2 时，会打印原因并自动回退到双 canvas，不会中断渲染；
+- `scene.msaaSamples > 1` 时 `blitFramebuffer` 可能失败，连续失败会自动关闭深度共享（仍共享上下文）；可在 Cesium 侧设 `scene.msaaSamples = 1` 规避；
+- 开启 OIT 后深度不在可搬运的 FBO 上，会自动降级为「仅共享上下文」；
+- 融合模式不要调用 `renderer.setSize()`：给 canvas 宽高赋值会清空绘制缓冲（连带擦掉 Cesium 的画面），尺寸由 Cesium 的画布决定。
 
-To check whether occlusion is actually active, call `kit.threeJs.getFusionStatus()`; it reports frustum count, logarithmic depth, MSAA samples and the current depth source.
+排查遮挡是否生效，用 `kit.threeJs.getFusionStatus()`，它会返回视锥数量、对数深度开关、MSAA 采样数与当前深度来源。
 
-## Development
+## Vue 组合式 API（适配器）
+
+`cesium_dev_kit/vue` 提供一个 `useCesiumKit` 组合式函数，把 kit 的创建 / 销毁接到 Vue 组件生命周期上，省去手动 `onMounted` / `onUnmounted` 的样板代码：
+
+```vue
+<script setup lang="ts">
+import * as Cesium from 'cesium'
+import { useCesiumKit } from 'cesium_dev_kit/vue'
+
+// 组件挂载时创建 kit，卸载时自动 dispose()
+const { kit, viewer, ready, error } = useCesiumKit({
+  Cesium,
+  containerId: 'cesiumContainer'
+})
+</script>
+
+<template>
+  <div id="cesiumContainer" style="width:100%;height:100%"></div>
+</template>
+```
+
+- `kit` / `viewer` 是 `shallowRef`（重量对象不做深层响应式）；
+- `ready` 变 `true` 后再访问 `kit.value.graphics` 等模块；
+- 需要多个组件共享同一个 viewer 时，用 `provideCesiumKit(kit)` / `useCesiumKitShared()`。
+- `vue` 是可选 peer 依赖（`>=3.2`），不用 Vue 完全不受影响。
+
+## React Hooks（适配器）
+
+`cesium_dev_kit/react` 提供同款 `useCesiumKit` Hook，把 kit 的创建 / 销毁接到 React 组件生命周期上：
+
+```tsx
+import * as Cesium from 'cesium'
+import { useCesiumKit } from 'cesium_dev_kit/react'
+
+function Map() {
+  const { kit, viewer, ready, error } = useCesiumKit({
+    Cesium,
+    containerId: 'cesiumContainer'
+  })
+
+  if (error) return <div>初始化失败：{error.message}</div>
+
+  return <div id="cesiumContainer" style={{ width: '100%', height: '100%' }} />
+}
+```
+
+- 挂载时创建 kit，卸载时自动 `dispose()`；
+- `options` 只在挂载时读取一次，变化不会重建（如需重建请用 `key` 重新挂载）；
+- 多个组件共享同一个 viewer 时，用 `<CesiumKitProvider value={kit}>` 包裹子组件，再在子组件里 `useCesiumKitShared()`；
+- `react` 是可选 peer 依赖（`>=16.8`），不用 React 完全不受影响。
+
+## 标注序列化与撤销 / 重做
+
+`cesium_dev_kit/annotation` 把「标注数据」和「Cesium 渲染」拆成两层，数据层是纯逻辑、可脱离浏览器单测：
+
+```ts
+import * as Cesium from 'cesium'
+import { AnnotationStore, AnnotationLayer } from 'cesium_dev_kit/annotation'
+
+const store = new AnnotationStore()
+const layer = new AnnotationLayer({ Cesium, viewer, store })
+
+// 新增 / 修改 / 删除都会自动进入撤销栈
+store.add({ type: 'point', positions: [[104.09, 30.65]], style: { color: '#ffcc00' } })
+store.add({
+  type: 'polyline',
+  positions: [[104.09, 30.65], [104.11, 30.68]],
+  style: { lineWidth: 3 }
+})
+
+store.undo() // 撤销上一步
+store.redo() // 重做
+
+// 持久化：导出为纯 JSON
+const json = store.toJSON()
+localStorage.setItem('annotations', JSON.stringify(json))
+
+// 载入（可撤销）；初始化时可用 AnnotationStore.fromJSON（不产生撤销记录）
+store.load(JSON.parse(localStorage.getItem('annotations')!))
+
+// 不再需要时移除实体并取消订阅
+layer.destroy()
+```
+
+- `AnnotationStore` 支持 `add / update / remove / clear / load / toJSON / fromJSON`，`style`、`meta` 更新为浅合并；
+- 每次变更生成一条可撤销命令，`undo()` / `redo()` 与 `canUndo` / `canRedo` 可直接驱动工具栏按钮；
+- `AnnotationLayer` 把 store 变化 diff 成 Cesium entity，变更的标注采用「删掉重建」，避开属性更新 API 的兼容问题；
+- 需要更细粒度的命令控制时，可单独使用 `cesium_dev_kit/history` 的 `CommandHistory`。
+
+标绘（攻击 / 钳击 / 直线箭头）也支持同样的序列化 + 撤销，走 `cesium_dev_kit/plot`：
+
+```ts
+import * as Cesium from 'cesium'
+import { PlotStore, PlotLayer } from 'cesium_dev_kit/plot'
+
+const store = new PlotStore()
+const layer = new PlotLayer({ Cesium, viewer, store })
+
+store.add({
+  type: 'AttackArrow',
+  positions: [[104.09, 30.65], [104.11, 30.68], [104.10, 30.70]],
+  fillMaterial: '#ff5252'
+})
+
+store.undo()              // 撤销
+const json = store.toJSON() // 持久化（控制点 + 类型 + 填充色）
+store.load(json)          // 载入（可撤销）
+layer.destroy()
+```
+
+- `PlotStore` 数据层校验类型与控制点数量（三种箭头均需 ≥3 个点），`PlotLayer` 复用标绘自身的 `createByData` 还原图形；
+- 删除 / 变更时彻底销毁 handler 与 tooltip，避免交互监听器累积。
+
+## 框架无关绘制工具条（Web Components）
+
+`cesium_dev_kit/web-components` 提供 `<cesium-draw-toolbar>` 自定义元素，不依赖 React / Vue：
+
+```ts
+import { defineDrawToolbar, bindDrawToolbar } from 'cesium_dev_kit/web-components'
+
+defineDrawToolbar() // 注册 <cesium-draw-toolbar>
+
+bindDrawToolbar(document.querySelector('cesium-draw-toolbar')!, {
+  point: () => draw.drawPointGraphics(),
+  polyline: () => draw.drawLineGraphics(),
+  polygon: () => draw.drawPolygonGraphics(),
+  cancel: () => draw.cancelDraw?.()
+})
+```
+
+```html
+<cesium-draw-toolbar modes="point,polyline,polygon,rectangle,circle"></cesium-draw-toolbar>
+```
+
+- 选中模式时派发 `cesium-draw` 事件，`event.detail.mode` 为模式名（点「取消」时为 `null`）；
+- `value` 属性用于回显当前激活模式；
+- 对 SSR 安全：Node 中 import 不会因 `HTMLElement` 未定义而报错，`defineDrawToolbar()` 只在浏览器真正注册。
+
+## 剖面分析
+
+`kit.analysis.createProfileAnalysis` 沿一条线采样地形，输出高程剖面图与统计（最高 / 最低 / 平均 / 累计爬升下降）：
+
+```ts
+kit.analysis.createProfileAnalysis({
+  positions: [[104.09, 30.65], [104.11, 30.68]], // 省略则在地图上交互画线
+  samples: 200,
+  callback: (result) => {
+    console.log(result.stats) // { minHeight, maxHeight, avgHeight, gain, loss, ... }
+    console.log(result.samples) // [{ distance, height, lng, lat }, ...]
+    // result.remove() 可关闭剖面图
+  }
+})
+```
+
+纯计算部分（`computeProfileStats` / `buildProfileChartData` / `interpolateLngLat`）从 `cesium_dev_kit/analysis` 导出，可脱离 viewer 单测或自行渲染图表。
+
+## 教程
+
+- [快速上手：10 分钟画出第一个三维场景](./guides/getting-started.zh.md)
+- [地形编辑实战：开挖基坑并导出 / 载入](./guides/terrain-editing.zh.md)
+- [Cesium + Three.js 单上下文融合](./guides/cesium-three-fusion.zh.md)
+
+（英文版见 [`guides/*.en.md`](./guides/)）
+
+## 部署
 
 ```shell
 npm install
-npm run dev          # demo site
+npm run dev          # 查看案例
 npm run typecheck
 npm test
-npm run build:lib    # dist: ESM + CJS + .d.ts + sourcemaps
-npm run build        # demo site
+npm run build:lib    # 将插件打包，其中包含 ESM + CJS + .d.ts + 源码
+npm run build        # 查看案例 
 ```
 
 ---
 
-## Use example
+## 使用范例
 
-- Vue Use case
+- ES6 使用案例
   [https://github.com/dengxiaoning/cesium_kit_test](https://github.com/dengxiaoning/cesium_kit_test)
 
 - React Use case
   [https://github.com/dengxiaoning/react-cesium](https://github.com/dengxiaoning/react-cesium)
-- H5 Use case
+- H5 使用案例
   [https://github.com/dengxiaoning/cesium_kit_test_h5](https://github.com/dengxiaoning/cesium_kit_test_h5)
 
-## Donate
+## 捐赠
 
-Do you use and like cesium_dev_kit but you don’t find a way to show some love? If yes, please consider donating to support this project. Otherwise, no worries, regardless of whether there is support or not, I will keep maintaining this project. Still, if you buy me a cup of coffee I would be more than happy though😄
+你是否使用并喜欢 cesium_dev_kit，但你没有找到一种方式来表达你的喜欢? 如果是，请考虑捐款来支持这个项目。或许不是也不用担心，不管有没有支持，我都会继续维护这个项目。不过，如果你请我喝杯咖啡，我会非常高兴 😄
 
 - [![Support via PayPal](src/assets/image/preview/paypal-logo-129x32.svg)](https://paypal.me/xiaoningdeng?country.x=C2&locale.x=en_US)
 
@@ -327,50 +509,48 @@ Do you use and like cesium_dev_kit but you don’t find a way to show some love?
 
 ##
 
-## Browser support
+## 浏览器支持
 
-The 'Chrome 80+' browser is recommended for local development
+本地开发推荐使用`Chrome 80+` 浏览器
 
-Modern browsers (chrome, Firefox, Microsoft edge, etc.) are supported. Internet Explorer is not supported
+支持现代（chrome，Firefox，Microsoft edge，etc.）浏览器, 不支持 IE
 
-## Thanks
+## 鸣谢
 
 [cesium-d3kit](https://github.com/zhangti0708/cesium-d3kit)<br/>
 [drawarrowforcesium](https://gitcode.net/mirrors/gitgitczl/drawarrowforcesium)<br/>
 [vue3-ts-cesium-map-show](https://gitee.com/hawk86104/vue3-ts-cesium-map-show)<br/>
 
-This project includes but is not limited to the reference and reference of the above materials, thank you very much for sharing
+本项目包括但不限于借鉴和参考以上资料，非常感谢作者分享
 
-## Project deficiency and optimization
+## 项目不足与优化
 
-- 1、Errors are normalized as `CesiumDevKitError` with stable codes, and non-fatal ones go through `setErrorHandler` (see above); a few legacy helpers still swallow errors silently
-- 2、Unit tests cover the pure algorithm layers (12 suites). Browser/DOM-level integration tests and a Cesium version matrix are still missing
+- 1、错误已统一为 `CesiumDevKitError`（稳定 code），非致命错误走 `setErrorHandler`；少数旧工具方法仍会静默吞掉异常
+- 2、单元测试覆盖纯算法层（12 个套件），浏览器 / DOM 级集成测试与 Cesium 版本矩阵仍缺失
 
-## How to contribute
-
-This project exists thanks to all the people who contribute.<br/>
+## 如何贡献
 
 <a href="https://github.com/dengxiaoning/cesium_dev_kit/graphs/contributors">
-<img src="https://contrib.rocks/image?repo=dengxiaoning/cesium_dev_kit" />
+  <img src="https://contrib.rocks/image?repo=dengxiaoning/cesium_dev_kit" />
 </a>
 
-- If you want to contribute, you can [Raise an issue](https://github.com/dengxiaoning/cesium_dev_kit/issues/new) Or submit a Pull Request.
+你可以[提一个 issue](https://github.com/dengxiaoning/cesium_dev_kit/issues/new) 或者提交一个 Pull Request。
 
-See [CONTRIBUTING](./CONTRIBUTING.md) for more details on donations...
+更多贡献详情见[CONTRIBUTING](./CONTRIBUTING.md)...
 
 ---
 
 ## `Star`
 
-I am grateful to the generous individuals who awarded me these little stars, thank you for your support :heart:
+非常感谢留下星星的好心人，感谢您的支持 :heart:
 
-[See all stargazers](https://github.com/dengxiaoning/cesium_dev_kit/stargazers) · [Star history](https://api.star-history.com/svg?repos=dengxiaoning/cesium_dev_kit&type=Date)
+[查看全部 Stargazers](https://github.com/dengxiaoning/cesium_dev_kit/stargazers) · [Star 增长曲线](https://api.star-history.com/svg?repos=dengxiaoning/cesium_dev_kit&type=Date)
 
 ## `Fork`
 
-@sincely、`@ooil929`、 @InPanda、 `luyufanzhi`、AllenChiangCN、`Liquid-Zhangliquan`... thank you for your attention :heart:
+@sincely、`@ooil929`、 @InPanda、 `luyufanzhi`、AllenChiangCN、`Liquid-Zhangliquan` :heart:
 
-[See all forks](https://github.com/dengxiaoning/cesium_dev_kit/network/members)
+[查看全部 Fork](https://github.com/dengxiaoning/cesium_dev_kit/network/members)
 
 [npm]: https://img.shields.io/npm/v/cesium_dev_kit
 [npm-url]: https://www.npmjs.com/package/cesium_dev_kit
