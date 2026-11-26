@@ -400,11 +400,11 @@ export interface TerrainEditModuleOptions {
   /** 默认线条颜色 */
   color?: string
   /**
-   * 编辑块裙边向下的深度（米），默认 200。
+   * 编辑块裙边的向下深度（米），默认 `0`（关闭）。
    *
-   * 块边界高度来自「创建时采样」的地形；相机旋转 / 换 LOD 后实时地形可能略低，
-   * 块边缘会露出缝隙看着悬空。裙边沿边界垂直向下延伸，平整时埋在地形下看不见，
-   * 出现缝隙时正好填住。想更保险可以调大（例如 500）。
+   * 块边界高度来自采样地形，相机换 LOD 后实时地形可能略低，边缘会露缝。
+   * 开启后沿边界垂直向下延伸；平整时埋在地形下看不见，露缝时填住。
+   * 注意：落差大的地方会露出一面土色侧壁，视觉上可能显得「突出」，按需谨慎开启（如 60）。
    */
   skirtDepth?: number
 }
@@ -1146,39 +1146,56 @@ export function createTerrainEditModule() {
      * @private
      */
     async _sampleHeights(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid) {
-      const cartographics: any[] = []
-      const indices: number[] = []
+      const globe = this._viewer.scene.globe
+      // 先取「当前已加载地形」的高度：它和画面对得上。
+      // 若直接用 sampleTerrainMostDetailed 取最大细节，会和屏幕上的当前 LOD 差几十米，
+      // 陡峭山地就会悬空 / 顶穿，这正是「不贴地」的根源。
+      const missIndices: number[] = []
+      const missCarto: any[] = []
       for (let i = 0; i < grid.vertexCount; i++) {
         if (!grid.inside[i]) continue
         const { lng, lat } = gridLngLat(grid, i)
-        cartographics.push(Cesium.Cartographic.fromDegrees(lng, lat))
-        indices.push(i)
+        const carto = Cesium.Cartographic.fromDegrees(lng, lat)
+        let h: number | undefined
+        if (globe && typeof globe.getHeight === 'function') {
+          try {
+            h = globe.getHeight(carto)
+          } catch (err) {
+            h = undefined
+          }
+        }
+        if (typeof h === 'number' && Number.isFinite(h)) {
+          grid.base[i] = h
+        } else {
+          missIndices.push(i)
+          missCarto.push(carto)
+        }
       }
 
-      let heights: number[] | null = null
-      if (cartographics.length) {
+      // 瓦片还没加载到的点（globe.getHeight 返回 undefined）走异步采样兜底
+      if (missCarto.length) {
         const provider = this._viewer.terrainProvider
         const isEllipsoid =
           !provider || (Cesium.EllipsoidTerrainProvider && provider instanceof Cesium.EllipsoidTerrainProvider)
+        let heights: number[] | null = null
         if (!isEllipsoid) {
           try {
-            const sampled = await Cesium.sampleTerrainMostDetailed(provider, cartographics)
+            const sampled = await Cesium.sampleTerrainMostDetailed(provider, missCarto)
             heights = sampled.map((c: any) => c.height || 0)
           } catch (err) {
             try {
-              const sampled = await Cesium.sampleTerrain(provider, 13, cartographics)
+              const sampled = await Cesium.sampleTerrain(provider, 13, missCarto)
               heights = sampled.map((c: any) => c.height || 0)
             } catch (err2) {
               reportError(err2, { scope: 'TerrainEdit.sampleHeights' })
             }
           }
         }
+        for (let k = 0; k < missIndices.length; k++) {
+          grid.base[missIndices[k]] = heights ? heights[k] || 0 : 0
+        }
       }
 
-      for (let k = 0; k < indices.length; k++) {
-        const index = indices[k]
-        grid.base[index] = heights ? heights[k] || 0 : 0
-      }
       grid.current = new Float32Array(grid.base)
       return grid
     },
@@ -1498,7 +1515,10 @@ export function createTerrainEditModule() {
       if (!this._root || !THREE || !positions) return this
       const stride = grid.stride
       const segments = grid.segments
-      const depth = Math.max(20, Number(this._options && this._options.skirtDepth) || 200)
+      // 默认关闭（0）：裙边能填住 LOD 缝隙，但落差大时会露出一整面土色侧壁，反而显得「突出」。
+      // 需要时显式传 skirtDepth（例如 60）再开。
+      const depth = Number(this._options && this._options.skirtDepth) || 0
+      if (!(depth > 0)) return this
 
       // 某个单元格是否会渲染（四角都在编辑区内）
       const renderedCell = (row: number, col: number) => {

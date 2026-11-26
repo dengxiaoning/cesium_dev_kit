@@ -40,10 +40,10 @@
       </div>
 
       <div class="row modes">
-        <button class="chip" :disabled="!ready" @click="applyTemplate('pit')">基坑</button>
-        <button class="chip" :disabled="!ready" @click="applyTemplate('mound')">土堆</button>
-        <button class="chip" :disabled="!ready" @click="applyTemplate('platform')">平台</button>
-        <button class="chip" :disabled="!ready" @click="applyTemplate('ramp')">坡道</button>
+        <button class="chip" :class="{ active: activeTemplate === 'pit' }" :disabled="!ready" title="一键基坑：再点一次取消" @click="applyTemplate('pit')">基坑</button>
+        <button class="chip" :class="{ active: activeTemplate === 'mound' }" :disabled="!ready" title="一键土堆：再点一次取消" @click="applyTemplate('mound')">土堆</button>
+        <button class="chip" :class="{ active: activeTemplate === 'platform' }" :disabled="!ready" title="一键平台：再点一次取消" @click="applyTemplate('platform')">平台</button>
+        <button class="chip" :class="{ active: activeTemplate === 'ramp' }" :disabled="!ready" title="一键坡道：再点一次取消" @click="applyTemplate('ramp')">坡道</button>
       </div>
 
       <div class="slider">
@@ -117,6 +117,7 @@ export default {
       useTexture: true,
       cutSurface: true,
       targetHeight: null,
+      activeTemplate: null,
       brush: { mode: 'lower', radius: 110, maxDelta: 3 },
       stats: null,
       tip: '按住左键逐级下挖，拖动沿轨迹刷出平底平台；右键转视角，滚轮缩放',
@@ -265,6 +266,7 @@ export default {
     async resetArea () {
       this.terrainEdit.clear()
       this.painting = false
+      this.activeTemplate = null
       await this.buildArea()
       this.focusArea()
     },
@@ -304,13 +306,22 @@ export default {
     },
     undo () {
       this.terrainEdit.undo()
+      this.activeTemplate = null
       this.updateStats()
       this.tip = '已撤销上一步'
     },
-    /** 一键应用地形模板：基坑 / 土堆 / 平台 / 坡道 */
+    /** 一键应用地形模板：基坑 / 土堆 / 平台 / 坡道；再次点击同一模板 = 撤销并取消选中 */
     applyTemplate (type) {
       if (!this.ready || !this.terrainEdit) return
       try {
+        if (this.activeTemplate === type) {
+          // 再点一次同一个 = 取消：撤销这次模板改动
+          this.terrainEdit.undo()
+          this.activeTemplate = null
+          this.updateStats()
+          this.tip = `已取消模板：${type}`
+          return
+        }
         if (type === 'pit') {
           this.terrainEdit.applyTemplate({ type: 'pit', depth: 60, stepHeight: 6 })
         } else if (type === 'mound') {
@@ -320,8 +331,9 @@ export default {
         } else {
           this.terrainEdit.applyTemplate({ type: 'ramp', direction: 90 })
         }
+        this.activeTemplate = type
         this.updateStats()
-        this.tip = `已应用模板：${type}（可继续用笔刷微调）`
+        this.tip = `已应用模板：${type}（可继续用笔刷微调；再点一次按钮可取消）`
       } catch (err) {
         this.error = '应用模板失败：' + (err && err.message ? err.message : err)
       }
