@@ -383,17 +383,25 @@ Height-field interchange is pure computation, exported from `cesium_dev_kit/terr
 with no Cesium / Three dependency, so it can be unit-tested outside the viewer:
 
 ```ts
-import { heightFieldToGeoTIFF, diffHeightField, applyHeightPatch } from 'cesium_dev_kit/terrain'
+import { heightFieldToGeoTIFF, geoTIFFToHeightField, diffHeightField, applyHeightPatch } from 'cesium_dev_kit/terrain'
 
+// export
 const field = kit.terrainEdit.getHeightField() // { segments, bounds, base, current }
 const tiff = heightFieldToGeoTIFF(field)        // single-band Float32 GeoTIFF (WGS84)
-const patch = diffHeightField(field)            // collaborative delta: changed vertices only
+
+// import: decode a DEM / GeoTIFF / ASCII / XYZ and load it straight back into terrainEdit
+const loaded = geoTIFFToHeightField(tiffBytes)
+kit.terrainEdit.importHeightField(loaded).enableBrush(true)
+
+// collaborative delta: changed vertices only
+const patch = diffHeightField(field)
 const restored = applyHeightPatch({ ...field, current: field.base }, patch)
 ```
 
-Formats: GeoTIFF, ESRI ASCII grid (`.asc`), XYZ text; Int16 quantization
-(`quantizeHeightField` / `dequantizeHeightField`) shrinks the height field from
-4 bytes/point to 2 bytes/point.
+Formats (both directions): GeoTIFF, ESRI ASCII grid (`.asc`), XYZ text
+(`geoTIFFToHeightField` / `asciiGridToHeightField` / `xyzToHeightField` decode them back);
+Int16 quantization (`quantizeHeightField` / `dequantizeHeightField`) shrinks the
+height field from 4 bytes/point to 2 bytes/point.
 
 > See the full walkthrough in [Terrain editing](./guides/terrain-editing.en.md).
 

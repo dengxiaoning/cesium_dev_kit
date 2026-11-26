@@ -39,7 +39,8 @@ export type {
   TerrainEditAreaInfo,
   TerrainEditViewState,
   TerrainHeightField,
-  TerrainHeightsPayload
+  TerrainHeightsPayload,
+  HeightField
 } from './libs/TerrainEdit'
 
 export {

@@ -363,15 +363,23 @@ kit.terrainEdit.setBrush({ mode: 'lower', radius: 110, maxDelta: 3 }).enableBrus
 高度场数据交换是纯计算，从 `cesium_dev_kit/terrain` 导出，无 Cesium / Three 依赖，可脱离 viewer 单测：
 
 ```ts
-import { heightFieldToGeoTIFF, diffHeightField, applyHeightPatch } from 'cesium_dev_kit/terrain'
+import { heightFieldToGeoTIFF, geoTIFFToHeightField, diffHeightField, applyHeightPatch } from 'cesium_dev_kit/terrain'
 
+// 导出
 const field = kit.terrainEdit.getHeightField() // { segments, bounds, base, current }
 const tiff = heightFieldToGeoTIFF(field)        // 单波段 Float32 GeoTIFF（WGS84 地理配准）
-const patch = diffHeightField(field)            // 协同差量：只含被改动的顶点
+
+// 导入：DEM / GeoTIFF / ASCII / XYZ 解码后直接接回 terrainEdit
+const loaded = geoTIFFToHeightField(tiffBytes)
+kit.terrainEdit.importHeightField(loaded).enableBrush(true)
+
+// 协同差量：只含被改动的顶点
+const patch = diffHeightField(field)
 const restored = applyHeightPatch({ ...field, current: field.base }, patch)
 ```
 
-导出格式：GeoTIFF、ESRI ASCII 格网（`.asc`）、XYZ 文本；另有 Int16 量化
+导出 / 导入格式：GeoTIFF、ESRI ASCII 格网（`.asc`）、XYZ 文本，均可回读
+（`geoTIFFToHeightField` / `asciiGridToHeightField` / `xyzToHeightField`）；另有 Int16 量化
 （`quantizeHeightField` / `dequantizeHeightField`）把高度场从 4 字节/点压到 2 字节/点。
 
 > 完整用法见 [地形编辑实战](./guides/terrain-editing.zh.md)。

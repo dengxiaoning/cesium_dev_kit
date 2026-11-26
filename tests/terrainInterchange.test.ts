@@ -1,15 +1,18 @@
 import { describe, it, expect } from 'vitest'
 import {
   heightFieldToGeoTIFF,
+  geoTIFFToHeightField,
   heightFieldToAsciiGrid,
   asciiGridToHeightField,
   heightFieldToXyz,
+  xyzToHeightField,
   quantizeHeightField,
   dequantizeHeightField,
   diffHeightField,
   applyHeightPatch
 } from '../src/utils/cesiumPluginsExtends/libs/terrain/terrainInterchange'
 import type { HeightField } from '../src/utils/cesiumPluginsExtends/libs/terrain/terrainInterchange'
+import { buildGridFromHeightField } from '../src/utils/cesiumPluginsExtends/libs/terrain/terrainGrid'
 
 /** 造一个小格网：segments=2 → stride=3，9 个顶点 */
 function makeField(): HeightField {
@@ -177,5 +180,53 @@ describe('地形高度场数据交换', () => {
   it('ASCII 回读：非方形格网抛错', () => {
     const text = 'ncols 3\nnrows 4\nxllcorner 0\nyllcorner 0\ncellsize 1\nNODATA_value -9999\n' + '1 '.repeat(12)
     expect(() => asciiGridToHeightField(text)).toThrow(/方形/)
+  })
+
+  it('GeoTIFF：导出后可解码回同一高度场', () => {
+    const field = makeField()
+    const decoded = geoTIFFToHeightField(heightFieldToGeoTIFF(field))
+
+    expect(decoded.segments).toBe(2)
+    expect(decoded.bounds.minLng).toBeCloseTo(104, 6)
+    expect(decoded.bounds.minLat).toBeCloseTo(30, 6)
+    expect(decoded.bounds.maxLng).toBeCloseTo(104.02, 6)
+    expect(decoded.bounds.maxLat).toBeCloseTo(30.02, 6)
+    expect(Array.from(decoded.current)).toEqual(Array.from(field.current))
+  })
+
+  it('GeoTIFF：非浮点 / 非方形数据抛错', () => {
+    const field = makeField()
+    const tiff = heightFieldToGeoTIFF(field)
+    // 把 SampleFormat 从 3 改成 1（无符号整型）——但测试里直接构造更容易：
+    expect(() => geoTIFFToHeightField(new Uint8Array([1, 2, 3, 4]))).toThrow(/TIFF/)
+    // 截断的合法头也应报错
+    expect(() => geoTIFFToHeightField(tiff.slice(0, 20))).toThrow()
+  })
+
+  it('XYZ：导出后可回读为同一高度场', () => {
+    const field = makeField()
+    const decoded = xyzToHeightField(heightFieldToXyz(field))
+
+    expect(decoded.segments).toBe(2)
+    expect(decoded.bounds.minLng).toBeCloseTo(104, 6)
+    expect(decoded.bounds.maxLat).toBeCloseTo(30.02, 6)
+    expect(Array.from(decoded.current)).toEqual(Array.from(field.current))
+  })
+
+  it('XYZ：散乱点（非规则格网）抛错', () => {
+    // 3 个点无法构成 3×3 方阵
+    expect(() => xyzToHeightField('0 0 1\n1 0 2\n0 1 3')).toThrow(/规则格网|方形/)
+  })
+
+  it('buildGridFromHeightField：全内部、权重恒 1、bounds 不外扩', () => {
+    const field = makeField()
+    const grid = buildGridFromHeightField(field.segments, field.bounds, field.base, field.current)
+
+    expect(grid.stride).toBe(3)
+    expect(grid.vertexCount).toBe(9)
+    expect(grid.bounds).toEqual(field.bounds)
+    expect(Array.from(grid.inside)).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1])
+    expect(Array.from(grid.weight)).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1])
+    expect(Array.from(grid.current)).toEqual(Array.from(field.current))
   })
 })

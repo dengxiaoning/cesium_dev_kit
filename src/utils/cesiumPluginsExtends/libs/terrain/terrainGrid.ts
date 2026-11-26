@@ -374,6 +374,53 @@ export function buildTerrainGrid(polygon: TerrainLngLat[], options: TerrainGridO
   }
 }
 
+/**
+ * 用给定的高度场直接构造格网（不采样、不 padding）。
+ *
+ * 与 {@link buildTerrainGrid} 不同：这里**完全采用**传入的 bounds，不按比例外扩，
+ * 所有顶点都视为「内部」且权重恒为 1 —— 适合把一份外部 DEM / GeoTIFF / XYZ 还原成
+ * 可继续编辑的格网（整块都是编辑区，不做边界羽化）。
+ *
+ * @param segments - 每边划分数
+ * @param bounds - 精确的经纬度范围（不做外扩）
+ * @param base - 原始高度（可等于 current）
+ * @param current - 当前高度
+ */
+export function buildGridFromHeightField(
+  segments: number,
+  bounds: TerrainBounds,
+  base: Float32Array,
+  current: Float32Array
+): TerrainGrid {
+  const stride = segments + 1
+  const vertexCount = stride * stride
+  if (base.length !== vertexCount || current.length !== vertexCount) {
+    throw new Error(`高度场长度不匹配：期望 ${vertexCount}，实际 ${base.length} / ${current.length}`)
+  }
+  const dLng = (bounds.maxLng - bounds.minLng) / segments
+  const dLat = (bounds.maxLat - bounds.minLat) / segments
+  const centerLat = (bounds.minLat + bounds.maxLat) / 2
+  const mx = metersPerDegLng(centerLat)
+  const cellSize = Math.max(dLng * mx, dLat * METERS_PER_DEG_LAT)
+
+  return {
+    segments,
+    stride,
+    bounds: { ...bounds },
+    dLng,
+    dLat,
+    vertexCount,
+    inside: new Uint8Array(vertexCount).fill(1),
+    distance: new Float32Array(vertexCount).fill(cellSize),
+    weight: new Float32Array(vertexCount).fill(1),
+    base: new Float32Array(base),
+    current: new Float32Array(current),
+    slopeWidth: cellSize,
+    cellSize,
+    cellArea: cellSize * cellSize
+  }
+}
+
 /** 取格网某个顶点的经纬度 */
 export function gridLngLat(grid: TerrainGrid, index: number): TerrainLngLat {
   const row = Math.floor(index / grid.stride)

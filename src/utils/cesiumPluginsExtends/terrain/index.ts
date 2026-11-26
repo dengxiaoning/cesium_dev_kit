@@ -16,6 +16,8 @@ export {
   heightFieldToAsciiGrid,
   asciiGridToHeightField,
   heightFieldToXyz,
+  geoTIFFToHeightField,
+  xyzToHeightField,
   quantizeHeightField,
   dequantizeHeightField,
   diffHeightField,

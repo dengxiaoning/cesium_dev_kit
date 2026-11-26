@@ -20,8 +20,14 @@
 
       <div class="row">
         <button class="btn" :disabled="!ready" @click="saveTerrain">保存数据</button>
+        <select class="select" v-model="exportFormat" :disabled="!ready" title="导出格式">
+          <option value="json">JSON</option>
+          <option value="geotiff">GeoTIFF</option>
+          <option value="ascii">ASCII</option>
+          <option value="xyz">XYZ</option>
+        </select>
         <button class="btn" :disabled="!ready || loading" @click="pickFile">载入数据</button>
-        <input ref="fileInput" class="file" type="file" accept=".json,application/json" @change="loadTerrain" />
+        <input ref="fileInput" class="file" type="file" accept=".json,.tif,.tiff,.asc,.xyz,application/json,image/tiff,text/plain" @change="loadTerrain" />
       </div>
 
       <div class="row modes">
@@ -77,6 +83,14 @@
 import * as Cesium from 'cesium'
 import * as THREE from 'three'
 import { createKit } from '@/utils/cesiumPluginsExtends/index'
+import {
+  heightFieldToGeoTIFF,
+  geoTIFFToHeightField,
+  heightFieldToAsciiGrid,
+  asciiGridToHeightField,
+  heightFieldToXyz,
+  xyzToHeightField
+} from '@/utils/cesiumPluginsExtends/terrain'
 import { defaultStatic } from '../defaultStaticConf'
 
 /** 默认观察位置：泰山一带，地形起伏明显，适合演示开挖 */
@@ -92,6 +106,7 @@ export default {
       showContour: true,
       useTexture: true,
       cutSurface: true,
+      exportFormat: 'json',
       targetHeight: null,
       brush: { mode: 'lower', radius: 110, maxDelta: 3 },
       stats: null,
@@ -283,47 +298,101 @@ export default {
       this.updateStats()
       this.tip = '已撤销上一步'
     },
-    /** 导出当前编辑结果并让浏览器下载：演示「数据接口 + 自己的存储」怎么配合 */
+    /** 导出当前编辑结果并让浏览器下载：支持 JSON 快照 / GeoTIFF / ASCII / XYZ */
     saveTerrain () {
-      const data = this.terrainEdit.exportData()
-      if (!data) {
+      const field = this.terrainEdit.getHeightField()
+      if (!field) {
         this.tip = '还没有可导出的地形，先刷两笔'
         return
       }
-      const text = JSON.stringify(data)
-      const blob = new Blob([text], { type: 'application/json' })
+      const format = this.exportFormat
+      let blob
+      let filename
+      let sizeText
+      if (format === 'geotiff') {
+        const bytes = heightFieldToGeoTIFF(field)
+        blob = new Blob([bytes], { type: 'image/tiff' })
+        filename = `terrain-${field.segments}x${field.segments}-${Date.now()}.tif`
+        sizeText = `${(bytes.byteLength / 1024).toFixed(0)} KB`
+      } else if (format === 'ascii') {
+        const text = heightFieldToAsciiGrid(field)
+        blob = new Blob([text], { type: 'text/plain' })
+        filename = `terrain-${field.segments}x${field.segments}-${Date.now()}.asc`
+        sizeText = `${(text.length / 1024).toFixed(0)} KB`
+      } else if (format === 'xyz') {
+        const text = heightFieldToXyz(field)
+        blob = new Blob([text], { type: 'text/plain' })
+        filename = `terrain-${field.segments}x${field.segments}-${Date.now()}.xyz`
+        sizeText = `${(text.length / 1024).toFixed(0)} KB`
+      } else {
+        const data = this.terrainEdit.exportData()
+        const text = JSON.stringify(data)
+        blob = new Blob([text], { type: 'application/json' })
+        filename = `terrain-${data.grid.segments}x${data.grid.segments}-${Date.now()}.json`
+        sizeText = `${(text.length / 1024).toFixed(0)} KB`
+      }
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `terrain-${data.grid.segments}x${data.grid.segments}-${Date.now()}.json`
+      link.download = filename
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
       setTimeout(() => URL.revokeObjectURL(url), 1000)
-      const kb = (text.length / 1024).toFixed(0)
-      this.tip = `已导出 ${kb} KB：含原始 / 编辑后两份高度场，可直接 POST 到自己的后端，再 importData 复原`
+      this.tip = `已导出 ${sizeText}（${format.toUpperCase()}）：可用「载入数据」直接还原，或交给 QGIS / GDAL 等工具`
     },
     pickFile () {
       const input = this.$refs.fileInput
       if (input) input.click()
     },
-    /** 载入导出的 JSON：不重新采样地形，直接恢复成可继续编辑的状态 */
+    /** 载入数据：按扩展名分发到 JSON 快照 / GeoTIFF / ASCII / XYZ */
     loadTerrain (event) {
       const file = event.target.files && event.target.files[0]
       if (!file) return
+      const ext = (file.name.split('.').pop() || '').toLowerCase()
+
+      if (ext === 'tif' || ext === 'tiff') {
+        const reader = new FileReader()
+        reader.onload = () => {
+          try {
+            const field = geoTIFFToHeightField(new Uint8Array(reader.result))
+            this.terrainEdit.importHeightField(field)
+            this.afterImportField(field, file.name)
+          } catch (err) {
+            this.error = '载入失败：' + (err && err.message ? err.message : err)
+          } finally {
+            event.target.value = ''
+          }
+        }
+        reader.onerror = () => { this.error = '读取文件失败' }
+        reader.readAsArrayBuffer(file)
+        return
+      }
+
       const reader = new FileReader()
       reader.onload = () => {
         try {
-          const data = JSON.parse(String(reader.result))
-          this.terrainEdit.importData(data)
-          this.applySnapshotUi(data)
-          this.terrainEdit.enableBrush(true)
-          this.painting = true
-          this.areaCenter = this.snapshotCenter(data)
-          this.focusArea()
-          this.error = ''
-          this.updateStats()
-          this.tip = `已载入 ${file.name}（${data.grid.segments}×${data.grid.segments} 网格），可继续刷`
+          const text = String(reader.result)
+          if (ext === 'asc') {
+            const field = asciiGridToHeightField(text)
+            this.terrainEdit.importHeightField(field)
+            this.afterImportField(field, file.name)
+          } else if (ext === 'xyz') {
+            const field = xyzToHeightField(text)
+            this.terrainEdit.importHeightField(field)
+            this.afterImportField(field, file.name)
+          } else {
+            const data = JSON.parse(text)
+            this.terrainEdit.importData(data)
+            this.applySnapshotUi(data)
+            this.terrainEdit.enableBrush(true)
+            this.painting = true
+            this.areaCenter = this.snapshotCenter(data)
+            this.focusArea()
+            this.error = ''
+            this.updateStats()
+            this.tip = `已载入 ${file.name}（${data.grid.segments}×${data.grid.segments} 网格），可继续刷`
+          }
         } catch (err) {
           this.error = '载入失败：' + (err && err.message ? err.message : err)
         } finally {
@@ -334,6 +403,17 @@ export default {
         this.error = '读取文件失败'
       }
       reader.readAsText(file)
+    },
+    /** 载入高度场（DEM / GeoTIFF / ASCII / XYZ）后的通用收尾 */
+    afterImportField (field, name) {
+      this.terrainEdit.enableBrush(true)
+      this.painting = true
+      const b = field.bounds
+      this.areaCenter = { lng: (b.minLng + b.maxLng) / 2, lat: (b.minLat + b.maxLat) / 2 }
+      this.error = ''
+      this.focusArea()
+      this.updateStats()
+      this.tip = `已载入 ${name}（${field.segments + 1}×${field.segments + 1} 格网），可继续刷`
     },
     /** 把数据包里的笔刷 / 显示状态同步回界面，避免面板和实际状态不一致 */
     applySnapshotUi (data) {
@@ -525,6 +605,17 @@ export default {
 .btn.ghost {
   flex: 0 0 60px;
   background: transparent;
+}
+.select {
+  flex: 0 0 82px;
+  height: 30px;
+  padding: 0 4px;
+  border: 1px solid rgba(110, 226, 255, 0.28);
+  border-radius: 6px;
+  background: rgba(21, 48, 66, 0.7);
+  color: #cfe9f5;
+  font-size: 12px;
+  cursor: pointer;
 }
 .file {
   display: none;

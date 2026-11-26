@@ -10,6 +10,7 @@ import {
   applyBrush,
   benchHeight,
   buildContourSegments,
+  buildGridFromHeightField,
   buildTerrainGrid,
   deformTerrain,
   dedupePolygon,
@@ -26,6 +27,7 @@ import {
 import { buildImageryTextureFromLayers, slopeDrapeOffset } from './terrain/terrainTexture'
 import { packHeights, unpackHeights } from './terrain/terrainData'
 import type { TerrainHeightsPayload } from './terrain/terrainData'
+import type { HeightField } from './terrain/terrainInterchange'
 import type {
   TerrainBounds,
   TerrainBrushMode,
@@ -42,6 +44,8 @@ import type {
 export type { TerrainEditMode }
 /** 高度场载荷（`TerrainEditSnapshot.grid` 的类型），便于自行拼装 / 校验数据 */
 export type { TerrainHeightsPayload }
+/** 高度场（`getHeightField()` 返回值 / `importHeightField()` 参数） */
+export type { HeightField }
 
 /**
  * 按住左键时的持续施加速度（毫秒一次）。
@@ -562,6 +566,21 @@ export interface TerrainEditInstance {
    * console.log('最大挖深', Math.min(...delta))
    */
   getHeightField(): TerrainHeightField | null
+
+  /**
+   * 把一份高度场（DEM / GeoTIFF / XYZ 等）载入为可继续编辑的地形块。
+   *
+   * 与 {@link importData}（载入本库的快照）不同，这里不要求多边形 / 快照结构，
+   * 直接按高度场的 `bounds` 铺一块格网、把 `base` / `current` 填进去即可。
+   * 适合把 `cesium_dev_kit/terrain` 的 `geoTIFFToHeightField()` 等解码结果接进来。
+   *
+   * @param field - `{ segments, bounds, base, current }`（与 `getHeightField()` 返回值同构）
+   * @example
+   * import { geoTIFFToHeightField } from 'cesium_dev_kit/terrain'
+   * const field = geoTIFFToHeightField(bytes)
+   * terrainEdit.importHeightField(field).enableBrush(true)
+   */
+  importHeightField(field: HeightField): TerrainEditInstance
 
   /**
    * 就地开辟一块可连续涂抹的地形编辑区域（不需要先画多边形）。
@@ -2899,6 +2918,70 @@ export function createTerrainEditModule() {
         base: new Float32Array(grid.base),
         current: new Float32Array(grid.current)
       }
+    },
+
+    /**
+     * 载入高度场（DEM / GeoTIFF / XYZ 解码结果），不重新采样地形
+     * @function
+     */
+    importHeightField(this: TerrainEditInstance & Record<string, any>, field: HeightField) {
+      if (this._disposed) return this
+      if (!field || typeof field !== 'object') {
+        throw new CesiumDevKitError('INVALID_ARGUMENT', '缺少高度场数据')
+      }
+      const segments = Math.round(field.segments)
+      if (!Number.isFinite(segments) || segments < 8 || segments > 256) {
+        throw new CesiumDevKitError('INVALID_ARGUMENT', `格网分段非法：${field.segments}`)
+      }
+      const expected = (segments + 1) * (segments + 1)
+      if (!field.current || field.current.length !== expected) {
+        throw new CesiumDevKitError('INVALID_ARGUMENT', `高度场长度不匹配：期望 ${expected}`)
+      }
+      const b = field.bounds
+      if (!b || b.maxLng <= b.minLng || b.maxLat <= b.minLat) {
+        throw new CesiumDevKitError('INVALID_ARGUMENT', '高度场范围非法')
+      }
+      const base = field.base && field.base.length === expected ? field.base : field.current
+
+      const grid = buildGridFromHeightField(segments, b, base, field.current)
+
+      // 正在涂抹时先收笔：否则这一笔的定时器会往新格网里写
+      if (this._stroking) this._finishStroke()
+
+      this._polygon = [
+        { lng: b.minLng, lat: b.minLat },
+        { lng: b.maxLng, lat: b.minLat },
+        { lng: b.maxLng, lat: b.maxLat },
+        { lng: b.minLng, lat: b.maxLat }
+      ]
+      this._polygonHeight = [0, 0, 0, 0]
+      this._grid = grid
+      this._fillHoles = true
+      this._areaMode = true
+      const centerLat = (b.minLat + b.maxLat) / 2
+      const sizeMeters = Math.max(
+        (b.maxLng - b.minLng) * metersPerDegLng(centerLat),
+        (b.maxLat - b.minLat) * 111319.49079327358
+      )
+      this._areaInfo = {
+        center: { lng: (b.minLng + b.maxLng) / 2, lat: centerLat },
+        size: sizeMeters,
+        segments,
+        feather: 0
+      }
+      // 历史 / 贴图 / 笔刷状态属于上一份地形，载入后不再沿用
+      this._history = []
+      this._waterLevel = null
+      this._texture = null
+      this._textureToken++
+      this._strokeBase = null
+      this._strokeTarget = null
+      this._targetAuto = false
+
+      this._rebuild()
+      this._renderBoundary()
+      if (this._useTexture) this._requestTexture()
+      return this
     },
 
     /**

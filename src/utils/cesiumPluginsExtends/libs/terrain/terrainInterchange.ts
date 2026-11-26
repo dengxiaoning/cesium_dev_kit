@@ -559,3 +559,198 @@ export function applyHeightPatch(base: HeightField, patch: TerrainPatch): Float3
   }
   return out
 }
+
+/* ============================ 解码 ============================ */
+
+/**
+ * 解析单波段 Float32 GeoTIFF 为高度场。
+ *
+ * 支持小端 / 大端、单条或多条 strip；只接受 32 位浮点（SampleFormat=3）、单波段、
+ * 方形格网（ncols === nrows）。地理配准按「像素中心 = 顶点」读取 `ModelPixelScale` /
+ * `ModelTiepoint`（与 {@link heightFieldToGeoTIFF} 一致，PixelIsPoint / PixelIsArea
+ * 的中心坐标相同，均可正确还原范围）。
+ *
+ * @param bytes - `.tif` 文件字节
+ * @example
+ * const field = geoTIFFToHeightField(await (await fetch('/terrain/42.tif')).arrayBuffer())
+ * terrainEdit.importHeightField(field)
+ */
+export function geoTIFFToHeightField(bytes: Uint8Array): HeightField {
+  if (!bytes || bytes.length < 8) throw new Error('GeoTIFF 数据为空')
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+  const little = bytes[0] === 0x49
+  if ((!little && bytes[0] !== 0x4d) || bytes[1] !== (little ? 0x49 : 0x4d)) {
+    throw new Error('不是合法的 TIFF 文件')
+  }
+  const u16 = (o: number) => view.getUint16(o, little)
+  const u32 = (o: number) => view.getUint32(o, little)
+  const f32 = (o: number) => view.getFloat32(o, little)
+  const f64 = (o: number) => view.getFloat64(o, little)
+  if (u16(2) !== 42) throw new Error('不是合法的 TIFF（magic ≠ 42）')
+
+  const ifd = u32(4)
+  const count = u16(ifd)
+  const typeSize = (t: number) => (t === 3 ? 2 : t === 4 ? 4 : t === 12 ? 8 : 1)
+
+  let width = 0
+  let height = 0
+  let bitsPerSample = 0
+  let sampleFormat = 1
+  let samplesPerPixel = 1
+  let rowsPerStrip = 0
+  const stripOffsets: number[] = []
+  const stripByteCounts: number[] = []
+  let pixelScale: number[] | null = null
+  let tiepoint: number[] | null = null
+
+  for (let k = 0; k < count; k++) {
+    const off = ifd + 2 + k * 12
+    const tag = u16(off)
+    const type = u16(off + 2)
+    const n = u32(off + 4)
+    const inline = typeSize(type) * n <= 4
+    const valueOff = off + 8
+    const readNum = (idx: number): number => {
+      const base = inline ? valueOff : u32(valueOff)
+      if (type === 3) return u16(base + idx * 2)
+      if (type === 4) return u32(base + idx * 4)
+      if (type === 12) return f64(base + idx * 8)
+      return view.getUint8(base + idx)
+    }
+
+    if (tag === 256) width = readNum(0)
+    else if (tag === 257) height = readNum(0)
+    else if (tag === 258) bitsPerSample = readNum(0)
+    else if (tag === 277) samplesPerPixel = readNum(0)
+    else if (tag === 339) sampleFormat = readNum(0)
+    else if (tag === 278) rowsPerStrip = readNum(0)
+    else if (tag === 273) {
+      if (inline) stripOffsets.push(readNum(0))
+      else {
+        const base = u32(valueOff)
+        for (let i = 0; i < n; i++) stripOffsets.push(u32(base + i * 4))
+      }
+    } else if (tag === 279) {
+      if (inline) stripByteCounts.push(readNum(0))
+      else {
+        const base = u32(valueOff)
+        for (let i = 0; i < n; i++) stripByteCounts.push(u32(base + i * 4))
+      }
+    } else if (tag === 33550) {
+      const base = inline ? valueOff : u32(valueOff)
+      pixelScale = [f64(base), f64(base + 8), f64(base + 16)]
+    } else if (tag === 33922) {
+      const base = inline ? valueOff : u32(valueOff)
+      tiepoint = [f64(base), f64(base + 8), f64(base + 16), f64(base + 24), f64(base + 32), f64(base + 40)]
+    }
+  }
+
+  if (!width || !height) throw new Error('GeoTIFF 缺少尺寸')
+  if (width !== height) throw new Error(`GeoTIFF 需要方形格网（ncols === nrows），当前 ${width}×${height}`)
+  if (bitsPerSample !== 0 && bitsPerSample !== 32) throw new Error(`GeoTIFF 仅支持 32 位浮点，当前 ${bitsPerSample} 位`)
+  if (sampleFormat !== 3) throw new Error(`GeoTIFF 仅支持 IEEE 浮点（SampleFormat=3），当前 ${sampleFormat}`)
+  if (samplesPerPixel !== 1) throw new Error(`GeoTIFF 仅支持单波段，当前 ${samplesPerPixel}`)
+  if (!stripOffsets.length) throw new Error('GeoTIFF 缺少 StripOffsets')
+
+  // 读取所有 strip（按 RowsPerStrip 分块），像素行序为北→南
+  const rowsIn = rowsPerStrip || height
+  const pixels = new Float32Array(width * height)
+  const bytesPerRow = width * 4
+  let row = 0
+  for (let s = 0; s < stripOffsets.length && row < height; s++) {
+    const rowsHere = Math.min(rowsIn, height - row)
+    const expect = rowsHere * bytesPerRow
+    if (stripByteCounts[s] && stripByteCounts[s] < expect) throw new Error('GeoTIFF 数据不完整')
+    for (let r = 0; r < rowsHere; r++) {
+      for (let c = 0; c < width; c++) {
+        pixels[(row + r) * width + c] = f32(stripOffsets[s] + (r * width + c) * 4)
+      }
+    }
+    row += rowsHere
+  }
+  if (row < height) throw new Error('GeoTIFF 数据行数不足')
+
+  const scaleX = pixelScale ? pixelScale[0] : 1
+  const scaleY = pixelScale ? pixelScale[1] : 1
+  const ti = tiepoint ? tiepoint[0] : 0
+  const tj = tiepoint ? tiepoint[1] : 0
+  const tx = tiepoint ? tiepoint[3] : 0
+  const ty = tiepoint ? tiepoint[4] : 0
+
+  // 顶点即像素中心：pixel(pi,pj) = (tx + (pi-ti)*scaleX, ty - (pj-tj)*scaleY)（北→南）
+  const minLng = tx - ti * scaleX
+  const maxLng = tx + (width - 1 - ti) * scaleX
+  const maxLat = ty + tj * scaleY
+  const minLat = ty - (height - 1 - tj) * scaleY
+  if (maxLng <= minLng || maxLat <= minLat) throw new Error('GeoTIFF 地理配准非法')
+
+  // 转成内部南→北行序
+  const segments = width - 1
+  const current = new Float32Array(width * height)
+  for (let r = 0; r < height; r++) {
+    const srcRow = height - 1 - r
+    for (let c = 0; c < width; c++) {
+      current[r * width + c] = pixels[srcRow * width + c]
+    }
+  }
+  return {
+    segments,
+    bounds: { minLng, minLat, maxLng, maxLat },
+    base: new Float32Array(current),
+    current
+  }
+}
+
+/**
+ * 解析规则格网 XYZ 文本为高度场（`heightFieldToXyz` 的逆操作）。
+ *
+ * 要求点严格落在 `cols × rows` 的规则格网上（且方形），否则抛错——散乱点云
+ * 需要重采样 / 插值，不在本函数的职责内。
+ * @param text - `lng lat height` 逐行的文本
+ */
+export function xyzToHeightField(text: string): HeightField {
+  if (typeof text !== 'string' || !text.trim()) throw new Error('XYZ 数据为空')
+  const pts: { lng: number; lat: number; h: number }[] = []
+  for (const line of text.split(/\r?\n/)) {
+    const t = line.trim()
+    if (!t) continue
+    const parts = t.split(/[\s,]+/)
+    if (parts.length < 3) continue
+    const lng = Number(parts[0])
+    const lat = Number(parts[1])
+    const h = Number(parts[2])
+    if (Number.isFinite(lng) && Number.isFinite(lat) && Number.isFinite(h)) pts.push({ lng, lat, h })
+  }
+  if (!pts.length) throw new Error('XYZ 数据为空')
+
+  // 用 6 位小数归并，吸收文本化时的浮点抖动
+  const key = (v: number) => Math.round(v * 1e6)
+  const lngs = Array.from(new Set(pts.map((p) => key(p.lng)))).sort((a, b) => a - b)
+  const lats = Array.from(new Set(pts.map((p) => key(p.lat)))).sort((a, b) => a - b)
+  const cols = lngs.length
+  const rows = lats.length
+  if (cols < 2 || rows < 2) throw new Error('XYZ 无法构成规则格网')
+  if (cols !== rows) throw new Error(`XYZ 需要方形格网，当前 ${cols}×${rows}`)
+  if (cols * rows !== pts.length) throw new Error(`XYZ 不是规则格网（${cols}×${rows} ≠ ${pts.length} 点）`)
+
+  const lngMap = new Map(lngs.map((v, i) => [v, i]))
+  const latMap = new Map(lats.map((v, i) => [v, i]))
+  const current = new Float32Array(pts.length)
+  for (const p of pts) {
+    const row = latMap.get(key(p.lat)) as number
+    const col = lngMap.get(key(p.lng)) as number
+    current[row * cols + col] = p.h
+  }
+
+  const minLng = lngs[0] / 1e6
+  const maxLng = lngs[cols - 1] / 1e6
+  const minLat = lats[0] / 1e6
+  const maxLat = lats[rows - 1] / 1e6
+
+  return {
+    segments: cols - 1,
+    bounds: { minLng, minLat, maxLng, maxLat },
+    base: new Float32Array(current),
+    current
+  }
+}
