@@ -1,7 +1,7 @@
 <template>
   <el-aside class="layout-aside"
             :class="setCollapseWidth"
-            v-if="clientWidth > 1000">
+            v-if="Number(clientWidth) > 1000">
     <Logo v-if="setShowLogo" />
     <el-scrollbar class="flex-auto"
                   ref="layoutAsideScrollbarRef"

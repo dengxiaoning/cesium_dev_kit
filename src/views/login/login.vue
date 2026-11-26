@@ -176,6 +176,7 @@ export default defineComponent({
       loginForm,
       loginRules,
       submitForm,
+      getCode, // 模板里验证码图片 @click="getCode"，不导出的话点击无效
       custRef
     }
   }
