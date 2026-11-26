@@ -379,6 +379,14 @@ await kit.terrainEdit.setArea([117.1, 36.25], { size: 2000, segments: 160 })
 kit.terrainEdit.setBrush({ mode: 'lower', radius: 110, maxDelta: 3 }).enableBrush(true)
 ```
 
+You can also stamp a one-click engineering template (pit / mound / platform / ramp),
+then fine-tune with the brush:
+
+```ts
+terrainEdit.applyTemplate({ type: 'pit', depth: 60, stepHeight: 6 })
+terrainEdit.applyTemplate({ type: 'ramp', direction: 90, endHeight: 540 })
+```
+
 Height-field interchange is pure computation, exported from `cesium_dev_kit/terrain`
 with no Cesium / Three dependency, so it can be unit-tested outside the viewer:
 

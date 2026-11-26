@@ -360,6 +360,13 @@ await kit.terrainEdit.setArea([117.1, 36.25], { size: 2000, segments: 160 })
 kit.terrainEdit.setBrush({ mode: 'lower', radius: 110, maxDelta: 3 }).enableBrush(true)
 ```
 
+也可以一键套用工程造型模板（基坑 / 土堆 / 平台 / 坡道），再拿笔刷微调：
+
+```ts
+terrainEdit.applyTemplate({ type: 'pit', depth: 60, stepHeight: 6 })
+terrainEdit.applyTemplate({ type: 'ramp', direction: 90, endHeight: 540 })
+```
+
 高度场数据交换是纯计算，从 `cesium_dev_kit/terrain` 导出，无 Cesium / Three 依赖，可脱离 viewer 单测：
 
 ```ts

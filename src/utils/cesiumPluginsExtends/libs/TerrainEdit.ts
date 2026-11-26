@@ -27,6 +27,8 @@ import {
 import { buildImageryTextureFromLayers, slopeDrapeOffset } from './terrain/terrainTexture'
 import { packHeights, unpackHeights } from './terrain/terrainData'
 import type { TerrainHeightsPayload } from './terrain/terrainData'
+import { applyTerrainTemplate } from './terrain/terrainTemplates'
+import type { TerrainTemplateOptions } from './terrain/terrainTemplates'
 import type { HeightField } from './terrain/terrainInterchange'
 import type {
   TerrainBounds,
@@ -46,6 +48,8 @@ export type { TerrainEditMode }
 export type { TerrainHeightsPayload }
 /** 高度场（`getHeightField()` 返回值 / `importHeightField()` 参数） */
 export type { HeightField }
+/** 地形模板（`applyTemplate()` 的参数类型） */
+export type { TerrainTemplateType, TerrainTemplateOptions } from './terrain/terrainTemplates'
 
 /**
  * 按住左键时的持续施加速度（毫秒一次）。
@@ -472,6 +476,18 @@ export interface TerrainEditInstance {
    * terrainEdit.apply({ mode: 'raise', depth: 20 })
    */
   apply(options?: TerrainEditApplyOptions): TerrainEditInstance
+
+  /**
+   * 一键应用地形模板（基坑 / 土堆 / 平台 / 坡道）。
+   *
+   * 是 `apply()` 的语义化封装：基坑≈下沉、土堆≈抬升、平台≈整平，坡道按方向线性起坡。
+   * 会自动记入撤销历史。
+   * @param options - 模板类型与参数
+   * @example
+   * terrainEdit.applyTemplate({ type: 'pit', depth: 60, stepHeight: 6 })
+   * terrainEdit.applyTemplate({ type: 'ramp', direction: 90, startHeight: 500, endHeight: 540 })
+   */
+  applyTemplate(options: TerrainTemplateOptions): TerrainEditInstance
 
   /**
    * 设置水面高度并立即重绘。
@@ -2788,6 +2804,26 @@ export function createTerrainEditModule() {
       if (Object.prototype.hasOwnProperty.call(opts, 'waterLevel')) {
         this._waterLevel = this._resolveWaterLevel(opts.waterLevel)
       }
+      this._rebuild()
+      return this
+    },
+
+    /**
+     * 一键应用地形模板
+     * @function
+     */
+    applyTemplate(this: TerrainEditInstance & Record<string, any>, options: TerrainTemplateOptions) {
+      if (!this._grid) {
+        throw new CesiumDevKitError('INVALID_ARGUMENT', '请先调用 setPolygon 或 beginDraw 圈定编辑范围')
+      }
+      if (!options || !options.type) {
+        throw new CesiumDevKitError('INVALID_ARGUMENT', '缺少地形模板类型 type')
+      }
+      this._history.push(new Float32Array(this._grid.current))
+      if (this._history.length > MAX_HISTORY) this._history.shift()
+
+      this._grid.current = applyTerrainTemplate(this._grid, options)
+      this._stepHeight = options.stepHeight && options.stepHeight > 0 ? options.stepHeight : 0
       this._rebuild()
       return this
     },

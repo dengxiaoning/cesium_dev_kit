@@ -33,3 +33,10 @@ export type {
   DiffOptions,
   TerrainPatch
 } from '../libs/terrain/terrainInterchange'
+
+/** 地形模板（基坑 / 土堆 / 平台 / 坡道）的纯计算实现 */
+export { applyTerrainTemplate } from '../libs/terrain/terrainTemplates'
+export type {
+  TerrainTemplateType,
+  TerrainTemplateOptions
+} from '../libs/terrain/terrainTemplates'

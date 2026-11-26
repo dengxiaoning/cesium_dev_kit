@@ -36,6 +36,13 @@
         </button>
       </div>
 
+      <div class="row modes">
+        <button class="chip" :disabled="!ready" @click="applyTemplate('pit')">基坑</button>
+        <button class="chip" :disabled="!ready" @click="applyTemplate('mound')">土堆</button>
+        <button class="chip" :disabled="!ready" @click="applyTemplate('platform')">平台</button>
+        <button class="chip" :disabled="!ready" @click="applyTemplate('ramp')">坡道</button>
+      </div>
+
       <div class="slider">
         <label>笔刷半径 <b>{{ brush.radius }} m</b></label>
         <input type="range" min="20" max="400" step="10" v-model.number="brush.radius" @input="syncBrush" />
@@ -297,6 +304,25 @@ export default {
       this.terrainEdit.undo()
       this.updateStats()
       this.tip = '已撤销上一步'
+    },
+    /** 一键应用地形模板：基坑 / 土堆 / 平台 / 坡道 */
+    applyTemplate (type) {
+      if (!this.ready || !this.terrainEdit) return
+      try {
+        if (type === 'pit') {
+          this.terrainEdit.applyTemplate({ type: 'pit', depth: 60, stepHeight: 6 })
+        } else if (type === 'mound') {
+          this.terrainEdit.applyTemplate({ type: 'mound', depth: 40, stepHeight: 0 })
+        } else if (type === 'platform') {
+          this.terrainEdit.applyTemplate({ type: 'platform' })
+        } else {
+          this.terrainEdit.applyTemplate({ type: 'ramp', direction: 90 })
+        }
+        this.updateStats()
+        this.tip = `已应用模板：${type}（可继续用笔刷微调）`
+      } catch (err) {
+        this.error = '应用模板失败：' + (err && err.message ? err.message : err)
+      }
     },
     /** 导出当前编辑结果并让浏览器下载：支持 JSON 快照 / GeoTIFF / ASCII / XYZ */
     saveTerrain () {
@@ -637,6 +663,10 @@ export default {
   border-color: rgba(87, 224, 255, 0.8);
   background: rgba(35, 120, 152, 0.45);
   color: #eafaff;
+}
+.chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 .slider {
   margin-bottom: 8px;
