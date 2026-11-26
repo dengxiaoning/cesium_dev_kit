@@ -193,7 +193,9 @@ export function createKit(options: CreateKitOptions): ResModulesType {
   const _control = protoExtends(Base, Control)
   const _plugin = protoExtends([Base, Graphics], Plugin)
   const _base = new Base(_viewer, cesiumGlobal)
-  const _analysis = protoExtends([Base, Draw, Plugin], Analysis)
+  // Draw 自身依赖 Math3d（getPositionDistance / getPositionsArea）与 Math2d（computeStar2d 等），
+  // Analysis 复用 Draw 的方法，必须带上同样的父模块，否则 analysis 实例上取不到这些方法。
+  const _analysis = protoExtends([Base, Math3d, Math2d, Draw, Plugin], Analysis)
   const _attackArrowObj = new AttackArrow(_viewer, cesiumGlobal)
   const _straightArrowObj = new StraightArrow(_viewer, cesiumGlobal)
   const _pincerArrowObj = new PincerArrow(_viewer, cesiumGlobal)

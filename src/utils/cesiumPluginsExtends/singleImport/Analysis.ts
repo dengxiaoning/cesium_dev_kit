@@ -1,6 +1,6 @@
 import { createSingleImport } from './Base'
 import type { SingleImportConstructor } from './Base'
-import { Analysis as AnalysisCom, Base, Draw, Plugin } from '../libs'
+import { Analysis as AnalysisCom, Base, Draw, Math2d, Math3d, Plugin } from '../libs'
 import type { AnalysisInstance } from '../libs/Analysis'
 import type { BaseInstance } from '../libs/Base'
 import type { Viewer } from '../libs/Base'
@@ -17,7 +17,7 @@ export interface AnalysisExtendsApi {
  * 空间分析模块（单独引入版）
  */
 export const Analysis = createSingleImport<AnalysisExtendsApi>(
-  [Base, Draw, Plugin],
+  [Base, Math3d, Math2d, Draw, Plugin],
   AnalysisCom,
   'analysis'
 ) as SingleImportConstructor<AnalysisExtendsApi>
@@ -26,3 +26,40 @@ export const Analysis = createSingleImport<AnalysisExtendsApi>(
 export { computeProfileStats, buildProfileChartData, interpolateLngLat } from '../libs/analysis/profile'
 export type { ProfileSample, ProfileStats } from '../libs/analysis/profile'
 export type { ProfileAnalysisOptions, ProfileAnalysisResult } from '../libs/Analysis'
+
+/** 地形表面分析的纯计算工具（坡度/坡向、方量对比、通视判定） */
+export {
+  computeSlopeAspect,
+  computeVolumeCompare,
+  isPointInPolygon,
+  computeSightlineVisibility,
+  buildAspectChartData,
+  buildVolumeCompareChartData
+} from '../libs/analysis/terrainSurface'
+export type {
+  SlopeAspectInput,
+  SlopeAspectResult,
+  VolumeCell,
+  VolumeCompareResult,
+  LngLat,
+  SightSample,
+  SightlineOptions,
+  SightlineResult,
+  AspectChartSample,
+  VolumeCompareChartItem
+} from '../libs/analysis/terrainSurface'
+export type {
+  AspectAnalysisOptions,
+  AspectAnalysisResult,
+  AspectSample,
+  MultiViewshedAnalysisOptions,
+  MultiViewshedAnalysisResult,
+  MultiViewshedObserver,
+  CutVolumeCompareOptions,
+  CutVolumeCompareResult,
+  VolumeCompareItem,
+  BatchClipPlanOptions,
+  BatchClipPlanResult,
+  VisibilityPathOptions,
+  VisibilityPathResult
+} from '../libs/Analysis'

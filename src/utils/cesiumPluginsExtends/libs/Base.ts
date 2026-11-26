@@ -1729,6 +1729,8 @@ class Base {
         _handlers.setInputAction(function (movement: any) {
           _mouseLeftUpHandler(movement, _handlers)
         }, Cesium.ScreenSpaceEventType.LEFT_UP)
+      // 返回 handler，便于调用方在重复绑定前销毁上一次的监听（避免事件层层叠加）
+      return _handlers
     }
   }
   /**

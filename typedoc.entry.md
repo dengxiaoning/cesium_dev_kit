@@ -86,7 +86,7 @@ graphics.createLineGraphics({ positions: [[104.09, 30.65], [104.11, 30.68]], wid
 | 标绘箭头 | [StraightArrow](./classes/StraightArrow.html) | 直箭头 |
 | 标绘箭头 | [BasePlot](./classes/BasePlot.html) | 标绘基类：状态机、公共工具 |
 | 图元与分析 | [Primitive](./classes/Primitive.html) | 自定义几何图元、三维热力图 |
-| 空间分析 | [Analysis](./classes/Analysis.html) | 通视、环视、可视域、剖切、开挖、淹没、坡度、方量 |
+| 空间分析 | [Analysis](./classes/Analysis.html) | 通视、环视、可视域、开挖、淹没、坡度、方量 |
 | 材质 | [Material](./classes/Material.html) | 流光、预警、城市道路、波纹圆等自定义材质 |
 | 场景插件 | [Plugin](./classes/Plugin.html) | 路径漫游、雷达扫描、坐标纠偏、路径规划、聚合、3D 柱 |
 | 图层与控制 | [Control](./classes/Control.html) | 图层开关、后处理面板、鼠标事件统一定义 |

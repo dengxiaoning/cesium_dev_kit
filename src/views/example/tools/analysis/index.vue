@@ -16,6 +16,11 @@
         <el-button size="mini" @click="slopeAnalysis">坡度分析</el-button>
         <el-button size="mini" @click="cutVolumeAnalysis"> 方量分析</el-button>
         <el-button size="mini" @click="profileAnalysis">剖面分析</el-button>
+        <el-button size="mini" @click="aspectAnalysis">坡向分析</el-button>
+        <el-button size="mini" @click="multiViewshedAnalysis">多观察点可视域</el-button>
+        <el-button size="mini" @click="cutVolumeCompareAnalysis">方量对比</el-button>
+        <el-button size="mini" @click="batchClipPlanAnalysis">批量地形开挖</el-button>
+        <el-button size="mini" @click="visibilityPathAnalysis">通视路径</el-button>
       </div>
     </el-card>
   </div>
@@ -91,7 +96,12 @@ export default {
     submergedAnalysis () { this.analysis.createSubmergedAnalysis(); },
     slopeAnalysis () { this.analysis.createSlopeAnalysis(); },
     cutVolumeAnalysis () { this.analysis.createCutVolumeAnalysis(); },
-    profileAnalysis () { this.analysis.createProfileAnalysis(); }
+    profileAnalysis () { this.analysis.createProfileAnalysis(); },
+    aspectAnalysis () { this.analysis.createAspectAnalysis(); },
+    multiViewshedAnalysis () { this.analysis.createMultiViewshedAnalysis(); },
+    cutVolumeCompareAnalysis () { this.analysis.createCutVolumeCompareAnalysis(); },
+    batchClipPlanAnalysis () { this.analysis.createBatchClipPlanAnalysis(); },
+    visibilityPathAnalysis () { this.analysis.createVisibilityPathAnalysis(); }
   },
   beforeUnmount () {
     this.c_viewer = null;

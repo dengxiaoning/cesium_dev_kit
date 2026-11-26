@@ -330,6 +330,42 @@ Caveats:
 
 To check whether occlusion is actually active, call `kit.threeJs.getFusionStatus()`; it reports frustum count, logarithmic depth, MSAA samples and the current depth source.
 
+## Spatial analysis
+
+`kit.analysis` ships a set of ready-to-use 3D analyses. After calling one, you interact on the map (draw a line / polygon, or click); results are delivered through `callback`, and most result objects expose `remove()`:
+
+| Method | Interaction | Description |
+| --- | --- | --- |
+| `createVisibilityAnalysis()` | draw line | Line of sight between two points, highlights blockers and the sight line |
+| `createVisibilityPathAnalysis()` | draw line / positions | Visibility along a path: visible segments green, blocked red, returns visible ratio |
+| `createVisualFieldAnalysis()` | click | Single-observer viewshed |
+| `createMultiViewshedAnalysis()` | click / `observers` | Multiple overlapping observer viewsheds; aim each via `target`, or via `direction` / `pitch` / `distance` |
+| `createLookAroundAnalysis()` | draw circle | Look-around analysis |
+| `createProfileAnalysis()` | draw line / positions | Elevation profile chart + min/max/avg/gain/loss |
+| `createSlopeAnalysis()` | draw line | Slope profile chart |
+| `createAspectAnalysis()` | draw line / positions | Slope / aspect curves, returns the dominant aspect |
+| `createClipPlanAnalysis()` | draw polygon | Single-region terrain excavation |
+| `createBatchClipPlanAnalysis()` | draw polygon / `regions` | Batch excavation of multiple regions |
+| `createSubmergedAnalysis()` | draw polygon | Submersion animation |
+| `createCutVolumeAnalysis()` | draw polygon | Single cut/fill volume |
+| `createCutVolumeCompareAnalysis()` | draw polygon / `positions` | Cut/fill comparison bar chart across design elevations |
+
+```ts
+// Provide coordinates directly, no interaction
+kit.analysis.createVisibilityPathAnalysis({
+  positions: [[104.09, 30.65], [104.11, 30.68]],
+  observerHeight: 1.7,
+  callback: (r) => console.log('visible ratio', r.visibleRatio)
+})
+
+kit.analysis.createCutVolumeCompareAnalysis({
+  designHeights: [500, 520, 540],
+  callback: (r) => console.log(r.items)
+})
+```
+
+The pure computation helpers (`computeSlopeAspect` / `computeVolumeCompare` / `computeSightlineVisibility`, etc.) are exported from `cesium_dev_kit/analysis` and can be unit-tested or rendered without a viewer.
+
 ## Vue Composition API (adapter)
 
 `cesium_dev_kit/vue` provides a `useCesiumKit` composable that ties the kit's create / dispose lifecycle to a Vue component, saving you the manual `onMounted` / `onUnmounted` boilerplate:

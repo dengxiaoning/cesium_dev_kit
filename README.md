@@ -83,7 +83,7 @@ npm run docs:serve       # 本地预览 http://localhost:5174
 | ![heatmap3d](src/assets/image/preview/heatmap3d.png) | ![extrude](src/assets/image/preview/extrude.png)  | ![fireworksEffect](src/assets/image/preview/fireworksEffect.png) |
 |                                    三维热力 |                 图形挤压         |           烟花      |
 |![radar](src/assets/image/preview/radar.png)|![roaming](src/assets/image/preview/pathRoam.png) |![自定义图元](src/assets/image/preview/custPrimitive.png) |
-|                雷达案例          |                            第一人称漫              |                  自定义图元          |
+|                雷达案例          |                            第一人称漫游             |                  自定义图元          |
 
 [更多示例（含源码）>>](https://dengxiaoning.github.io/cesium_dev_kit/examples/)
 
@@ -311,6 +311,42 @@ kit.threeJs.loop(() => {
 - 融合模式不要调用 `renderer.setSize()`：给 canvas 宽高赋值会清空绘制缓冲（连带擦掉 Cesium 的画面），尺寸由 Cesium 的画布决定。
 
 排查遮挡是否生效，用 `kit.threeJs.getFusionStatus()`，它会返回视锥数量、对数深度开关、MSAA 采样数与当前深度来源。
+
+## 空间分析
+
+`kit.analysis` 提供一组开箱即用的三维分析，调用后在地图上交互（画线 / 画面 / 点击），结果通过 `callback` 返回，多数结果对象带 `remove()` 可移除：
+
+| 方法 | 交互 | 说明 |
+| --- | --- | --- |
+| `createVisibilityAnalysis()` | 画线 | 两点通视，高亮遮挡物与通视线 |
+| `createVisibilityPathAnalysis()` | 画线 / 传坐标 | 沿路径通视判定，可见段绿、遮挡段红，返回通视比例 |
+| `createVisualFieldAnalysis()` | 点击 | 单观察点可视域 |
+| `createMultiViewshedAnalysis()` | 点击 / 传 `observers` | 多观察点视域叠加；每个观察点可给 `target` 瞄准，或按 `direction` / `pitch` / `distance` 摆姿势 |
+| `createLookAroundAnalysis()` | 画圆 | 环视分析 |
+| `createProfileAnalysis()` | 画线 / 传坐标 | 高程剖面图 + 最高/最低/平均/爬升下降 |
+| `createSlopeAnalysis()` | 画线 | 坡度剖面图 |
+| `createAspectAnalysis()` | 画线 / 传坐标 | 坡度 / 坡向曲线，返回主导坡向 |
+| `createClipPlanAnalysis()` | 画面 | 单区域地形开挖 |
+| `createBatchClipPlanAnalysis()` | 画面 / 传 `regions` | 多区域批量地形开挖 |
+| `createSubmergedAnalysis()` | 画面 | 淹没演进动画 |
+| `createCutVolumeAnalysis()` | 画面 | 单次挖填方量 |
+| `createCutVolumeCompareAnalysis()` | 画面 / 传 `positions` | 多设计标高挖填方对比柱状图 |
+
+```ts
+// 直接给坐标，不交互
+kit.analysis.createVisibilityPathAnalysis({
+  positions: [[104.09, 30.65], [104.11, 30.68]],
+  observerHeight: 1.7,
+  callback: (r) => console.log('通视比例', r.visibleRatio)
+})
+
+kit.analysis.createCutVolumeCompareAnalysis({
+  designHeights: [500, 520, 540],
+  callback: (r) => console.log(r.items)
+})
+```
+
+纯计算部分（`computeSlopeAspect` / `computeVolumeCompare` / `computeSightlineVisibility` 等）从 `cesium_dev_kit/analysis` 导出，可脱离 viewer 单测。
 
 ## Vue 组合式 API（适配器）
 
