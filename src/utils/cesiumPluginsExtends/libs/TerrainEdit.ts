@@ -395,6 +395,14 @@ export interface TerrainEditModuleOptions {
   slopeWidth?: number
   /** 默认线条颜色 */
   color?: string
+  /**
+   * 编辑块裙边向下的深度（米），默认 200。
+   *
+   * 块边界高度来自「创建时采样」的地形；相机旋转 / 换 LOD 后实时地形可能略低，
+   * 块边缘会露出缝隙看着悬空。裙边沿边界垂直向下延伸，平整时埋在地形下看不见，
+   * 出现缝隙时正好填住。想更保险可以调大（例如 500）。
+   */
+  skirtDepth?: number
 }
 
 /**
@@ -1412,6 +1420,9 @@ export function createTerrainEditModule() {
       root.add(mesh)
       this._surface = mesh
 
+      // 裙边：沿块边界向下延伸一圈，填住「采样高度 vs 实时地形」的缝隙，避免边缘悬空
+      this._buildSkirt(grid, positions, up)
+
       // 灯光只给水面等其它元素用；地表靠顶点色明暗，不再参与实时光照。
       const hemi = new THREE.HemisphereLight(0xffffff, 0x5a6572, 1.0)
       hemi.name = 'terrain-edit-hemi'
@@ -1450,6 +1461,100 @@ export function createTerrainEditModule() {
         this._buildWater(waterLevel)
       }
 
+      return this
+    },
+
+    /**
+     * 给编辑块加一圈向下的裙边。
+     *
+     * 块边界的高度来自「创建时采样」的地形。相机旋转 / 换 LOD 后，实时渲染的地形
+     * 可能比采样时略低（或略高），块边缘就会露出一条缝，看着像悬空。
+     * 裙边从块边界垂直向下延伸一段：平整时整条埋在地形下被遮住，出现缝隙时正好填上，
+     * 从任何角度看都不会再「飘」。
+     * @private
+     */
+    _buildSkirt(
+      this: TerrainEditInstance & Record<string, any>,
+      grid: TerrainGrid,
+      positions: Float32Array,
+      up: any
+    ) {
+      if (!this._root || !THREE || !positions) return this
+      const stride = grid.stride
+      const segments = grid.segments
+      const depth = Math.max(20, Number(this._options && this._options.skirtDepth) || 200)
+
+      // 某个单元格是否会渲染（四角都在编辑区内）
+      const renderedCell = (row: number, col: number) => {
+        if (row < 0 || col < 0 || row >= segments || col >= segments) return false
+        const a = row * stride + col
+        return !!(
+          grid.inside[a] &&
+          grid.inside[a + 1] &&
+          grid.inside[a + stride] &&
+          grid.inside[a + stride + 1]
+        )
+      }
+
+      // 收集外边界边：渲染单元与未渲染单元之间的那条边
+      const edges: number[] = []
+      for (let row = 0; row < segments; row++) {
+        for (let col = 0; col < segments; col++) {
+          if (!renderedCell(row, col)) continue
+          const a = row * stride + col
+          const b = a + 1
+          const c = a + stride
+          const d = c + 1
+          if (!renderedCell(row - 1, col)) edges.push(a, b)
+          if (!renderedCell(row, col + 1)) edges.push(b, d)
+          if (!renderedCell(row + 1, col)) edges.push(c, d)
+          if (!renderedCell(row, col - 1)) edges.push(a, c)
+        }
+      }
+      if (!edges.length) return this
+
+      // 每条边界边生成一个向下的四边形（两个三角形），顶边复用面网格顶点
+      const pairCount = edges.length / 2
+      const arr = new Float32Array(pairCount * 6 * 3)
+      const ux = up.x * depth
+      const uy = up.y * depth
+      const uz = up.z * depth
+      let n = 0
+      const pushTop = (i: number) => {
+        arr[n++] = positions[i * 3]
+        arr[n++] = positions[i * 3 + 1]
+        arr[n++] = positions[i * 3 + 2]
+      }
+      const pushBottom = (i: number) => {
+        arr[n++] = positions[i * 3] - ux
+        arr[n++] = positions[i * 3 + 1] - uy
+        arr[n++] = positions[i * 3 + 2] - uz
+      }
+      for (let k = 0; k < edges.length; k += 2) {
+        const v0 = edges[k]
+        const v1 = edges[k + 1]
+        pushTop(v0)
+        pushTop(v1)
+        pushBottom(v1)
+        pushTop(v0)
+        pushBottom(v1)
+        pushBottom(v0)
+      }
+
+      const geometry = new THREE.BufferGeometry()
+      geometry.setAttribute('position', new THREE.BufferAttribute(arr, 3))
+      geometry.computeVertexNormals()
+      geometry.computeBoundingSphere()
+      // 暗土色、双面：看起来像被切开的土体侧壁；平整时埋在地形下，看不见
+      const material = new THREE.MeshBasicMaterial({
+        color: 0x4a3b2c,
+        side: THREE.DoubleSide,
+        depthWrite: true
+      })
+      const skirt = new THREE.Mesh(geometry, material)
+      skirt.name = 'terrain-edit-skirt'
+      skirt.renderOrder = 1
+      this._root.add(skirt)
       return this
     },
 
