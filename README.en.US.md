@@ -15,7 +15,7 @@
 
 ### Why choose it
 
-- **Import only what you need**: 17 subpaths (`/graphics`, `/analysis`, `/three`, ...) — use only what you install, without pulling in `echarts` / `dat.gui`.
+- **Import only what you need**: 18 subpaths (`/graphics`, `/analysis`, `/three`, `/terrain`, ...) — use only what you install, without pulling in `echarts` / `dat.gui`.
 - **Rare capabilities**: terrain editing (excavation / raise / terraces / water / cut-fill) and Three.js single-context fusion (sharing Cesium's canvas and depth buffer) are uncommon in the Cesium ecosystem.
 - **Framework-agnostic**: a plain API that works in React / Vue / vanilla; `createKit()` has a clear lifecycle and an idempotent `dispose()`.
 - **Maintainable**: TypeScript types, stable error codes, 477 APIs, 70+ live examples, docs and demo match one-to-one.
@@ -164,8 +164,9 @@ dispose()
 Each subpath only bundles its own dependency graph. For example
 `cesium_dev_kit/graphics` does not pull in `echarts` or `dat.gui`.
 Available subpaths: `/graphics`, `/material`, `/primitive`, `/draw`, `/analysis`,
-`/plugin`, `/pass-effect`, `/control`, `/three`, `/vue`, `/custom-cesium-plugin`,
-`/default-static`.
+`/plugin`, `/pass-effect`, `/control`, `/three`, `/vue`, `/react`, `/plot`,
+`/history`, `/annotation`, `/web-components`, `/custom-cesium-plugin`,
+`/default-static`, `/terrain`.
 
 ### Default images and assets
 
@@ -365,6 +366,36 @@ kit.analysis.createCutVolumeCompareAnalysis({
 ```
 
 The pure computation helpers (`computeSlopeAspect` / `computeVolumeCompare` / `computeSightlineVisibility`, etc.) are exported from `cesium_dev_kit/analysis` and can be unit-tested or rendered without a viewer.
+
+## Terrain editing & data interchange
+
+`kit.terrainEdit` provides real-time excavation / raising / flattening (requires
+Three.js); the result can be serialized, saved and re-edited:
+
+```ts
+import * as THREE from 'three'
+const { scene } = kit.threeJs.initThree({ center: [117.1, 36.25] })
+await kit.terrainEdit.setArea([117.1, 36.25], { size: 2000, segments: 160 })
+kit.terrainEdit.setBrush({ mode: 'lower', radius: 110, maxDelta: 3 }).enableBrush(true)
+```
+
+Height-field interchange is pure computation, exported from `cesium_dev_kit/terrain`
+with no Cesium / Three dependency, so it can be unit-tested outside the viewer:
+
+```ts
+import { heightFieldToGeoTIFF, diffHeightField, applyHeightPatch } from 'cesium_dev_kit/terrain'
+
+const field = kit.terrainEdit.getHeightField() // { segments, bounds, base, current }
+const tiff = heightFieldToGeoTIFF(field)        // single-band Float32 GeoTIFF (WGS84)
+const patch = diffHeightField(field)            // collaborative delta: changed vertices only
+const restored = applyHeightPatch({ ...field, current: field.base }, patch)
+```
+
+Formats: GeoTIFF, ESRI ASCII grid (`.asc`), XYZ text; Int16 quantization
+(`quantizeHeightField` / `dequantizeHeightField`) shrinks the height field from
+4 bytes/point to 2 bytes/point.
+
+> See the full walkthrough in [Terrain editing](./guides/terrain-editing.en.md).
 
 ## Vue Composition API (adapter)
 

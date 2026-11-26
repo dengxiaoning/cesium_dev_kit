@@ -15,7 +15,7 @@
 
 ### 为什么选它
 
-- **按需引入**：17 个子路径（`/graphics`、`/analysis`、`/three`……），用哪个装哪个，不会连带引入 `echarts` / `dat.gui`。
+- **按需引入**：18 个子路径（`/graphics`、`/analysis`、`/three`、`/terrain`……），用哪个装哪个，不会连带引入 `echarts` / `dat.gui`。
 - **稀缺能力**：地形编辑（开挖 / 堆高 / 台阶 / 水面 / 土方统计）和 Three.js 单上下文深度融合（共享 Cesium 的 canvas 与深度缓冲），在 Cesium 生态里都不常见。
 - **无框架绑定**：原生 API，React / Vue / 原生页面都能用；`createKit()` 生命周期清晰，`dispose()` 幂等。
 - **可维护**：TypeScript 类型、稳定错误码、477 个 API、70+ 在线示例，文档与 Demo 一一对应。
@@ -156,7 +156,8 @@ dispose()
 
 `cesium_dev_kit/graphics` 不会连带引入 `echarts` / `dat.gui`。可用子路径：
 `/graphics`、`/material`、`/primitive`、`/draw`、`/analysis`、`/plugin`、
-`/pass-effect`、`/control`、`/three`、`/vue`、`/custom-cesium-plugin`、`/default-static`。
+`/pass-effect`、`/control`、`/three`、`/vue`、`/react`、`/plot`、`/history`、
+`/annotation`、`/web-components`、`/custom-cesium-plugin`、`/default-static`、`/terrain`。
 
 ### 默认图片与静态资源
 
@@ -347,6 +348,33 @@ kit.analysis.createCutVolumeCompareAnalysis({
 ```
 
 纯计算部分（`computeSlopeAspect` / `computeVolumeCompare` / `computeSightlineVisibility` 等）从 `cesium_dev_kit/analysis` 导出，可脱离 viewer 单测。
+
+## 地形编辑与数据交换
+
+`kit.terrainEdit` 提供实时开挖 / 堆高 / 整平（依赖 Three.js），结果可序列化保存、二次编辑：
+
+```ts
+import * as THREE from 'three'
+const { scene } = kit.threeJs.initThree({ center: [117.1, 36.25] })
+await kit.terrainEdit.setArea([117.1, 36.25], { size: 2000, segments: 160 })
+kit.terrainEdit.setBrush({ mode: 'lower', radius: 110, maxDelta: 3 }).enableBrush(true)
+```
+
+高度场数据交换是纯计算，从 `cesium_dev_kit/terrain` 导出，无 Cesium / Three 依赖，可脱离 viewer 单测：
+
+```ts
+import { heightFieldToGeoTIFF, diffHeightField, applyHeightPatch } from 'cesium_dev_kit/terrain'
+
+const field = kit.terrainEdit.getHeightField() // { segments, bounds, base, current }
+const tiff = heightFieldToGeoTIFF(field)        // 单波段 Float32 GeoTIFF（WGS84 地理配准）
+const patch = diffHeightField(field)            // 协同差量：只含被改动的顶点
+const restored = applyHeightPatch({ ...field, current: field.base }, patch)
+```
+
+导出格式：GeoTIFF、ESRI ASCII 格网（`.asc`）、XYZ 文本；另有 Int16 量化
+（`quantizeHeightField` / `dequantizeHeightField`）把高度场从 4 字节/点压到 2 字节/点。
+
+> 完整用法见 [地形编辑实战](./guides/terrain-editing.zh.md)。
 
 ## Vue 组合式 API（适配器）
 

@@ -220,6 +220,16 @@
         "default": "./dist/default-static.cjs"
       }
     },
+    "./terrain": {
+      "import": {
+        "types": "./dist/terrain.d.mts",
+        "default": "./dist/terrain.mjs"
+      },
+      "require": {
+        "types": "./dist/terrain.d.ts",
+        "default": "./dist/terrain.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
@@ -274,6 +284,9 @@
       ],
       "default-static": [
         "dist/default-static.d.ts"
+      ],
+      "terrain": [
+        "dist/terrain.d.ts"
       ]
     }
   },

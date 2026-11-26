@@ -32,7 +32,8 @@ export default defineConfig({
     plot: 'src/utils/cesiumPluginsExtends/plot/index.ts',
     history: 'src/utils/cesiumPluginsExtends/history/index.ts',
     annotation: 'src/utils/cesiumPluginsExtends/annotation/index.ts',
-    'web-components': 'src/utils/cesiumPluginsExtends/web-components/index.ts'
+    'web-components': 'src/utils/cesiumPluginsExtends/web-components/index.ts',
+    terrain: 'src/utils/cesiumPluginsExtends/terrain/index.ts'
   },
   format: ['esm', 'cjs'],
   dts: true,
