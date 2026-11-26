@@ -362,7 +362,7 @@
     "libgif": "0.0.3",
     "mitt": "^2.1.0",
     "nprogress": "0.2.0",
-    "ol": "^6.9.0",
+    "ol": "^10.11.0",
     "path-browserify": "^1.0.1",
     "prettier": "^2.2.1",
     "publint": "^0.3.25",
