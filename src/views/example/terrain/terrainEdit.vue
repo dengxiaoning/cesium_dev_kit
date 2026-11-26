@@ -19,13 +19,16 @@
       </div>
 
       <div class="row">
-        <button class="btn" :disabled="!ready" @click="saveTerrain">保存数据</button>
-        <select class="select" v-model="exportFormat" :disabled="!ready" title="导出格式">
-          <option value="json">JSON</option>
-          <option value="geotiff">GeoTIFF</option>
-          <option value="ascii">ASCII</option>
-          <option value="xyz">XYZ</option>
-        </select>
+        <div class="export-group">
+          <span class="export-label">导出</span>
+          <button type="button" :disabled="!ready" title="导出 JSON 快照（可再 importData 复原）" @click="saveTerrain('json')">JSON</button>
+          <button type="button" :disabled="!ready" title="导出 GeoTIFF（QGIS / GDAL 可直接读取）" @click="saveTerrain('geotiff')">GeoTIFF</button>
+          <button type="button" :disabled="!ready" title="导出 ESRI ASCII 格网（.asc）" @click="saveTerrain('ascii')">ASCII</button>
+          <button type="button" :disabled="!ready" title="导出 XYZ 文本（逐顶点）" @click="saveTerrain('xyz')">XYZ</button>
+        </div>
+      </div>
+
+      <div class="row">
         <button class="btn" :disabled="!ready || loading" @click="pickFile">载入数据</button>
         <input ref="fileInput" class="file" type="file" accept=".json,.tif,.tiff,.asc,.xyz,application/json,image/tiff,text/plain" @change="loadTerrain" />
       </div>
@@ -113,7 +116,6 @@ export default {
       showContour: true,
       useTexture: true,
       cutSurface: true,
-      exportFormat: 'json',
       targetHeight: null,
       brush: { mode: 'lower', radius: 110, maxDelta: 3 },
       stats: null,
@@ -324,14 +326,13 @@ export default {
         this.error = '应用模板失败：' + (err && err.message ? err.message : err)
       }
     },
-    /** 导出当前编辑结果并让浏览器下载：支持 JSON 快照 / GeoTIFF / ASCII / XYZ */
-    saveTerrain () {
+    /** 导出当前编辑结果并让浏览器下载：format 为 json / geotiff / ascii / xyz */
+    saveTerrain (format = 'json') {
       const field = this.terrainEdit.getHeightField()
       if (!field) {
         this.tip = '还没有可导出的地形，先刷两笔'
         return
       }
-      const format = this.exportFormat
       let blob
       let filename
       let sizeText
@@ -632,16 +633,46 @@ export default {
   flex: 0 0 60px;
   background: transparent;
 }
-.select {
-  flex: 0 0 82px;
+/* 导出按钮组：左侧「导出」标签 + 各格式按钮，共享一个外框 */
+.export-group {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
   height: 30px;
-  padding: 0 4px;
   border: 1px solid rgba(110, 226, 255, 0.28);
   border-radius: 6px;
+  overflow: hidden;
+}
+.export-label {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  background: linear-gradient(180deg, rgba(32, 122, 158, 0.9), rgba(20, 78, 104, 0.9));
+  color: #eafaff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.export-group button {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  padding: 0 2px;
+  border: none;
+  border-left: 1px solid rgba(110, 226, 255, 0.18);
   background: rgba(21, 48, 66, 0.7);
   color: #cfe9f5;
   font-size: 12px;
   cursor: pointer;
+  transition: all 0.15s;
+}
+.export-group button:hover:not(:disabled) {
+  background: rgba(30, 72, 96, 0.92);
+  color: #fff;
+}
+.export-group button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 .file {
   display: none;
