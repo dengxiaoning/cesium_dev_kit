@@ -26,8 +26,12 @@ src/utils/cesiumPluginsExtends/api
 # release.yml 从 CHANGELOG 提取的发布说明（构建产物，不提交）
 .release-notes.md
 
-# 英文文档构建后仍未翻译的注释清单（临时报告，补完词表后消失）
+# 英文文档构建后仍未翻译的注释清单 / 待翻译段落（临时报告，补完词表后自动清空）
 .i18n-untranslated.md
+.i18n-blocks.md
+
+# 英文文档的翻译覆盖率统计（docs:check 读取，构建产物不提交）
+.i18n-stats.json
 
 research
 

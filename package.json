@@ -327,7 +327,9 @@
     "build:demo:pages": "vite build --outDir docs/demo --emptyOutDir",
     "prepack": "npm run build:lib",
     "changeset": "changeset",
-    "release:version": "changeset version && node scripts/changelog-zh.mjs"
+    "release:version": "changeset version && node scripts/changelog-zh.mjs",
+    "docs:check": "node scripts/check-docs-i18n.mjs",
+    "docs:verify": "npm run docs:all && npm run docs:check"
   },
   "peerDependencies": {
     "cesium": ">=1.105.0",

@@ -164,6 +164,11 @@ npm deprecate "cesium_dev_kit@<1.1.0" ""
   - 补历史版本（分支还没建立时）：`git worktree add /tmp/v1.4.0 v1.4.0`，在该工作树里
     `npm ci && npm run docs:typedoc && npm run docs:typedoc:en`，再把 `docs/` 拷进
     `docs-archive` 分支的 `v1.4.0/` 后推送。`scripts/archive-version.mjs` 就是干这一步的；
-- 中英文文档：中文在根路径，英文在 `/en/`。英文站的方法说明由 `scripts/api-i18n-en.mjs` 的
-  术语表翻译（属性、参数、常用方法说明），长段落仍保留中文原文，未命中的行会写进
-  `.i18n-untranslated.md`，按清单补词表即可逐步提高覆盖率。
+- 中英文文档：中文在根路径，英文在 `/en/`。英文站所有注释（模块说明、属性/参数、`@example`
+  里的注释与日志字符串）都由 `scripts/api-i18n-en.mjs` 翻译，词表在 `scripts/i18n/`：
+  - `exact.json` 整行 / 短语映射（历史最久、量最大，默认先查它）；
+  - `blocks.json` 连续散文段落整段映射（长段落逐行切会碎句子，键是多行文本本身）；
+  - `terms.json` 参与组合翻译的词根（配合 `是否X`、`X颜色`、`X，默认 Y` 等规则）。
+  改完源码注释后跑 `npm run docs:all`，若出现未命中，会生成 `.i18n-untranslated.md`
+  （按行）和 `.i18n-blocks.md`（按段落），把对应条目补进词表即可；`npm run docs:check`
+  是 CI 闸门，覆盖率低于 90%、英文站残留中文、或缺类页/成员数不一致都会让构建失败。

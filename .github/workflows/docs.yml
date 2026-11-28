@@ -91,6 +91,11 @@ jobs:
       - name: Build site extras (examples / sitemap / llms / versions)
         run: npm run docs:extras
 
+      # 中英文一致性闸门：覆盖率 < 90%、英文站出现中文、或缺类页/成员数不一致都会让构建失败，
+      # 避免「某次提交把中文说明带进英文站」这种问题静默上线。
+      - name: Verify bilingual docs
+        run: npm run docs:check
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

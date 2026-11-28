@@ -8,12 +8,12 @@ Cesium development kit: plotting, measurement, analysis, custom materials / prim
 > materials, post-processing, path roaming, …). The demo auto-logs-in with a mock account
 > (`?auto=1`). To run locally: `npm run dev`.
 
-> **Chinese is the primary documentation language.** In this English edition the UI, category
-> names, signatures, property lists and parameter descriptions are translated through the
-> glossary in `scripts/api-i18n-en.mjs`; longer prose (module overviews, `@example` comments)
-> may still show the original Chinese JSDoc until it is translated line by line — those lines
-> are listed in `.i18n-untranslated.md` after every English build. For the complete Chinese
-> version, see <https://dengxiaoning.github.io/cesium_dev_kit/>.
+> **All API comments are translated.** Every JSDoc line — module overviews, property lists,
+> parameter descriptions and `@example` comments — is translated through the glossary in
+> `scripts/i18n/*.json` (`exact.json` for line-level, `blocks.json` for paragraphs, `terms.json`
+> for term composition). `npm run docs:check` verifies that the English site contains no Chinese
+> and that every page and member of the Chinese site has an English counterpart.
+> For the complete Chinese version, see <https://dengxiaoning.github.io/cesium_dev_kit/>.
 
 ## Install
 
