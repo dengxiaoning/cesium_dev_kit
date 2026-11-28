@@ -127,6 +127,7 @@ jobs:
             mkdir -p "$work/archive"
             git -C "$work/archive" init -q
             git -C "$work/archive" checkout -q -b docs-archive
+            git -C "$work/archive" remote add origin "$remote"
           fi
           target="$work/archive/v${version}"
           rm -rf "$target"
