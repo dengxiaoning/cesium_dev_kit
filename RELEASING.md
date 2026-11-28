@@ -157,7 +157,13 @@ npm deprecate "cesium_dev_kit@<1.1.0" ""
 `versions.json`。latest 永远在站点根路径 `/`，旧版本放在 `/vX.Y.Z/` 下：
 
 - `versions.json` 由 `docs:extras` 在构建时生成，自动扫描 `docs/` 里所有 `v<semver>` 目录；
-- 给旧版本归档：切到旧 tag 的 worktree，构建后执行 `node scripts/archive-version.mjs X.Y.Z`，
-  把 `docs/` 快照成 `docs/vX.Y.Z/`，随下一次站点发布一起上线；
-- 中英文文档：中文在根路径，英文在 `/en/`（`npm run docs:en` 单独构建英文 UI，方法说明仍为源码中文原文，
-  待 JSDoc 逐条翻译后补齐）。
+- 归档靠 `docs-archive` 分支：`release.yml` 在打 tag 时构建该版本文档，把 `docs/`（不含 demo）
+  推到 `docs-archive` 的 `vX.Y.Z/` 下；`docs.yml` 在 typedoc 与 demo 构建之后、`docs:extras`
+  之前把该分支的 `v*/` 合进 `docs/`，于是版本切换器就能列出历史版本；
+  - 顺序不能改：`cleanOutputDir` 会清空 `docs/`，放早了归档会被删掉；放晚了 `versions.json` 已经写完；
+  - 补历史版本（分支还没建立时）：`git worktree add /tmp/v1.4.0 v1.4.0`，在该工作树里
+    `npm ci && npm run docs:typedoc && npm run docs:typedoc:en`，再把 `docs/` 拷进
+    `docs-archive` 分支的 `v1.4.0/` 后推送。`scripts/archive-version.mjs` 就是干这一步的；
+- 中英文文档：中文在根路径，英文在 `/en/`。英文站的方法说明由 `scripts/api-i18n-en.mjs` 的
+  术语表翻译（属性、参数、常用方法说明），长段落仍保留中文原文，未命中的行会写进
+  `.i18n-untranslated.md`，按清单补词表即可逐步提高覆盖率。

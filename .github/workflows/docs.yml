@@ -56,6 +56,36 @@ jobs:
       - name: Build demo site into docs/demo
         run: npm run build:demo:pages
 
+      # 历史版本快照：docs-archive 分支按 vX.Y.Z/ 存着各版本的文档产物。
+      # 必须放在 typedoc 之后（cleanOutputDir 会清空 docs/），
+      # 且在 docs:extras 之前（writeVersions 靠扫描 docs/v*/ 生成 versions.json）。
+      # 分支还不存在时不算失败，退化为「只有最新版」。
+      - name: Checkout docs-archive branch
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: docs-archive
+          path: .archive
+          fetch-depth: 1
+
+      - name: Merge archived versions into docs
+        run: |
+          if [ ! -d .archive ]; then
+            echo "::notice::docs-archive 分支不存在，本次只发布最新版"
+            exit 0
+          fi
+          shopt -s nullglob
+          for dir in .archive/v*/; do
+            name=$(basename "$dir")
+            if [ -e "docs/$name" ]; then
+              echo "skip $name (already exists)"
+              continue
+            fi
+            cp -r "$dir" "docs/$name"
+            echo "archived version: $name"
+          done
+          ls -1 docs | grep '^v' || echo "（尚无归档版本）"
+
       # 最后生成示例静态页 / sitemap / robots / llms.txt / api-index.json / versions.json，
       # 此时 docs/ 与 docs/en/ 都已就绪，sitemap 才能把中英文页面一起收进去。
       - name: Build site extras (examples / sitemap / llms / versions)

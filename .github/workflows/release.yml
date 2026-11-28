@@ -11,6 +11,8 @@ jobs:
     permissions:
       # contents: write 是给下面的 GitHub Release 步骤用的（创建/更新 release）
       contents: write
+      # actions: write 用于发布后重新触发 Docs 工作流，让新归档的版本立刻出现在站点上
+      actions: write
       id-token: write
 
     steps:
@@ -100,3 +102,49 @@ jobs:
           else
             gh release create "$tag" --title "$tag" "${notes[@]}"
           fi
+
+      # ---------------------------------------------------------------------
+      # 文档归档：每个 tag 版本在 docs-archive 分支下留一份 vX.Y.Z/ 快照。
+      # 主站 docs.yml 会 checkout 这个分支并把 v*/ 合进 docs/，
+      # 于是版本切换器（docs/assets/custom.js -> versions.json）就能列出版本历史。
+      # ---------------------------------------------------------------------
+      - name: Build docs snapshot for archive
+        if: startsWith(github.ref, 'refs/tags/')
+        run: npm run docs:typedoc && npm run docs:typedoc:en
+
+      - name: Push docs snapshot to docs-archive branch
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          work="$(mktemp -d)"
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if git ls-remote --exit-code --heads "$remote" docs-archive >/dev/null 2>&1; then
+            git clone --depth 1 --branch docs-archive "$remote" "$work/archive"
+          else
+            mkdir -p "$work/archive"
+            git -C "$work/archive" init -q
+            git -C "$work/archive" checkout -q -b docs-archive
+          fi
+          target="$work/archive/v${version}"
+          rm -rf "$target"
+          mkdir -p "$target"
+          # demo 体积大且始终指向最新站点，不进归档
+          ( cd docs && tar --exclude='./demo' -cf - . ) | ( cd "$target" && tar -xf - )
+          git -C "$work/archive" config user.name "github-actions[bot]"
+          git -C "$work/archive" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$work/archive" add -A
+          if git -C "$work/archive" diff --cached --quiet; then
+            echo "v${version} 已归档，跳过"
+          else
+            git -C "$work/archive" commit -m "docs: archive v${version}"
+            git -C "$work/archive" push origin HEAD:docs-archive
+          fi
+
+      - name: Refresh Pages with the new archive
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run docs.yml --ref main || echo "::notice::请手动触发 Docs 工作流"

@@ -21,9 +21,18 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
+import {
+  translateDocLines,
+  writeUntranslatedReport,
+  i18nCoverage,
+  reportPath
+} from './api-i18n-en.mjs'
 
 // Node 18 没有 import.meta.dirname（20.11+ 才有），CI 的 18.x 矩阵会直接崩
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+
+/** 英文文档模式：UI + 分类 + 注释都走英文 */
+const IS_EN = process.env.DOC_LANG === 'en' || process.argv.includes('--en')
 const LIB_DIR = path.join(ROOT, 'src/utils/cesiumPluginsExtends/libs')
 const OUT_DIR = path.join(ROOT, 'src/utils/cesiumPluginsExtends/api')
 
@@ -164,6 +173,9 @@ function normalizeDoc(raw, { dropParams = false } = {}) {
 
   if (dropParams) kept = kept.filter((line) => !/^\s*@param\b/.test(line))
   else kept = foldNestedParams(kept)
+
+  // 英文站：把中文说明换成英文（翻不动的保留原文，并计入未翻译清单）
+  if (IS_EN) kept = translateDocLines(kept)
 
   return kept.map((line) => (line.length ? ` * ${line}` : ' *')).join('\n')
 }
@@ -574,7 +586,8 @@ function buildStub(file, sub = '') {
 
   // 桩文件是生成的，链接不到真实实现；这里补一条源码位置，方便维护者跳转
   const sourcePath = path.relative(ROOT, file).split(path.sep).join('/')
-  const seeLine = ` * @see [实现源码](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/${sourcePath})`
+  const seeLabel = IS_EN ? 'Source code' : '实现源码'
+  const seeLine = ` * @see [${seeLabel}](https://github.com/dengxiaoning/cesium_dev_kit/blob/main/${sourcePath})`
   classDoc = classDoc
     ? classDoc.replace(/\n \*\/\n$/, `\n${seeLine}\n */\n`)
     : `/**\n${seeLine}\n */\n`
@@ -610,9 +623,13 @@ function buildStub(file, sub = '') {
   if (!emitted.length) return null
 
   if (skipped.length) {
-    const note = ` * > 已弃用的兼容别名（不再列出，请改用对应的 \`create*\` 方法）：${skipped
-      .map((n) => `\`${n}\``)
-      .join('、')}`
+    const note = IS_EN
+      ? ` * > Deprecated aliases (no longer listed; use the corresponding \`create*\` method): ${skipped
+          .map((n) => `\`${n}\``)
+          .join(', ')}`
+      : ` * > 已弃用的兼容别名（不再列出，请改用对应的 \`create*\` 方法）：${skipped
+          .map((n) => `\`${n}\``)
+          .join('、')}`
     classDoc = classDoc.replace(/\n \*\/\n$/, `\n *\n${note}\n */\n`)
 
     // 指向已隐藏别名的 `{@link craeteXxx}` 会变成死链，改写成代码文本
@@ -780,8 +797,7 @@ const CATEGORIES_EN = {
   Base: 'Infrastructure'
 }
 
-const CATEGORIES =
-  process.env.DOC_LANG === 'en' || process.argv.includes('--en') ? CATEGORIES_EN : CATEGORIES_ZH
+const CATEGORIES = IS_EN ? CATEGORIES_EN : CATEGORIES_ZH
 
 /** 入口文件里类的排列顺序（侧边栏顺序跟着这个走） */
 const CLASS_ORDER = [
@@ -841,6 +857,18 @@ function main() {
 
   console.log(`[gen-api-stubs] ${summary.length} 个类 / ${total} 个成员 -> ${path.relative(ROOT, OUT_DIR)}`)
   console.log('  ' + summary.join('  '))
+
+  if (IS_EN) {
+    const { total: lines, translated, rate } = i18nCoverage()
+    console.log(
+      `[gen-api-stubs:en] 注释翻译 ${translated}/${lines} 行（${(rate * 100).toFixed(1)}%）`
+    )
+    if (translated < lines) {
+      const reportFile = reportPath(ROOT)
+      const rest = writeUntranslatedReport(reportFile)
+      console.log(`[gen-api-stubs:en] 仍有 ${rest} 条未翻译，清单：${path.relative(ROOT, reportFile)}`)
+    }
+  }
 }
 
 main()
