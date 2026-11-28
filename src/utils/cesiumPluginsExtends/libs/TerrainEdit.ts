@@ -905,6 +905,13 @@ export function createTerrainEditModule() {
     // 用 3D 噪声岩土把近垂直立面盖住，缓坡仍保留影像
     this._cutSurface = true
     this._texture = null
+    // 地表影像 / 边缘羽化的 three 纹理缓存（见 `_ensureMapTexture`）：
+    // 同一张画布只上传一次，重建地形时复用，避免显存被反复分配耗尽后地表变黑。
+    this._mapTexture = null
+    this._mapTextureCanvas = null
+    this._alphaMapTexture = null
+    this._alphaMapGrid = null
+    this._alphaMapBand = -1
     this._surface = null
     this._localXZ = null
     this._baseColors = null
@@ -2086,6 +2093,7 @@ export function createTerrainEditModule() {
       this._waterLevel = null
       // 范围变了，旧贴图（按旧包围盒裁的 UV）不能再用
       this._texture = null
+      this._disposeSurfaceTextures()
       this._textureToken++
       this._rebuild()
       this._renderBoundary()
@@ -3143,6 +3151,13 @@ export function createTerrainEditModule() {
         vertexColors: true,
         side: THREE.DoubleSide,
         transparent: true,
+        // 双面透明材质默认会被 three 拆成「背面 + 正面」两遍绘制，两遍各用一个
+        // program → 同一个 geometry 会各建一个 VAO。元素缓冲只在 VAO 首次建立 /
+        // forceUpdate 时显式绑定；第二个 VAO 一旦遇到程序重建就会丢掉元素缓冲，
+        // 从上方看时正面那遍 drawElements 会报 "Must have element array buffer bound"，
+        // 整块地表直接不画（表现为编辑区漆黑）。这里强制单遍绘制：DoubleSide 本来
+        // 就是一次画完，外观不变，还少一半 draw call。
+        forceSinglePass: true,
         // 未编辑区域的 alpha 由 aEdit 顶点属性压到 0；alphaTest 把这些片元直接丢弃，
         // 既不写深度也不盖住底下的真实地球影像。编辑区域 alpha=1，正常参与深度测试。
         alphaTest: 0.02,
@@ -3177,14 +3192,7 @@ export function createTerrainEditModule() {
       }
       material.customProgramCacheKey = () => (canvas ? 'terrain-edit-earth' : 'terrain-edit-editmask')
       if (canvas) {
-        const tex = new THREE.CanvasTexture(canvas)
-        // 影像本身是 sRGB：标成 sRGBColorSpace 后，three 采样时解到线性、输出时
-        // 再编码回 sRGB，等于原样输出；标成 NoColorSpace 会被二次编码，整体发白。
-        if ('colorSpace' in tex && THREE.SRGBColorSpace !== undefined) {
-          tex.colorSpace = THREE.SRGBColorSpace
-        } else if (THREE.sRGBEncoding != null) {
-          tex.encoding = THREE.sRGBEncoding
-        }
+        const tex = this._ensureMapTexture(canvas)
         // 斜视角下 mipmap 各向异性决定远处地表糊不糊：按显卡上限给足，
         // 否则越靠近地平线越糊成一片，看着像没贴图。
         tex.minFilter = THREE.LinearMipmapLinearFilter
@@ -3195,13 +3203,96 @@ export function createTerrainEditModule() {
         params.map = tex
         material.map = tex
         // 边缘羽化：把编辑区「化」进原地表，避免一圈生硬的矩形接缝
-        const alpha = this._makeEdgeAlphaMap()
+        const alpha = this._ensureAlphaMapTexture()
         if (alpha) {
           params.alphaMap = alpha
           material.alphaMap = alpha
         }
       }
       return material
+    },
+
+    /**
+     * 取（并缓存）地表影像的 three 纹理。
+     *
+     * 每次 `_rebuild()` 都 `new THREE.CanvasTexture(canvas)` 是个显存陷阱：
+     * `material.dispose()` **不会**释放 `map`，旧纹理会一直占着显存。
+     * 3072×3072 带 mipmap 一张约 50MB，切几次「显示等高线」/撤销/模板就能把
+     * 显存吃满；显存不足时纹理上传或 mipmap 生成失败，地表会整块采样成黑色。
+     * 所以这里按画布缓存：同一张画布只建一个纹理对象，重建时直接复用。
+     * @private
+     */
+    _ensureMapTexture(this: TerrainEditInstance & Record<string, any>, canvas: HTMLCanvasElement) {
+      if (this._mapTexture && this._mapTextureCanvas === canvas) return this._mapTexture
+      this._disposeMapTexture()
+      const tex = new THREE.CanvasTexture(canvas)
+      // 影像本身是 sRGB：标成 sRGBColorSpace 后，three 采样时解到线性、输出时
+      // 再编码回 sRGB，等于原样输出；标成 NoColorSpace 会被二次编码，整体发白。
+      if ('colorSpace' in tex && THREE.SRGBColorSpace !== undefined) {
+        tex.colorSpace = THREE.SRGBColorSpace
+      } else if (THREE.sRGBEncoding != null) {
+        tex.encoding = THREE.sRGBEncoding
+      }
+      tex.needsUpdate = true
+      this._mapTexture = tex
+      this._mapTextureCanvas = canvas
+      return tex
+    },
+
+    /**
+     * 释放地表影像纹理缓存（范围 / 贴图状态变化时调用）。
+     * @private
+     */
+    _disposeMapTexture(this: TerrainEditInstance & Record<string, any>) {
+      if (this._mapTexture && this._mapTexture.dispose) this._mapTexture.dispose()
+      this._mapTexture = null
+      this._mapTextureCanvas = null
+      return this
+    },
+
+    /**
+     * 取（并缓存）边缘羽化贴图。
+     *
+     * 它只跟格网范围与羽化带宽有关，同一块地形反复重建时完全一样，
+     * 没必要每次都新建一张 256×256 画布再上传。
+     * @private
+     */
+    _ensureAlphaMapTexture(this: TerrainEditInstance & Record<string, any>) {
+      const grid = this._grid
+      const band = grid ? Number(grid.slopeWidth) || 0 : 0
+      if (this._alphaMapTexture && this._alphaMapGrid === grid && this._alphaMapBand === band) {
+        return this._alphaMapTexture
+      }
+      this._disposeAlphaMapTexture()
+      const tex = this._makeEdgeAlphaMap()
+      if (tex) {
+        this._alphaMapTexture = tex
+        this._alphaMapGrid = grid
+        this._alphaMapBand = band
+      }
+      return tex
+    },
+
+    /**
+     * 释放边缘羽化贴图缓存。
+     * @private
+     */
+    _disposeAlphaMapTexture(this: TerrainEditInstance & Record<string, any>) {
+      if (this._alphaMapTexture && this._alphaMapTexture.dispose) this._alphaMapTexture.dispose()
+      this._alphaMapTexture = null
+      this._alphaMapGrid = null
+      this._alphaMapBand = -1
+      return this
+    },
+
+    /**
+     * 一次性释放所有与地表材质相关的纹理缓存。
+     * @private
+     */
+    _disposeSurfaceTextures(this: TerrainEditInstance & Record<string, any>) {
+      this._disposeMapTexture()
+      this._disposeAlphaMapTexture()
+      return this
     },
 
     /**
@@ -3502,6 +3593,8 @@ export function createTerrainEditModule() {
         roughness: 0.16,
         metalness: 0.32,
         side: THREE.DoubleSide,
+        // 同地表：透明 + 双面不要拆两遍，避免出现第二个 VAO / 程序重建后丢元素缓冲
+        forceSinglePass: true,
         depthWrite: false
       })
       const water = new THREE.Mesh(geometry, material)
@@ -3783,6 +3876,7 @@ export function createTerrainEditModule() {
       this._useTexture = next
       if (!next) {
         this._texture = null
+        this._disposeSurfaceTextures()
         this._rebuild()
       } else {
         this._requestTexture()
@@ -3792,6 +3886,8 @@ export function createTerrainEditModule() {
 
     /** 重建地表贴图（切换影像图层后调用） */
     async refreshTexture(this: TerrainEditInstance & Record<string, any>) {
+      // 这里不立刻释放旧纹理：新纹理还没到，当前地表材质仍在用它。
+      // 等新画布到位后 `_ensureMapTexture()` 会按画布不同自动释放旧的。
       this._texture = null
       this._useTexture = true
       await this._requestTexture()
@@ -4158,7 +4254,9 @@ export function createTerrainEditModule() {
           transparent: true,
           opacity: 0.12,
           depthTest: false,
-          side: THREE.DoubleSide
+          side: THREE.DoubleSide,
+          // 同地表：透明 + 双面不要拆两遍
+          forceSinglePass: true
         })
       )
       disc.renderOrder = 899
@@ -4314,11 +4412,15 @@ export function createTerrainEditModule() {
 
     /**
      * 显示 / 隐藏等高线
+     *
+     * 只增删等高线对象，**不重建整块地形**。`_rebuild()` 会重新生成几何、
+     * 重新上传几千万像素的影像贴图，在显存吃紧的机器上可能直接把贴图上传搞失败，
+     * 编辑区就变成一片漆黑 —— 而等高线开关完全不需要这么大动静。
      * @function
      */
     setContourVisible(this: TerrainEditInstance & Record<string, any>, visible: boolean) {
       this._showGrid = !!visible
-      this._rebuild()
+      if (this._root) this._buildContours()
       return this
     },
 
@@ -4357,6 +4459,7 @@ export function createTerrainEditModule() {
       this._history = []
       this._waterLevel = null
       this._texture = null
+      this._disposeSurfaceTextures()
       this._surface = null
       this._localXZ = null
       this._baseColors = null
@@ -4508,6 +4611,7 @@ export function createTerrainEditModule() {
       // 历史属于上一份地形，载入后不该还能撤回去；贴图按新范围重取
       this._history = []
       this._texture = null
+      this._disposeSurfaceTextures()
       this._textureToken++
       this._strokeBase = null
       this._strokeTarget = null
@@ -4592,6 +4696,7 @@ export function createTerrainEditModule() {
       this._history = []
       this._waterLevel = null
       this._texture = null
+      this._disposeSurfaceTextures()
       this._textureToken++
       this._strokeBase = null
       this._strokeTarget = null
@@ -4643,6 +4748,8 @@ export function createTerrainEditModule() {
       this._draftSource = null
       // 销毁前把地形洞补回去，避免 viewer 还在用时留下裁剪
       this._clearTerrainClip()
+      this._texture = null
+      this._disposeSurfaceTextures()
       this._grid = null
       this._polygon = []
       this._polygonHeight = []

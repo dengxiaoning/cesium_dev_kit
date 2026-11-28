@@ -6,6 +6,28 @@
 在发版时生成 —— 尚未发版的改动记录在 `.changeset/` 目录，而不是写在这里。
 版本号怎么判定、多久发一次，见 [RELEASING.md](RELEASING.md)。
 
+## 1.5.1 - 2026-11-28
+
+### 修复（Fixed）
+
+- fix(terrain): 修复关闭「显示等高线」后编辑区漆黑、控制台刷屏 `glDrawElements: Must have element array buffer bound`
+  
+  **根因**：地表材质是「透明 + `DoubleSide`」，three 会把这种材质拆成「背面 + 正面」两遍绘制
+  （`renderObject` 里临时改 `material.side` 并 `needsUpdate`）。两遍对应两个 shader program，
+  而 three 的 `bindingStates` 按 `geometry.id + program.id` 缓存 VAO —— 同一块地表因此有两个 VAO。
+  元素缓冲只在 VAO 首次建立或 `forceUpdate` 时被显式 `bindBuffer`，第二个 VAO 一旦遇到程序重建
+  （比如等高线材质被 dispose）就会丢掉元素缓冲：从上方看时背面那遍被剔除，正面那遍
+  `drawElements` 失败，整块地表不画，表现为编辑区一片漆黑。这也解释了为什么
+  「影像贴图关掉再打开」（触发一次完整 `_rebuild`）能恢复，以及恢复后勾选/取消等高线都不再坏。
+  
+  - 地表、水面、笔刷圆盘材质统一加 `forceSinglePass: true`：透明 + 双面只画一遍，外观不变，
+    draw call 减半，也不会再产生第二个 VAO。
+  - 融合渲染每帧改用 `renderer.resetState()`（连 `bindingStates` 一起重置并强制重绑），
+    保证每帧第一笔绘制都会重新绑定 VAO 与元素缓冲。
+  - `setContourVisible()` 不再整块重建地形，只增删等高线对象。
+  - 影像 / 羽化贴图按画布与格网缓存复用，范围变化、关闭贴图、`clear()` / `dispose()` 时释放，
+    避免反复重建时 3072²（约 50MB）纹理泄漏把显存吃满。
+
 ## 1.5.0 - 2026-11-28
 
 ### 新增 / 变更（Added / Changed）

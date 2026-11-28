@@ -532,11 +532,22 @@ function initThreeScene({ THREE, Cesium, viewer }: any) {
         this.updateGroupMatrixWorld()
         this.updateCameraMatrix()
 
-        //three 在背后可能改动任意 GL 状态，这里让它的状态缓存全部失效；
-        //reset() 同时会把 framebuffer 绑定回默认帧缓冲（即 Cesium 的 canvas）
+        //three 在背后可能改动任意 GL 状态，这里让它的状态缓存全部失效。
+        //
+        //必须用 renderer.resetState() 而不是 state.reset()：Cesium 在它自己的一帧里
+        //会绑定自己的 VAO，而 three 的 bindingStates 仍以为上一个 VAO 还绑着。
+        //正常情况下一帧的开始和结束画的是不同对象（例如地表网格 + 等高线），
+        //`currentState !== state` 会让 three 重新 bindVertexArray，恰好把错误掩盖过去；
+        //一旦场景里只剩一个可绘制对象（关闭等高线后只剩地表网格），两帧的「当前 VAO」
+        //相同，three 直接跳过绑定，drawElements 就会报
+        //"Must have element array buffer bound"，整块地表绘制失败——看起来就是一片漆黑。
+        //resetState() 会连 bindingStates（VAO / 元素缓冲缓存）一起重置并强制重绑。
         glTouched = true
-        if (this.renderer.state && this.renderer.state.reset) {
-          this.renderer.state.reset()
+        const renderer: any = this.renderer
+        if (typeof renderer.resetState === 'function') {
+          renderer.resetState()
+        } else if (renderer.state && renderer.state.reset) {
+          renderer.state.reset()
         }
         this.syncViewport()
 
