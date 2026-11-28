@@ -147,7 +147,14 @@ export default {
           infoBox: false,
           selectionIndicator: false,
           animation: false,
-          timeline: false
+          timeline: false,
+          // 编辑块要和地形做真正的深度遮挡（前景山体挡住它时就该看不见）：
+          // - 关掉 OIT：开启后 Cesium 把深度挪进自己的累积缓冲，搬不出来；
+          // - canvas 关 antialias、msaaSamples 设 1：多重采样的缓冲不能 blit 深度。
+          // 抗锯齿改由 FXAA 后处理补回来，见下方 scene.postProcessStages.fxaa。
+          orderIndependentTranslucency: false,
+          contextOptions: { webgl: { antialias: false } },
+          msaaSamples: 1
         },
         extraConfig: {
           depthTest: true,
@@ -182,6 +189,9 @@ export default {
 
       this.kit = kit
       this.viewer = kit.viewer
+      // 关闭 canvas MSAA 才能把地形深度搬给 three，边缘锯齿交给 FXAA 补
+      const stages = this.viewer.scene.postProcessStages
+      if (stages && stages.fxaa) stages.fxaa.enabled = true
       this.terrainEdit = kit.terrainEdit
       // 调试用：控制台可拿到场景与模块实例
       if (typeof window !== 'undefined') {

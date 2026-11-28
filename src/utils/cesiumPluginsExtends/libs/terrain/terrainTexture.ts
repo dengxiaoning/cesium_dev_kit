@@ -231,6 +231,15 @@ export async function buildImageryTexture(
   await Promise.all(jobs)
   if (!tiles) return null
 
+  // 跨域瓦片会「污染」画布：之后 THREE.CanvasTexture 上传时 texImage2D 会抛 SecurityError，
+  // 贴图变成全黑，编辑区看起来就是一大块黑斑。读一个像素探测一下，污染了就当没取到，
+  // 让调用方退回顶点着色（岩土色 + 明暗），至少不会出现黑块。
+  try {
+    ctx.getImageData(0, 0, 1, 1)
+  } catch (e) {
+    return null
+  }
+
   const uv = (lng: number, lat: number): [number, number] => [
     (lng - bounds.minLng) / dLng,
     (lat - bounds.minLat) / dLat

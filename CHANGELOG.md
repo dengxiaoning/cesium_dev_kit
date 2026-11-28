@@ -6,6 +6,210 @@
 在发版时生成 —— 尚未发版的改动记录在 `.changeset/` 目录，而不是写在这里。
 版本号怎么判定、多久发一次，见 [RELEASING.md](RELEASING.md)。
 
+## 1.5.0 - 2026-11-28
+
+### 新增 / 变更（Added / Changed）
+
+- `Analysis` 空间分析能力扩展（第二梯队）：
+  
+  - 新增 `createAspectAnalysis()`：沿一条线计算坡度 / 坡向，输出曲线并返回平均坡度、主导坡向；支持直接传 `positions` 或交互画线。
+  - 新增 `createVisibilityPathAnalysis()`：沿路径做通视判定，可见段绿色、遮挡段红色，返回 `visible` / `firstBlockerIndex` / `visibleRatio`；支持 `observerHeight` / `targetHeight`。
+  - 新增 `createMultiViewshedAnalysis()`：多观察点可视域叠加。支持 `observers` 批量传入（可给 `target` 瞄准，或按 `direction` / `pitch` / `distance` 摆姿势）；交互模式为「左键放置 → 移动鼠标瞄准 → 再次左键确认 → 下一击放下一个」，确认那一击不会误建新观察点，观察者默认离地 `eyeHeight`（1.7m），返回可 `addObserver` / `finish` / `remove` 的结果对象。
+  - 新增 `createCutVolumeCompareAnalysis()`：按多个设计标高统计挖方 / 填方并绘制对比柱状图；支持直接传多边形 `positions` 或交互绘制。
+  - 新增 `createBatchClipPlanAnalysis()`：多区域批量地形开挖，支持 `regions` 批量传入或交互绘制，返回统一 `remove()`。
+  - 新增纯计算模块 `libs/analysis/terrainSurface.ts`（`computeSlopeAspect` / `computeVolumeCompare` / `isPointInPolygon` / `computeSightlineVisibility` 及图表数据整理），从 `cesium_dev_kit/analysis` 导出，可脱离 viewer 单测。
+- 新增地形高度场的数据交换能力，挂在新子路径 `cesium_dev_kit/terrain`（纯计算，无 Cesium / Three 依赖，可脱离 viewer 单测）：
+  
+  - `heightFieldToGeoTIFF()` / `geoTIFFToHeightField()`：把高度场导出为单波段 Float32 GeoTIFF（小端、WGS84 地理配准），并可从 `.tif` 解码回来；可直接给 QGIS / GDAL 使用，或作为离线地形源。
+  - `heightFieldToAsciiGrid()` / `asciiGridToHeightField()`：ESRI ASCII 格网（`.asc`）导出与回读。
+  - `heightFieldToXyz()` / `xyzToHeightField()`：逐顶点 `lng lat height` 文本导出与回读。
+  - `quantizeHeightField()` / `dequantizeHeightField()`：Int16 量化，把高度场从 4 字节/点压到 2 字节/点。
+  - `diffHeightField()` / `applyHeightPatch()`：协同差量，只同步被改动的顶点（last-write-wins），替代整场传输。
+  - `TerrainEdit.importHeightField()`：把解码后的高度场直接载入为可继续编辑的地形块（不要求快照 / 多边形结构）。
+  
+  输入与 `TerrainEdit.getHeightField()` 的返回值（`{ segments, bounds, base, current }`）结构兼容，无需转换即可复用。地形编辑演示页（保存 / 载入）同步支持 JSON / GeoTIFF / ASCII / XYZ 四种格式。
+- 新增地形模板 `TerrainEdit.applyTemplate()`：一键套用常见工程造型，再拿笔刷微调。
+  
+  - `pit`（基坑）：下沉，可配 `depth` / `stepHeight`。
+  - `mound`（土堆）：抬升，可配 `depth` / `stepHeight`。
+  - `platform`（平台）：整平到 `targetHeight`（不传取内圈平均高度）。
+  - `ramp`（坡道）：沿 `direction` 线性起坡，`startHeight` / `endHeight` 不传时按两侧地形自动取。
+  
+  纯计算实现 `applyTerrainTemplate()` 同时从 `cesium_dev_kit/terrain` 导出，可脱离 viewer 单测。模板会记入撤销历史；地形编辑演示页新增「基坑 / 土堆 / 平台 / 坡道」四个按钮。
+
+### 修复（Fixed）
+
+- 修复交互式分析的鼠标事件会层层叠加：
+  
+  `bindHandleEvent` 每次调用都会新建一个 `ScreenSpaceEventHandler`，且只在模块销毁时才清理，从不销毁上一次绑定的。因此重复点击同一个分析按钮（或连续启动两个交互式分析）后，一层 handler 叠一层——一次左键会同时触发多个回调，画出来的观察点 / 视域成倍冒出，像套娃一样。
+  
+  - `bindHandleEvent` 现在会把创建的 handler 返回给调用方（纯增量，原有忽略返回值的用法不受影响）。
+  - `Analysis` 内部新增 `bindAnalysisEvent()`，重复绑定前先销毁上一层；`createVisualFieldAnalysis()`（可视域）与 `createMultiViewshedAnalysis()`（多观察点视域）已改用它，同一实例上始终只保留最后一层监听。
+- 修复 `Analysis` 因缺少 `Math3d` / `Math2d` 混入导致的运行时报错。
+  
+  `Analysis` 的原型混入列表原为 `[Base, Draw, Plugin]`，但 `Draw` 自身依赖 `Math3d`（`getPositionDistance` / `getPositionsArea`）与 `Math2d`（`computeStar2d` 等）。`prototypeExtends` 的 `exeClone` 只拷贝父原型的 own 方法，且 `resolveScopedConstructor` 每次都会生成全新原型，因此 `Draw` 那份混入不会传递到 `Analysis`。
+  
+  表现为所有经 `drawLineGraphics` / `drawPolygonGraphics` 的分析（剖面、通视、环视、开挖、淹没、坡度、方量等）在首次点击时抛出 `TypeError: $this.getPositionDistance is not a function`。
+  
+  现将两处接线（`kit.ts` 的 `createKit` 与 `singleImport/Analysis.ts`）统一为 `[Base, Math3d, Math2d, Draw, Plugin]`，与 `Draw` 自身的 `[Base, Math3d, Math2d]` 对齐，并新增回归测试 `tests/analysisMixin.test.ts`。
+- 修复地形编辑区「贴在地图上、不贴合地形」的问题 —— 旋转 / 翻滚 / 缩放都不会再和地图脱开。
+  
+  **根因有两层**
+  
+  1. 编辑块的基准面取自 `globe.getHeight()`（当前 LOD 的 renderedMesh），这个值随视角变化：
+     同一块山地在不同视角下能差几十上百米，瓦片没精化时还会返回 `undefined` 或接近 0 的离谱高度。
+     旧实现拿它当主数据源、缺失点还按 `0` 兜底，相机一动块体就跟着 LOD 变形，边缘垂下一整面
+     「竖直幕布」。
+  2. 即使高度对了，编辑块也只是一张独立的 three 网格：底下的 Cesium 原地形还在原高度上，
+     两层地表叠在一起；而 three 内容默认不做深度测试，永远画在地形之上 —— 压低视角时前景山体
+     挡不住它，整块就像一张贴片盖在山坡上。
+  
+  **修复**
+  
+  - 基准面改用与视角无关的 `sampleTerrainMostDetailed`（兜底 `sampleTerrain` 最高级别）：
+    同一经纬度永远得到同一个高度，相机怎么转，块体的位置和形状都不变。
+  - 采样值加合理性校验（`-1500` ~ `9000` m）+ 8 邻域中位数孤立尖峰剔除，再走邻域扩散补洞，
+    不再用 `0` 兜底，避免「一个点掉到海平面 → 垂下一面千米幕布」。
+  - 新增 `cutTerrain`（默认 `true`）：用 `globe.clippingPolygons` 把编辑区底下的 Cesium 原地形挖掉
+    （内缩一圈，内缩量默认 `feather × 1.8`）。区域里只剩编辑块这一层地表，原地形不会再从块面里
+    穿出来，挖出来的坑也不会被原地形盖住。`clear()` / `dispose()` / 切回手绘多边形时会把地形还回去。
+  - **只替换真正编辑过的区域**（见文末最终方案）：没刷过的格网 alpha=0，three 网格透明，
+    露出 Cesium 真实地球；只有刷动过的地方才显示网格，并且只挖掉那块区域底下的地形。
+  - 多边形模式（手绘范围）仍保留「按当前渲染地形对齐块边界」：相机停稳后沿边界采样
+    `globe.getHeight()`，把显示修正量向块内扩散，块面边缘和画面里的地形逐点重合。
+  - 边缘羽化带宽度改为按 `feather`（米）换算，不再固定占整块 10%：2.4km 的地块原来是 240m 的
+    半透明边，挖掉地形后那圈会透空，现在与裁剪内缩量对齐。
+  - 影像贴图取到跨域瓦片时画布会被「污染」，上传后贴图变全黑（编辑区成一块黑斑）。现在会先探测，
+    污染就退回顶点着色，不再出现黑块。
+  - 新增 `hideWhenUnderground`（默认 `true`）：相机钻到编辑面以下时隐藏 three 网格，
+    与 Cesium 单面地形表现一致，避免像一张悬空的毯子。
+  
+  **新增 / 变化的选项**
+  
+  - `cutTerrain`（新增，默认 `true`）：是否挖掉编辑区底下的 Cesium 原地形；需要 WebGL2，不支持时自动跳过。
+  - `cutInset`（新增）：裁剪多边形内缩距离（米），默认取 `feather × 1.8`。
+  - `followTerrain`（新增，默认 `true`）：块面边缘是否跟随当前渲染地形自动对齐；只修正显示高度，不改块体基准面。
+  - `followInterval`（新增，默认 `200ms`）：边缘对齐的重算间隔；只在相机停稳后重算。
+  - `hideWhenUnderground`（新增，默认 `true`）：相机到地表以下时隐藏编辑块。
+  - `skirtDepth` 默认值 `28` → `0`：默认**不生成裙边**，传 `> 0` 时才保留侧壁。
+  
+  **集成要求（重要）**：要让编辑块被前景地形正确遮挡，viewer 需要能和 three 共享深度 ——
+  `orderIndependentTranslucency: false`、`msaaSamples: 1`、`contextOptions.webgl.antialias: false`
+  （抗锯齿可用 FXAA 后处理补回）。否则会打一条控制台提示，块面仍会盖住前景地形。
+  演示页已按这套配置改好。
+  
+  **代价**：重建区域每次都要做一次与视角无关的地形采样（160 段约 2~5s，旧实现遍历
+  `getHeight` 同样要 ~8s 且会阻塞主线程），进度提示文案不变。
+  
+  ---
+  
+  ## 追加修复：笔刷与鼠标偏移、坑沿「竖直幕布」
+  
+  上一轮修完之后还剩两个问题：笔刷圈和光标对不上（实测偏 129px），以及编辑区域看着
+  像一块贴片浮在地形上 —— 剖开高度场才发现坑沿是一面一格高的**竖直墙**。
+  
+  **笔刷 / 光标偏移**
+  
+  根因是从「上一次的地形交点」出发做牛顿迭代，收敛判据用的是**高度差**。平缓视线下
+  1 m 的高度差能对应几百米的水平距离，判据一满足，屏幕位置早就跑偏了。改成沿射线
+  行进 + 二分求根（区间由编辑块包围球裁剪），三个采样点的误差降到 **0 px**。
+  `_pickLngLat` 先求编辑面交点，未命中再回落到 `globe.pick`。
+  
+  **坑沿竖直幕布（本轮的主要根因）**
+  
+  三个独立缺陷叠在一起：
+  
+  1. `applyBrush` 每格写的是 `h + (target - h) * w`。这个式子的不动点是 `target`，
+     只要 `w > 0`，同一处反复落笔整圈都会指数收敛到目标标高 —— **连本该渐隐到自然地面
+     的过渡带也被一起吃掉**。收完之后边缘只剩一格高的断崖：实测距笔心 134m 还是坑底
+     1080，151m 就是原地面 1230，150m 的高差全压在 17m 的一格里。
+  2. 过渡带宽度按「**笔心**的原始高度与目标之差」算。深挖时笔心本来就贴着目标
+     （一笔只降一级），圈边却还高出一百多米，于是坡宽只算出二十几米，把一两百米落差
+     硬塞进最后一格。
+  3. 塌方坡想按安息角把坡摊开，但圈内已经没有空间，只能把高差一路推到笔刷边界，
+     在圈边留下断崖（实测坑沿被多削 65m，边界高差反而涨到 102m）。
+  
+  对应修法：
+  
+  - 写入改为以**原始地面** `base` 为参考系：`shaped = base + (target - base) * w`，
+    再加一钳 `挖 → min(h, max(next, shaped))` / `填 → max(h, min(next, shaped))`。
+    `shaped` 于是成为每格的地板（挖）/ 天花板（填）：渐隐按 `w` **永久保留**（重复落笔幂等），
+    重叠区域又取「最深处」，拖出来的沟底依然是平的。每笔降一级的手感不变
+    （`target` 仍按当前高度重算）。
+  - 坡宽改用**圈内最大落差**（扫一遍 `base`）而不是笔心落差；系数取 0.9，
+    让平台保持大半个圈，坡面交给后续处理。
+  - 挖方不再走塌方坡（抬升保留）。填充的 `maxDrop` 不变，堆土仍有自然坡脚。
+  - `padLimit` 只拦「往上垫」这一侧：往下压只是挖土，挖多深都不会悬空。
+    早先不分方向地拦 `|target - h|`，坑心比目标高 111.8m、上限正好 108m，
+    坑心被整片跳过，只剩塌方坡一格格削出来的同心台阶。
+  - 边界噪声改成**降频**而非减幅：波长 0.55R → 0.9R，并让噪声按比例缩放整个轮廓
+    （平台边 + 过渡带一起动）。之前只削最外圈，平台边被 `coreR = 0.9R` 锁死，坑口永远是圆。
+  - 坑壁岩土着色改用高度场相邻高差判陡（`slope = maxStep / cellM`），不再用顶点法线 ——
+    法线被平均后整面墙只有几十个顶点过门槛。
+  
+  **效果**（150m 笔刷、150m 落差山坡、同一处按住 90 笔）
+  
+  | | 修前 | 修后 |
+  |---|---|---|
+  | 圈边一格内的高差 | 102 m | 24 m（其中 14m 是山体自然坡度）|
+  | 圈外改动 | 0 | 0 |
+  | 坑壁剖面 | 1080 平底 → 一格跳到 1230 | 1080 → 1085 → 1102 → 1124 → 1151 → 1183 → 1220 → 1244 |
+  
+  **破坏性变更**：`applyBrush` 的写入语义由「向目标收敛」变为「向 `base` 定出的
+  最终形状单调推进」。重复落笔不会再把过渡带吃没；需要继续加深时由调用方重算 `target`
+  （`TerrainEdit` 的笔画正是这么做的）。
+  
+  ---
+  
+  ## 追加修复：只显示真正编辑过的区域，未编辑处保持真实地球
+  
+  用户反馈截图里编辑块和左侧地球之间有**明显的颜色差和高度台阶**（右侧编辑区偏色、偏高）。
+  上一版把整块 2.4km 见方都换成 three 网格：网格用的是建区时烘好的静态影像贴图
+  （固定分辨率 / 色调），而周围是 Cesium 实时渲染的影像和 LOD 地形。两者在块边界对不上，
+  就成了「一块贴在地球上的、颜色和高度都不一样的方块」——裙边只是把它放大了一圈。
+  
+  **根因**
+  
+  - 编辑区是**整块独立网格**：即使一笔都没刷，这块 2.4km 也会盖住真实地球；
+  - 静态贴图的分辨率 / 影像层级与屏幕上的实时影像不一致（缩放后更明显）；
+  - 网格高度来自 `sampleTerrainMostDetailed`（真值），地球渲染的是随视角变化的 LOD，
+    块边界天然存在几米级高差；
+  - 所有顶点都乘了坡度明暗，未编辑区域整体偏暗。
+  
+  **修复（最终方案）：编辑区域掩膜 + 按编辑范围动态裁剪**
+  
+  - **未编辑区域完全透明**：新增顶点属性 `aEdit`，按格网与原始高度的差值生成掩膜。
+    没被刷动过的地方 `aEdit = 0`，材质开 `alphaTest` 直接丢弃这些片元——
+    既不画颜色也不写深度，Cesium 的真实地球原样显示。整个编辑区在没动过之前**完全不可见**。
+  - **只显示编辑范围**：刷动后取编辑过格网的包围盒，向外扩 `EDIT_PAD_CELLS = 3` 格、
+    再渐隐 `EDIT_FADE_CELLS = 3` 格。掩膜在裁剪矩形内保持 1、矩形外渐隐，
+    所以不会在矩形角上透出裁剪洞。
+  - **按编辑范围动态裁剪地形**：`cutTerrain` 不再固定挖整块，而是只挖「编辑范围 + 3 格」
+    底下的 Cesium 地形；裁剪边落在未编辑的原始地面上，和周围地形同高。
+    `undo()` / `clear()` / 切回手绘模式时自动把地形还回去。
+  - **等高线也只画在编辑范围附近**：未编辑时整块不画，避免在真实地球上留下一圈矩形线框。
+  - **默认关闭裙边**：`skirtDepth` 默认 `0`，不再生成土色侧壁。
+  - **去掉整体下沉**：`settle` 默认 `0`。
+  - **明暗只作用于编辑过的顶点**：未编辑顶点保持 `shade = 1`，只有刷动过的坡面才压暗提亮。
+  - 多边形（手绘）模式保持原行为：用户圈定的范围本身就是要显示/编辑的区域；
+    该模式仍用 `followTerrain` 沿边界对齐当前渲染地形。
+  
+  **可见的行为变化**
+  
+  - 进入页面时看到的就是真实地球，编辑区不再是预先铺好的一块贴片；
+  - 只有刷过的地方才「长」出 three 网格，并且只挖掉那块地方的地形；
+  - 编辑范围外的一圈保持真实地球的影像、颜色和地形高度，颜色/高度台阶随之消失。
+  
+  **实测**（160 段、2.4km 见方、本地地形服务）
+  
+  | | 修前 | 修后 |
+  |---|---|---|
+  | 未编辑时的编辑区 | 整块贴图，颜色/高度与周围不同 | 完全透明，真实地球原样显示 |
+  | 编辑区边界 | 2.4km 矩形硬边 + 褐色裙边 | 只有编辑范围附近可见，向外渐隐 |
+  | 地形裁剪 | 固定挖整块 | 只挖编辑范围（+3 格），撤销即恢复 |
+  | 未编辑块面的明暗 | 比周围暗约 16% | 与周围影像一致（shade = 1） |
+  | 拾取 / 笔刷偏移 | — | 0~1 px |
+
 ## 1.4.0 - 2026-11-25
 
 ### 新增 / 变更（Added / Changed）

@@ -24,6 +24,7 @@ git add . && git commit -m "feat: xxx" && git push
 # 攒了 2~3 条之后（或到两周窗口）
 npm run release:version    # 发版前：合并所有 changeset，升版本号 + 写 CHANGELOG，并删掉这些文件
 git diff                   # 看一眼
+git add -A 
 git commit -am "chore(release): v1.3.0"
 git tag v1.3.0
 git push --follow-tags

@@ -1113,31 +1113,52 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
   const strokeLimit = Math.max(0, Math.min(500, options.strokeLimit ?? DEFAULT_STROKE_LIMIT))
 
   const mLng = metersPerDegLng(options.lat)
-  // 边缘棱角：用世界坐标噪声轻微掰动有效半径，坑口才有折角。
-  // 幅度比早期版本收敛很多 —— 让边缘「显形」的是标高平台，不是噪声。
+  // 边缘棱角：用世界坐标噪声掰动有效半径，坑口才有折角。
+  //
+  // 这里的关键是**降频**而不是减幅。当年为了让坑口不规则，用的是 0.55 倍半径的
+  // 波长 + ±30% 幅度：一圈上挤了十几个波瓣，相邻两列的边界能差几十米，深挖时
+  // 整面墙就被折成一褶一褶的竖棱（百叶窗 / 幕布）。后来改成压幅度，坑口又变回
+  // 一个规规矩矩的圆。
+  //
+  // 正确解法是波长拉长到接近笔刷直径：一圈上只有六七个缓坡波瓣，边界依然是
+  // 明显的星形，但相邻两列的缩进量之差不到一格，墙面就是一圈连续坡面。
   const roughness = mode === 'smooth' ? 0 : clamp(options.roughness ?? DEFAULT_BRUSH_ROUGHNESS, 0, 1)
   const cellM = Math.max(grid.dLat * METERS_PER_DEG_LAT, Math.abs(grid.dLng) * mLng) || 1
-  // 波长跟笔刷大小走，但不小于约 2.4 个格网：比格网还细就只剩噪点，看不出「棱角」
-  const lobeWave = Math.max(radius * 0.55, cellM * 2.4)
-  const grainWave = Math.max(radius * 0.38, cellM * 3.5)
+  // 波长跟笔刷大小走，但不小于约 6 个格网：比格网还细就只剩噪点，看不出「棱角」
+  const lobeWave = Math.max(radius * 0.9, cellM * 6)
   const rough = roughness > 0
 
-  // 过渡带（立面）宽度：跟着台阶落差走，最少也得有半个格网，不然网格表达不出来
-  const skirt = clamp(
-    Math.max(step * BRUSH_WALL_PER_STEP, cellM * 0.6),
-    cellM * 0.45,
-    radius * 0.35
-  )
-  // 平台半径：硬边比例压出来的核心圈，但必须给过渡带留出位置。
-  // 平滑模式没有「平台」，仍是整圆软衰减，只是过渡更缓。
-  const isSmooth = mode === 'smooth'
-  const coreR = isSmooth ? 0 : Math.min(radius * hardness, radius - skirt)
-  const outerR = isSmooth ? radius : coreR + skirt
-  const scanRadius = outerR * (1 + roughness * 0.55)
+  // 过渡带（立面）宽度的下限：最少要有一格多一点。
+  // 比一格还窄的话，网格上相邻两格就直接从坑底跳到坑沿，mesh 只能把它表示成
+  // 一面竖直的「窄幕布」，贴图顺着竖面拉成条纹 —— 看着就像编辑块被撕起来了。
+  //
+  // 这只对「浅挖」起作用：深挖的坡宽由下面按圈内真实落差算出来的 `skirt` 主导。
+  // 早期把下限给到 1.6 格，结果粗格网（40m 一格、220m 笔刷）上平台只剩 69%，
+  // 而笔刷给人的预期是「大半个圈都是平的」，所以收到 1.2 格。
+  const cellSpan = Math.max(1, cellM * 1.2)
 
-  const radiusDegLng = scanRadius / mLng
-  const radiusDegLat = scanRadius / METERS_PER_DEG_LAT
+  // 目标标高：显式给了就用它（整条笔画锁同一个标高，拖出来才是平底沟槽），
+  // 没给就按落笔处高度自动取「下一级 / 上一级」台阶。
+  const centerH = brushCenterHeight(grid, options.lng, options.lat)
+  let target = options.targetHeight
+  if (target == null || !Number.isFinite(target)) {
+    if (mode === 'lower') target = benchHeight(centerH - step, step, -1)
+    else if (mode === 'raise') target = benchHeight(centerH + step, step, 1)
+    else target = centerH
+  }
+  const targetHeight = target as number
+
+  // 圈内的最大高差（相对目标标高）—— 过渡带要摊多宽，取决于圈里**最需要搬动**
+  // 的那一格，而不是笔心那一格。
+  //
+  // 深挖时笔心本来就贴着目标标高（一笔只降一级），可圈边上可能还高出上百米：
+  // 实测一个 150m 笔刷，笔心 base 只比目标高 8m，圈边 base 却高 150m。
+  // 若按笔心那 8m 算 `skirt`，过渡带只有二十几米，那一两百米的高差就全被压进
+  // 最后一格 —— 网格只能把它画成一面竖直幕布，也就是「编辑块没贴上地形」的观感。
+  // 必须先扫一圈 `base` 拿到真实落差，再定坡宽。
   const b = grid.bounds
+  const radiusDegLng = radius / mLng
+  const radiusDegLat = radius / METERS_PER_DEG_LAT
   if (
     options.lng < b.minLng - radiusDegLng ||
     options.lng > b.maxLng + radiusDegLng ||
@@ -1152,19 +1173,60 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
   const row0 = Math.max(0, Math.floor((options.lat - radiusDegLat - b.minLat) / grid.dLat))
   const row1 = Math.min(grid.stride - 1, Math.ceil((options.lat + radiusDegLat - b.minLat) / grid.dLat))
 
-  // 目标标高：显式给了就用它（整条笔画锁同一个标高，拖出来才是平底沟槽），
-  // 没给就按落笔处高度自动取「下一级 / 上一级」台阶。
-  const centerH = brushCenterHeight(grid, options.lng, options.lat)
-  let target = options.targetHeight
-  if (target == null || !Number.isFinite(target)) {
-    if (mode === 'lower') target = benchHeight(centerH - step, step, -1)
-    else if (mode === 'raise') target = benchHeight(centerH + step, step, 1)
-    else target = centerH
+  let relief = 0
+  if (mode !== 'smooth') {
+    for (let row = row0; row <= row1; row++) {
+      const dz = (b.minLat + row * grid.dLat - options.lat) * METERS_PER_DEG_LAT
+      for (let col = col0; col <= col1; col++) {
+        const index = row * grid.stride + col
+        if (!grid.inside[index]) continue
+        const dx = (b.minLng + col * grid.dLng - options.lng) * mLng
+        if (dx * dx + dz * dz > radius * radius) continue
+        const d = Math.abs(grid.base[index] - targetHeight)
+        if (Number.isFinite(d) && d > relief) relief = d
+      }
+    }
   }
-  const targetHeight = target as number
+
+  // 坑（或台）的坡宽按圈内最大落差展开：落差越大，过渡带越宽，
+  // 挖出来的坑壁是一条坡，而不是一圈 90° 的褶皱。
+  //
+  // 系数 0.9 是个折中：按 1.2（名义 40°）算时，缓坡上稍微有点起伏就会吃掉半径的
+  // 30%，平台只剩 69%，笔刷看上去像个碗；而笔刷给人的预期是「大半个圈都是平的」。
+  // 0.9 让平台保住大半圈，坡面相应陡到 ~48°（深挖被 0.7 倍半径封顶后 ~55°），
+  // 仍是一条连续坡面 —— 网格能表达，也不会出现一格高的竖直幕布。
+  const depthBand = mode === 'smooth' ? 0 : relief * 0.9
+  const skirt = clamp(
+    Math.max(step * BRUSH_WALL_PER_STEP, cellSpan, depthBand),
+    cellSpan,
+    Math.max(cellSpan, radius * 0.7)
+  )
+  /**
+   * 一次落笔「向上垫」的最大高差（米）。
+   *
+   * 平台模型要求「圈内压到同一标高」，于是圈里比目标低得多的谷底会被抬起来。
+   * 给一个和笔刷尺寸挂钩的上限（0.6 倍半径），既保住「斜坡压平」的手感，
+   * 又不会在拖过山谷时凭空长出一块悬空的台子。
+   *
+   * 注意这个上限**只管「往上推」这一个方向**：把格子往下压只是挖，挖多深都不会
+   * 悬空，反而不该拦。早先不分方向地拦 `|target - h| > padLimit`，坑心比目标高
+   * 111.8m、而上限正好 108m，坑心就被整片跳过、只留下塌方坡一格格削出来的
+   * 台阶（步长恒等于 maxDrop = cellM·tan34°），看着像坑底套了一圈同心台地。
+   */
+  const padLimit = Math.max(radius * 0.6, cellM * 8)
+  // 平台半径：硬边比例压出来的核心圈，但必须给过渡带留出位置。
+  // 平滑模式没有「平台」，仍是整圆软衰减，只是过渡更缓。
+  const isSmooth = mode === 'smooth'
+  const coreR = isSmooth ? 0 : Math.min(radius * hardness, radius - skirt)
+  const outerR = isSmooth ? radius : coreR + skirt
+  // 圈外恒不可达（`outerK` 不超过 `outerR`，而 `outerR` 不超过 `radius`），
+  // 所以扫描范围就是笔刷半径本身，不必再多放。
+  const scanRadius = radius
 
   let changed = 0
   let gap = 0
+  /** 本笔里「相对原始地面」最大的挖 / 填量（米），用来决定坑沿要铺多宽的坡 */
+  let rimDepth = 0
   const seeds: number[] = []
 
   for (let row = row0; row <= row1; row++) {
@@ -1178,28 +1240,24 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
       const dist = Math.sqrt(dx * dx + dz * dz)
       if (dist > scanRadius) continue
 
-      let rEff = radius
+      let scale = 1
       if (rough) {
         // 采样用绝对经纬度换算的米，而不是「相对笔心的偏移」：
         // 前者图案固定在地图上，按住不动反复加深也不会抖；后者会跟着指针爬，看着像沸腾。
         const px = lng * mLng
         const pz = lat * METERS_PER_DEG_LAT
-        const n1 = valueNoise2(px / lobeWave, pz / lobeWave)
-        const lobe = (n1 - 0.5) * 2
-        const notch = 1 - Math.abs(lobe)
-        const grain = (valueNoise2(px / grainWave + 37.2, pz / grainWave + 11.9) - 0.5) * 2
-        // 只允许噪声把边界往里揉，不往外扩：`radius` 是用户看到的笔刷圈，
-        // 也是硬边界，圈外不能有任何改动。
-        rEff = Math.min(
-          radius,
-          radius * (1 + roughness * (0.3 * lobe - 0.16 * notch * notch + 0.22 * grain))
-        )
+        const lobe = (valueNoise2(px / lobeWave, pz / lobeWave) - 0.5) * 2
+        // 噪声按比例缩放**整个轮廓**（平台边 + 过渡带一起动），而不是只削最外圈。
+        // 只削外圈的话，平台边仍被 `coreR = 0.9R` 这个固定值锁死，坑口看上去还是圆。
+        // 常数项 -0.06 让平均值略小于 1：平均值不会被噪点带大，`radius` 始终是外边界。
+        scale = Math.min(1, 1 + roughness * (0.26 * lobe - 0.06))
       }
 
-      if (dist > rEff) continue
+      const outerK = outerR * scale
+      if (dist > outerK) continue
       // 核心圈恒 1（压到绝对平），过渡带线性收边（直的立面）：
       // 不用 smoothstep —— 它在两端斜率为 0，坑底和坑沿都会被抹圆，坡折就没了。
-      const w = isSmooth ? clamp(1 - dist / rEff, 0, 1) : clamp((outerR - dist) / skirt, 0, 1)
+      const w = isSmooth ? clamp(1 - dist / outerK, 0, 1) : clamp((outerK - dist) / (skirt * scale), 0, 1)
       if (w <= 0) continue
 
       const h = grid.current[index]
@@ -1209,10 +1267,43 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
         const avg = neighborAverage(grid, row, col)
         next = h + (avg - h) * clamp(w * 1.4, 0, 1)
       } else {
-        // 直接压到目标标高，不做「只挖不填」的方向裁剪：
-        // 一旦裁剪，斜坡上比目标更低的半边会留着原地面，平台就不再平了。
-        // 目标标高本身按「脚下高度 ± 一级」取，所以整笔仍是朝一个方向推进。
-        next = h + (targetHeight - h) * w * strength
+        // 朝目标标高推进，整片压平（斜坡上也压成水平面）。
+        //
+        // 这里的参考系是**原始地面** `base`，不是当前高度 `h`，这一点很关键：
+        //
+        //   `h + (target - h) * w` 这个式子的不动点是 `target` —— 只要 `w > 0`，
+        //   同一个地方反复落笔，整圈都会指数收敛到目标标高，连本该渐隐到自然地面
+        //   的那条过渡带也被一起吃掉。收完之后，边缘只剩下一格高的断崖
+        //   （实测：距笔心 134m 处还是坑底 1080，151m 处就是原地面 1230，
+        //   150m 的高差全压在 17m 的一格里），网格把它画出来就是一面竖直幕布，
+        //   也就是用户看到的「编辑块飘在地形上」。
+        //
+        //   换成 `base + (target - base) * w` 之后，不动点变成这条**最终形状**：
+        //   重复落笔是幂等的，`w` 定义的渐隐永久保留，圈内永远是碗状曲面，
+        //   圈沿与自然地面严丝合缝地接上。
+        //
+        // 每笔降一级的手感由 `target` 自己保证（`benchHeight(当前 - maxDelta)`），
+        // 所以换参考系不影响「按住持续下沉」。
+        const base = grid.base[index]
+        const shaped = Number.isFinite(base) ? base + (targetHeight - base) * w : targetHeight
+        // 别把「要抬多远」交给下面，先拦一道，理由见 `padLimit`：
+        // 一圈里既有山顶又有谷底时，把谷底抬到标高上会凭空长出一块悬空台子。
+        // 这里拦的是「本笔实际要往上垫多少」，比拿 `target - h` 估更准。
+        if (shaped - h > padLimit) continue
+        next = h + (shaped - h) * strength
+        // 关键的一钳：挖的地方只会更浅、填的地方只会更高，且都不越过 `shaped`。
+        //
+        // 少了这一钳，一笔 `h + (shaped - h) * strength` 会让「最后落的一笔」
+        // 说了算：拖过一段轨迹时，那些被前面的笔已经压到坑底的格子，会被后面
+        // 那一笔较小的 `w` 反推回 `shaped`（更浅），沟底就成了一道道横楞。
+        // 而若换回 `h + (target - h) * w`，不动点又变成 `target`，反复落笔会把
+        // 渐隐彻底吃掉，边缘塌成断崖（竖直幕布）。
+        //
+        // 这一钳同时满足两边：`shaped` 是每格的地板（挖）/ 天花板（填），
+        // 单调推进又保证重叠区域取「最深处」，沟底平、坑沿缓。
+        next = targetHeight <= base
+          ? Math.min(h, Math.max(next, shaped))
+          : Math.max(h, Math.min(next, shaped))
         // 核心圈的高度差就是「这一级压平了没有」，调用方据此逐级下沉
         if (w >= 1) {
           const d = Math.abs(next - targetHeight)
@@ -1232,6 +1323,11 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
         grid.current[index] = next
         changed++
         seeds.push(index)
+        // 这一格相对**原始地面**被挖掉 / 垫高了多少：坑沿要按这个量往外套坡。
+        // 用「本笔挖了多少」是不行的 —— 一笔只挖一级（几米），
+        // 但一百笔下来沿口可能是上百米，塌方坡的宽度必须跟累计量走。
+        const sinceBase = Math.abs(next - grid.base[index])
+        if (Number.isFinite(sinceBase) && sinceBase > rimDepth) rimDepth = sinceBase
       }
     }
   }
@@ -1241,18 +1337,25 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
   let minCol = col0
   let maxCol = col1
 
-  // 陡壁塌到安息角：抬升模式是往下填（土堆），其余是往上削（坑壁）
-  if (mode !== 'smooth' && seeds.length) {
+  // 陡壁塌到安息角 —— 只对**抬升**（堆土）做。
+  //
+  // 挖方这边撤掉了，原因是它和「圈内压平 + 硬边界」根本凑不到一起：
+  // 坑壁的坡度由 `skirt` 决定（约 48°，深挖被 0.7 倍半径封顶后约 55°），
+  // 本来就比 34° 的安息角陡。塌方坡于是想把它继续往外摊，可圈内已经没有空间了，
+  // 只能把高差一路推到笔刷边界，最后在圈边留下一道断崖 —— 实测一个 150m 笔刷
+  // 在 150m 落差的山坡上挖坑，坑沿被塌方坡多削掉 65m，圈边高差反而涨到 102m。
+  // 撤掉之后同一处只剩 37m（其中 14m 还是山体本身的自然坡度），坑壁是一条连续坡。
+  //
+  // 堆土保留：往坡上垫土时，坡脚往外铺一段碎石坡才像自然地貌，而且填方被
+  // `padLimit` 限着，不会出现「凭空长出台子」那种无限外扩。
+  if (mode === 'raise' && seeds.length) {
     const repose = Math.tan((poseDeg * Math.PI) / 180)
     const maxDrop = Math.max(0.05, cellM * repose)
-    // 塌方坡只铺到笔刷圈以内：`radius` 是光标圈画出来的范围，圈外的天然地形
-    // 不应被顺手削平。旧实现按「深度 ÷ tan(安息角)」往外铺、上限 3 倍半径，
-    // 小半径笔刷会明显刷到圈外很远的地方。
-    const talusDist = radius
-    // 深度按「原地形中心高度」算，而不是按本笔的落差：坑是一层层挖下去的，
-    // 塌方坡的遍数要跟**总深度**走。
-    const baseCenter = brushCenterHeight(grid, options.lng, options.lat, grid.base)
-    const depth = Math.abs(baseCenter - targetHeight)
+    // 塌方坡只在笔刷圈**内**收拾：`radius` 是用户看到的硬边界，圈外的地面
+    // 一点都不该变 —— 早先让它按「深度 ÷ tan(安息角)」铺到 3 倍半径，
+    // 小半径笔刷会肉眼可见地刷到圈外。
+    const neededRun = rimDepth / Math.max(0.2, repose)
+    const talusDist = Math.min(radius, Math.max(cellM * 2, neededRun + cellM))
     const spread = Math.ceil(talusDist / cellM) + 1
     const talus = relaxTalus(
       grid,
@@ -1269,8 +1372,9 @@ export function applyBrush(grid: TerrainGrid, options: TerrainBrushOptions): Ter
       options.lng,
       options.lat,
       mLng,
-      // 坡要往上铺到自然地面：一遍推进会有一格，按需要的格数给遍数，封顶 12 遍
-      Math.max(2, Math.min(12, Math.ceil(depth / maxDrop) + 1))
+      // 坡要往上铺到自然地面：一遍只推进一格，按需要的格数给遍数。
+      // 封顶 40 遍：160m 的落差按 34° 摊开大约 13 格，留够余量。
+      Math.max(2, Math.min(40, Math.ceil(rimDepth / maxDrop) + 1))
     )
     if (talus.changed > 0) {
       changed += talus.changed

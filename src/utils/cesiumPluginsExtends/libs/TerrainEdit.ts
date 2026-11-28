@@ -400,13 +400,64 @@ export interface TerrainEditModuleOptions {
   /** 默认线条颜色 */
   color?: string
   /**
-   * 编辑块裙边的向下深度（米），默认 `0`（关闭）。
+   * 编辑块边界裙边的基础深度（米），默认 `0`（关闭）。
    *
-   * 块边界高度来自采样地形，相机换 LOD 后实时地形可能略低，边缘会露缝。
-   * 开启后沿边界垂直向下延伸；平整时埋在地形下看不见，露缝时填住。
-   * 注意：落差大的地方会露出一面土色侧壁，视觉上可能显得「突出」，按需谨慎开启（如 60）。
+   * 编辑块现在会把边缘逐点对齐到当前画面里的地形（见 `followTerrain`），
+   * 块面和地形直接重合，不再需要一圈土色侧壁去兜缝。
+   * 只有特殊场景（例如外部地形服务不可用、拿不到当前渲染高度）才建议显式传正数。
    */
   skirtDepth?: number
+  /**
+   * 编辑块整体下沉的距离（米），默认 `0`。
+   *
+   * 早期用整体下沉来把边缘藏进地形，但下沉会在裁剪洞边留下一道台阶，
+   * 低角度下反而更明显。现在默认不下沉，改用「边缘逐点对齐当前渲染地形」
+   * 来消除接缝；保留这个选项只是为了兼容旧调用。
+   */
+  settle?: number
+  /**
+   * 是否让编辑块边缘跟随当前**已渲染**地形自动对齐，默认 `true`
+   * （区域模式现在只显示真正编辑过的范围，不再需要整块对齐；该选项主要用于手绘多边形模式）。
+   *
+   * 编辑块本体的高度来自与视角无关的地形采样，相机怎么旋转 / 翻滚 / 缩放，
+   * 块体的形状都不会变。但屏幕上显示的地形会随距离切换 LOD，和真值差一两米；
+   * 开启后，相机停稳时沿边界采样当前渲染高度，把块面边缘逐点对齐过去，
+   * 接缝、台阶和裙边都不会再出现。
+   */
+  followTerrain?: boolean
+  /**
+   * 边缘对齐的采样间隔（毫秒），默认 `200`。
+   *
+   * 只在相机停稳、地形瓦片加载完成后才重算，移动过程中沿用上一次的对齐量，
+   * 避免旋转时每帧扫一遍边界把主线程拖住。
+   */
+  followInterval?: number
+  /**
+   * 相机钻到地表以下时是否隐藏编辑块，默认 `true`。
+   *
+   * Cesium 的地形是单面渲染，相机翻到地面以下时原本就看不到地形；如果编辑块仍
+   * 双面渲染，就会像一张悬在空中的毯子，看起来和地图「脱开」。隐藏后与地形表现一致。
+   */
+  hideWhenUnderground?: boolean
+  /**
+   * 是否在编辑区下方「挖掉」Cesium 原地形，默认 `true`。
+   *
+   * 编辑块是一张独立的 three 网格，如果不把底下的 Cesium 地表去掉，同一个位置
+   * 就有两层地表：一层在原地形高度、一层在块面高度。相机压低视角时，原地形会
+   * 从块面里「穿」出来，看起来就像编辑区贴在地图上、没有和地图融为一体。
+   *
+   * 开启后按编辑区范围给 `globe.clippingPolygons` 设一个内缩一圈的多边形
+   * （内缩量等于边缘羽化宽度），块面边缘的渐隐带仍压在保留的地形上，
+   * 中间则只剩编辑块这一层地表。需要 WebGL2；拿不到裁剪能力时自动跳过。
+   */
+  cutTerrain?: boolean
+  /**
+   * 裁剪多边形相对编辑区内缩的距离（米），默认取 `feather` 的值。
+   *
+   * 内缩是为了让编辑块最外圈的渐隐带仍然盖在真实地形上：羽化带需要底下的地形
+   * 才能「化」进去，若一直挖到块边界，渐隐带会变成透明的洞。
+   */
+  cutInset?: number
 }
 
 /**
@@ -737,6 +788,56 @@ export function createTerrainEditModule() {
   const DEFAULT_SEGMENTS = 64
   const MAX_HISTORY = 20
   const DRAFT_SOURCE_NAME = 'cesium-dev-kit-terrain-edit'
+  /** 边缘对齐的默认重算间隔（毫秒） */
+  const DEFAULT_FOLLOW_INTERVAL = 200
+  /** 相机停下多久之后才重算边缘对齐：留出瓦片精化的时间，避免刚停下就按旧 LOD 定高度 */
+  const SEAM_SETTLE_MS = 320
+  /** 边界上每隔几个顶点采一次渲染高度，中间线性过渡（160 段的块约 220 次采样） */
+  const SEAM_SAMPLE_STRIDE = 3
+  /**
+   * 裙边默认基础深度（米）。
+   *
+   * 默认 **0（关闭）**：编辑块现在按「当前画面里的地形」逐点对齐（见 `_refreshSeam`），
+   * 边缘直接和地形重合，不再需要一圈土色侧壁去兜缝。显式传正数仍会生成裙边，
+   * 但那是给特殊场景的兜底，正常使用不需要。
+   */
+  const DEFAULT_SKIRT_DEPTH = 0
+  /** 采到的「当前渲染高度」偏离真实高度超过这个值就当它不可信（米） */
+  const SEAM_TRUST_GAP = 600
+  /** 采样值的绝对合理区间：超出这个范围一律当成采样失败 */
+  const HEIGHT_ABS_MAX = 9000
+  const HEIGHT_ABS_MIN = -1500
+  /**
+   * 对齐量的单次上限（米）。
+   *
+   * 正常情况下块面和当前渲染地形只差一两米；上限只用来兜「瓦片还没加载完」的
+   * 极端情况，避免把块面一下拉出几十米的深沟。
+   */
+  const STITCH_MAX = 30
+  /**
+   * 对齐量从裁剪洞边往块内衰减的格数。
+   *
+   * 洞边必须严丝合缝（衰减 0），但块面内部是编辑后的真实高度，不应该被
+   * 当前 LOD 拖着走；给 8 格过渡，洞边到内部之间就不会出现硬折。
+   */
+  const FIT_FADE_CELLS = 8
+  /** 「被编辑过」的判定阈值（米）：低于这个高差视为没动过 */
+  const EDIT_EPS = 0.05
+  /** 编辑区出现后，外圈再保持不透明的一格数（保证裁剪洞边被完全盖住） */
+  const EDIT_PLATEAU_CELLS = 1
+  /** 编辑范围向外额外扩几格再裁：让裁剪边落在未编辑的原始地面上，避免洞边高差 */
+  const EDIT_PAD_CELLS = 3
+  /** 从不透明边缘向外渐隐的格数 */
+  const EDIT_FADE_CELLS = 3
+  /** 非区域模式下，对齐量向内扩散的圈数 */
+  const STITCH_SPREAD_PASSES = 10
+  /** 每向内扩散一圈的衰减 */
+  const STITCH_DECAY = 0.7
+
+  const nowMs = () =>
+    typeof performance !== 'undefined' && performance.now
+      ? performance.now()
+      : Date.now()
 
   const TerrainEdit = function (
     this: TerrainEditInstance & Record<string, any>,
@@ -826,6 +927,54 @@ export function createTerrainEditModule() {
     this._handler = null
     this._draftSource = null
     this._disposed = false
+    // 编辑块**本体**的高度来自与视角无关的地形采样（_sampleHeights），
+    // 相机怎么旋转 / 翻滚都不会改变它，所以块体不会「偏离地图」。
+    // 下面这套逐帧逻辑只负责两件事：
+    //   1) 相机钻到地表以下时隐藏块体，避免看到一张悬空的毯子；
+    //   2) 按当前渲染地形把块面边缘逐点对齐，把 LOD 造成的接缝消掉。
+    this._followTerrain = this._options.followTerrain !== false
+    this._followInterval = Math.max(
+      30,
+      Number(this._options.followInterval) || DEFAULT_FOLLOW_INTERVAL
+    )
+    this._skirtBaseDepth =
+      this._options.skirtDepth == null
+        ? DEFAULT_SKIRT_DEPTH
+        : Math.max(0, Number(this._options.skirtDepth) || 0)
+    // 块面整体下沉量：先把用户给的值记下来，等网格建好再按格网大小补默认值
+    // （见 `_resolveSink`）。它只影响「画在哪里」，不影响高度场本身。
+    this._sinkOption = this._options.settle == null ? null : Math.max(0, Number(this._options.settle) || 0)
+    this._sinkDepth = this._sinkOption == null ? 0 : this._sinkOption
+    // 边缘缝合：每个顶点「额外再往下让多少」，由 _refreshSeam 按当前渲染地形算
+    this._stitch = null
+    this._stitchDirty = false
+    // 编辑区域掩膜：只有真正被刷动过的格网附近才显示 three 网格，
+    // 其余部分保持透明，让 Cesium 的真实地球露出来（见 _refreshEditRegion）。
+    this._editAlpha = null
+    this._editActive = false
+    this._editRange = null
+    this._editClipBounds = null
+    this._editClipSig = ''
+    this._hideWhenUnderground = this._options.hideWhenUnderground !== false
+    this._followUninstall = null
+    this._tileProgressRemove = null
+    this._seamLastAt = 0
+    this._seamDeadline = 0
+    this._seamDirty = true
+    this._followCamera = null
+    this._followCarto = null
+    this._underground = false
+    // 边界裙边：顶点索引对 + 每个边界顶点当前的裙边深度
+    this._skirtEdges = null
+    this._skirtVerts = null
+    this._skirtDepths = null
+    this._skirtMesh = null
+    // 挖掉编辑区底下的 Cesium 原地形（globe.clippingPolygons）
+    this._cutTerrain = this._options.cutTerrain !== false
+    this._cutInset = this._options.cutInset == null ? null : Math.max(0, Number(this._options.cutInset) || 0)
+    this._clip = null
+    this._clipWarned = false
+    this._depthHinted = false
 
     attachDestroy(this)
     registerCleanup(this, () => this.dispose())
@@ -856,6 +1005,532 @@ export function createTerrainEditModule() {
       const scene = this._getScene()
       const world = scene.positionToWorldVector([lng, lat, height])
       return scene.childrenGroup.worldToLocal(world.clone())
+    },
+
+    /**
+     * 取「当前画面已经渲染出来」的地形高度（米）。
+     *
+     * `globe.getHeight()` 读的是当前 LOD 的 renderedMesh，和屏幕上看到的地形一致，
+     * 但**只能用来算边缘对齐量**：它会随视角变化，绝不能拿它当编辑块的基准面。
+     * 它返回 `undefined` 而不是 `null`，瓦片没建好时恒为 `undefined`；
+     * 页面上取到几十公里 / 接近 0 的离谱值也时有发生（粗 LOD 的 renderedMesh），
+     * 所以这里统一按「不合理就当没采到」处理。
+     * @private
+     */
+    _sampleRenderedHeight(
+      this: TerrainEditInstance & Record<string, any>,
+      lng: number,
+      lat: number
+    ): number | null {
+      const scene = this._viewer && this._viewer.scene
+      const globe = scene && scene.globe
+      if (!globe || typeof globe.getHeight !== 'function') return null
+      // `_levelZeroTiles` 还没建立时 getHeight 一定拿不到值
+      const surface = (globe as any)._surface
+      if (!surface || !(surface as any)._levelZeroTiles) return null
+      if (!this._followCarto) this._followCarto = new Cesium.Cartographic()
+      const carto = Cesium.Cartographic.fromDegrees(lng, lat, 0, this._followCarto)
+      const height = globe.getHeight(carto)
+      if (typeof height !== 'number' || !Number.isFinite(height)) return null
+      if (height > HEIGHT_ABS_MAX || height < HEIGHT_ABS_MIN) return null
+      return height
+    },
+
+    /**
+     * 安装「贴合地表」的逐帧回调（幂等）。
+     *
+     * 只做两件事：相机钻到地表以下时隐藏块体、相机停稳后把块面边缘对齐到当前地形。
+     * 编辑块本体的基准面**不随视角改变**：只在边缘那一圈叠加显示修正量，
+     * 避免旋转 / 翻滚时整块跟着 LOD 一起抖。
+     * @private
+     */
+    _ensureFollowLoop(this: TerrainEditInstance & Record<string, any>) {
+      if (this._disposed || this._followUninstall) return this
+      let scene: any = null
+      try {
+        scene = this._getScene()
+      } catch (err) {
+        return this
+      }
+      if (!scene || typeof scene.addFrameCallback !== 'function') return this
+      // 回调里拿到的 time 和 performance.now() 同一个时钟；
+      // 放在 three 融合帧的最前面执行，本帧就能用新的对齐结果绘制。
+      this._followUninstall = scene.addFrameCallback((time: number) => {
+        this._onTerrainFrame(time)
+      })
+      this._installTileProgress()
+      this._seamDirty = true
+      this._seamDeadline = nowMs() + SEAM_SETTLE_MS
+      return this
+    },
+
+    /**
+     * 监听地形瓦片加载进度：一批瓦片加载完成（队列归零）后补算一次边缘对齐。
+     *
+     * 相机旋转 / 翻滚时 LOD 会换瓦片，地形高低的变化正好发生在加载完成的时刻；
+     * 监听这个事件比每帧轮询「是否加载完」更省，也不会漏掉精化。
+     * @private
+     */
+    _installTileProgress(this: TerrainEditInstance & Record<string, any>) {
+      if (this._tileProgressRemove) return this
+      const globe = this._viewer && this._viewer.scene && this._viewer.scene.globe
+      const event = globe && globe.tileLoadProgressEvent
+      if (!event || typeof event.addEventListener !== 'function') return this
+      const remove = event.addEventListener((queued: number) => {
+        if (this._disposed || !this._followTerrain) return
+        if (queued > 0) return
+        this._seamDirty = true
+        this._seamDeadline = nowMs() + SEAM_SETTLE_MS
+      })
+      this._tileProgressRemove = typeof remove === 'function' ? remove : null
+      return this
+    },
+
+    /**
+     * 每帧检查：相机是否停稳、地形是否已加载完，需要时把边缘重新对齐到当前地形。
+     *
+     * 编辑块本体的高度来自与视角无关的地形采样（见 `_sampleHeights`），
+     * 相机旋转 / 翻滚 / 缩放时它在世界坐标里不会跟着 LOD 变形；这里只按
+     * 当前画面里的地形修正**边缘那一圈显示高度**，让接缝消失。
+     * @private
+     */
+    _onTerrainFrame(this: TerrainEditInstance & Record<string, any>, time?: number) {
+      if (this._disposed) return
+      const grid = this._grid
+      const root = this._root
+      if (!grid || !root) return
+      const now =
+        typeof time === 'number' && Number.isFinite(time) ? time : nowMs()
+
+      // 相机翻到编辑面以下时隐藏，避免出现「一块悬空毯子」的观感
+      this._updateTerrainVisibility()
+
+      // 涂抹中不对齐：这一笔还没结束，块面高度每帧都在变，抬笔后再统一算
+      if (this._stroking) {
+        this._seamDirty = true
+        return
+      }
+      if (!this._followTerrain) return
+
+      if (this._cameraMoved()) this._seamDeadline = now + SEAM_SETTLE_MS
+      // 相机还在动：沿用上一次的结果，等停稳再算，避免旋转时每帧扫边界
+      if (now < this._seamDeadline) return
+      // 这里**不等** `tilesLoaded`：我们要对齐的正是「此刻画面上的地形」，
+      // 而 `getHeight` 读的就是当前渲染的网格。停稳就先对一次，
+      // 瓦片精化后 `tileLoadProgressEvent` 会自动再来一次。
+      if (!this._seamDirty) return
+      if (now - this._seamLastAt < this._followInterval) return
+      this._seamLastAt = now
+      // 采样失败（瓦片还没建好，`getHeight` 恒为 undefined）时不要把标记清掉，
+      // 否则这一轮没对齐就再也不会重试，边缘会一直悬着
+      this._seamDirty = !this._refreshSeam()
+    },
+
+    /**
+     * 相机位置 / 朝向 / up 是否变化（旋转、翻滚都会体现在 up 上）。
+     * @private
+     */
+    _cameraMoved(this: TerrainEditInstance & Record<string, any>) {
+      const camera = this._viewer && this._viewer.camera
+      if (!camera) return false
+      const p = camera.position
+      const d = camera.direction
+      const u = camera.up
+      const prev = this._followCamera
+      const next = {
+        px: p.x, py: p.y, pz: p.z,
+        dx: d.x, dy: d.y, dz: d.z,
+        ux: u.x, uy: u.y, uz: u.z
+      }
+      this._followCamera = next
+      if (!prev) return true
+      // 米级位移 / 方向微小变化都算移动；阈值足够小，能捕捉到缓慢的倾斜和翻滚
+      const moved =
+        Math.abs(next.px - prev.px) > 0.01 ||
+        Math.abs(next.py - prev.py) > 0.01 ||
+        Math.abs(next.pz - prev.pz) > 0.01 ||
+        Math.abs(next.dx - prev.dx) > 1e-7 ||
+        Math.abs(next.dy - prev.dy) > 1e-7 ||
+        Math.abs(next.dz - prev.dz) > 1e-7 ||
+        Math.abs(next.ux - prev.ux) > 1e-7 ||
+        Math.abs(next.uy - prev.uy) > 1e-7 ||
+        Math.abs(next.uz - prev.uz) > 1e-7
+      return moved
+    },
+
+    /**
+     * 把编辑块边缘对齐到「当前画面里的地形」。
+     *
+     * 编辑块本体的高度来自与视角无关的 `sampleTerrainMostDetailed`，而屏幕上
+     * 的地形是随距离切换的 LOD：同一座山，粗 LOD 会比真值低一两米甚至几十米。
+     * 块面如果按真值画，就会比看到的地形高出一截，边缘要么露出一圈土色裙边，
+     * 要么在裁剪洞边留下一道台阶。
+     *
+     * 这里沿**裁剪洞边**（区域模式）或**编辑块边界**（多边形模式）采样
+     * `globe.getHeight()`，得到「真值 - 当前渲染值」的差值，再把它作为每个顶点
+     * 的显示修正量：洞边修正 100%，向块内按 `FIT_FADE_CELLS` 格渐隐到 0。
+     *
+     * 效果是：块面边缘和真实地形**逐点重合**，没有裙边、没有台阶；
+     * 块面内部仍是编辑后的真实高度，不会被 LOD 拖着走。
+     * @private
+     */
+    _refreshSeam(this: TerrainEditInstance & Record<string, any>) {
+      const grid: TerrainGrid | null = this._grid
+      const xz: Float32Array | null = this._localXZ
+      const up = this._up
+      const surface = this._surface
+      if (!grid || !xz || !up || !surface) return false
+      const stitch = this._ensureStitch(grid)
+      let anySample = false
+
+      // 区域模式已经改成「只显示编辑范围」：裁剪洞边就是编辑范围外扩一格，
+      // 网格在洞边 alpha=1 已经完全盖住，不需要再做整块内缩的环形对齐。
+      // 没有编辑时连 getHeight 采样都省掉，整块保持透明、真实地球原样显示。
+      if (this._areaMode) {
+        stitch.fill(0)
+        this._updateSurfacePositions()
+        surface.geometry.computeVertexNormals()
+        this._updateSurfaceUVs(surface.geometry)
+        surface.geometry.computeBoundingSphere()
+        this._buildContours()
+        this._stitchDirty = true
+        return true
+      }
+
+      if (this._areaMode && this._clip) {
+        anySample = this._fitAreaEdge(grid, stitch)
+      } else {
+        anySample = this._fitPolygonBoundary(grid, stitch)
+      }
+      if (!anySample) return false
+
+      // 块面位置、法线、贴图 UV、等高线都跟着修正量重算。
+      // 这里刻意不走 `_updateSurface()`：它会把 `_seamDirty` 重新点着，
+      // 于是每 320ms 又跑一遍本函数，永远停不下来。
+      this._updateSurfacePositions()
+      surface.geometry.computeVertexNormals()
+      this._updateSurfaceUVs(surface.geometry)
+      surface.geometry.computeBoundingSphere()
+      this._buildContours()
+      // 显式开启了裙边（`skirtDepth > 0`）时，顶边跟着块面一起走
+      if (this._skirtMesh) this._updateSkirtGeometry(grid, stitch)
+      this._stitchDirty = true
+      return true
+    },
+
+    /**
+     * 取某个格网顶点的「当前渲染地形高度」，失败返回 null。
+     * @private
+     */
+    _renderedAt(
+      this: TerrainEditInstance & Record<string, any>,
+      grid: TerrainGrid,
+      index: number
+    ): number | null {
+      const row = Math.floor(index / grid.stride)
+      const col = index % grid.stride
+      const lng = grid.bounds.minLng + col * grid.dLng
+      const lat = grid.bounds.minLat + row * grid.dLat
+      const rendered = this._sampleRenderedHeight(lng, lat)
+      if (rendered === null) return null
+      const ref = grid.base[index]
+      // 采到的值必须和真实地形对得上：粗 LOD 偶尔会给出接近 0 / 几十公里的数，
+      // 照它对齐会在块边上拉出几百米的深沟
+      if (!Number.isFinite(ref) || Math.abs(rendered - ref) > SEAM_TRUST_GAP) return null
+      return rendered
+    },
+
+    /**
+     * 区域模式：沿裁剪洞边采样，把差值铺满外圈并往块内渐隐。
+     *
+     * 洞边是块面和 Cesium 地形真正交接的地方，必须严丝合缝；块边界比洞边
+     * 还外扩了一圈（`cutInset`），那一圈直接沿用洞边的修正量，块面就正好
+     * 压在真实地形上，既不会浮起来也不会陷下去。
+     * @private
+     */
+    _fitAreaEdge(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid, stitch: Float32Array) {
+      const stride = grid.stride
+      const segments = grid.segments
+      const cellM = grid.cellSize > 0 ? grid.cellSize : 1
+      const inset = Math.max(1, Math.round(this._clipInsetMeters() / cellM))
+      const r0 = Math.max(0, Math.min(segments - 2, inset))
+      const r1 = Math.min(segments, Math.max(r0 + 2, segments - inset))
+      const c0 = Math.max(0, Math.min(segments - 2, inset))
+      const c1 = Math.min(segments, Math.max(c0 + 2, segments - inset))
+      if (r1 - r0 < 2 || c1 - c0 < 2) return false
+
+      // 洞边一圈顶点，按顺时针排成一条闭合的折线
+      const ring: number[] = []
+      for (let c = c0; c <= c1; c++) ring.push(r0 * stride + c)
+      for (let r = r0 + 1; r <= r1; r++) ring.push(r * stride + c1)
+      for (let c = c1 - 1; c >= c0; c--) ring.push(r1 * stride + c)
+      for (let r = r1 - 1; r > r0; r--) ring.push(r * stride + c0)
+      const n = ring.length
+      if (n < 4) return false
+
+      const corr = new Float32Array(n)
+      const known = new Uint8Array(n)
+      let any = false
+      for (let k = 0; k < n; k += Math.max(1, SEAM_SAMPLE_STRIDE)) {
+        const i = ring[k]
+        const rendered = this._renderedAt(grid, i)
+        if (rendered === null) continue
+        let delta = grid.current[i] - rendered
+        if (delta > STITCH_MAX) delta = STITCH_MAX
+        else if (delta < -STITCH_MAX) delta = -STITCH_MAX
+        corr[k] = delta
+        known[k] = 1
+        any = true
+      }
+      if (!any) return false
+
+      // 采样点之间用前后最近的有效值补上（环是闭合的，扫两遍）
+      this._fillRing(corr, known)
+
+      const ringCorr = new Float32Array(grid.vertexCount)
+      for (let k = 0; k < n; k++) ringCorr[ring[k]] = corr[k]
+      const ringAt = (r: number, c: number) => ringCorr[r * stride + c]
+
+      for (let row = 0; row <= segments; row++) {
+        for (let col = 0; col <= segments; col++) {
+          if (row < r0 || row > r1 || col < c0 || col > c1) {
+            // 洞边以外（含块最外圈）：沿用最近洞边点的修正量，完全贴合当前地形
+            const rr = row < r0 ? r0 : row > r1 ? r1 : row
+            const cc = col < c0 ? c0 : col > c1 ? c1 : col
+            stitch[row * stride + col] = ringAt(rr, cc)
+          } else {
+            // 洞边以内：取到四条洞边的距离，按反距离加权得到该点的修正量，
+            // 再按最近一条边的深度渐隐到 0。不能直接读 ringCorr[row][col]——
+            // 内部顶点不在环上，值为 0，那样只会在洞边留下一格宽的硬折。
+            const dTop = row - r0
+            const dBottom = r1 - row
+            const dLeft = col - c0
+            const dRight = c1 - col
+            const depth = Math.min(dTop, dBottom, dLeft, dRight)
+            if (depth === 0) {
+              // 正落在洞边上的顶点：修正量必须是 100%，和裁剪边严丝合缝
+              stitch[row * stride + col] = ringAt(row, col)
+              continue
+            }
+            const fade = Math.max(0, 1 - depth / FIT_FADE_CELLS)
+            if (fade <= 0) {
+              stitch[row * stride + col] = 0
+              continue
+            }
+            const wTop = 1 / (dTop + 1)
+            const wBottom = 1 / (dBottom + 1)
+            const wLeft = 1 / (dLeft + 1)
+            const wRight = 1 / (dRight + 1)
+            const wSum = wTop + wBottom + wLeft + wRight
+            const edge =
+              (ringAt(r0, col) * wTop +
+                ringAt(r1, col) * wBottom +
+                ringAt(row, c0) * wLeft +
+                ringAt(row, c1) * wRight) /
+              wSum
+            stitch[row * stride + col] = edge * fade
+          }
+        }
+      }
+      return true
+    },
+
+    /**
+     * 多边形模式：沿编辑块外边界采样，差值向块内扩散。
+     * @private
+     */
+    _fitPolygonBoundary(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid, stitch: Float32Array) {
+      const ring = this._collectBoundaryVerts(grid)
+      const n = ring.length
+      if (n < 4) return false
+      const corr = new Float32Array(n)
+      const known = new Uint8Array(n)
+      let any = false
+      for (let k = 0; k < n; k += Math.max(1, SEAM_SAMPLE_STRIDE)) {
+        const i = ring[k]
+        const rendered = this._renderedAt(grid, i)
+        if (rendered === null) continue
+        let delta = grid.current[i] - rendered
+        if (delta > STITCH_MAX) delta = STITCH_MAX
+        else if (delta < -STITCH_MAX) delta = -STITCH_MAX
+        corr[k] = delta
+        known[k] = 1
+        any = true
+      }
+      if (!any) return false
+      this._fillRing(corr, known)
+      for (let k = 0; k < n; k++) stitch[ring[k]] = corr[k]
+      this._spreadSigned(grid, stitch)
+      return true
+    },
+
+    /**
+     * 把环上未采样的点补成前后最近的有效值（首尾相接）。
+     * @private
+     */
+    _fillRing(this: TerrainEditInstance & Record<string, any>, values: Float32Array, known: Uint8Array) {
+      const n = values.length
+      if (!n) return
+      let last = NaN
+      for (let k = 0; k < n * 2; k++) {
+        const i = k % n
+        if (known[i]) last = values[i]
+        else if (!Number.isNaN(last)) {
+          values[i] = last
+          known[i] = 1
+        }
+      }
+      // 整圈都没有有效值时保持 0
+    },
+
+    /**
+     * 把边界修正量按「绝对值最大」向块内扩散，正负都保留。
+     * @private
+     */
+    _spreadSigned(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid, values: Float32Array) {
+      const stride = grid.stride
+      const inside = grid.inside
+      let scratch: Float32Array = this._stitchScratch
+      if (!scratch || scratch.length !== values.length) {
+        scratch = new Float32Array(values.length)
+        this._stitchScratch = scratch
+      }
+      for (let pass = 0; pass < STITCH_SPREAD_PASSES; pass++) {
+        let changed = false
+        for (let r = 0; r < stride; r++) {
+          for (let c = 0; c < stride; c++) {
+            const i = r * stride + c
+            if (!inside[i]) {
+              scratch[i] = values[i]
+              continue
+            }
+            let best = values[i]
+            const consider = (j: number) => {
+              const v = values[j] * STITCH_DECAY
+              if (Math.abs(v) > Math.abs(best)) best = v
+            }
+            if (c > 0) consider(i - 1)
+            if (c + 1 < stride) consider(i + 1)
+            if (r > 0) consider(i - stride)
+            if (r + 1 < stride) consider(i + stride)
+            scratch[i] = best
+            if (Math.abs(best) > Math.abs(values[i]) + 1e-4) changed = true
+          }
+        }
+        values.set(scratch)
+        if (!changed) break
+      }
+      return this
+    },
+
+    /**
+     * 收集编辑块外边界顶点（渲染单元与未渲染单元之间的边），按行扫描顺序。
+     * @private
+     */
+    _collectBoundaryVerts(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid): number[] {
+      const stride = grid.stride
+      const segments = grid.segments
+      const renderedCell = (row: number, col: number) => {
+        if (row < 0 || col < 0 || row >= segments || col >= segments) return false
+        const a = row * stride + col
+        return !!(grid.inside[a] && grid.inside[a + 1] && grid.inside[a + stride] && grid.inside[a + stride + 1])
+      }
+      const seen = new Set<number>()
+      for (let row = 0; row < segments; row++) {
+        for (let col = 0; col < segments; col++) {
+          if (!renderedCell(row, col)) continue
+          const a = row * stride + col
+          const b = a + 1
+          const c = a + stride
+          const d = c + 1
+          if (!renderedCell(row - 1, col)) { seen.add(a); seen.add(b) }
+          if (!renderedCell(row, col + 1)) { seen.add(b); seen.add(d) }
+          if (!renderedCell(row + 1, col)) { seen.add(c); seen.add(d) }
+          if (!renderedCell(row, col - 1)) { seen.add(a); seen.add(c) }
+        }
+      }
+      return Array.from(seen)
+    },
+
+    /**
+     * 显式开启裙边时，把顶边贴到当前块面（含对齐修正），底边保持基础深度。
+     * @private
+     */
+    _updateSkirtGeometry(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid, stitch: Float32Array) {
+      const skirt = this._skirtMesh
+      const edges: Int32Array | null = this._skirtEdges
+      const verts: number[] | null = this._skirtVerts
+      const depths: Float32Array | null = this._skirtDepths
+      const xz: Float32Array | null = this._localXZ
+      const up = this._up
+      if (!skirt || !edges || !verts || !depths || !xz || !up) return this
+      const posAttr = skirt.geometry.getAttribute('position')
+      if (!posAttr) return this
+      const arr = posAttr.array as Float32Array
+      const sink = this._sinkDepth || 0
+      const topHeight = (i: number) => grid.current[i] - sink - stitch[i]
+      let cursor = 0
+      const write = (i: number, h: number) => {
+        arr[cursor++] = xz[i * 3] + up.x * h
+        arr[cursor++] = xz[i * 3 + 1] + up.y * h
+        arr[cursor++] = xz[i * 3 + 2] + up.z * h
+      }
+      for (let e = 0; e < edges.length; e += 2) {
+        const v0 = edges[e]
+        const v1 = edges[e + 1]
+        const h0 = topHeight(v0)
+        const h1 = topHeight(v1)
+        write(v0, h0)
+        write(v1, h1)
+        write(v1, h1 - depths[v1])
+        write(v0, h0)
+        write(v1, h1 - depths[v1])
+        write(v0, h0 - depths[v0])
+      }
+      posAttr.needsUpdate = true
+      skirt.geometry.computeBoundingSphere()
+      return this
+    },
+
+    /**
+     * 相机钻进编辑面以下时隐藏 three 网格，和 Cesium 地形的单面渲染表现一致。
+     * @private
+     */
+    _updateTerrainVisibility(this: TerrainEditInstance & Record<string, any>) {
+      const root = this._root
+      if (!root) return
+      if (!this._hideWhenUnderground || !this._grid) {
+        if (!root.visible) root.visible = true
+        this._underground = false
+        return
+      }
+      const camera = this._viewer && this._viewer.camera
+      const globe = this._viewer && this._viewer.scene && this._viewer.scene.globe
+      if (!camera || !globe) return
+      if (!this._followCarto) this._followCarto = new Cesium.Cartographic()
+      const carto = Cesium.Cartographic.fromCartesian(
+        camera.positionWC,
+        globe.ellipsoid,
+        this._followCarto
+      )
+      if (!carto) return
+      const lng = Cesium.Math.toDegrees(carto.longitude)
+      const lat = Cesium.Math.toDegrees(carto.latitude)
+      const b = this._grid.bounds
+      // 只在编辑块自身的范围内做判断：相机钻进旁边山体时，
+      // 编辑块仍可能从山体另一侧露出来，不该整块隐藏。
+      if (lng < b.minLng || lng > b.maxLng || lat < b.minLat || lat > b.maxLat) {
+        if (!root.visible) root.visible = true
+        this._underground = false
+        return
+      }
+      const surface = this._heightAt(lng, lat)
+      if (!Number.isFinite(surface)) return
+      const below = carto.height < surface - (this._sinkDepth || 0) - 0.5
+      if (below !== this._underground) {
+        this._underground = below
+        root.visible = !below
+      }
     },
 
     /**
@@ -1142,62 +1817,226 @@ export function createTerrainEditModule() {
     },
 
     /**
-     * 采样格网顶点的真实地形高度
+     * 采样格网顶点的真实地形高度。
+     *
+     * 这里是「编辑块会不会偏离地图」的关键：**必须用与视角无关的数据源**。
+     *
+     * `globe.getHeight()` 读的是当前 LOD 的 renderedMesh，同一块山地在不同视角下
+     * 会返回不同的高度（缩远一点、跨过一条瓦片边界，数值能差几十上百米，瓦片没
+     * 精化时甚至给出几十公里或接近 0 的离谱值）。拿它当基准面，结果就是：
+     * 相机一转，块体跟着 LOD 变形，边缘垂下一整面「竖直幕布」，看起来和地图脱开。
+     *
+     * 所以基准面统一用 `sampleTerrainMostDetailed`（与相机无关，同一经纬度永远
+     * 得到同一个高度），采样不到的少数量再走低级别兜底，最后剔除离谱值并补洞。
+     * 这样无论怎么旋转 / 翻滚 / 缩放，块体的形状和位置都完全不变。
      * @private
      */
     async _sampleHeights(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid) {
-      const globe = this._viewer.scene.globe
-      // 先取「当前已加载地形」的高度：它和画面对得上。
-      // 若直接用 sampleTerrainMostDetailed 取最大细节，会和屏幕上的当前 LOD 差几十米，
-      // 陡峭山地就会悬空 / 顶穿，这正是「不贴地」的根源。
-      const missIndices: number[] = []
-      const missCarto: any[] = []
+      // 格网顶点数量固定，先全部标成 NaN（未采样），最后再统一补洞。
+      // 不能像以前那样用 0 兜底：在海拔 1000m 的山上，一个没采到的点会被当成
+      // 海平面，网格里就会垂下一整面「竖直幕布」，看起来和地图完全脱离。
+      for (let i = 0; i < grid.vertexCount; i++) {
+        if (grid.inside[i]) grid.base[i] = NaN
+      }
+
+      const insideCount = grid.inside.reduce((n, ok) => n + (ok ? 1 : 0), 0)
+      if (!insideCount) {
+        grid.current = new Float32Array(grid.base)
+        return grid
+      }
+
+      const provider = this._viewer.terrainProvider
+      const isEllipsoid =
+        !provider ||
+        (Cesium.EllipsoidTerrainProvider && provider instanceof Cesium.EllipsoidTerrainProvider)
+      const cartographics: any[] = []
+      const indices: number[] = []
       for (let i = 0; i < grid.vertexCount; i++) {
         if (!grid.inside[i]) continue
         const { lng, lat } = gridLngLat(grid, i)
-        const carto = Cesium.Cartographic.fromDegrees(lng, lat)
-        let h: number | undefined
-        if (globe && typeof globe.getHeight === 'function') {
+        cartographics.push(Cesium.Cartographic.fromDegrees(lng, lat))
+        indices.push(i)
+      }
+
+      let heights: number[] | null = null
+      if (isEllipsoid) {
+        // 没有真实地形（椭球）：整块按 0 高程铺平，和地图上的平地一致
+        heights = new Array(cartographics.length).fill(0)
+      } else {
+        try {
+          const sampled = await Cesium.sampleTerrainMostDetailed(provider, cartographics)
+          heights = sampled.map((c: any) =>
+            c && typeof c.height === 'number' && Number.isFinite(c.height) ? c.height : NaN
+          )
+        } catch (err) {
           try {
-            h = globe.getHeight(carto)
-          } catch (err) {
-            h = undefined
+            const level = this._terrainSampleLevel(provider)
+            const sampled = await Cesium.sampleTerrain(provider, level, cartographics)
+            heights = sampled.map((c: any) =>
+              c && typeof c.height === 'number' && Number.isFinite(c.height) ? c.height : NaN
+            )
+          } catch (err2) {
+            reportError(err2, { scope: 'TerrainEdit.sampleHeights' })
           }
-        }
-        if (typeof h === 'number' && Number.isFinite(h)) {
-          grid.base[i] = h
-        } else {
-          missIndices.push(i)
-          missCarto.push(carto)
         }
       }
 
-      // 瓦片还没加载到的点（globe.getHeight 返回 undefined）走异步采样兜底
-      if (missCarto.length) {
-        const provider = this._viewer.terrainProvider
-        const isEllipsoid =
-          !provider || (Cesium.EllipsoidTerrainProvider && provider instanceof Cesium.EllipsoidTerrainProvider)
-        let heights: number[] | null = null
-        if (!isEllipsoid) {
-          try {
-            const sampled = await Cesium.sampleTerrainMostDetailed(provider, missCarto)
-            heights = sampled.map((c: any) => c.height || 0)
-          } catch (err) {
-            try {
-              const sampled = await Cesium.sampleTerrain(provider, 13, missCarto)
-              heights = sampled.map((c: any) => c.height || 0)
-            } catch (err2) {
-              reportError(err2, { scope: 'TerrainEdit.sampleHeights' })
-            }
-          }
-        }
-        for (let k = 0; k < missIndices.length; k++) {
-          grid.base[missIndices[k]] = heights ? heights[k] || 0 : 0
+      for (let k = 0; k < indices.length; k++) {
+        const value = heights ? heights[k] : NaN
+        grid.base[indices[k]] = Number.isFinite(value) ? (value as number) : NaN
+      }
+
+      // 采样服务整块都不可用（离线 / 全部超时）时的最后一招：
+      // 退回「当前渲染地形」逐点取高度 —— 它随视角变，但至少能让块落在山上，
+      // 而不是整块沉到 0 高程、从画面里消失。
+      let validCount = 0
+      for (let i = 0; i < grid.vertexCount; i++) {
+        if (grid.inside[i] && Number.isFinite(grid.base[i])) validCount++
+      }
+      if (!validCount && !isEllipsoid) {
+        for (let i = 0; i < grid.vertexCount; i++) {
+          if (!grid.inside[i]) continue
+          const { lng, lat } = gridLngLat(grid, i)
+          const live = this._sampleRenderedHeight(lng, lat)
+          if (live !== null) grid.base[i] = live
         }
       }
 
+      this._sanitizeHeights(grid)
+      this._fillMissingHeights(grid)
       grid.current = new Float32Array(grid.base)
       return grid
+    },
+
+    /**
+     * 取地形服务可用的最高级别，作为 `sampleTerrain` 的兜底级别。
+     * @private
+     */
+    _terrainSampleLevel(this: TerrainEditInstance & Record<string, any>, provider: any) {
+      try {
+        const availability = provider && provider.availability
+        const levels = availability && availability._levels
+        if (levels && levels.length) {
+          // 取最后一个有区间的级别
+          for (let i = levels.length - 1; i >= 0; i--) {
+            if (levels[i] && levels[i].length) return i
+          }
+        }
+      } catch (err) {
+        /* 忽略：拿不到就用默认级别 */
+      }
+      return 13
+    },
+
+    /**
+     * 剔除明显不可能是地形高度的采样值。
+     *
+     * 采样服务、瓦片缺失、粗 LOD 都可能给出离谱的数（几十公里、接近 0、
+     * 或者比四周突然低一千米）。这些点在网格里就是一面「竖直幕布」，
+     * 正是编辑块看起来和地图脱开的直接原因，所以宁可当成没采到，
+     * 交给 `_fillMissingHeights` 用邻域补一个连续的值。
+     * @private
+     */
+    _sanitizeHeights(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid) {
+      const { stride, segments, inside, base } = grid
+      // 1) 绝对范围：地球陆地高度基本落在这个区间内
+      for (let i = 0; i < grid.vertexCount; i++) {
+        if (!inside[i]) continue
+        const h = base[i]
+        if (!Number.isFinite(h) || h > HEIGHT_ABS_MAX || h < HEIGHT_ABS_MIN) base[i] = NaN
+      }
+
+      // 2) 孤立尖峰：与 8 邻域中位数的差超过阈值，且邻居大多互相一致
+      const SPIKE = 800
+      const neighbors: number[] = []
+      for (let pass = 0; pass < 2; pass++) {
+        const spikes: number[] = []
+        for (let i = 0; i < grid.vertexCount; i++) {
+          if (!inside[i]) continue
+          const h = base[i]
+          if (!Number.isFinite(h)) continue
+          const row = Math.floor(i / stride)
+          const col = i % stride
+          neighbors.length = 0
+          for (let dr = -1; dr <= 1; dr++) {
+            const r = row + dr
+            if (r < 0 || r > segments) continue
+            for (let dc = -1; dc <= 1; dc++) {
+              if (!dr && !dc) continue
+              const c = col + dc
+              if (c < 0 || c > segments) continue
+              const j = r * stride + c
+              if (!inside[j]) continue
+              const v = base[j]
+              if (Number.isFinite(v)) neighbors.push(v)
+            }
+          }
+          if (neighbors.length < 5) continue
+          neighbors.sort((a, b) => a - b)
+          const median = neighbors[neighbors.length >> 1]
+          if (Math.abs(h - median) > SPIKE) spikes.push(i)
+        }
+        if (!spikes.length) break
+        for (let k = 0; k < spikes.length; k++) base[spikes[k]] = NaN
+      }
+      return this
+    },
+
+    /**
+     * 用邻域平均值补齐没有采到高度的内部顶点。
+     *
+     * 采样服务偶尔会漏点 / 超时，一个孤立顶点如果留成 0，会和周围差上千米，
+     * 网格里直接撕出一面竖墙。这里先按 4/8 邻域逐圈扩散，实在没有邻居的
+     * 极端情况才退回整块平均值。
+     * @private
+     */
+    _fillMissingHeights(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid) {
+      const { stride, segments, inside, base } = grid
+      let missing: number[] = []
+      let validSum = 0
+      let validCount = 0
+      for (let i = 0; i < grid.vertexCount; i++) {
+        if (!inside[i]) continue
+        if (Number.isFinite(base[i])) {
+          validSum += base[i]
+          validCount++
+        } else {
+          missing.push(i)
+        }
+      }
+      if (!missing.length) return
+      // 轮数给足：采样大面积失败时（例如地形服务短暂不可用）也能从少量有效点
+      // 一圈圈扩散把整块补成连续曲面，而不是留一片平面平均值的「补丁」
+      for (let pass = 0; pass < 24 && missing.length; pass++) {
+        const next: number[] = []
+        for (let k = 0; k < missing.length; k++) {
+          const i = missing[k]
+          const row = Math.floor(i / stride)
+          const col = i % stride
+          let sum = 0
+          let count = 0
+          for (let dr = -1; dr <= 1; dr++) {
+            const r = row + dr
+            if (r < 0 || r > segments) continue
+            for (let dc = -1; dc <= 1; dc++) {
+              if (!dr && !dc) continue
+              const c = col + dc
+              if (c < 0 || c > segments) continue
+              const j = r * stride + c
+              if (!inside[j] || !Number.isFinite(base[j])) continue
+              sum += base[j]
+              count++
+            }
+          }
+          if (count) base[i] = sum / count
+          else next.push(i)
+        }
+        missing = next
+      }
+      // 整块一个有效点都没有（例如采样服务完全不可用）：用平均值兜底，
+      // 至少保证网格是平的，而不是一排 0 高程的深井。
+      const fallback = validCount ? validSum / validCount : 0
+      for (let k = 0; k < missing.length; k++) base[missing[k]] = fallback
     },
 
     /**
@@ -1241,6 +2080,8 @@ export function createTerrainEditModule() {
       // 直接给多边形（含手绘结束）就是「手绘范围」，之前若用过 setArea 要把区域标记清掉，
       // 否则边框会因为 areaMode 仍在而被隐藏
       this._areaMode = false
+      // 范围已经换成手绘多边形，之前为矩形区域挖的地形洞必须补回来
+      this._clearTerrainClip()
       this._history = []
       this._waterLevel = null
       // 范围变了，旧贴图（按旧包围盒裁的 UV）不能再用
@@ -1308,6 +2149,59 @@ export function createTerrainEditModule() {
     },
 
     /**
+     * 算一次「块面整体下沉量」（米）。
+     *
+     * 默认 **0**：块面不再整体沉进地形，而是按当前画面里的地形逐点对齐
+     * （见 `_refreshSeam`）。只有用户显式传了 `settle` 才保留这个旧行为。
+     *
+     * 注意它只影响「画在哪里」：`grid.current` / `getStats()` / `getHeightAt()`
+     * 拿到的仍然是真实地形高度，导出的高度场不受影响。
+     * @private
+     */
+    _resolveSink(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid | null) {
+      if (this._sinkOption != null) {
+        this._sinkDepth = this._sinkOption
+        return this._sinkDepth
+      }
+      this._sinkDepth = 0
+      return this._sinkDepth
+    },
+
+    /**
+     * 取/重置「显示修正量」数组（每个顶点减掉多少米，负数表示抬高）。
+     * @private
+     */
+    _ensureStitch(this: TerrainEditInstance & Record<string, any>, grid: TerrainGrid) {
+      const n = grid.vertexCount
+      if (!this._stitch || this._stitch.length !== n) this._stitch = new Float32Array(n)
+      else this._stitch.fill(0)
+      return this._stitch
+    },
+
+    /**
+     * 取经纬度处的「显示修正量」（米），格网外为 0。
+     * @private
+     */
+    _stitchAt(this: TerrainEditInstance & Record<string, any>, lng: number, lat: number) {
+      const stitch: Float32Array | null = this._stitch
+      const grid: TerrainGrid | null = this._grid
+      if (!stitch || !grid) return 0
+      const b = grid.bounds
+      const fx = ((lng - b.minLng) / (b.maxLng - b.minLng)) * grid.segments
+      const fy = ((lat - b.minLat) / (b.maxLat - b.minLat)) * grid.segments
+      if (!(fx >= 0 && fy >= 0 && fx <= grid.segments && fy <= grid.segments)) return 0
+      const stride = grid.stride
+      const col = Math.min(grid.segments - 1, Math.max(0, Math.floor(fx)))
+      const row = Math.min(grid.segments - 1, Math.max(0, Math.floor(fy)))
+      const tx = Math.max(0, Math.min(1, fx - col))
+      const ty = Math.max(0, Math.min(1, fy - row))
+      const i00 = row * stride + col
+      const a = stitch[i00] * (1 - tx) + stitch[i00 + 1] * tx
+      const c = stitch[i00 + stride] * (1 - tx) + stitch[i00 + stride + 1] * tx
+      return a * (1 - ty) + c * ty
+    },
+
+    /**
      * 清空 three 场景里的地形对象
      * @private
      */
@@ -1324,6 +2218,10 @@ export function createTerrainEditModule() {
       })
       if (scene && scene.remove) scene.remove(root)
       this._root = null
+      this._skirtMesh = null
+      this._skirtEdges = null
+      this._skirtVerts = null
+      this._skirtDepths = null
     },
 
     /**
@@ -1344,8 +2242,17 @@ export function createTerrainEditModule() {
       root.name = 'terrain-edit-root'
       scene.add(root)
       this._root = root
+      // 挂上「贴合地表」的逐帧回调（幂等）：只负责地下隐藏 + 边缘对齐，
+      // 不会改变块体基准面（块体高度来自与视角无关的采样，见 _sampleHeights）。
+      this._ensureFollowLoop()
+      this._seamDirty = true
+      this._seamDeadline = nowMs() + SEAM_SETTLE_MS
 
       const grid = this._grid
+      this._resolveSink(grid)
+      // 重建时旧网格的缝合量已经没有意义，清掉等 _refreshSeam 重算
+      this._stitch = null
+      this._stitchDirty = false
       const stats = terrainStats(grid, this._polygon, grid.current)
       const waterLevel = this._waterLevel
       const span = Math.max(1, stats.maxHeight - stats.minHeight)
@@ -1383,7 +2290,8 @@ export function createTerrainEditModule() {
         localXZ[i * 3] = base.x
         localXZ[i * 3 + 1] = base.y
         localXZ[i * 3 + 2] = base.z
-        const h = grid.current[i]
+        // 整体下沉（见 settle）：块面比采样高度低几米，边缘藏进真实地形里
+        const h = grid.current[i] - (this._sinkDepth || 0)
         positions[i * 3] = base.x + up.x * h
         positions[i * 3 + 1] = base.y + up.y * h
         positions[i * 3 + 2] = base.z + up.z * h
@@ -1393,7 +2301,7 @@ export function createTerrainEditModule() {
           uvs[i * 2 + 1] = pair[1]
         }
         const ratio = (stats.maxHeight - h) / span
-        const underwater = waterLevel != null && h < waterLevel
+        const underwater = waterLevel != null && grid.current[i] < waterLevel
         // 有贴图时顶点色只负责「明暗」，颜色交给影像；没贴图时才用岩土色
         const color = useMap ? ([1, 1, 1] as [number, number, number]) : terrainVertexColor(ratio, hash2d(col, row), underwater)
         colors[i * 3] = color[0]
@@ -1434,6 +2342,8 @@ export function createTerrainEditModule() {
       geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
       geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2))
       geometry.setAttribute('aCut', new THREE.BufferAttribute(cuts, 1))
+      // 编辑区域掩膜：初始全 0（未编辑），刷过之后由 _refreshEditRegion 更新
+      geometry.setAttribute('aEdit', new THREE.BufferAttribute(new Float32Array(grid.vertexCount), 1))
       geometry.setIndex(indices)
       geometry.computeVertexNormals()
       // 法线出来之后才能算「立面展开」UV：把陡壁的贴图坐标按坡面弧长铺开
@@ -1453,7 +2363,10 @@ export function createTerrainEditModule() {
       root.add(mesh)
       this._surface = mesh
 
-      // 裙边：沿块边界向下延伸一圈，填住「采样高度 vs 实时地形」的缝隙，避免边缘悬空
+      // 初始没有任何编辑：整块网格 alpha=0，让真实地球直接露出来
+      this._refreshEditRegion(geometry)
+
+      // 可选裙边：仅当显式设置 `skirtDepth > 0` 时生成（默认关闭，靠边缘对齐贴合地形）
       this._buildSkirt(grid, positions, up)
 
       // 灯光只给水面等其它元素用；地表靠顶点色明暗，不再参与实时光照。
@@ -1469,26 +2382,7 @@ export function createTerrainEditModule() {
       // （缓坡上稀疏、陡坡上密集），而不是把格网边画成三角线框
       this._buildContours()
 
-      // 坑口轮廓线：笔刷区域模式下不需要（边界是人为划的，画出来反而像贴片）
-      if (!this._areaMode) {
-        const rimPositions: number[] = []
-        this._polygon.forEach((p: TerrainLngLat) => {
-          const local = this._toLocal(p.lng, p.lat, this._heightAt(p.lng, p.lat) + 0.6)
-          rimPositions.push(local.x, local.y, local.z)
-        })
-        if (rimPositions.length >= 6) {
-          const rimGeometry = new THREE.BufferGeometry()
-          rimGeometry.setAttribute('position', new THREE.Float32BufferAttribute(rimPositions, 3))
-          const rimMaterial = new THREE.LineBasicMaterial({
-            color: 0xc4f7ff,
-            transparent: true,
-            opacity: 0.95
-          })
-          const rim = new THREE.LineLoop(rimGeometry, rimMaterial)
-          rim.name = 'terrain-edit-rim'
-          root.add(rim)
-        }
-      }
+      this._buildRim()
 
       if (waterLevel != null) {
         this._buildWater(waterLevel)
@@ -1498,12 +2392,354 @@ export function createTerrainEditModule() {
     },
 
     /**
-     * 给编辑块加一圈向下的裙边。
+     * 绘制矿坑 / 地块的轮廓线（贴地，随当前高度场重建）。
+     * @private
+     */
+    _buildRim(this: TerrainEditInstance & Record<string, any>) {
+      const root = this._root
+      if (!root || !THREE) return this
+      const old = root.getObjectByName('terrain-edit-rim')
+      if (old) {
+        if (old.geometry) old.geometry.dispose()
+        if (old.material) old.material.dispose()
+        root.remove(old)
+      }
+      // 笔刷区域模式不需要：边界是人为划的矩形，画出来反而像一层贴片
+      if (this._areaMode || !this._polygon.length) return this
+      const rimPositions: number[] = []
+      // 轮廓线要贴在实际画出来的块面上（块面整体下沉了多少，线也要跟着沉），
+      // 否则深挖后边框会像一圈悬浮的圈
+      const rimSink = this._sinkDepth || 0
+      this._polygon.forEach((p: TerrainLngLat) => {
+        const local = this._toLocal(p.lng, p.lat, this._heightAt(p.lng, p.lat) - rimSink + 0.6)
+        rimPositions.push(local.x, local.y, local.z)
+      })
+      if (rimPositions.length < 6) return this
+      const rimGeometry = new THREE.BufferGeometry()
+      rimGeometry.setAttribute('position', new THREE.Float32BufferAttribute(rimPositions, 3))
+      const rimMaterial = new THREE.LineBasicMaterial({
+        color: 0xc4f7ff,
+        transparent: true,
+        opacity: 0.95
+      })
+      const rim = new THREE.LineLoop(rimGeometry, rimMaterial)
+      rim.name = 'terrain-edit-rim'
+      root.add(rim)
+      return this
+    },
+
+    /**
+     * 计算「编辑区域掩膜」：只有真正被刷动过的格网附近才显示 three 网格。
      *
-     * 块边界的高度来自「创建时采样」的地形。相机旋转 / 换 LOD 后，实时渲染的地形
-     * 可能比采样时略低（或略高），块边缘就会露出一条缝，看着像悬空。
-     * 裙边从块边界垂直向下延伸一段：平整时整条埋在地形下被遮住，出现缝隙时正好填上，
-     * 从任何角度看都不会再「飘」。
+     * 编辑区默认是一整块 2.4km 的独立网格，即使一笔都没刷，它也会整块盖在
+     * Cesium 地球上——贴图分辨率 / 色调和实时影像对不上，看起来就是「一块
+     * 颜色不同的贴片」。这里把没动过的顶点 alpha 置 0，three 网格只在编辑过的
+     * 地方可见；配合只挖掉编辑区域底下的地形，未编辑的地方完全就是真实地球。
+     *
+     * 掩膜向编辑区外保持 `EDIT_PLATEAU_CELLS` 格不透明、再渐隐 `EDIT_FADE_CELLS`
+     * 格；裁剪矩形就取在这圈不透明平台内，确保洞边永远被网格盖住，不会透空。
+     * @private
+     */
+    _refreshEditRegion(this: TerrainEditInstance & Record<string, any>, geometry?: any) {
+      const grid: TerrainGrid | null = this._grid
+      if (!grid) return this
+      const seg = grid.segments
+      const stride = grid.stride
+      const count = grid.vertexCount
+      let alpha = this._editAlpha
+      if (!alpha || alpha.length !== count) alpha = this._editAlpha = new Float32Array(count)
+
+      // 手绘多边形模式沿用旧行为：多边形本身就是用户圈定的编辑范围
+      if (!this._areaMode) {
+        alpha.fill(1)
+        this._editActive = false
+        this._editRange = null
+        this._editClipBounds = null
+        this._writeEditAlpha(geometry)
+        return this
+      }
+
+      const base = grid.base
+      const cur = grid.current
+      let minR = seg
+      let maxR = -1
+      let minC = seg
+      let maxC = -1
+      for (let r = 0; r < seg; r++) {
+        for (let c = 0; c < seg; c++) {
+          const i = r * stride + c
+          if (!grid.inside[i]) continue
+          const d0 = Math.abs(cur[i] - base[i])
+          const d1 = Math.abs(cur[i + 1] - base[i + 1])
+          const d2 = Math.abs(cur[i + stride] - base[i + stride])
+          const d3 = Math.abs(cur[i + stride + 1] - base[i + stride + 1])
+          if (d0 > EDIT_EPS || d1 > EDIT_EPS || d2 > EDIT_EPS || d3 > EDIT_EPS) {
+            if (r < minR) minR = r
+            if (r > maxR) maxR = r
+            if (c < minC) minC = c
+            if (c > maxC) maxC = c
+          }
+        }
+      }
+
+      const active = maxR >= 0
+      this._editActive = active
+      this._editRange = active ? { minR, maxR, minC, maxC } : null
+
+      if (!active) {
+        alpha.fill(0)
+        this._editClipBounds = null
+        this._writeEditAlpha(geometry)
+        this._syncTerrainClip()
+        return this
+      }
+
+      // 裁剪矩形 = 活动范围外扩几格，并避开块边界（边界那圈有羽化 alpha，挖掉会透空）。
+      // alpha 在整块裁剪矩形内都保持 1（不能只贴着编辑单元），否则矩形的
+      // 四个角会透出裁剪洞；矩形外再渐隐 EDIT_FADE_CELLS 格融进真实地球。
+      const pad = EDIT_PAD_CELLS
+      const cellM = grid.cellSize > 0 ? grid.cellSize : 1
+      const edgeInset = Math.max(EDIT_PLATEAU_CELLS, Math.ceil(this._clipInsetMeters() / cellM))
+      let cMinR = Math.max(edgeInset, minR - pad)
+      let cMaxR = Math.min(seg - edgeInset, maxR + pad)
+      let cMinC = Math.max(edgeInset, minC - pad)
+      let cMaxC = Math.min(seg - edgeInset, maxC + pad)
+      // 编辑范围几乎铺满整块：退回「整块内缩」的裁剪方式
+      if (cMinR > cMaxR - 2 || cMinC > cMaxC - 2) {
+        cMinR = edgeInset
+        cMaxR = seg - edgeInset
+        cMinC = edgeInset
+        cMaxC = seg - edgeInset
+      }
+      if (cMaxR <= cMinR || cMaxC <= cMinC) {
+        // 范围太小（例如只有零星几格且贴边），不挖地形，保证不会露出洞
+        alpha.fill(0)
+        this._editClipBounds = null
+        this._writeEditAlpha(geometry)
+        this._syncTerrainClip()
+        return this
+      }
+      const vMinR = cMinR
+      const vMaxR = Math.min(seg, cMaxR + 1)
+      const vMinC = cMinC
+      const vMaxC = Math.min(seg, cMaxC + 1)
+      for (let r = 0; r <= seg; r++) {
+        const dr = r < vMinR ? vMinR - r : r > vMaxR ? r - vMaxR : 0
+        for (let c = 0; c <= seg; c++) {
+          const dc = c < vMinC ? vMinC - c : c > vMaxC ? c - vMaxC : 0
+          const dist = Math.max(dr, dc)
+          alpha[r * stride + c] =
+            dist === 0 ? 1 : Math.max(0, 1 - dist / (EDIT_FADE_CELLS + 1))
+        }
+      }
+      this._writeEditAlpha(geometry)
+
+      const b = grid.bounds
+      this._editClipBounds = {
+        minLng: b.minLng + cMinC * grid.dLng,
+        maxLng: b.minLng + (cMaxC + 1) * grid.dLng,
+        minLat: b.minLat + cMinR * grid.dLat,
+        maxLat: b.minLat + (cMaxR + 1) * grid.dLat
+      }
+      this._syncTerrainClip()
+      return this
+    },
+
+    /**
+     * 把编辑区域掩膜写进 `aEdit` 顶点属性（没有就创建）。
+     * @private
+     */
+    _writeEditAlpha(this: TerrainEditInstance & Record<string, any>, geometry?: any) {
+      const geo = geometry || (this._surface && this._surface.geometry)
+      const alpha = this._editAlpha
+      if (!geo || !alpha) return this
+      const existing = geo.getAttribute('aEdit')
+      if (!existing || existing.array.length !== alpha.length) {
+        geo.setAttribute('aEdit', new THREE.BufferAttribute(new Float32Array(alpha), 1))
+      } else {
+        ;(existing.array as Float32Array).set(alpha)
+        existing.needsUpdate = true
+      }
+      return this
+    },
+
+    /**
+     * 让地形裁剪跟着「编辑区域」走：有编辑就只挖编辑范围底下，没有编辑就把地形还回去。
+     * @private
+     */
+    _syncTerrainClip(this: TerrainEditInstance & Record<string, any>) {
+      if (!this._areaMode) return this
+      const bounds = this._editClipBounds
+      if (!bounds) {
+        if (this._clip || this._editClipSig) {
+          this._editClipSig = ''
+          this._clearTerrainClip()
+        }
+        return this
+      }
+      const sig = [
+        bounds.minLng.toFixed(6),
+        bounds.maxLng.toFixed(6),
+        bounds.minLat.toFixed(6),
+        bounds.maxLat.toFixed(6)
+      ].join(',')
+      // 外部 clear()/setPolygon() 可能已经把裁剪撤掉了，这里用 _clip 兜底判断，
+      // 避免签名相同却不再重新挖洞。
+      if (sig === this._editClipSig && this._clip) return this
+      this._editClipSig = sig
+      this._applyTerrainClip(bounds)
+      return this
+    },
+
+
+    /**
+     * 裁剪多边形的内缩距离（米）。
+     *
+     * 默认等于边缘羽化宽度：编辑块最外圈是半透明的渐隐带，它需要底下的地形
+     * 才能「化」进原地表；如果一直挖到块边界，渐隐带底下就没有东西了，会变成
+     * 一圈透空的暗边。内缩一圈后，洞的边界正好落在块面不透明的区域里。
+     * @private
+     */
+    _clipInsetMeters(this: TerrainEditInstance & Record<string, any>) {
+      if (this._cutInset != null) return this._cutInset
+      const grid = this._grid
+      const feather = grid ? Number(grid.slopeWidth) : NaN
+      const band = Number.isFinite(feather) && feather > 0 ? feather : 80
+      // 缩 1.8 倍：羽化带的 alpha 叠了低频扰动（振幅约 0.7 个带宽），
+      // 洞边要落在扰动的最大外扩之外，边缘才不会透出一条暗缝
+      return Math.max(8, band * 1.8)
+    },
+
+    /**
+     * 把编辑区底下的 Cesium 原地形挖掉。
+     *
+     * 不挖的话，同一块地方会有两层地表：Cesium 地形还停在被编辑前的高度，编辑块
+     * 是另一层。相机压低视角时，原地形从块面里穿出来，看着就是「编辑区域贴在
+     * 地图上」；挖掉之后这个区域只剩编辑块一层地表，和地图真正连成一片。
+     *
+     * 只对矩形「区域」模式生效：手绘多边形模式下块面被 `inside` 掩膜裁过，
+     * 用矩形去挖会多挖掉多边形外的一圈地形。
+     * @private
+     */
+    _applyTerrainClip(
+      this: TerrainEditInstance & Record<string, any>,
+      boundsOverride?: { minLng: number; maxLng: number; minLat: number; maxLat: number }
+    ) {
+      if (!this._cutTerrain || !this._grid || !this._areaMode) return this
+      const viewer = this._viewer
+      const scene = viewer && !viewer.isDestroyed() ? viewer.scene : null
+      const globe = scene && scene.globe
+      if (!globe) return this
+      if (!Cesium || !Cesium.ClippingPolygon || !Cesium.ClippingPolygonCollection) {
+        if (!this._clipWarned) {
+          this._clipWarned = true
+          console.warn('[cesium_dev_kit] 当前 Cesium 版本不支持 globe.clippingPolygons，编辑区无法挖掉原地形')
+        }
+        return this
+      }
+      // 裁剪多边形只在 WebGL2 上下文可用
+      const context = (scene as any).context
+      if (context && context.webgl2 === false) {
+        if (!this._clipWarned) {
+          this._clipWarned = true
+          console.warn('[cesium_dev_kit] 裁剪多边形需要 WebGL2，当前上下文不支持，编辑区无法挖掉原地形')
+        }
+        return this
+      }
+      // 已经设过别人的裁剪：不去覆盖，避免和外部功能互相打架
+      const current = globe.clippingPolygons
+      if (current && (!this._clip || current !== this._clip.collection)) return this
+
+      let minLng: number
+      let maxLng: number
+      let minLat: number
+      let maxLat: number
+      if (boundsOverride) {
+        // 只挖「真正编辑过」的范围：范围外保持 Cesium 真实地形，不再整块替换
+        minLng = boundsOverride.minLng
+        maxLng = boundsOverride.maxLng
+        minLat = boundsOverride.minLat
+        maxLat = boundsOverride.maxLat
+      } else {
+        // 兼容旧行为：整块编辑区按 feather 内缩
+        const bounds = this._grid.bounds
+        const inset = this._clipInsetMeters()
+        const dLat = inset / 111319.49079327358
+        const dLng = inset / metersPerDegLng((bounds.minLat + bounds.maxLat) / 2)
+        minLng = bounds.minLng + dLng
+        maxLng = bounds.maxLng - dLng
+        minLat = bounds.minLat + dLat
+        maxLat = bounds.maxLat - dLat
+      }
+      if (!(maxLng > minLng) || !(maxLat > minLat)) return this
+
+      // 每条边多打几个点：几公里见方的范围，地球曲率已经不能忽略，
+      // 只用四个角的话洞的边会往内凹一点，接缝就对不齐了
+      const positions: any[] = []
+      const add = (lng: number, lat: number) => {
+        positions.push(Cesium.Cartesian3.fromDegrees(lng, lat, 0))
+      }
+      const N = 6
+      for (let i = 0; i < N; i++) add(minLng + ((maxLng - minLng) * i) / N, minLat)
+      for (let i = 0; i < N; i++) add(maxLng, minLat + ((maxLat - minLat) * i) / N)
+      for (let i = 0; i < N; i++) add(maxLng - ((maxLng - minLng) * i) / N, maxLat)
+      for (let i = 0; i < N; i++) add(minLng, maxLat - ((maxLat - minLat) * i) / N)
+
+      try {
+        const collection = new Cesium.ClippingPolygonCollection({
+          polygons: [new Cesium.ClippingPolygon({ positions })]
+        })
+        this._clearTerrainClip()
+        globe.clippingPolygons = collection
+        this._clip = { globe, collection }
+        // 地形洞已经挖好，但 three 若没有和 Cesium 共享深度，块面仍会整片盖在地形上：
+        // 前景山体挡不住它，看起来还是「贴片」。这里提示一次，方便集成时对齐配置。
+        const threeJs: any = this._threeJs
+        const status = threeJs && typeof threeJs.getFusionStatus === 'function' ? threeJs.getFusionStatus() : null
+        if (status && status.depth === 'none' && !this._depthHinted) {
+          this._depthHinted = true
+          console.warn(
+            '[cesium_dev_kit] 编辑区已挖掉原地形，但 three 与 Cesium 未共享深度，' +
+              '块面仍会盖住前景地形。请给 viewer 设 orderIndependentTranslucency: false、' +
+              'msaaSamples: 1、contextOptions.webgl.antialias: false。'
+          )
+        }
+      } catch (err) {
+        reportError(err, { scope: 'TerrainEdit.applyTerrainClip' })
+      }
+      return this
+    },
+
+    /**
+     * 撤掉编辑区的地形裁剪，把地形还给 Cesium。
+     * @private
+     */
+    _clearTerrainClip(this: TerrainEditInstance & Record<string, any>) {
+      const clip = this._clip
+      if (!clip) return this
+      this._clip = null
+      try {
+        const globe = clip.globe
+        if (globe && !globe.isDestroyed?.() && globe.clippingPolygons === clip.collection) {
+          globe.clippingPolygons = undefined
+        }
+      } catch (err) {
+        /* 场景已销毁：不用再管 */
+      }
+      try {
+        if (clip.collection && !clip.collection.isDestroyed()) clip.collection.destroy()
+      } catch (err) {
+        /* 销毁失败也不影响后续：集合已从 globe 上摘掉 */
+      }
+      return this
+    },
+
+    /**
+     * 沿编辑块外边界建一圈向下的裙边（侧壁）。
+     *
+     * 默认**不生成**（`skirtDepth = 0`）：块面边缘已经按当前渲染地形逐点对齐，
+     * 不需要土色侧壁。只有调用方显式传 `skirtDepth > 0` 时才建，
+     * 用来在无法采样渲染高度、或外部地形服务不可用的特殊场景里兜底。
      * @private
      */
     _buildSkirt(
@@ -1512,13 +2748,16 @@ export function createTerrainEditModule() {
       positions: Float32Array,
       up: any
     ) {
+      this._skirtMesh = null
+      this._skirtEdges = null
+      this._skirtVerts = null
+      this._skirtDepths = null
       if (!this._root || !THREE || !positions) return this
+      // 默认不建裙边：块面已经按当前地形逐点对齐（见 `_refreshSeam`），
+      // 边缘不再需要一圈土色侧壁。只有显式传了 `skirtDepth > 0` 才生成。
+      if (!(this._skirtBaseDepth > 0)) return this
       const stride = grid.stride
       const segments = grid.segments
-      // 默认关闭（0）：裙边能填住 LOD 缝隙，但落差大时会露出一整面土色侧壁，反而显得「突出」。
-      // 需要时显式传 skirtDepth（例如 60）再开。
-      const depth = Number(this._options && this._options.skirtDepth) || 0
-      if (!(depth > 0)) return this
 
       // 某个单元格是否会渲染（四角都在编辑区内）
       const renderedCell = (row: number, col: number) => {
@@ -1534,6 +2773,7 @@ export function createTerrainEditModule() {
 
       // 收集外边界边：渲染单元与未渲染单元之间的那条边
       const edges: number[] = []
+      const seen = new Set<number>()
       for (let row = 0; row < segments; row++) {
         for (let col = 0; col < segments; col++) {
           if (!renderedCell(row, col)) continue
@@ -1541,30 +2781,74 @@ export function createTerrainEditModule() {
           const b = a + 1
           const c = a + stride
           const d = c + 1
-          if (!renderedCell(row - 1, col)) edges.push(a, b)
-          if (!renderedCell(row, col + 1)) edges.push(b, d)
-          if (!renderedCell(row + 1, col)) edges.push(c, d)
-          if (!renderedCell(row, col - 1)) edges.push(a, c)
+          if (!renderedCell(row - 1, col)) {
+            edges.push(a, b)
+            seen.add(a)
+            seen.add(b)
+          }
+          if (!renderedCell(row, col + 1)) {
+            edges.push(b, d)
+            seen.add(b)
+            seen.add(d)
+          }
+          if (!renderedCell(row + 1, col)) {
+            edges.push(c, d)
+            seen.add(c)
+            seen.add(d)
+          }
+          if (!renderedCell(row, col - 1)) {
+            edges.push(a, c)
+            seen.add(a)
+            seen.add(c)
+          }
         }
       }
       if (!edges.length) return this
 
-      // 每条边界边生成一个向下的四边形（两个三角形），顶边复用面网格顶点
-      const pairCount = edges.length / 2
-      const arr = new Float32Array(pairCount * 6 * 3)
-      const ux = up.x * depth
-      const uy = up.y * depth
-      const uz = up.z * depth
+      // 每条边界边一个向下的四边形（两个三角形）：顶边贴块面，底边按各自深度下探
+      const quadCount = edges.length / 2
+      const verts = Array.from(seen)
+      const depths = new Float32Array(grid.vertexCount)
+      for (let k = 0; k < verts.length; k++) depths[verts[k]] = this._skirtBaseDepth
+      const arr = new Float32Array(quadCount * 6 * 3)
+      // 侧壁必须是**不透明**的土体。
+      //
+      // 早先这里让 alpha 从 1 渐隐到 0，想让侧壁「化」进地形；结果低角度下
+      // 编辑区悬在一段被抹平的地形之上时，裙边下半截全是透明的，等于什么都没挡 ——
+      // 底下那圈地形洞直接露出白底，看着比褐色土壁刺眼得多。
+      // 现在整圈不透明：裙边平时埋在块面下方（块面本身已下沉几米），看不见；
+      // 一旦露出来，就是一道实实在在的土体断面。
+      const colors = new Float32Array(quadCount * 6 * 4)
+      const xz: Float32Array = this._localXZ
+      const baseDepth = this._skirtBaseDepth
       let n = 0
+      let c = 0
+      const writeColor = (alpha: number) => {
+        colors[c++] = 1
+        colors[c++] = 1
+        colors[c++] = 1
+        colors[c++] = alpha
+      }
       const pushTop = (i: number) => {
-        arr[n++] = positions[i * 3]
-        arr[n++] = positions[i * 3 + 1]
-        arr[n++] = positions[i * 3 + 2]
+        // 顶边必须贴着块面：块面整体下沉了多少，裙边顶边也要跟着下沉多少，
+        // 否则显式打开裙边时会露出一条「顶边高出块面」的暗带
+        const h = grid.current[i] - (this._sinkDepth || 0)
+        if (xz) {
+          arr[n++] = xz[i * 3] + up.x * h
+          arr[n++] = xz[i * 3 + 1] + up.y * h
+          arr[n++] = xz[i * 3 + 2] + up.z * h
+        } else {
+          arr[n++] = positions[i * 3]
+          arr[n++] = positions[i * 3 + 1]
+          arr[n++] = positions[i * 3 + 2]
+        }
+        writeColor(1)
       }
       const pushBottom = (i: number) => {
-        arr[n++] = positions[i * 3] - ux
-        arr[n++] = positions[i * 3 + 1] - uy
-        arr[n++] = positions[i * 3 + 2] - uz
+        arr[n++] = positions[i * 3] - up.x * baseDepth
+        arr[n++] = positions[i * 3 + 1] - up.y * baseDepth
+        arr[n++] = positions[i * 3 + 2] - up.z * baseDepth
+        writeColor(1)
       }
       for (let k = 0; k < edges.length; k += 2) {
         const v0 = edges[k]
@@ -1579,11 +2863,14 @@ export function createTerrainEditModule() {
 
       const geometry = new THREE.BufferGeometry()
       geometry.setAttribute('position', new THREE.BufferAttribute(arr, 3))
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 4))
       geometry.computeVertexNormals()
       geometry.computeBoundingSphere()
-      // 暗土色、双面：看起来像被切开的土体侧壁；平整时埋在地形下，看不见
+      // 暗土色、双面、完全不透明：平时埋在块面下方看不见，
+      // 露出来时就是一道实实在在的土体断面，挡住底下那个透空的地形洞
       const material = new THREE.MeshBasicMaterial({
-        color: 0x4a3b2c,
+        color: 0x3a2f25,
+        vertexColors: true,
         side: THREE.DoubleSide,
         depthWrite: true
       })
@@ -1591,6 +2878,12 @@ export function createTerrainEditModule() {
       skirt.name = 'terrain-edit-skirt'
       skirt.renderOrder = 1
       this._root.add(skirt)
+      this._skirtMesh = skirt
+      this._skirtEdges = Int32Array.from(edges)
+      this._skirtVerts = verts
+      this._skirtDepths = depths
+      // 裙边建好先按基础深度摆着，等相机停稳、瓦片精化后再按实际地形补深
+      this._seamDirty = true
       return this
     },
 
@@ -1610,6 +2903,8 @@ export function createTerrainEditModule() {
         this._root.remove(old)
       }
       if (!this._showGrid) return this
+      // 没有编辑时不画等高线，否则会在真实地球上露出一整块矩形范围
+      if (this._areaMode && !this._editActive) return this
 
       const grid = this._grid
       const stats = terrainStats(grid, this._polygon)
@@ -1620,23 +2915,29 @@ export function createTerrainEditModule() {
       const segs = buildContourSegments(grid, interval, grid.current)
       if (!segs.length) return this
 
-      const count = segs.length / 4
-      const positions = new Float32Array(count * 6)
+      const range = this._editRange
+      const margin = EDIT_PLATEAU_CELLS
+      const positions: number[] = []
       const offset = Math.max(0.35, interval * 0.03)
-      let n = 0
       for (let i = 0; i < segs.length; i += 4) {
+        if (range) {
+          const r0 = segs[i]
+          const c0 = segs[i + 1]
+          const outRow = r0 < range.minR - margin || r0 > range.maxR + margin
+          const outCol = c0 < range.minC - margin || c0 > range.maxC + margin
+          if (outRow || outCol) continue
+        }
         for (let k = 0; k < 2; k++) {
           const row = segs[i + k * 2]
           const col = segs[i + k * 2 + 1]
           const sample = this._sampleGrid(row, col)
-          positions[n++] = sample.x
-          positions[n++] = sample.y + offset
-          positions[n++] = sample.z
+          positions.push(sample.x, sample.y + offset, sample.z)
         }
       }
+      if (!positions.length) return this
 
       const geometry = new THREE.BufferGeometry()
-      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
       geometry.computeBoundingSphere()
       const material = new THREE.LineBasicMaterial({
         color: 0x1d2a1a,
@@ -1677,7 +2978,12 @@ export function createTerrainEditModule() {
       const w10 = fr * (1 - fc)
       const w11 = fr * fc
       const h =
-        grid.current[i00] * w00 + grid.current[i01] * w01 + grid.current[i10] * w10 + grid.current[i11] * w11
+        grid.current[i00] * w00 +
+        grid.current[i01] * w01 +
+        grid.current[i10] * w10 +
+        grid.current[i11] * w11 -
+        (this._sinkDepth || 0) -
+        (this._stitch ? this._stitch[i00] * w00 + this._stitch[i01] * w01 + this._stitch[i10] * w10 + this._stitch[i11] * w11 : 0)
       const x = localXZ[i00 * 3] * w00 + localXZ[i01 * 3] * w01 + localXZ[i10 * 3] * w10 + localXZ[i11 * 3] * w11
       const y = localXZ[i00 * 3 + 1] * w00 + localXZ[i01 * 3 + 1] * w01 + localXZ[i10 * 3 + 1] * w10 + localXZ[i11 * 3 + 1] * w11
       const z = localXZ[i00 * 3 + 2] * w00 + localXZ[i01 * 3 + 2] * w01 + localXZ[i10 * 3 + 2] * w10 + localXZ[i11 * 3 + 2] * w11
@@ -1705,6 +3011,27 @@ export function createTerrainEditModule() {
      * @private
      */
     _updateSurface(this: TerrainEditInstance & Record<string, any>) {
+      if (!this._surface || !this._grid) return this
+      this._updateSurfacePositions()
+      const mesh = this._surface
+      // 重新计算编辑区域掩膜：刷到哪儿，three 网格就显示到哪儿
+      this._refreshEditRegion(mesh.geometry)
+      mesh.geometry.computeVertexNormals()
+      // 高度/法线变了，陡壁的展开 UV 得一起重算，否则刚挖出的立面又会退回成竖条
+      this._updateSurfaceUVs(mesh.geometry)
+      // 法线变了，明暗得跟着重烘，不然刚挖出来的坡面还是按旧法线打光，看着像贴了张图
+      this._bakeShading(mesh.geometry)
+      // 块面高度变了，边界裙边的顶边得跟着走，否则刷到边界时裙边会脱开一条缝
+      this._seamDirty = true
+      this._seamDeadline = nowMs() + SEAM_SETTLE_MS
+      return this
+    },
+
+    /**
+     * 只更新顶点位置（不算法线 / UV / 明暗），用于相机移动中的低频粗校正。
+     * @private
+     */
+    _updateSurfacePositions(this: TerrainEditInstance & Record<string, any>) {
       const mesh = this._surface
       const grid: TerrainGrid = this._grid
       if (!mesh || !grid) return this
@@ -1712,18 +3039,17 @@ export function createTerrainEditModule() {
       const arr = attr.array as Float32Array
       const xz: Float32Array = this._localXZ
       const up = this._up
+      // 与顶点色 / 拾取共用同一个下沉量：块面要整体沉进地形里，不能只有一部分沉
+      const sink = this._sinkDepth || 0
+      // 边缘缝合：最外几圈还要再按「当前渲染地形」让下去（见 _refreshSeam）
+      const stitch: Float32Array | null = this._stitch
       for (let i = 0; i < grid.vertexCount; i++) {
-        const h = grid.current[i]
+        const h = grid.current[i] - sink - (stitch ? stitch[i] : 0)
         arr[i * 3] = xz[i * 3] + up.x * h
         arr[i * 3 + 1] = xz[i * 3 + 1] + up.y * h
         arr[i * 3 + 2] = xz[i * 3 + 2] + up.z * h
       }
       attr.needsUpdate = true
-      mesh.geometry.computeVertexNormals()
-      // 高度/法线变了，陡壁的展开 UV 得一起重算，否则刚挖出的立面又会退回成竖条
-      this._updateSurfaceUVs(mesh.geometry)
-      // 法线变了，明暗得跟着重烘，不然刚挖出来的坡面还是按旧法线打光，看着像贴了张图
-      this._bakeShading(mesh.geometry)
       mesh.geometry.computeBoundingSphere()
       return this
     },
@@ -1816,9 +3142,40 @@ export function createTerrainEditModule() {
       const params: any = {
         vertexColors: true,
         side: THREE.DoubleSide,
-        transparent: true
+        transparent: true,
+        // 未编辑区域的 alpha 由 aEdit 顶点属性压到 0；alphaTest 把这些片元直接丢弃，
+        // 既不写深度也不盖住底下的真实地球影像。编辑区域 alpha=1，正常参与深度测试。
+        alphaTest: 0.02,
+        // 编辑网格和 Cesium 地形高度对齐后几乎共面，不加深度偏移会出现
+        // 一条条闪烁的接缝（时而露出底下地形）；让编辑面稳定压在地形之上。
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1
       }
       const material = new THREE.MeshBasicMaterial(params)
+      // aEdit：编辑区域掩膜（见 _refreshEditRegion）。始终注入，只有刷过的地方才显示。
+      material.onBeforeCompile = (shader: any) => {
+        const vertexDecl =
+          '\nattribute float aEdit;\nvarying float vEdit;' +
+          (canvas ? '\nattribute float aCut;\nvarying float vCut;\nvarying vec3 vLocalPos;' : '')
+        const vertexBody =
+          '\nvEdit = aEdit;' + (canvas ? '\nvCut = aCut;\nvLocalPos = position;' : '')
+        shader.vertexShader = shader.vertexShader
+          .replace('#include <common>', '#include <common>' + vertexDecl)
+          .replace('#include <begin_vertex>', '#include <begin_vertex>' + vertexBody)
+        const fragCommon = '\nvarying float vEdit;' + (canvas ? '\n' + EARTH_COMMON_GLSL : '')
+        shader.fragmentShader = shader.fragmentShader
+          .replace('#include <common>', '#include <common>' + fragCommon)
+          .replace('#include <alphamap_fragment>', '#include <alphamap_fragment>\ndiffuseColor.a *= vEdit;')
+        if (canvas) {
+          // 开挖面：把影像渐变成程序化岩土（详见 EARTH_COMMON_GLSL 的注释）
+          shader.fragmentShader = shader.fragmentShader.replace(
+            '#include <map_fragment>',
+            '#include <map_fragment>\n' + EARTH_APPLY_GLSL
+          )
+        }
+      }
+      material.customProgramCacheKey = () => (canvas ? 'terrain-edit-earth' : 'terrain-edit-editmask')
       if (canvas) {
         const tex = new THREE.CanvasTexture(canvas)
         // 影像本身是 sRGB：标成 sRGBColorSpace 后，three 采样时解到线性、输出时
@@ -1843,19 +3200,6 @@ export function createTerrainEditModule() {
           params.alphaMap = alpha
           material.alphaMap = alpha
         }
-        // 开挖面：把影像渐变成程序化岩土（详见 EARTH_COMMON_GLSL 的注释）
-        material.onBeforeCompile = (shader: any) => {
-          shader.vertexShader = shader.vertexShader
-            .replace(
-              '#include <common>',
-              '#include <common>\nattribute float aCut;\nvarying float vCut;\nvarying vec3 vLocalPos;'
-            )
-            .replace('#include <begin_vertex>', '#include <begin_vertex>\nvCut = aCut;\nvLocalPos = position;')
-          shader.fragmentShader = shader.fragmentShader
-            .replace('#include <common>', '#include <common>\n' + EARTH_COMMON_GLSL)
-            .replace('#include <map_fragment>', '#include <map_fragment>\n' + EARTH_APPLY_GLSL)
-        }
-        material.customProgramCacheKey = () => 'terrain-edit-earth'
       }
       return material
     },
@@ -1893,7 +3237,19 @@ export function createTerrainEditModule() {
       if (!ctx) return null
       const image = ctx.createImageData(size, size)
       const data = image.data
-      const band = size * 0.1 // 渐隐带宽度（约占整块的 10%）
+      // 渐隐带宽度要跟「挖掉地形」的内缩量对齐：那块地方底下已经没有 Cesium 地形，
+      // 渐隐带太宽就会在洞的边缘露出一圈透空的暗边。按 `feather`（米）换算成比例，
+      // 固定 10% 在 2.4km 的地块上是 240m，挖完地形后那圈就遮不住了。
+      let bandRatio = 0.1
+      const grid = this._grid
+      if (grid && grid.bounds) {
+        const sizeM =
+          (grid.bounds.maxLng - grid.bounds.minLng) *
+          metersPerDegLng((grid.bounds.minLat + grid.bounds.maxLat) / 2)
+        const bandM = Math.max(6, Number(grid.slopeWidth) || 0)
+        if (sizeM > 0) bandRatio = Math.min(0.16, Math.max(0.015, bandM / sizeM))
+      }
+      const band = Math.max(3, size * bandRatio)
       const hash = (x: number, y: number) => {
         const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453
         return n - Math.floor(n)
@@ -1931,8 +3287,9 @@ export function createTerrainEditModule() {
     /**
      * 把明暗重新烘进顶点色，并刷新「开挖量」属性
      *
-     * 亮度只跟「法线与地表法线的夹角」有关：平地 1.0（影像原样输出）、陡坡压到 0.84，
-     * 所以翻出的坡面能看出体积感，而对齐的平地又不会比周围影像暗一块。
+     * 亮度只跟「法线与地表法线的夹角」有关：未编辑的顶点保持 1.0（影像原样输出），
+     * 只有被刷动过的顶点才按坡度压到 0.84，所以翻出的坡面能看出体积感，
+     * 而对齐的平地又不会比周围影像暗一块。
      * 顶点色是破坏性相乘，所以必须从 `_baseColors` 底色重算，不能在上一次结果上再乘。
      *
      * 被刷动过的顶点额外烘一层**方向性明暗**：迎光立面提亮、背光立面压暗。
@@ -1957,6 +3314,9 @@ export function createTerrainEditModule() {
       const count = this._grid.vertexCount
       const current = this._grid.current
       const origin = this._grid.base
+      const stride = this._grid.stride
+      const segments = this._grid.segments
+      const cellM = this._grid.cellSize > 0 ? this._grid.cellSize : 1
       const sunLen = Math.hypot(SUN_DIR.x, SUN_DIR.y, SUN_DIR.z) || 1
       const sx = SUN_DIR.x / sunLen
       const sy = SUN_DIR.y / sunLen
@@ -1965,13 +3325,16 @@ export function createTerrainEditModule() {
         const nx = normals.getX(i)
         const ny = normals.getY(i)
         const nz = normals.getZ(i)
-        const ndl = Math.abs(nx * up.x + ny * up.y + nz * up.z)
-        let shade = 0.84 + 0.16 * Math.min(1, ndl)
         const moved = Math.abs(current[i] - origin[i])
+        // 没被编辑过的顶点：亮度保持 1.0，让编辑区的影像和周围地球完全一致，
+        // 看不出「贴上去的一块」。坡面明暗只在真的刷动过之后才烘进去。
+        let shade = 1
         // 方向性明暗：只作用于被刷动过的顶点，迎光立面提亮、背光立面压暗。
         // 台阶「一眼看得出来」靠的是折点处这道明暗突变，而不是换一张贴图；
         // 天然陡崖没被刷过（moved = 0），保持影像原样。
         if (moved > 0.001) {
+          const ndl = Math.abs(nx * up.x + ny * up.y + nz * up.z)
+          shade = 0.84 + 0.16 * Math.min(1, ndl)
           const sunDot = nx * sx + ny * sy + nz * sz
           shade *= 1 + Math.min(1, moved / 6) * 0.3 * sunDot
         }
@@ -1981,9 +3344,21 @@ export function createTerrainEditModule() {
           if (this._cutSurface && moved > 2) {
             // 只对「真的动过」的顶点生效：没刷到的地方即使天然陡峭也保持影像原样
             const edited = Math.min(1, (moved - 2) / 6)
-            // 坡度门槛：约 37° 起、53° 满。缓坡（<30°）保留影像——那种坡上影像拉伸不严重，
-            // 硬换成岩土反而把整片山坡刷成灰面；真正的陡壁才需要换材质。
-            const steep = Math.min(1, Math.max(0, (0.8 - ndl) / 0.22))
+            // 坡度**直接由高度场算**，不要用顶点法线。
+            // 法线是相邻三角面平均出来的：一整面陡壁上的法线会被上下两端的缓坡拉平，
+            // `ndl` 仍然接近 1，于是「陡壁」判定几乎不触发（实测整面墙只有几十个顶点
+            // 越过门槛），墙面上只剩被 UV 展开拉长的影像 —— 就是那条竖条纹「幕布」。
+            // 高度场里的相邻高差不会骗人：一格之内差多少米，就是真实坡度。
+            const row = Math.floor(i / stride)
+            const col = i % stride
+            let maxStep = 0
+            if (col > 0) maxStep = Math.max(maxStep, Math.abs(current[i] - current[i - 1]))
+            if (col < segments) maxStep = Math.max(maxStep, Math.abs(current[i] - current[i + 1]))
+            if (row > 0) maxStep = Math.max(maxStep, Math.abs(current[i] - current[i - stride]))
+            if (row < segments) maxStep = Math.max(maxStep, Math.abs(current[i] - current[i + stride]))
+            const slope = Number.isFinite(maxStep) ? maxStep / cellM : 0
+            // 约 39° 起、58° 满
+            const steep = Math.min(1, Math.max(0, (slope - 0.8) / 0.8))
             const deep = Math.min(1, Math.max(0, (moved - 60) / 160))
             // `deep` 只对下挖生效：抬升出来的平台顶部是平的，应该保留影像，
             // 不能因为「高差大」就把整个平台顶也刷成岩土。
@@ -2075,12 +3450,21 @@ export function createTerrainEditModule() {
      */
     _buildWater(this: TerrainEditInstance & Record<string, any>, waterLevel: number) {
       if (!this._root || !this._grid || !this._polygon.length) return
+      // 高度场跟随地形后水面也要重算：先拆掉上一次的水面，避免叠出多层
+      const old = this._root.getObjectByName('terrain-edit-water')
+      if (old) {
+        if (old.geometry) old.geometry.dispose()
+        if (old.material) old.material.dispose()
+        this._root.remove(old)
+      }
       const grid = this._grid
       const stride = grid.stride
+      // 水面跟着块面一起下沉，否则块面沉下去后水面会浮在坑口之上
+      const displayLevel = waterLevel - (this._sinkDepth || 0)
       const positions = new Float32Array(grid.vertexCount * 3)
       for (let i = 0; i < grid.vertexCount; i++) {
         const { lng, lat } = gridLngLat(grid, i)
-        const local = this._toLocal(lng, lat, waterLevel)
+        const local = this._toLocal(lng, lat, displayLevel)
         positions[i * 3] = local.x
         positions[i * 3 + 1] = local.y
         positions[i * 3 + 2] = local.z
@@ -2178,6 +3562,10 @@ export function createTerrainEditModule() {
       this._areaMode = true
       this._areaInfo = { center: { lng: point.lng, lat: point.lat }, size, segments, feather }
       this._renderBoundary()
+      // 区域和高度都定了：先按「是否真的编辑过」生成掩膜。
+      // 没有编辑时整块网格透明、地形保持原样；有编辑时才挖掉编辑范围底下的地形。
+      this._refreshEditRegion(this._surface && this._surface.geometry)
+      this._syncTerrainClip()
       return this
     },
 
@@ -2422,12 +3810,20 @@ export function createTerrainEditModule() {
       const scene = this._viewer.scene
       const ray = this._viewer.camera.getPickRay(windowPosition)
       if (!ray || !scene.globe) return null
+      // 先求与「编辑块」的交点：块面才是用户看到、也是笔刷真正作用的那一层地表。
+      // 放到原地形之后判断的话，块被抬高 / 挖低的地方都会退回地形交点，
+      // 落笔点就会和鼠标差出几十上百米。
+      const edited = this._pickEditedSurface(ray)
+      if (edited) {
+        return {
+          lng: Cesium.Math.toDegrees(edited.longitude),
+          lat: Cesium.Math.toDegrees(edited.latitude)
+        }
+      }
       const cartesian = scene.globe.pick(ray, scene)
       if (!cartesian) return null
-      let carto = Cesium.Cartographic.fromCartesian(cartesian)
+      const carto = Cesium.Cartographic.fromCartesian(cartesian)
       if (!carto) return null
-      const edited = this._pickEditedSurface(ray, cartesian)
-      if (edited) carto = edited
       return {
         lng: Cesium.Math.toDegrees(carto.longitude),
         lat: Cesium.Math.toDegrees(carto.latitude)
@@ -2437,67 +3833,122 @@ export function createTerrainEditModule() {
     /**
      * 沿拾取射线求与「编辑后地表」的交点
      *
-     * 射线高度随距离单调变化，所以「射线当前高度 = 该处地表高度」这个不动点
-     * 用几次牛顿迭代就能收敛。只在编辑区内计算；交点跑到范围外时返回 null，
-     * 调用方退回原始地形交点。
+     * 这里**必须用沿射线行进 + 二分求根**，不能用牛顿从「未编辑地形」的交点迭代：
+     * - 牛顿的收敛判据是「高度差」，而平缓的视线下 1m 高度差可以对应几百米水平距离，
+     *   于是迭代“收敛”了、落点却在几百米开外 —— 表现就是笔刷圈和鼠标错位；
+     * - 块面被抬高 / 挖低之后，起点（原地形交点）离新地表很远，牛顿常常直接跑飞，
+     *   最后退回原地形交点，落笔点就更偏了。
+     *
+     * 射线行进只依赖「射线高度 - 地表高度」这个标量场的符号翻转，几何上永远不会偏离
+     * 射线，所以拿到的点投影回屏幕必然落在鼠标下面。
+     *
      * @private
      */
     _pickEditedSurface(
       this: TerrainEditInstance & Record<string, any>,
-      ray: any,
-      cartesian: any
+      ray: any
     ) {
       const grid: TerrainGrid | null = this._grid
+      const THREE_: any = THREE
+      const surface: any = this._surface
       if (!grid || !Cesium) return null
+
+      // 只在块的包围球范围里搜索：先算出射线进出球的两个 t，省掉几公里的空走
+      let tStart = 1
+      let tEnd = 0
+      try {
+        const scene = this._getScene()
+        const geo = surface && surface.geometry
+        if (!geo) return null
+        if (!geo.boundingSphere) geo.computeBoundingSphere()
+        const sphere: any = geo.boundingSphere
+        if (!sphere || !THREE_) return null
+        const centerWorld = surface.localToWorld(new THREE_.Vector3().copy(sphere.center))
+        const origin = scene.getSceneOriginPosition()
+        const ox = centerWorld.x + origin.x - ray.origin.x
+        const oy = centerWorld.y + origin.y - ray.origin.y
+        const oz = centerWorld.z + origin.z - ray.origin.z
+        const R = sphere.radius
+        // 求 |d·t - o|² = R² 的根，o = 球心 - 射线起点：
+        //   t = (o·d) ± sqrt((o·d)² - (|o|² - R²))
+        // 注意是「+b」而不是「-b」：写成 -b 的话根会落在相机身后几十米，
+        // 后面的行进只在那一小段里找，永远找不到交点（笔刷圈直接不出现）。
+        const b = ox * ray.direction.x + oy * ray.direction.y + oz * ray.direction.z
+        const c = ox * ox + oy * oy + oz * oz - R * R
+        const disc = b * b - c
+        if (disc <= 0) return null
+        const sq = Math.sqrt(disc)
+        tStart = Math.max(1, b - sq)
+        tEnd = b + sq
+      } catch (err) {
+        return null
+      }
+      if (!(tEnd > tStart)) return null
+
+      const point = new Cesium.Cartesian3()
       const b = grid.bounds
-      const toDeg = Cesium.Math.toDegrees
-      // 允许一格误差：圈边缘的拾取点可能刚好落在格网外
       const padLng = grid.dLng
       const padLat = grid.dLat
-      const inside = (lng: number, lat: number) =>
-        lng >= b.minLng - padLng &&
-        lng <= b.maxLng + padLng &&
-        lat >= b.minLat - padLat &&
-        lat <= b.maxLat + padLat
-
-      let t = Cesium.Cartesian3.distance(ray.origin, cartesian)
-      if (!Number.isFinite(t) || t <= 0) return null
-      const tMax = t + 20000
-      const point = new Cesium.Cartesian3()
-      const up = new Cesium.Cartesian3()
-      let best: any = null
-      let bestErr = Infinity
-      let initialErr = Infinity
-
-      for (let k = 0; k < 8; k++) {
+      const sample = (t: number) => {
         Cesium.Cartesian3.multiplyByScalar(ray.direction, t, point)
         Cesium.Cartesian3.add(ray.origin, point, point)
-        const current = Cesium.Cartographic.fromCartesian(point)
-        if (!current) break
-        const lng = toDeg(current.longitude)
-        const lat = toDeg(current.latitude)
-        if (!inside(lng, lat)) break
-        const surface = this._heightAt(lng, lat)
-        const err = Math.abs(surface - current.height)
-        if (k === 0) initialErr = err
-        if (err < bestErr) {
-          bestErr = err
-          best = current
+        const carto = Cesium.Cartographic.fromCartesian(point)
+        if (!carto) return null
+        const lng = Cesium.Math.toDegrees(carto.longitude)
+        const lat = Cesium.Math.toDegrees(carto.latitude)
+        // 块外（留一格余量）不算命中：否则光标会跑到范围外的空气里
+        if (
+          lng < b.minLng - padLng ||
+          lng > b.maxLng + padLng ||
+          lat < b.minLat - padLat ||
+          lat > b.maxLat + padLat
+        ) {
+          return null
         }
-        if (err < 0.05) break
-        Cesium.Ellipsoid.WGS84.geodeticSurfaceNormal(point, up)
-        const dhdt = Cesium.Cartesian3.dot(ray.direction, up)
-        if (!Number.isFinite(dhdt) || Math.abs(dhdt) < 1e-6) break
-        const next = t + (surface - current.height) / dhdt
-        if (!Number.isFinite(next) || next < 0 || next > tMax) break
-        if (Math.abs(next - t) < 0.01) break
-        t = next
+        // 求交要对「画出来的那一层」做：块面整体下沉了 sink 米、边缘还缝了
+        // stitch 米，这里也必须用同样的高度，否则平缓视线下落点会偏出几百米
+        const h = this._heightAt(lng, lat) - (this._sinkDepth || 0) - this._stitchAt(lng, lat)
+        if (!Number.isFinite(h)) return null
+        // 射线在该处的高度 - 地表高度：>0 在面上方，<0 已钻到面下
+        return { lng, lat, diff: carto.height - h }
       }
 
-      // 迭代没有把误差压下去（陡壁上来回跳）就退回原始地形交点，别把落笔点甩得更远
-      if (!best) return null
-      if (bestErr > grid.cellSize && bestErr >= initialErr) return null
-      return best
+      // 步长取半个格网：再细没必要（格网本身就这么密），再粗会漏掉薄脊
+      const step = Math.max(1, grid.cellSize * 0.5)
+      let prev = sample(tStart)
+      let tPrev = tStart
+      for (let t = tStart + step; t <= tEnd; t += step) {
+        const cur = sample(t)
+        if (cur && prev && prev.diff > 0 && cur.diff <= 0) {
+          // 夹住符号翻转，再二分 24 次（16m 区间 -> 微米级，远小于一个像素）
+          let lo = tPrev
+          let hi = t
+          let loDiff = prev.diff
+          for (let k = 0; k < 24; k++) {
+            const mid = (lo + hi) * 0.5
+            const s = sample(mid)
+            if (!s) break
+            if (s.diff > 0) {
+              lo = mid
+              loDiff = s.diff
+            } else {
+              hi = mid
+            }
+          }
+          const hitT = loDiff > 0 ? hi : lo
+          Cesium.Cartesian3.multiplyByScalar(ray.direction, hitT, point)
+          Cesium.Cartesian3.add(ray.origin, point, point)
+          const carto = Cesium.Cartographic.fromCartesian(point)
+          if (!carto) return null
+          return carto
+        }
+        if (cur) {
+          prev = cur
+          tPrev = t
+        }
+      }
+      // 射线没有穿过编辑块：交回调用方退回原始地形
+      return null
     },
 
     /**
@@ -2601,6 +4052,8 @@ export function createTerrainEditModule() {
       this._lastMovePos = null
       this._strokeDist = 0
       this.endStroke()
+      // 块面高度变了，边界裙边的顶边得跟着走（底边保持扎在地形以下）
+      this._seamDirty = true
       return this
     },
 
@@ -2888,6 +4341,8 @@ export function createTerrainEditModule() {
       this.cancelDraw()
       this.enableBrush(false)
       this._clearMeshes()
+      // 编辑区没了，之前挖掉的地形要还回去，否则地图上会留一个矩形洞
+      this._clearTerrainClip()
       if (this._draftSource && !this._viewer.isDestroyed()) {
         try {
           this._viewer.dataSources.remove(this._draftSource, true)
@@ -3062,6 +4517,9 @@ export function createTerrainEditModule() {
 
       this._rebuild()
       this._renderBoundary()
+      // 载入数据后重新计算编辑区域：区域数据只挖真正编辑过的地方，多边形数据把洞补回
+      if (this._areaMode) this._refreshEditRegion(this._surface && this._surface.geometry)
+      else this._clearTerrainClip()
       if (this._useTexture) this._requestTexture()
       return this
     },
@@ -3152,6 +4610,23 @@ export function createTerrainEditModule() {
     dispose(this: TerrainEditInstance & Record<string, any>) {
       if (this._disposed) return
       this._disposed = true
+      // 先摘掉逐帧跟随回调，避免场景销毁后还在访问已释放的格网
+      if (typeof this._followUninstall === 'function') {
+        try {
+          this._followUninstall()
+        } catch (err) {
+          reportError(err, { scope: 'TerrainEdit.dispose' })
+        }
+      }
+      this._followUninstall = null
+      if (typeof this._tileProgressRemove === 'function') {
+        try {
+          this._tileProgressRemove()
+        } catch (err) {
+          reportError(err, { scope: 'TerrainEdit.dispose' })
+        }
+      }
+      this._tileProgressRemove = null
       // 先收笔并解绑涂抹事件，再把相机操作还给 cesium
       this._destroyBrushHandler()
       this.enableBrush(false)
@@ -3166,6 +4641,8 @@ export function createTerrainEditModule() {
         }
       }
       this._draftSource = null
+      // 销毁前把地形洞补回去，避免 viewer 还在用时留下裁剪
+      this._clearTerrainClip()
       this._grid = null
       this._polygon = []
       this._polygonHeight = []
