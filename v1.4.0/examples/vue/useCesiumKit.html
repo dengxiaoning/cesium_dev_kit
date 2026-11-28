@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vue 组合式 API - Cesium 示例与源码 | cesium_dev_kit</title>
+<meta name="description" content="Vue 组合式 API：Vue 适配。cesium_dev_kit 提供可直接运行的 Vue 组合式 API 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="keywords" content="Vue 组合式 API, Vue 适配, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码">
+<meta name="author" content="dengxiaoning">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dengxiaoning.github.io/cesium_dev_kit/examples/vue/useCesiumKit.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cesium_dev_kit">
+<meta property="og:title" content="Vue 组合式 API - Cesium 示例 | cesium_dev_kit">
+<meta property="og:description" content="Vue 组合式 API：Vue 适配。cesium_dev_kit 提供可直接运行的 Vue 组合式 API 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta property="og:url" content="https://dengxiaoning.github.io/cesium_dev_kit/examples/vue/useCesiumKit.html">
+<meta property="og:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vue 组合式 API - Cesium 示例">
+<meta name="twitter:description" content="Vue 组合式 API：Vue 适配。cesium_dev_kit 提供可直接运行的 Vue 组合式 API 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="twitter:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<style>
+:root{--bg:#0b1220;--panel:#111b2e;--text:#e6edf7;--muted:#9fb0c9;--accent:#38bdf8;--border:#24324a}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b1220,#0e1626 40%,#0b1220);color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 72px}
+nav.crumb{font-size:13px;color:var(--muted);margin-bottom:18px}
+nav.crumb a{color:var(--muted);text-decoration:none}
+nav.crumb a:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.25;margin:0 0 12px}
+.lead{color:var(--muted);font-size:17px;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 32px}
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid var(--border)}
+.btn.primary{background:var(--accent);color:#062033;border-color:var(--accent)}
+.btn.ghost{color:var(--text);background:var(--panel)}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin:22px 0}
+h2{font-size:20px;margin:0 0 12px}
+pre.code{overflow:auto;background:#08101d;border:1px solid var(--border);border-radius:10px;padding:16px;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+ul.links{padding-left:20px;margin:0}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--border);margin-top:40px;padding-top:18px;color:var(--muted);font-size:14px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Vue 组合式 API - cesium_dev_kit Cesium 示例",
+  "description": "Vue 组合式 API：Vue 适配。cesium_dev_kit 提供可直接运行的 Vue 组合式 API 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。",
+  "url": "https://dengxiaoning.github.io/cesium_dev_kit/examples/vue/useCesiumKit.html",
+  "image": "https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Person",
+    "name": "dengxiaoning"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "cesium_dev_kit"
+  },
+  "programmingLanguage": [
+    "TypeScript",
+    "JavaScript"
+  ],
+  "isPartOf": {
+    "@type": "SoftwareApplication",
+    "name": "cesium_dev_kit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "codeRepository": "https://github.com/dengxiaoning/cesium_dev_kit"
+  }
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "cesium_dev_kit",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "示例",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Vue 适配",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/vue/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Vue 组合式 API",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/vue/useCesiumKit.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumb"><a href="../../index.html">API 文档</a> / <a href="../../examples/index.html">示例</a> / Vue 适配 / Vue 组合式 API</nav>
+  <h1>Vue 组合式 API</h1>
+  <p class="lead">Vue 适配。下面是该示例的核心 script 片段，供参考学习；完整可运行代码请进入在线 Demo 或查看仓库源码。</p>
+  <div class="cta">
+    <a class="btn primary" href="../../demo/?auto=1#/vue/useCesiumKit">在线运行 Demo</a>
+    <a class="btn ghost" href="../../examples/index.html">全部示例</a>
+    <a class="btn ghost" href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/vue/useCesiumKit.vue">查看完整源码</a>
+  </div>
+  <section>
+    <h2>示例代码</h2>
+    <pre class="code"><code>import * as Cesium from &#39;cesium&#39;
+import { watch } from &#39;vue&#39;
+import { useCesiumKit } from &#39;@/utils/cesiumPluginsExtends/vue&#39;
+
+// 演示站专用 token；业务项目请替换为自己的 Cesium Ion token
+Cesium.Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_ION_TOKEN as string
+
+// 组件挂载时创建 kit，卸载时自动 dispose，无需手动清理
+const { kit, viewer, ready, error } = useCesiumKit({
+  Cesium,
+  containerId: &#39;cesiumContainer&#39;,
+  viewerConfig: { infoBox: false, shouldAnimate: true }
+})
+
+watch(ready, (ok) =&gt; {
+  if (!ok || !kit.value) return
+  // 画一个面，并飞到目标位置
+  kit.value.graphics.createPolygonGraphics({
+    positions: Cesium.Cartesian3.fromDegreesArray([
+      104.09, 30.65, 104.12, 30.65, 104.11, 30.62
+    ]),
+    material: Cesium.Color.DEEPSKYBLUE.withAlpha(0.4),
+    clampToGround: true
+  })
+  viewer.value?.camera.flyTo({
+    destination: Cesium.Cartesian3.fromDegrees(104.10, 30.635, 9000)
+  })
+})</code></pre>
+  </section>
+  <section>
+    <h2>相关 API</h2>
+    <p class="muted">暂无关联类，请从左侧 API 文档浏览。</p>
+    <p class="muted">安装：<code>npm install cesium_dev_kit cesium</code></p>
+  </section>
+  <footer>
+    <p>cesium_dev_kit v1.4.0 · <a href="../../index.html">API 文档</a> · <a href="../../demo/?auto=1">在线 Demo</a> · <a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a></p>
+    <p>关键词：Vue 组合式 API, Vue 适配, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码</p>
+  </footer>
+</div>
+</body>
+</html>

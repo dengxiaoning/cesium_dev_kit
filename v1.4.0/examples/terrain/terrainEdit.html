@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>地形重建 - Cesium 示例与源码 | cesium_dev_kit</title>
+<meta name="description" content="地形重建：地形开挖、堆高、整平、台阶、水面与土方统计。cesium_dev_kit 提供可直接运行的 地形重建 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="keywords" content="地形重建, 地形编辑, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, TerrainEdit">
+<meta name="author" content="dengxiaoning">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dengxiaoning.github.io/cesium_dev_kit/examples/terrain/terrainEdit.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cesium_dev_kit">
+<meta property="og:title" content="地形重建 - Cesium 示例 | cesium_dev_kit">
+<meta property="og:description" content="地形重建：地形开挖、堆高、整平、台阶、水面与土方统计。cesium_dev_kit 提供可直接运行的 地形重建 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta property="og:url" content="https://dengxiaoning.github.io/cesium_dev_kit/examples/terrain/terrainEdit.html">
+<meta property="og:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="地形重建 - Cesium 示例">
+<meta name="twitter:description" content="地形重建：地形开挖、堆高、整平、台阶、水面与土方统计。cesium_dev_kit 提供可直接运行的 地形重建 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="twitter:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<style>
+:root{--bg:#0b1220;--panel:#111b2e;--text:#e6edf7;--muted:#9fb0c9;--accent:#38bdf8;--border:#24324a}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b1220,#0e1626 40%,#0b1220);color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 72px}
+nav.crumb{font-size:13px;color:var(--muted);margin-bottom:18px}
+nav.crumb a{color:var(--muted);text-decoration:none}
+nav.crumb a:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.25;margin:0 0 12px}
+.lead{color:var(--muted);font-size:17px;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 32px}
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid var(--border)}
+.btn.primary{background:var(--accent);color:#062033;border-color:var(--accent)}
+.btn.ghost{color:var(--text);background:var(--panel)}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin:22px 0}
+h2{font-size:20px;margin:0 0 12px}
+pre.code{overflow:auto;background:#08101d;border:1px solid var(--border);border-radius:10px;padding:16px;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+ul.links{padding-left:20px;margin:0}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--border);margin-top:40px;padding-top:18px;color:var(--muted);font-size:14px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "地形重建 - cesium_dev_kit Cesium 示例",
+  "description": "地形重建：地形开挖、堆高、整平、台阶、水面与土方统计。cesium_dev_kit 提供可直接运行的 地形重建 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。",
+  "url": "https://dengxiaoning.github.io/cesium_dev_kit/examples/terrain/terrainEdit.html",
+  "image": "https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Person",
+    "name": "dengxiaoning"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "cesium_dev_kit"
+  },
+  "programmingLanguage": [
+    "TypeScript",
+    "JavaScript"
+  ],
+  "isPartOf": {
+    "@type": "SoftwareApplication",
+    "name": "cesium_dev_kit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "codeRepository": "https://github.com/dengxiaoning/cesium_dev_kit"
+  }
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "cesium_dev_kit",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "示例",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "地形编辑",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/terrain/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "地形重建",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/terrain/terrainEdit.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumb"><a href="../../index.html">API 文档</a> / <a href="../../examples/index.html">示例</a> / 地形编辑 / 地形重建</nav>
+  <h1>地形重建</h1>
+  <p class="lead">地形开挖、堆高、整平、台阶、水面与土方统计。下面是该示例的核心 script 片段，供参考学习；完整可运行代码请进入在线 Demo 或查看仓库源码。</p>
+  <div class="cta">
+    <a class="btn primary" href="../../demo/?auto=1#/terrain/terrainEdit">在线运行 Demo</a>
+    <a class="btn ghost" href="../../examples/index.html">全部示例</a>
+    <a class="btn ghost" href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/terrain/terrainEdit.vue">查看完整源码</a>
+  </div>
+  <section>
+    <h2>示例代码</h2>
+    <pre class="code"><code>import * as Cesium from &#39;cesium&#39;
+import * as THREE from &#39;three&#39;
+import { createKit } from &#39;@/utils/cesiumPluginsExtends/index&#39;
+import { defaultStatic } from &#39;../defaultStaticConf&#39;
+
+/** 默认观察位置：泰山一带，地形起伏明显，适合演示开挖 */
+const DEFAULT_CENTER = [117.1, 36.25]
+
+export default {
+  data () {
+    return {
+      loading: false,
+      ready: false,
+      painting: false,
+      terrainReady: false,
+      showContour: true,
+      useTexture: true,
+      cutSurface: true,
+      targetHeight: null,
+      brush: { mode: &#39;lower&#39;, radius: 110, maxDelta: 3 },
+      stats: null,
+      tip: &#39;按住左键逐级下挖，拖动沿轨迹刷出平底平台；右键转视角，滚轮缩放&#39;,
+      error: &#39;&#39;,
+      modes: [
+        { value: &#39;lower&#39;, label: &#39;下沉&#39; },
+        { value: &#39;raise&#39;, label: &#39;抬升&#39; },
+        { value: &#39;level&#39;, label: &#39;整平&#39; },
+        { value: &#39;smooth&#39;, label: &#39;平滑&#39; }
+      ]
+    }
+  },
+  mounted () {
+    this.initMap()
+  },
+  methods: {
+    async initMap () {
+      const kit = createKit({
+        Cesium,
+        three: THREE,
+        containerId: &#39;cesiumContainer&#39;,
+        threeContainerId: &#39;threeContainer&#39;,
+        viewerConfig: {
+          // 与 three 融合必须关闭默认渲染循环
+          useDefaultRenderLoop: false,
+          shouldAnimate: true,
+          infoBox: false,
+          selectionIndicator: false,
+          animation: false,
+          timeline: false
+        },
+        extraConfig: {
+          depthTest: true,
+          logo: false
+        },
+        imageryProvider: {
+          type: &#39;WebMapTileServiceImageryProvider&#39;,
+          option: {
+            url: &#39;https://t0.tianditu.gov.cn/img_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973&#39;,
+            layer: &#39;img&#39;,
+            style: &#39;default&#39;,
+            tileMatrixSetID: &#39;w&#39;,
+            format: &#39;tiles&#39;,
+            maximumLevel: 18
+          }
+        },
+        MapImageryList: [
+          {
+            type: &#39;WebMapTileServiceImageryProvider&#39;,
+            option: {
+              url: &#39;https://t0.tianditu.gov.cn/cia_w/wmts?tk=65a5f62a964c1d5b23fa81bc34147973&#39;,
+              layer: &#39;cia&#39;,
+              style: &#39;default&#39;,
+              tileMatrixSetID: &#39;w&#39;,
+              format: &#39;tiles&#39;,
+              maximumLevel: 18
+            }
+          }
+        ],
+        defaultStatic
+      })
+
+      this.kit = kit
+      this.viewer = kit.viewer
+      this.terrainEdit = kit.terrainEdit
+      // 调试用：控制台可拿到场景与模块实例
+      if (typeof window !== &#39;undefined&#39;) {
+        window.__terrainDemo = this
+        // 便于在控制台调试
+        window.Cesium = Cesium
+        window.THREE = THREE
+      }
+
+      const { scene } = kit.threeJs.initThree({ center: DEFAULT_CENTER, threeHabit: false, fusion: &#39;single-context&#39;, depth: &#39;canvas-blit&#39; })
+      this.scene = scene
+      // 单帧循环交给 three 统一驱动：先渲染 cesium，再用同一帧的相机矩阵渲染 three
+      kit.threeJs.loop(() =&gt; this.scene.update())
+
+      await this.addTerrain()
+      this.ready = true
+      await this.buildArea({ lng: DEFAULT_CENTER[0], lat: DEFAULT_CENTER[1] })
+      this.focusArea()
+      // 涂抹过程中统计不需要每帧刷新，按固定间隔采样即可
+      this.statsTimer = setInterval(() =&gt; this.updateStats(), 700)
+    },
+    /** 把镜头对准编辑区：用包围球 + 俯角偏移，避免只朝某个方向看而没框住区域 */
+    focusArea () {
+      const stats = this.terrainEdit.getStats()
+      const center = this.areaCenter || { lng: DEFAULT_CENTER[0], lat: DEFAULT_CENTER[1] }
+      const height = stats ? (stats.minHeight + stats.maxHeight) / 2 : 0
+      const cartesian = Cesium.Cartesian3.fromDegrees(center.lng, center.lat, height)
+      // 半径取区域对角线的一半，range 约 1.1 倍边长：
+      // 太远的话 2400m 的地块只占屏幕一角，笔刷圈小得像个点，完全看不出在刷什么
+      const sphere = new Cesium.BoundingSphere(cartesian, 1180)
+      this.viewer.camera.flyToBoundingSphere(sphere, {
+        offset: new Cesium.HeadingPitchRange(
+          Cesium.Math.toRadians(18),
+          Cesium.Math.toRadians(-46),
+          2600
+        ),
+        duration: 0
+      })
+    },
+    async addTerrain () {
+      try {
+        // 演示站点统一在 main.ts 里配置了 Ion token，这里直接用世界地形。
+        // 网络不稳时不能一直卡在 await 上，超时就退回椭球（0 高程）继续演示。
+        const provider = await Promise.race([
+          Cesium.CesiumTerrainProvider.fromIonAssetId(1),
+          new Promise((resolve) =&gt; setTimeout(() =&gt; resolve(null), 12000))
+        ])
+        if (!provider) throw new Error(&#39;世界地形加载超时&#39;)
+        this.viewer.terrainProvider = provider
+        this.terrainReady = true
+      } catch (err) {
+        this.terrainReady = false
+        this.error = &#39;世界地形加载失败，将以 0 高程平面演示：&#39; + (err &amp;&amp; err.message ? err.message : err)
+      }
+    },
+    /** 在当前视野中心铺一块可涂抹的地形区域 */
+    async buildArea (fixedCenter) {
+      const center = fixedCenter || this.pickCenter() || { lng: DEFAULT_CENTER[0], lat: DEFAULT_CENTER[1] }
+      this.areaCenter = center
+      this.loading = true
+      this.error = &#39;&#39;
+      this.tip = &#39;正在采样地形高度并取地表贴图…&#39;
+      try {
+        await this.terrainEdit.setArea(center, {
+          size: 2400,
+          segments: 160,
+          feather: 90,
+          texture: this.useTexture,
+          cutSurface: this.cutSurface
+        })
+        this.syncBrush()
+        this.terrainEdit.enableBrush(true)
+        this.painting = true
+        this.updateStats()
+        this.tip = &#39;按住左键逐级下挖，拖动沿轨迹刷出平底平台；右键转视角，滚轮缩放&#39;
+      } catch (err) {
+        this.error = &#39;生成地形区域失败：&#39; + (err &amp;&amp; err.message ? err.message : err)
+      } finally {
+        this.loading = false
+      }
+    },
+    async resetArea () {
+      this.terrainEdit.clear()
+      this.painting = false
+      await this.buildArea()
+      this.focusArea()
+    },
+    toggleBrush () {
+      this.painting = !this.painting
+      this.terrainEdit.enableBrush(this.painting)
+      this.tip = this.painting
+        ? &#39;按住左键逐级下挖，拖动刷出平底平台；右键拖动转视角，滚轮缩放&#39;
+        : &#39;笔刷已关闭：左键拖动可旋转地图、滚轮缩放，随时可以再开启&#39;
+      this.updateStats()
+    },
+    changeMode (mode) {
+      this.brush.mode = mode
+      if (mode !== &#39;level&#39;) this.targetHeight = null
+      this.syncBrush()
+    },
+    onTarget (event) {
+      this.targetHeight = Number(event.target.value)
+      this.syncBrush()
+    },
+    syncBrush () {
+      this.terrainEdit.setBrush({
+        mode: this.brush.mode,
+        radius: this.brush.radius,
+        maxDelta: this.brush.maxDelta,
+        targetHeight: this.brush.mode === &#39;level&#39; ? this.targetHeight : null
+      })
+    },
+    toggleContour () {
+      this.terrainEdit.setContourVisible(this.showContour)
+    },
+    toggleTexture () {
+      this.terrainEdit.setTextureEnabled(this.useTexture)
+    },
+    toggleCutSurface () {
+      this.terrainEdit.setCutSurfaceEnabled(this.cutSurface)
+    },
+    undo () {
+      this.terrainEdit.undo()
+      this.updateStats()
+      this.tip = &#39;已撤销上一步&#39;
+    },
+    /** 导出当前编辑结果并让浏览器下载：演示「数据接口 + 自己的存储」怎么配合 */
+    saveTerrain () {
+      const data = this.terrainEdit.exportData()
+      if (!data) {
+        this.tip = &#39;还没有可导出的地形，先刷两笔&#39;
+        return
+      }
+      const text = JSON.stringify(data)
+      const blob = new Blob([text], { type: &#39;application/json&#39; })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement(&#39;a&#39;)
+      link.href = url
+      link.download = `terrain-${data.grid.segments}x${data.grid.segments}-${Date.now()}.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      setTimeout(() =&gt; URL.revokeObjectURL(url), 1000)
+      const kb = (text.length / 1024).toFixed(0)
+      this.tip = `已导出 ${kb} KB：含原始 / 编辑后两份高度场，可直接 POST 到自己的后端，再 importData 复原`
+    },
+    pickFile () {
+      const input = this.$refs.fileInput
+      if (input) input.click()
+    },
+    /** 载入导出的 JSON：不重新采样地形，直接恢复成可继续编辑的状态 */
+    loadTerrain (event) {
+      const file = event.target.files &amp;&amp; event.target.files[0]
+      if (!file) return
+      const reader = new FileReader()
+      reader.onload = () =&gt; {
+        try {
+          const data = JSON.parse(String(reader.result))
+          this.terrainEdit.importData(data)
+          this.applySnapshotUi(data)
+          this.terrainEdit.enableBrush(true)
+          this.painting = true
+          this.areaCenter = this.snapshotCenter(data)
+          this.focusArea()
+          this.error = &#39;&#39;
+          this.updateStats()
+          this.tip = `已载入 ${file.name}（${data.grid.segments}×${data.grid.segments} 网格），可继续刷`
+        } catch (err) {
+          this.error = &#39;载入失败：&#39; + (err &amp;&amp; err.message ? err.message : err)
+        } finally {
+          event.target.value = &#39;&#39;
+        }
+      }
+      reader.onerror = () =&gt; {
+        this.error = &#39;读取文件失败&#39;
+      }
+      reader.readAsText(file)
+// ... 完整源码见 https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/terrain/terrainEdit.vue</code></pre>
+  </section>
+  <section>
+    <h2>相关 API</h2>
+    <ul class="links"><li><a href="../../classes/TerrainEdit.html">TerrainEdit API 文档</a></li></ul>
+    <p class="muted">安装：<code>npm install cesium_dev_kit cesium</code></p>
+  </section>
+  <footer>
+    <p>cesium_dev_kit v1.4.0 · <a href="../../index.html">API 文档</a> · <a href="../../demo/?auto=1">在线 Demo</a> · <a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a></p>
+    <p>关键词：地形重建, 地形编辑, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, TerrainEdit</p>
+  </footer>
+</div>
+</body>
+</html>

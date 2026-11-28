@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景光效控制 - Cesium 示例与源码 | cesium_dev_kit</title>
+<meta name="description" content="场景光效控制：天空盒、雨雪雾、夜景、后处理、火焰粒子等场景效果。cesium_dev_kit 提供可直接运行的 场景光效控制 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="keywords" content="场景光效控制, 场景与天气特效, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, PassEffect, Plugin">
+<meta name="author" content="dengxiaoning">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dengxiaoning.github.io/cesium_dev_kit/examples/scene/sceneParam.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cesium_dev_kit">
+<meta property="og:title" content="场景光效控制 - Cesium 示例 | cesium_dev_kit">
+<meta property="og:description" content="场景光效控制：天空盒、雨雪雾、夜景、后处理、火焰粒子等场景效果。cesium_dev_kit 提供可直接运行的 场景光效控制 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta property="og:url" content="https://dengxiaoning.github.io/cesium_dev_kit/examples/scene/sceneParam.html">
+<meta property="og:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="场景光效控制 - Cesium 示例">
+<meta name="twitter:description" content="场景光效控制：天空盒、雨雪雾、夜景、后处理、火焰粒子等场景效果。cesium_dev_kit 提供可直接运行的 场景光效控制 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="twitter:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<style>
+:root{--bg:#0b1220;--panel:#111b2e;--text:#e6edf7;--muted:#9fb0c9;--accent:#38bdf8;--border:#24324a}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b1220,#0e1626 40%,#0b1220);color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 72px}
+nav.crumb{font-size:13px;color:var(--muted);margin-bottom:18px}
+nav.crumb a{color:var(--muted);text-decoration:none}
+nav.crumb a:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.25;margin:0 0 12px}
+.lead{color:var(--muted);font-size:17px;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 32px}
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid var(--border)}
+.btn.primary{background:var(--accent);color:#062033;border-color:var(--accent)}
+.btn.ghost{color:var(--text);background:var(--panel)}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin:22px 0}
+h2{font-size:20px;margin:0 0 12px}
+pre.code{overflow:auto;background:#08101d;border:1px solid var(--border);border-radius:10px;padding:16px;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+ul.links{padding-left:20px;margin:0}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--border);margin-top:40px;padding-top:18px;color:var(--muted);font-size:14px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "场景光效控制 - cesium_dev_kit Cesium 示例",
+  "description": "场景光效控制：天空盒、雨雪雾、夜景、后处理、火焰粒子等场景效果。cesium_dev_kit 提供可直接运行的 场景光效控制 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。",
+  "url": "https://dengxiaoning.github.io/cesium_dev_kit/examples/scene/sceneParam.html",
+  "image": "https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Person",
+    "name": "dengxiaoning"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "cesium_dev_kit"
+  },
+  "programmingLanguage": [
+    "TypeScript",
+    "JavaScript"
+  ],
+  "isPartOf": {
+    "@type": "SoftwareApplication",
+    "name": "cesium_dev_kit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "codeRepository": "https://github.com/dengxiaoning/cesium_dev_kit"
+  }
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "cesium_dev_kit",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "示例",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "场景与天气特效",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/scene/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "场景光效控制",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/scene/sceneParam.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumb"><a href="../../index.html">API 文档</a> / <a href="../../examples/index.html">示例</a> / 场景与天气特效 / 场景光效控制</nav>
+  <h1>场景光效控制</h1>
+  <p class="lead">天空盒、雨雪雾、夜景、后处理、火焰粒子等场景效果。下面是该示例的核心 script 片段，供参考学习；完整可运行代码请进入在线 Demo 或查看仓库源码。</p>
+  <div class="cta">
+    <a class="btn primary" href="../../demo/?auto=1#/scene/sceneParam">在线运行 Demo</a>
+    <a class="btn ghost" href="../../examples/index.html">全部示例</a>
+    <a class="btn ghost" href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/scene/sceneParam.vue">查看完整源码</a>
+  </div>
+  <section>
+    <h2>示例代码</h2>
+    <pre class="code"><code>import * as Cesium from &#39;cesium&#39;
+import { initCesium } from &#39;@/utils/cesiumPluginsExtends/index&#39;
+
+export default {
+  data () {
+    return {
+      activeId: &#39;light&#39;
+    }
+  },
+  mounted () {
+    this.initMap()
+  },
+  methods: {
+    async initMap () {
+      const tempData = [
+        {
+          type: &#39;UrlTemplateImageryProvider&#39;,
+          option: {
+            url: &#39;https://webst02.is.autonavi.com/appmaptile?style=6&amp;x={x}&amp;y={y}&amp;z={z}&#39;,
+          }
+        }]
+      const {
+        viewer,
+        control,
+      } = new initCesium(
+        {
+          cesiumGlobal: Cesium,
+          containerId: &#39;cesiumContainer&#39;,
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: tempData
+        })
+
+
+      this.c_viewer = viewer;
+
+      this.control = control;
+
+      // let tileset = this.c_viewer.scene.primitives.add(
+      //   new Cesium.Cesium3DTileset({
+      //     url: &#39;static/data/3DTiles/building/tileset.json&#39;,
+      //   }),
+      // )
+      let tiles = await Cesium.Cesium3DTileset.fromUrl(&#39;static/data/3DTiles/building/tileset.json&#39;);
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
+      tileset.style = new Cesium.Cesium3DTileStyle({
+        color: {
+          conditions: [
+            [&#39;${height} &gt;= 300&#39;, &#39;rgba(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 200&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 100&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 50&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 25&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 10&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 5&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;true&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+          ],
+        },
+      })
+      this.c_viewer.flyTo(tileset);
+      this.control.showSceneBloomPanel({ elementId: &#39;cust-gui-box&#39; });
+    }
+  },
+  beforeUnmount () {
+    this.c_viewer = null;
+    this.control = null;
+  }
+}</code></pre>
+  </section>
+  <section>
+    <h2>相关 API</h2>
+    <ul class="links"><li><a href="../../classes/PassEffect.html">PassEffect API 文档</a></li><li><a href="../../classes/Plugin.html">Plugin API 文档</a></li></ul>
+    <p class="muted">安装：<code>npm install cesium_dev_kit cesium</code></p>
+  </section>
+  <footer>
+    <p>cesium_dev_kit v1.4.0 · <a href="../../index.html">API 文档</a> · <a href="../../demo/?auto=1">在线 Demo</a> · <a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a></p>
+    <p>关键词：场景光效控制, 场景与天气特效, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, PassEffect, Plugin</p>
+  </footer>
+</div>
+</body>
+</html>

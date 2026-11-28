@@ -1,0 +1,1053 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Graphics | cesium_dev_kit - v1.2.1</title><link rel="icon" href="../assets/favicon.ico"/><meta name="description" content="Documentation for cesium_dev_kit"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><link rel="stylesheet" href="../assets/custom.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">cesium_dev_kit - v1.2.1</a>
+<div id="tsd-toolbar-links"><a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a><a href="/cesium_dev_kit/demo/?auto=1">在线 Demo</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb" aria-label="Breadcrumb">
+<li><a href="" aria-current="page">Graphics</a></li></ul>
+<h1>Class Graphics</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>图形模块
+用于向地图加载各种实体对象</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see">See<a href="#see" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/utils/cesiumPluginsExtends/libs/Graphics.ts">实现源码</a></p>
+<blockquote>
+<p>已弃用的兼容别名（不再列出，请改用对应的 <code>create*</code> 方法）：<code>craeteCorridorGraphics</code>、<code>craeteDynamicPolyLineGraphics</code>、<code>craeteDynamicCylinderGraphics</code>、<code>craeteRotateCylinderGraphics</code>、<code>craeteDynamicBlinkCircleGraphics</code>、<code>craeteDynamicCricleGraphics</code>、<code>craeteDynamicShadeWallGraphics</code>、<code>craeteRotatePlaneGraphics</code></p>
+</blockquote>
+</div></div></section>
+<section class="tsd-panel-group tsd-index-group">
+<section class="tsd-panel tsd-index-panel">
+<details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h5 class="tsd-index-heading uppercase">Index</h5></summary>
+<div class="tsd-accordion-details">
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading tsd-anchor-link" id="properties">Properties<a href="#properties" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-index-list"><a href="#destroy" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>destroy</span></a>
+<a href="#getdfst" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>get<wbr/>Df<wbr/>St</span></a>
+<a href="#transformcartesianarraytowgs84array" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>Cartesian<wbr/>Array<wbr/>To<wbr/>WGS84<wbr/>Array</span></a>
+<a href="#transformcartesiantowgs84" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>Cartesian<wbr/>To<wbr/>WGS84</span></a>
+<a href="#transformwgs84arraytocartesianarray" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>WGS84<wbr/>Array<wbr/>To<wbr/>Cartesian<wbr/>Array</span></a>
+<a href="#transformwgs84tocartesian" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>WGS84<wbr/>To<wbr/>Cartesian</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading tsd-anchor-link" id="methods">Methods<a href="#methods" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-index-list"><a href="#createboxgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Box<wbr/>Graphics</span></a>
+<a href="#createcanvasgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Canvas<wbr/>Graphics</span></a>
+<a href="#createcorridorgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Corridor<wbr/>Graphics</span></a>
+<a href="#createcustomdefbillboardgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Custom<wbr/>Def<wbr/>Billboard<wbr/>Graphics</span></a>
+<a href="#createdynamicblinkcirclegraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Dynamic<wbr/>Blink<wbr/>Circle<wbr/>Graphics</span></a>
+<a href="#createdynamiccirclegraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Dynamic<wbr/>Circle<wbr/>Graphics</span></a>
+<a href="#createdynamiccylindergraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Dynamic<wbr/>Cylinder<wbr/>Graphics</span></a>
+<a href="#createdynamicpolylinegraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Dynamic<wbr/>Poly<wbr/>Line<wbr/>Graphics</span></a>
+<a href="#createdynamicshadewallgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Dynamic<wbr/>Shade<wbr/>Wall<wbr/>Graphics</span></a>
+<a href="#createfadecylindergraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Fade<wbr/>Cylinder<wbr/>Graphics</span></a>
+<a href="#createfanshape" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Fan<wbr/>Shape</span></a>
+<a href="#creategifbillboardgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Gif<wbr/>Billboard<wbr/>Graphics</span></a>
+<a href="#creategraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Graphics</span></a>
+<a href="#createlinegraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Line<wbr/>Graphics</span></a>
+<a href="#createmodelgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Model<wbr/>Graphics</span></a>
+<a href="#createpointsgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Points<wbr/>Graphics</span></a>
+<a href="#createpolygongraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Polygon<wbr/>Graphics</span></a>
+<a href="#createrotatecylindergraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Rotate<wbr/>Cylinder<wbr/>Graphics</span></a>
+<a href="#createrotateplanegraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Rotate<wbr/>Plane<wbr/>Graphics</span></a>
+<a href="#createvideoplanegraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Video<wbr/>Plane<wbr/>Graphics</span></a>
+<a href="#getbillboardgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Billboard<wbr/>Graphics</span></a>
+<a href="#getboxgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Box<wbr/>Graphics</span></a>
+<a href="#getcylindergraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Cylinder<wbr/>Graphics</span></a>
+<a href="#getellipsegraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Ellipse<wbr/>Graphics</span></a>
+<a href="#getellipsoidgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Ellipsoid<wbr/>Graphics</span></a>
+<a href="#getlabelgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Label<wbr/>Graphics</span></a>
+<a href="#getlinegraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Line<wbr/>Graphics</span></a>
+<a href="#getmodelgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Model<wbr/>Graphics</span></a>
+<a href="#getpathgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Path<wbr/>Graphics</span></a>
+<a href="#getplanegraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Plane<wbr/>Graphics</span></a>
+<a href="#getpointgraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Point<wbr/>Graphics</span></a>
+<a href="#getpolygongraphics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Polygon<wbr/>Graphics</span></a>
+<a href="#setgraphicsfloat" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Graphics<wbr/>Float</span></a>
+<a href="#setgraphicsrotate" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Graphics<wbr/>Rotate</span></a>
+</div></section></div></details></section></section>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
+<section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="destroy"><span>destroy</span><a href="#destroy" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">destroy</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span></div>
+<div class="tsd-comment tsd-typography"><p>释放当前模块持有的监听器 / DataSource（幂等）</p>
+</div></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getdfst"><span>get<wbr/>Df<wbr/>St</span><a href="#getdfst" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">getDfSt</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">attrArr</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></div></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="transformcartesianarraytowgs84array"><span>transform<wbr/>Cartesian<wbr/>Array<wbr/>To<wbr/>WGS84<wbr/>Array</span><a href="#transformcartesianarraytowgs84array" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">transformCartesianArrayToWGS84Array</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">cartesianArr</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> (<span class="tsd-signature-type">WGS84Type</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span>)<span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></div></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="transformcartesiantowgs84"><span>transform<wbr/>Cartesian<wbr/>To<wbr/>WGS84</span><a href="#transformcartesiantowgs84" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">transformCartesianToWGS84</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">cartesian</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">WGS84Type</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></div></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="transformwgs84arraytocartesianarray"><span>transform<wbr/>WGS84<wbr/>Array<wbr/>To<wbr/>Cartesian<wbr/>Array</span><a href="#transformwgs84arraytocartesianarray" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">transformWGS84ArrayToCartesianArray</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">WSG84Arr</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">WGS84Type</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">alt</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></div></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="transformwgs84tocartesian"><span>transform<wbr/>WGS84<wbr/>To<wbr/>Cartesian</span><a href="#transformwgs84tocartesian" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">transformWGS84ToCartesian</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">WGS84Type</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">alt</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">any</span></div></section></section></details>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
+<section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createboxgraphics"><span>create<wbr/>Box<wbr/>Graphics</span><a href="#createboxgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createboxgraphics-1"><span class="tsd-kind-call-signature">createBoxGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">BoxGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createboxgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建Box</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">BoxGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>position</code>（<code>Cartesian3</code>）：Cartesian3坐标</p>
+<ul>
+<li><code>show</code>（<code>boolean</code>）：是否显示</li>
+<li><code>name</code>（<code>string</code>）：名称</li>
+<li><code>dimensions</code>：盒子长宽高</li>
+<li><code>distanceDisplayCondition</code>：显示条件</li>
+<li><code>outlineColor</code>：外边线颜色</li>
+<li><code>outline</code>（<code>boolean</code>）：是否显示外边线</li>
+<li><code>fill</code>（<code>boolean</code>）：是否填充</li>
+<li><code>material</code>（<code>boolean</code>）：材质</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回BoxGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see-1">See<a href="#see-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>getBoxGraphics</p>
+</div>
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example">Example<a href="#example" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createBoxGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;boxG&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">position:Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegrees</span><span class="hl-1">(</span><span class="hl-8">104.081701757991</span><span class="hl-1">, </span><span class="hl-8">30.627042558105988</span><span class="hl-1">, </span><span class="hl-8">200</span><span class="hl-1">),</span><br/><span class="hl-1">     </span><span class="hl-6">material:Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">RED</span><span class="hl-1">.</span><span class="hl-0">withAlpha</span><span class="hl-1">(</span><span class="hl-8">0.2</span><span class="hl-1">),</span><br/><span class="hl-1">     </span><span class="hl-6">clampToGround:</span><span class="hl-5">false</span><span class="hl-1">,</span><br/><span class="hl-1">     </span><span class="hl-6">clampToS3M:</span><span class="hl-5">false</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createcanvasgraphics"><span>create<wbr/>Canvas<wbr/>Graphics</span><a href="#createcanvasgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createcanvasgraphics-1"><span class="tsd-kind-call-signature">createCanvasGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CanvasGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createcanvasgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>canvas 贴图</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">CanvasGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>positions</code>（<code>Array&lt;Cartesian3&gt;</code>）：坐标数组</p>
+<ul>
+<li><code>img</code>（<code>string</code>）：图片</li>
+<li><code>cwidth</code>（<code>number</code>）：宽度</li>
+<li><code>cheight</code>（<code>number</code>）：高度</li>
+<li><code>callback</code>：回调</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回rectangle实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-1">Example<a href="#example-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createCanvasGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">positions:Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegreesArray</span><span class="hl-1">(</span><br/><span class="hl-1">           </span><span class="hl-8">110.16018735617934</span><span class="hl-1">, </span><span class="hl-8">31.036076859828338</span><span class="hl-1">, </span><br/><span class="hl-1">           </span><span class="hl-8">110.17845812703679</span><span class="hl-1">,</span><span class="hl-8">31.033686527335444</span><span class="hl-1">,</span><br/><span class="hl-1">           </span><span class="hl-8">110.19261040403379</span><span class="hl-1">, </span><span class="hl-8">31.02892781958261</span><span class="hl-1">, </span><br/><span class="hl-1">           </span><span class="hl-8">110.20775152895165</span><span class="hl-1">,</span><span class="hl-8">31.02475678594998</span><span class="hl-1">,</span><br/><span class="hl-1">           </span><span class="hl-8">110.2247484728178</span><span class="hl-1">,</span><span class="hl-8">31.019315371809977</span><span class="hl-1">, </span><br/><span class="hl-1">           </span><span class="hl-8">110.24033095328579</span><span class="hl-1">,</span><span class="hl-8">31.017866033294506</span><span class="hl-1">)</span><br/><span class="hl-6">img</span><span class="hl-1"> : </span><span class="hl-2">&quot;images/ysCesium/logo.png&quot;</span><br/><span class="hl-6">cwidth</span><span class="hl-1"> : </span><span class="hl-8">500</span><span class="hl-1">,</span><br/><span class="hl-6">cheight:</span><span class="hl-8">200</span><span class="hl-1">,</span><br/><span class="hl-6">speed:</span><span class="hl-8">0.06</span><span class="hl-1">,</span><br/><span class="hl-0">callback</span><span class="hl-6">:res</span><span class="hl-5">=&gt;</span><span class="hl-1">{</span><span class="hl-6">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-6">res</span><span class="hl-1">)}</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createcorridorgraphics"><span>create<wbr/>Corridor<wbr/>Graphics</span><a href="#createcorridorgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createcorridorgraphics-1"><span class="tsd-kind-call-signature">createCorridorGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CorridorGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createcorridorgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建走廊（参数同 <code>craeteCorridorGraphics</code>）</p>
+<ul>
+<li><code>positions</code>（<code>any[]</code>）：坐标数组</li>
+<li><code>height</code>（<code>number</code>）：高度</li>
+<li><code>width</code>（<code>number</code>）：宽度</li>
+<li><code>material</code>（<code>MaterialInput</code>）：材质</li>
+<li><code>outline</code>（<code>boolean</code>）：是否显示外边线</li>
+<li><code>extrudedHeight</code>（<code>number</code>）：拉伸高度</li>
+<li><code>cornerType</code>：转角类型</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">CorridorGraphicsOptions</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createcustomdefbillboardgraphics"><span>create<wbr/>Custom<wbr/>Def<wbr/>Billboard<wbr/>Graphics</span><a href="#createcustomdefbillboardgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createcustomdefbillboardgraphics-1"><span class="tsd-kind-call-signature">createCustomDefBillboardGraphics</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CustomDefBillboardGraphicsOptions</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createcustomdefbillboardgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>自定义标牌气泡框</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">CustomDefBillboardGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>position</code>（<code>Cartesian3</code>）：坐标数组</p>
+<ul>
+<li><code>height</code>（<code>number</code>）：高度</li>
+<li><code>width</code>（<code>number</code>）：宽度</li>
+<li><code>text</code>（<code>string</code>）：文字</li>
+<li><code>image</code>（<code>string</code>）：气泡窗图片</li>
+<li><code>b_pixelOffset</code>（<code>Cartesian2</code>）：偏移</li>
+<li><code>b_scale</code>（<code>number</code>）：缩放比例</li>
+<li><code>callback</code>：回调返回entity</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see-2">See<a href="#see-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>getBillboardGraphics</p>
+</div>
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-2">Example<a href="#example-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createCustomDefBillboardGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">     </span><span class="hl-6">position:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegrees</span><span class="hl-1">(</span><span class="hl-8">110.16018735617934</span><span class="hl-1">, </span><span class="hl-8">31.036076859828338</span><span class="hl-1">),</span><br/><span class="hl-1">     </span><span class="hl-6">image:</span><span class="hl-1"> </span><span class="hl-2">&quot;static/data/images/Textures/circle_bg.png&quot;</span><span class="hl-1">,</span><br/><span class="hl-6">width :</span><span class="hl-1"> </span><span class="hl-8">150</span><span class="hl-1">;</span><br/><span class="hl-6">height</span><span class="hl-1">:</span><span class="hl-8">80</span><span class="hl-1">;</span><br/><span class="hl-6">text</span><span class="hl-1">: </span><span class="hl-2">&quot;建工集团&quot;</span><span class="hl-1">,</span><br/><span class="hl-6">b_pixelOffset:</span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Cartesian2</span><span class="hl-1">(</span><span class="hl-8">80</span><span class="hl-1">, -</span><span class="hl-8">35</span><span class="hl-1">),</span><br/><span class="hl-6">b_scale :</span><span class="hl-1"> </span><span class="hl-8">1.5</span><span class="hl-1">,</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createdynamicblinkcirclegraphics"><span>create<wbr/>Dynamic<wbr/>Blink<wbr/>Circle<wbr/>Graphics</span><a href="#createdynamicblinkcirclegraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createdynamicblinkcirclegraphics-1"><span class="tsd-kind-call-signature">createDynamicBlinkCircleGraphics</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">DynamicBlinkCircleGraphicsOptions</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createdynamicblinkcirclegraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建闪烁圆（参数同 <code>craeteDynamicBlinkCircleGraphics</code>）</p>
+<ul>
+<li><code>position</code>：Cartesian3坐标</li>
+<li><code>alp</code>（<code>number</code>）：频率</li>
+<li><code>flog</code>（<code>boolean</code>）：显示雾气效果</li>
+<li><code>height</code>（<code>number</code>）：高度</li>
+<li><code>semiMinorAxis</code>（<code>number</code>）：短半轴</li>
+<li><code>semiMajorAxis</code>（<code>number</code>）：长半轴</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">DynamicBlinkCircleGraphicsOptions</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createdynamiccirclegraphics"><span>create<wbr/>Dynamic<wbr/>Circle<wbr/>Graphics</span><a href="#createdynamiccirclegraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createdynamiccirclegraphics-1"><span class="tsd-kind-call-signature">createDynamicCircleGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">DynamicCricleGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createdynamiccirclegraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建动态圆（参数同 <code>craeteDynamicCricleGraphics</code>）</p>
+<ul>
+<li><code>center</code>（<code>any | number[]</code>）：中心坐标数组</li>
+<li><code>radius</code>（<code>number</code>）：半径</li>
+<li><code>rotateAmount</code>（<code>number</code>）：旋转频率</li>
+<li><code>height</code>（<code>number</code>）：高度</li>
+<li><code>scale</code>（<code>number</code>）：外圆缩放比例</li>
+<li><code>scale2</code>（<code>number</code>）：内圆缩放比例</li>
+<li><code>imge</code>（<code>string</code>）：材质图片</li>
+<li><code>material</code>（<code>MaterialInput</code>）：材质(与图片二选一)</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">DynamicCricleGraphicsOptions</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createdynamiccylindergraphics"><span>create<wbr/>Dynamic<wbr/>Cylinder<wbr/>Graphics</span><a href="#createdynamiccylindergraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createdynamiccylindergraphics-1"><span class="tsd-kind-call-signature">createDynamicCylinderGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">DynamicCylinderGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createdynamiccylindergraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建动态圆柱（参数同 <code>craeteDynamicCylinderGraphics</code>）</p>
+<ul>
+<li><code>cylinder</code>（<code>CylinderGraphicsOptions</code>）：椎体对象（传给 getCylinderGraphics 的参数）</li>
+<li><code>entity</code>：entity实体</li>
+<li><code>width</code>（<code>number</code>）：宽度</li>
+<li><code>clampToGround</code>（<code>boolean</code>）：是否贴地</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">DynamicCylinderGraphicsOptions</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createdynamicpolylinegraphics"><span>create<wbr/>Dynamic<wbr/>Poly<wbr/>Line<wbr/>Graphics</span><a href="#createdynamicpolylinegraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createdynamicpolylinegraphics-1"><span class="tsd-kind-call-signature">createDynamicPolyLineGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">DynamicPolyLineGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createdynamicpolylinegraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建动态线（参数同 <code>craeteDynamicPolyLineGraphics</code>）</p>
+<ul>
+<li><code>positions</code>（<code>any[]</code>）：坐标数组</li>
+<li><code>material</code>（<code>MaterialInput</code>）：材质</li>
+<li><code>width</code>（<code>number</code>）：宽度</li>
+<li><code>clampToGround</code>（<code>boolean</code>）：是否贴地</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">DynamicPolyLineGraphicsOptions</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createdynamicshadewallgraphics"><span>create<wbr/>Dynamic<wbr/>Shade<wbr/>Wall<wbr/>Graphics</span><a href="#createdynamicshadewallgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createdynamicshadewallgraphics-1"><span class="tsd-kind-call-signature">createDynamicShadeWallGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">DynamicShadeWallGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createdynamicshadewallgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建渐变墙（参数同 <code>craeteDynamicShadeWallGraphics</code>）</p>
+<ul>
+<li><code>positions</code>（<code>any[]</code>）：坐标数组</li>
+<li><code>alp</code>（<code>number</code>）：透明比例 0~1</li>
+<li><code>num</code>（<code>number</code>）：渐变步长</li>
+<li><code>speed</code>（<code>number</code>）：速度 0~1</li>
+<li><code>color</code>（<code>any | string</code>）：颜色</li>
+<li><code>img</code>（<code>string</code>）：材质图片</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">DynamicShadeWallGraphicsOptions</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createfadecylindergraphics"><span>create<wbr/>Fade<wbr/>Cylinder<wbr/>Graphics</span><a href="#createfadecylindergraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createfadecylindergraphics-1"><span class="tsd-kind-call-signature">createFadeCylinderGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">FadeCylinderGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createfadecylindergraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建渐变锥体</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">FadeCylinderGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>position</code>（<code>Cartesian3</code>）：Cartesian3坐标</p>
+<ul>
+<li><code>color</code>（<code>string</code>）：颜色</li>
+<li><code>duration</code>（<code>number</code>）：持续时长</li>
+<li><code>length</code>（<code>number</code>）：长度</li>
+<li><code>topRadius</code>（<code>number</code>）：顶部半径</li>
+<li><code>bottomRadius</code>（<code>number</code>）：底部半径</li>
+<li><code>slices</code>（<code>number</code>）：垂直分段数量</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回cylinder实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see-3">See<a href="#see-3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><ul>
+<li>getCylinderGraphics</li>
+<li>CircleFadeMaterialProperty</li>
+</ul>
+</div>
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-3">Example<a href="#example-3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createFadeCylinderGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">     </span><span class="hl-6">position:Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegrees</span><span class="hl-1">(</span><span class="hl-8">104.081701757991</span><span class="hl-1">, </span><span class="hl-8">30.627042558105988</span><span class="hl-1">, </span><span class="hl-8">200</span><span class="hl-1">),</span><br/><span class="hl-6">length:</span><span class="hl-1">   </span><span class="hl-8">500</span><span class="hl-1"> / </span><span class="hl-8">2</span><span class="hl-1">,</span><br/><span class="hl-6">topRadius:</span><span class="hl-1">   </span><span class="hl-8">130</span><span class="hl-1">,</span><br/><span class="hl-6">bottomRadius:</span><span class="hl-1">   </span><span class="hl-8">20</span><span class="hl-1">,</span><br/><span class="hl-6">color:</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Color</span><span class="hl-1">(</span><span class="hl-8">0</span><span class="hl-1">, </span><span class="hl-8">1</span><span class="hl-1">, </span><span class="hl-8">1</span><span class="hl-1">, </span><span class="hl-8">0.4</span><span class="hl-1">),</span><br/><span class="hl-6">slices:</span><span class="hl-1"> </span><span class="hl-8">128</span><span class="hl-1">,</span><br/><span class="hl-6">duration:</span><span class="hl-8">5</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createfanshape"><span>create<wbr/>Fan<wbr/>Shape</span><a href="#createfanshape" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createfanshape-1"><span class="tsd-kind-call-signature">createFanShape</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/>        <span class="tsd-kind-property">alt</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">custMaterial</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">direction</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">latitude</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">longitude</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">speed</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-kind-property">viewer</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createfanshape-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建扇形</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">alt</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">custMaterial</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">direction</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">latitude</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">longitude</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">speed</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">viewer</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></span>
+<div class="tsd-comment tsd-typography"><p><code>viewer</code>：cesium 视图对象</p>
+<ul>
+<li><code>custMaterial</code>（<code>Material</code>）：自定义材质</li>
+<li><code>speed</code>（<code>Number</code>）：运动速度</li>
+<li><code>longitude</code>（<code>Number</code>）：纬度</li>
+<li><code>latitude</code>（<code>Number</code>）：经度</li>
+<li><code>alt</code>（<code>Number</code>）：高度(z轴)</li>
+<li><code>direction</code>（<code>String</code>）：扫描方向（&quot;-&quot;顺时针，&quot;+&quot;逆时针）</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回wall实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-4">Example<a href="#example-4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createFanShape</span><span class="hl-1">({</span><br/><span class="hl-6">viewer:</span><span class="hl-1"> </span><span class="hl-5">this</span><span class="hl-1">.</span><span class="hl-6">viewer</span><span class="hl-1">,</span><br/><span class="hl-6">longitude:</span><span class="hl-1"> </span><span class="hl-8">104.06417395476578</span><span class="hl-1">,</span><br/><span class="hl-6">latitude:</span><span class="hl-1"> </span><span class="hl-8">30.636185094244944</span><span class="hl-1">,</span><br/><span class="hl-6">alt:</span><span class="hl-1"> </span><span class="hl-8">700</span><span class="hl-1">,</span><br/><span class="hl-6">speed:</span><span class="hl-1"> </span><span class="hl-8">2.0</span><span class="hl-1">,</span><br/><span class="hl-6">direction:</span><span class="hl-1"> </span><span class="hl-2">&#39;+&#39;</span><span class="hl-1">,</span><br/><span class="hl-6">custMaterial:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">AQUAMARINE</span><span class="hl-1">.</span><span class="hl-0">withAlpha</span><span class="hl-1">(</span><span class="hl-8">0.5</span><span class="hl-1">)</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="creategifbillboardgraphics"><span>create<wbr/>Gif<wbr/>Billboard<wbr/>Graphics</span><a href="#creategifbillboardgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="creategifbillboardgraphics-1"><span class="tsd-kind-call-signature">createGifBillboardGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">GifBillboardGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#creategifbillboardgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>gif 图片投影</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">GifBillboardGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>position</code>（<code>Cartesian3</code>）：Cartesian3坐标</p>
+<ul>
+<li><code>dimensions</code>（<code>Cartesian2</code>）：长宽高</li>
+<li><code>url</code>（<code>string</code>）：图片</li>
+<li><code>normal</code>（<code>Cartesian3</code>）：垂直方向</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回entity实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-5">Example<a href="#example-5" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createGifBillboardGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">position:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegrees</span><span class="hl-1">(</span><span class="hl-8">104.081701757991</span><span class="hl-1">, </span><span class="hl-8">30.627042558105988</span><span class="hl-1">, </span><span class="hl-8">200</span><span class="hl-1">),</span><br/><span class="hl-6">url:</span><span class="hl-1"> </span><span class="hl-2">&#39;static/data/file/scene1.gif&#39;</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="creategraphics"><span>create<wbr/>Graphics</span><a href="#creategraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="creategraphics-1"><span class="tsd-kind-call-signature">createGraphics</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#creategraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createlinegraphics"><span>create<wbr/>Line<wbr/>Graphics</span><a href="#createlinegraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createlinegraphics-1"><span class="tsd-kind-call-signature">createLineGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">LineGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createlinegraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建线</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">LineGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>positions</code>（<code>Array&lt;Cartesian3&gt;</code>）：坐标数组</p>
+<ul>
+<li><code>name</code>（<code>string</code>）：图形名称</li>
+<li><code>oid</code>（<code>string</code>）：原始id</li>
+<li><code>material</code>：配置线段材质</li>
+<li><code>width</code>（<code>number</code>）：线宽</li>
+<li><code>clampToGround</code>（<code>boolean</code>）：是否贴地</li>
+<li><code>label</code>：绘制label图形的参数</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回PolylineGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see-4">See<a href="#see-4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>getLineGraphics</p>
+</div>
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-6">Example<a href="#example-6" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createLineGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">   </span><span class="hl-6">name:</span><span class="hl-2">&#39;pLine&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">   </span><span class="hl-6">oid:</span><span class="hl-2">&#39;pLineID&#39;</span><span class="hl-1">,</span><br/><span class="hl-6">positions:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegreesArray</span><span class="hl-1">([</span><br/><span class="hl-8">104.09816110606057</span><span class="hl-1">,</span><br/><span class="hl-8">30.659821965447698</span><span class="hl-1">,</span><br/><span class="hl-8">104.1120972824757</span><span class="hl-1">,</span><br/><span class="hl-8">30.65330300319938</span><span class="hl-1">,</span><br/><span class="hl-8">104.10758419863926</span><span class="hl-1">,</span><br/><span class="hl-8">30.64592470850288</span><span class="hl-1">,</span><br/><span class="hl-8">104.09351691196979</span><span class="hl-1">,</span><br/><span class="hl-8">30.652434826507452</span><span class="hl-1">,</span><br/><span class="hl-8">104.09816110606057</span><span class="hl-1">,</span><br/><span class="hl-8">30.659821965447698</span><br/><span class="hl-1">]),</span><br/><span class="hl-6">show:</span><span class="hl-1"> </span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-6">material:</span><span class="hl-1">  </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">YELLOW</span><span class="hl-1">,</span><br/><span class="hl-6">width:</span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-6">clampToGround:</span><span class="hl-1"> </span><span class="hl-5">false</span><span class="hl-1">,</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createmodelgraphics"><span>create<wbr/>Model<wbr/>Graphics</span><a href="#createmodelgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createmodelgraphics-1"><span class="tsd-kind-call-signature">createModelGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">ModelGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createmodelgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建模型</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">ModelGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>position</code>（<code>Cartesian3</code>）：Cartesian3坐标</p>
+<ul>
+<li><code>m_url</code>（<code>string</code>）：模型url</li>
+<li><code>url</code>（<code>string</code>）：模型url</li>
+<li><code>m_scale</code>（<code>number</code>）：缩放比例</li>
+<li><code>scale</code>（<code>number</code>）：缩放比例</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回ModelGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see-5">See<a href="#see-5" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>getModelGraphics</p>
+</div>
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-7">Example<a href="#example-7" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createModelGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">position:Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegrees</span><span class="hl-1">(</span><span class="hl-8">104.081701757991</span><span class="hl-1">, </span><span class="hl-8">30.627042558105988</span><span class="hl-1">, </span><span class="hl-8">200</span><span class="hl-1">),</span><br/><span class="hl-6">url:</span><span class="hl-2">&quot;model/person.gltf&quot;</span><span class="hl-1">,</span><br/><span class="hl-6">scale:</span><span class="hl-8">2</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createpointsgraphics"><span>create<wbr/>Points<wbr/>Graphics</span><a href="#createpointsgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createpointsgraphics-1"><span class="tsd-kind-call-signature">createPointsGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">PointsGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createpointsgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建点信息</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">PointsGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>positions</code>（<code>Array&lt;Cartesian3&gt;</code>）：坐标数组</p>
+<ul>
+<li><code>name</code>（<code>string</code>）：图形名称</li>
+<li><code>oid</code>（<code>string</code>）：原始id</li>
+<li><code>material</code>（<code>boolean</code>）：材质</li>
+<li><code>point</code>（<code>boolean</code>）：标识是point图形</li>
+<li><code>billboard</code>：绘制billboard图形的参数</li>
+<li><code>label</code>：绘制label图形的参数</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回实例数组</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see-6">See<a href="#see-6" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><ul>
+<li>getPointGraphics</li>
+<li>getBillboardGraphics</li>
+<li>getLabelGraphics</li>
+</ul>
+</div>
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-8">Example<a href="#example-8" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createPointsGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">   </span><span class="hl-6">name:</span><span class="hl-2">&#39;cylinderObj&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">   </span><span class="hl-6">oid:</span><span class="hl-2">&#39;cylinderID&#39;</span><span class="hl-1">,</span><br/><span class="hl-6">positions:</span><span class="hl-1"> [</span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegrees</span><span class="hl-1">(</span><span class="hl-8">104.081701757991</span><span class="hl-1">, </span><span class="hl-8">30.627042558105988</span><span class="hl-1">, </span><span class="hl-8">400.0</span><span class="hl-1">)],</span><br/><span class="hl-6">billboard:</span><span class="hl-1"> {</span><br/><span class="hl-6">b_img:</span><span class="hl-1"> </span><span class="hl-2">&#39;static/data/images/Textures/billboard2.png&#39;</span><span class="hl-1">,</span><br/><span class="hl-6">b_width:</span><span class="hl-1"> </span><span class="hl-8">40</span><span class="hl-1">,</span><br/><span class="hl-6">b_height:</span><span class="hl-1"> </span><span class="hl-8">25</span><span class="hl-1">,</span><br/><span class="hl-6">b_scale:</span><span class="hl-1"> </span><span class="hl-8">1.5</span><span class="hl-1">,</span><br/><span class="hl-6">b_scaleByDistance:</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">NearFarScalar</span><span class="hl-1">(</span><span class="hl-8">1.5e2</span><span class="hl-1">, </span><span class="hl-8">2.0</span><span class="hl-1">, </span><span class="hl-8">1.5e7</span><span class="hl-1">, </span><span class="hl-8">0.5</span><span class="hl-1">),</span><br/><span class="hl-6">heightReference:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">HeightReference</span><span class="hl-1">.</span><span class="hl-7">CLAMP_TO_GROUND</span><br/><span class="hl-1">},</span><br/><span class="hl-6">label:</span><span class="hl-1"> {</span><br/><span class="hl-6">l_text:</span><span class="hl-1"> </span><span class="hl-2">&#39;中科较大&#39;</span><span class="hl-1">,</span><br/><span class="hl-6">l_fillColor:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">YELLOW</span><span class="hl-1">,</span><br/><span class="hl-6">l_outlineColor:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">KHAKI</span><span class="hl-1">,</span><br/><span class="hl-1">}</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createpolygongraphics"><span>create<wbr/>Polygon<wbr/>Graphics</span><a href="#createpolygongraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createpolygongraphics-1"><span class="tsd-kind-call-signature">createPolygonGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">PolygonGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createpolygongraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建面</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">PolygonGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>positions</code>（<code>Array&lt;Cartesian3&gt;</code>）：坐标数组</p>
+<ul>
+<li><code>material</code>：配置线段材质</li>
+<li><code>clampToGround</code>（<code>boolean</code>）：是否贴地</li>
+<li><code>clampToS3M</code>（<code>boolean</code>）：是否贴s3m模型</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回PolygonGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see-7">See<a href="#see-7" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>getPolygonGraphics</p>
+</div>
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-9">Example<a href="#example-9" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createPolygonGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">     </span><span class="hl-6">positions:Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegreesArray</span><span class="hl-1">([</span><br/><span class="hl-8">104.09816110606057</span><span class="hl-1">,</span><br/><span class="hl-8">30.659821965447698</span><span class="hl-1">,</span><br/><span class="hl-8">104.1120972824757</span><span class="hl-1">,</span><br/><span class="hl-8">30.65330300319938</span><span class="hl-1">,</span><br/><span class="hl-8">104.10758419863926</span><span class="hl-1">,</span><br/><span class="hl-8">30.64592470850288</span><span class="hl-1">,</span><br/><span class="hl-8">104.09351691196979</span><span class="hl-1">,</span><br/><span class="hl-8">30.652434826507452</span><span class="hl-1">,</span><br/><span class="hl-8">104.09816110606057</span><span class="hl-1">,</span><br/><span class="hl-8">30.659821965447698</span><br/><span class="hl-1">]),</span><br/><span class="hl-1">     </span><span class="hl-6">material:Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">RED</span><span class="hl-1">.</span><span class="hl-0">withAlpha</span><span class="hl-1">(</span><span class="hl-8">0.2</span><span class="hl-1">),</span><br/><span class="hl-1">     </span><span class="hl-6">clampToGround:</span><span class="hl-5">false</span><span class="hl-1">,</span><br/><span class="hl-1">     </span><span class="hl-6">clampToS3M:</span><span class="hl-5">false</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createrotatecylindergraphics"><span>create<wbr/>Rotate<wbr/>Cylinder<wbr/>Graphics</span><a href="#createrotatecylindergraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createrotatecylindergraphics-1"><span class="tsd-kind-call-signature">createRotateCylinderGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">RotateCylinderGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createrotatecylindergraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建旋转圆柱（参数同 <code>craeteRotateCylinderGraphics</code>）</p>
+<ul>
+<li><code>position</code>：Cartesian3坐标</li>
+<li><code>length</code>（<code>number</code>）：长度</li>
+<li><code>topRadius</code>（<code>number</code>）：顶部半径</li>
+<li><code>bottomRadius</code>（<code>number</code>）：底部半径</li>
+<li><code>slices</code>（<code>number</code>）：垂直分段数量</li>
+<li><code>img</code>（<code>string</code>）：材质图片</li>
+<li><code>material</code>（<code>MaterialInput</code>）：材质(与图片二选一)</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">RotateCylinderGraphicsOptions</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createrotateplanegraphics"><span>create<wbr/>Rotate<wbr/>Plane<wbr/>Graphics</span><a href="#createrotateplanegraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createrotateplanegraphics-1"><span class="tsd-kind-call-signature">createRotatePlaneGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">RotatePlaneGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createrotateplanegraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>创建旋转面（参数同 <code>craeteRotatePlaneGraphics</code>）</p>
+<ul>
+<li><code>positions</code>（<code>any[]</code>）：坐标数组</li>
+<li><code>center</code>（<code>number[]</code>）：中心点（经纬度数组）</li>
+<li><code>dimensions</code>（<code>any | number[]</code>）：长宽高</li>
+<li><code>image</code>（<code>string</code>）：图片</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">RotatePlaneGraphicsOptions</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="createvideoplanegraphics"><span>create<wbr/>Video<wbr/>Plane<wbr/>Graphics</span><a href="#createvideoplanegraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="createvideoplanegraphics-1"><span class="tsd-kind-call-signature">createVideoPlaneGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">VideoPlaneGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#createvideoplanegraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>视频投放</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">VideoPlaneGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>position</code>（<code>Cartesian3</code>）：Cartesian3坐标</p>
+<ul>
+<li><code>dimensions</code>（<code>Cartesian2</code>）：长宽高</li>
+<li><code>videoElement</code>（<code>HTMLElement</code>）：video绑定dom</li>
+<li><code>normal</code>（<code>Cartesian3</code>）：垂直方向</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回plane实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-10">Example<a href="#example-10" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">createVideoPlaneGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">position:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegrees</span><span class="hl-1">(</span><span class="hl-8">104.081701757991</span><span class="hl-1">, </span><span class="hl-8">30.627042558105988</span><span class="hl-1">, </span><span class="hl-8">200</span><span class="hl-1">),</span><br/><span class="hl-6">videoElement:</span><span class="hl-1"> </span><span class="hl-6">videoDom</span><span class="hl-1">,</span><br/><span class="hl-6">dimensions:</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Cartesian2</span><span class="hl-1">(</span><span class="hl-8">400.0</span><span class="hl-1">, </span><span class="hl-8">200.0</span><span class="hl-1">),</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getbillboardgraphics"><span>get<wbr/>Billboard<wbr/>Graphics</span><a href="#getbillboardgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getbillboardgraphics-1"><span class="tsd-kind-call-signature">getBillboardGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">BillboardGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getbillboardgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取广告牌图形</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">BillboardGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>b_img</code>（<code>string</code>）：背景图地址</p>
+<ul>
+<li><code>b_width</code>（<code>number</code>）：宽度</li>
+<li><code>b_height</code>（<code>number</code>）：高度</li>
+<li><code>b_clampToGround</code>（<code>boolean</code>）：贴地</li>
+<li><code>b_scale</code>（<code>number</code>）：缩放比例</li>
+<li><code>b_scaleByDistance</code>（<code>string</code>）：缩放远近距离</li>
+<li><code>b_pixelOffset</code>（<code>Cesium.Cartesian2</code>）：偏移</li>
+<li><code>b_eyeOffset</code>（<code>Cesium.Cartesian2</code>）：视角偏移设置</li>
+<li><code>b_heightReference</code>（<code>Cesium.HeightReference</code>）：高程参照设置</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回BillboardGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-11">Example<a href="#example-11" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getBillboardGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">b_img:</span><span class="hl-1"> </span><span class="hl-2">&quot;images/bill.png&quot;</span><span class="hl-1">,</span><br/><span class="hl-6">b_width:</span><span class="hl-1"> </span><span class="hl-8">35</span><span class="hl-1">,</span><br/><span class="hl-6">b_height :</span><span class="hl-1"> </span><span class="hl-8">35</span><span class="hl-1">,</span><br/><span class="hl-6">b_clampToGround :</span><span class="hl-1"> </span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-6">b_scale :</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-6">b_pixelOffset :</span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Cartesian2</span><span class="hl-1">(</span><span class="hl-8">0</span><span class="hl-1">, -</span><span class="hl-8">20</span><span class="hl-1">),</span><br/><span class="hl-6">b_scaleByDistance :</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">NearFarScalar</span><span class="hl-1">(</span><span class="hl-8">1.5e2</span><span class="hl-1">, </span><span class="hl-8">0.7</span><span class="hl-1">, </span><span class="hl-8">1.5e7</span><span class="hl-1">, </span><span class="hl-8">0.5</span><span class="hl-1">),</span><br/><span class="hl-6">b_eyeOffset:</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Cartesian2</span><span class="hl-1">(</span><span class="hl-8">0</span><span class="hl-1">, -</span><span class="hl-8">20</span><span class="hl-1">),</span><br/><span class="hl-6">b_heightReference:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">HeightReference</span><span class="hl-1">.</span><span class="hl-7">RELATIVE_TO_TERRAIN</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getboxgraphics"><span>get<wbr/>Box<wbr/>Graphics</span><a href="#getboxgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getboxgraphics-1"><span class="tsd-kind-call-signature">getBoxGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">BoxGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getboxgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取盒子图形</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">BoxGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>show</code>（<code>boolean</code>）：是否显示</p>
+<ul>
+<li><code>dimensions</code>：盒子长宽高</li>
+<li><code>distanceDisplayCondition</code>：显示条件</li>
+<li><code>outlineColor</code>：外边线颜色</li>
+<li><code>outline</code>（<code>boolean</code>）：是否显示外边线</li>
+<li><code>fill</code>（<code>boolean</code>）：是否填充</li>
+<li><code>material</code>（<code>boolean</code>）：材质</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回BoxGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-12">Example<a href="#example-12" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getBoxGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">show:</span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-6">dimensions:</span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Cartesian3</span><span class="hl-1">(</span><span class="hl-8">400000.0</span><span class="hl-1">, </span><span class="hl-8">300000.0</span><span class="hl-1">, </span><span class="hl-8">500000.0</span><span class="hl-1">),</span><br/><span class="hl-6">outlineColor:</span><span class="hl-1">  </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">YELLOW</span><span class="hl-1">,</span><br/><span class="hl-6">outline:</span><span class="hl-1">   </span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-6">fill:</span><span class="hl-1">   </span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-6">material:Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">RED</span><span class="hl-1">.</span><span class="hl-0">withAlpha</span><span class="hl-1">(</span><span class="hl-8">0.5</span><span class="hl-1">),</span><br/><span class="hl-6">distanceDisplayCondition:</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">DistanceDisplayCondition</span><span class="hl-1">(</span><span class="hl-8">2000.0</span><span class="hl-1">, </span><span class="hl-8">4000.0</span><span class="hl-1">)</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getcylindergraphics"><span>get<wbr/>Cylinder<wbr/>Graphics</span><a href="#getcylindergraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getcylindergraphics-1"><span class="tsd-kind-call-signature">getCylinderGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CylinderGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getcylindergraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取锥体图形</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">CylinderGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>length</code>（<code>number</code>）：长度</p>
+<ul>
+<li><code>topRadius</code>（<code>number</code>）：顶部半径</li>
+<li><code>bottomRadius</code>（<code>number</code>）：底部半径</li>
+<li><code>material</code>（<code>boolean</code>）：材质</li>
+<li><code>slices</code>（<code>number</code>）：垂直分段数量</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回CylinderGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-13">Example<a href="#example-13" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getCylinderGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">length:</span><span class="hl-1">   </span><span class="hl-8">500</span><span class="hl-1"> / </span><span class="hl-8">2</span><span class="hl-1">,</span><br/><span class="hl-6">topRadius:</span><span class="hl-1">   </span><span class="hl-8">130</span><span class="hl-1">,</span><br/><span class="hl-6">bottomRadius:</span><span class="hl-1">   </span><span class="hl-8">20</span><span class="hl-1">,</span><br/><span class="hl-6">material:</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Color</span><span class="hl-1">(</span><span class="hl-8">0</span><span class="hl-1">, </span><span class="hl-8">1</span><span class="hl-1">, </span><span class="hl-8">1</span><span class="hl-1">, </span><span class="hl-8">0.4</span><span class="hl-1">),</span><br/><span class="hl-6">slices:</span><span class="hl-1"> </span><span class="hl-8">128</span><span class="hl-1">,</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getellipsegraphics"><span>get<wbr/>Ellipse<wbr/>Graphics</span><a href="#getellipsegraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getellipsegraphics-1"><span class="tsd-kind-call-signature">getEllipseGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EllipseGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getellipsegraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取椭圆</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">EllipseGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>e_semiMajorAxis</code>（<code>number</code>）：长半轴</p>
+<ul>
+<li><code>e_semiMinorAxis</code>（<code>number</code>）：短半轴</li>
+<li><code>e_metarial</code>：材质</li>
+<li><code>e_outline</code>（<code>boolean</code>）：是否显示外边线</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回EllipseGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-14">Example<a href="#example-14" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getEllipseGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">e_semiMajorAxis:</span><span class="hl-8">1000080.0</span><span class="hl-1">,</span><br/><span class="hl-6">e_semiMinorAxis:</span><span class="hl-8">1000000.0</span><span class="hl-1">,</span><br/><span class="hl-6">e_metarial:Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">RED</span><span class="hl-1">.</span><span class="hl-0">withAlpha</span><span class="hl-1">(</span><span class="hl-8">0.5</span><span class="hl-1">),</span><br/><span class="hl-6">e_outline:</span><span class="hl-5">true</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getellipsoidgraphics"><span>get<wbr/>Ellipsoid<wbr/>Graphics</span><a href="#getellipsoidgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getellipsoidgraphics-1"><span class="tsd-kind-call-signature">getEllipsoidGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EllipsoidGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getellipsoidgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取球</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">EllipsoidGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>radii</code>（<code>number</code>）：半径</p>
+<ul>
+<li><code>innerRadii</code>（<code>number</code>）：内球半径</li>
+<li><code>maximumCone</code>（<code>number</code>）：椭圆最大角度</li>
+<li><code>stackPartitions</code>（<code>number</code>）：垂直分段数</li>
+<li><code>slicePartitions</code>（<code>number</code>）：平行分段数</li>
+<li><code>outlineWidth</code>（<code>number</code>）：外边线宽度</li>
+<li><code>outlineColor</code>：外边线颜色</li>
+<li><code>outline</code>（<code>boolean</code>）：是否显示外边线</li>
+<li><code>fill</code>（<code>boolean</code>）：是否填充</li>
+<li><code>material</code>（<code>boolean</code>）：材质</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回EllipsoidGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-15">Example<a href="#example-15" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getEllipsoidGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">radii:</span><span class="hl-1"> </span><span class="hl-8">1000000.0</span><span class="hl-1">, </span><span class="hl-3">//单位 米</span><br/><span class="hl-6">innerRadii:</span><span class="hl-1"> </span><span class="hl-8">50000.0</span><span class="hl-1">,</span><br/><span class="hl-6">maximumCone:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Math</span><span class="hl-1">.</span><span class="hl-7">PI_OVER_TWO</span><span class="hl-1">,</span><br/><span class="hl-6">stackPartitions:</span><span class="hl-1">   </span><span class="hl-8">56</span><span class="hl-1">,</span><br/><span class="hl-6">slicePartitions:</span><span class="hl-1">   </span><span class="hl-8">56</span><span class="hl-1">,</span><br/><span class="hl-6">outlineWidth:</span><span class="hl-1">   </span><span class="hl-8">2.0</span><span class="hl-1">,</span><br/><span class="hl-6">outlineColor:</span><span class="hl-1">  </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">YELLOW</span><span class="hl-1">,</span><br/><span class="hl-6">outline:</span><span class="hl-1">   </span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-6">fill:</span><span class="hl-1">   </span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-6">material:</span><span class="hl-1">  </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">RED</span><span class="hl-1">.</span><span class="hl-0">withAlpha</span><span class="hl-1">(</span><span class="hl-8">0.1</span><span class="hl-1">),</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getlabelgraphics"><span>get<wbr/>Label<wbr/>Graphics</span><a href="#getlabelgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getlabelgraphics-1"><span class="tsd-kind-call-signature">getLabelGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">LabelGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getlabelgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取标签图形</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">LabelGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>l_text</code>（<code>string</code>）：标签文字</p>
+<ul>
+<li><code>l_font</code>（<code>string</code>）：字体</li>
+<li><code>l_fillColor</code>（<code>string</code>）：颜色</li>
+<li><code>l_style</code>（<code>string</code>）：风格</li>
+<li><code>l_outlineColor</code>（<code>number</code>）：外边线颜色</li>
+<li><code>l_outlineWidth</code>（<code>number</code>）：外边线宽度</li>
+<li><code>l_showBackground</code>（<code>boolean</code>）：是否显示背景颜色</li>
+<li><code>l_backgroundColor</code>：背景颜色</li>
+<li><code>l_verticalOrigin</code>（<code>string</code>）：垂直方向</li>
+<li><code>l_pixelOffset</code>（<code>Cesium.Cartesian2</code>）：偏移</li>
+<li><code>l_heightReference</code>（<code>Cesium.HeightReference</code>）：高程参照设置</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回LabelGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-16">Example<a href="#example-16" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getLabelGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">l_text:</span><span class="hl-2">&quot;你好&quot;</span><span class="hl-1">,</span><br/><span class="hl-6">l_font :</span><span class="hl-1"> </span><span class="hl-2">&quot;14px sans-serif&quot;</span><span class="hl-1">,</span><br/><span class="hl-6">l_fillColor :</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">GOLD</span><span class="hl-1">,</span><br/><span class="hl-6">l_style :</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">LabelStyle</span><span class="hl-1">.</span><span class="hl-7">FILL_AND_OUTLINE</span><span class="hl-1">,</span><br/><span class="hl-6">l_outlineWidth :</span><span class="hl-1"> </span><span class="hl-8">2</span><span class="hl-1">,</span><br/><span class="hl-6">l_showBackground:</span><span class="hl-1"> </span><span class="hl-5">false</span><span class="hl-1">,</span><br/><span class="hl-6">l_backgroundColor :</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Color</span><span class="hl-1">(</span><span class="hl-8">0.165</span><span class="hl-1">, </span><span class="hl-8">0.165</span><span class="hl-1">, </span><span class="hl-8">0.165</span><span class="hl-1">, </span><span class="hl-8">0.8</span><span class="hl-1">),</span><br/><span class="hl-6">l_verticalOrigin :</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">VerticalOrigin</span><span class="hl-1">.</span><span class="hl-7">BOTTOM</span><span class="hl-1">,</span><br/><span class="hl-6">l_pixelOffset:</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Cartesian2</span><span class="hl-1">(</span><span class="hl-8">0</span><span class="hl-1">, -</span><span class="hl-8">30</span><span class="hl-1">),</span><br/><span class="hl-6">l_heightReference:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">HeightReference</span><span class="hl-1">.</span><span class="hl-7">RELATIVE_TO_TERRAIN</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getlinegraphics"><span>get<wbr/>Line<wbr/>Graphics</span><a href="#getlinegraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getlinegraphics-1"><span class="tsd-kind-call-signature">getLineGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">LineGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getlinegraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取线图形</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">LineGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>positions</code>（<code>Array&lt;Cartesian3&gt;</code>）：绘制线图形的坐标数组</p>
+<ul>
+<li><code>material</code>：配置线段材质</li>
+<li><code>width</code>（<code>number</code>）：线宽</li>
+<li><code>clampToGround</code>（<code>boolean</code>）：是否贴地</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回PolylineGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-17">Example<a href="#example-17" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getLineGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">positions:Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegreesArray</span><span class="hl-1">([</span><br/><span class="hl-8">104.09816110606057</span><span class="hl-1">,</span><br/><span class="hl-8">30.659821965447698</span><span class="hl-1">,</span><br/><span class="hl-8">104.1120972824757</span><span class="hl-1">,</span><br/><span class="hl-8">30.65330300319938</span><span class="hl-1">,</span><br/><span class="hl-8">104.10758419863926</span><span class="hl-1">,</span><br/><span class="hl-8">30.64592470850288</span><span class="hl-1">,</span><br/><span class="hl-8">104.09351691196979</span><span class="hl-1">,</span><br/><span class="hl-8">30.652434826507452</span><span class="hl-1">,</span><br/><span class="hl-8">104.09816110606057</span><span class="hl-1">,</span><br/><span class="hl-8">30.659821965447698</span><br/><span class="hl-1">]),</span><br/><span class="hl-1">     </span><span class="hl-6">material:Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">RED</span><span class="hl-1">.</span><span class="hl-0">withAlpha</span><span class="hl-1">(</span><span class="hl-8">0.2</span><span class="hl-1">),</span><br/><span class="hl-1">     </span><span class="hl-6">clampToGround:</span><span class="hl-5">false</span><span class="hl-1">,</span><br/><span class="hl-1">     </span><span class="hl-6">width:</span><span class="hl-8">1</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getmodelgraphics"><span>get<wbr/>Model<wbr/>Graphics</span><a href="#getmodelgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getmodelgraphics-1"><span class="tsd-kind-call-signature">getModelGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">ModelGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getmodelgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取模型</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">ModelGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>m_url</code>（<code>string</code>）：模型url</p>
+<ul>
+<li><code>url</code>（<code>string</code>）：模型url</li>
+<li><code>m_scale</code>（<code>number</code>）：缩放比例</li>
+<li><code>scale</code>（<code>number</code>）：缩放比例</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回ModelGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-18">Example<a href="#example-18" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getModelGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">url:</span><span class="hl-2">&quot;model/person.gltf&quot;</span><span class="hl-1">,</span><br/><span class="hl-6">scale:</span><span class="hl-8">2</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getpathgraphics"><span>get<wbr/>Path<wbr/>Graphics</span><a href="#getpathgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getpathgraphics-1"><span class="tsd-kind-call-signature">getPathGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">PathGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getpathgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取路径</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">PathGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>resolution</code>（<code>number</code>）：采样频率</p>
+<ul>
+<li><code>glowPower</code>（<code>number</code>）：发光强度</li>
+<li><code>color</code>：颜色</li>
+<li><code>width</code>（<code>number</code>）：宽度</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回PathGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-19">Example<a href="#example-19" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getPathGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">resolution:</span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-6">glowPower:</span><span class="hl-8">0.1</span><span class="hl-1">,</span><br/><span class="hl-6">color:Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">YELLOW</span><span class="hl-1">,</span><br/><span class="hl-6">width:</span><span class="hl-8">24</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getplanegraphics"><span>get<wbr/>Plane<wbr/>Graphics</span><a href="#getplanegraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getplanegraphics-1"><span class="tsd-kind-call-signature">getPlaneGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">PlaneGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getplanegraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取面板图形</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">PlaneGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>plane</code>：面板垂直方向</p>
+<ul>
+<li><code>dimensions</code>：面板长宽高</li>
+<li><code>material</code>（<code>boolean</code>）：材质</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回PlaneGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-20">Example<a href="#example-20" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getPlaneGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">   </span><span class="hl-6">plane:</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Plane</span><span class="hl-1">(</span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-7">UNIT_Y</span><span class="hl-1">, </span><span class="hl-8">0.0</span><span class="hl-1">),</span><br/><span class="hl-6">dimensions:</span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Cartesian2</span><span class="hl-1">(</span><span class="hl-8">170.0</span><span class="hl-1">, </span><span class="hl-8">130.0</span><span class="hl-1">),</span><br/><span class="hl-6">material:Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">BLUE</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getpointgraphics"><span>get<wbr/>Point<wbr/>Graphics</span><a href="#getpointgraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getpointgraphics-1"><span class="tsd-kind-call-signature">getPointGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">PointGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getpointgraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取点图形</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">PointGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>color</code>：点颜色</p>
+<ul>
+<li><code>pixelSize</code>（<code>number</code>）：点大小</li>
+<li><code>outlineColor</code>（<code>number</code>）：边线颜色</li>
+<li><code>outlineWidth</code>（<code>number</code>）：边线宽</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回PointGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-21">Example<a href="#example-21" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getPointGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">color:Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">GREEN</span><span class="hl-1">,</span><br/><span class="hl-1">     </span><span class="hl-6">pixelSize:</span><span class="hl-8">5</span><span class="hl-1">,</span><br/><span class="hl-1">     </span><span class="hl-6">outlineColor:Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">WHITE</span><span class="hl-1">,</span><br/><span class="hl-1">     </span><span class="hl-6">outlineWidth:</span><span class="hl-8">1</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getpolygongraphics"><span>get<wbr/>Polygon<wbr/>Graphics</span><a href="#getpolygongraphics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getpolygongraphics-1"><span class="tsd-kind-call-signature">getPolygonGraphics</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">PolygonGraphicsOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getpolygongraphics-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取面图形</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">PolygonGraphicsOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>positions</code>（<code>Array&lt;Cartesian3&gt;</code>）：绘制线图形的坐标数组</p>
+<ul>
+<li><code>material</code>：配置线段材质</li>
+<li><code>clampToGround</code>（<code>boolean</code>）：是否贴地</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4><p>返回PolygonGraphics实例</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-22">Example<a href="#example-22" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getPolygonGraphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">positions:Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegreesArray</span><span class="hl-1">([</span><br/><span class="hl-8">104.09816110606057</span><span class="hl-1">,</span><br/><span class="hl-8">30.659821965447698</span><span class="hl-1">,</span><br/><span class="hl-8">104.1120972824757</span><span class="hl-1">,</span><br/><span class="hl-8">30.65330300319938</span><span class="hl-1">,</span><br/><span class="hl-8">104.10758419863926</span><span class="hl-1">,</span><br/><span class="hl-8">30.64592470850288</span><span class="hl-1">,</span><br/><span class="hl-8">104.09351691196979</span><span class="hl-1">,</span><br/><span class="hl-8">30.652434826507452</span><span class="hl-1">,</span><br/><span class="hl-8">104.09816110606057</span><span class="hl-1">,</span><br/><span class="hl-8">30.659821965447698</span><br/><span class="hl-1">]),</span><br/><span class="hl-1">     </span><span class="hl-6">material:Cesium</span><span class="hl-1">.</span><span class="hl-6">Color</span><span class="hl-1">.</span><span class="hl-7">RED</span><span class="hl-1">.</span><span class="hl-0">withAlpha</span><span class="hl-1">(</span><span class="hl-8">0.2</span><span class="hl-1">),</span><br/><span class="hl-1">     </span><span class="hl-6">clampToGround:</span><span class="hl-5">false</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="setgraphicsfloat"><span>set<wbr/>Graphics<wbr/>Float</span><a href="#setgraphicsfloat" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="setgraphicsfloat-1"><span class="tsd-kind-call-signature">setGraphicsFloat</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">SetGraphicsFloatOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#setgraphicsfloat-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>图形浮动</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">SetGraphicsFloatOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>position</code>（<code>Cartesian3</code>）：坐标数组</p>
+<ul>
+<li><code>entity</code>（<code>Entity</code>）：实体对象</li>
+<li><code>maxHeiht</code>（<code>number</code>）：最大高度</li>
+<li><code>minHeiht</code>（<code>number</code>）：最小高度</li>
+<li><code>cartesians</code>（<code>Cartesian</code>）：原始位置</li>
+<li><code>speed</code>（<code>Cartesian</code>）：速度</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see-8">See<a href="#see-8" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><ul>
+<li>transformWGS84ToCartesian</li>
+<li>transformCartesianToWGS84</li>
+<li>transformCartesianArrayToWGS84Array</li>
+<li>transformWGS84ArrayToCartesianArray</li>
+</ul>
+</div>
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-23">Example<a href="#example-23" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">})</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">billboardGraphics</span><span class="hl-1"> =  </span><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getBillboardGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">b_img:</span><span class="hl-1"> </span><span class="hl-2">&quot;images/bill.png&quot;</span><span class="hl-1">,</span><br/><span class="hl-6">b_width:</span><span class="hl-1"> </span><span class="hl-8">35</span><span class="hl-1">,</span><br/><span class="hl-6">b_height :</span><span class="hl-1"> </span><span class="hl-8">35</span><span class="hl-1">,</span><br/><span class="hl-6">b_clampToGround :</span><span class="hl-1"> </span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-6">b_scale :</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-6">b_pixelOffset :</span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Cartesian2</span><span class="hl-1">(</span><span class="hl-8">0</span><span class="hl-1">, -</span><span class="hl-8">20</span><span class="hl-1">),</span><br/><span class="hl-6">b_scaleByDistance :</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">NearFarScalar</span><span class="hl-1">(</span><span class="hl-8">1.5e2</span><span class="hl-1">, </span><span class="hl-8">0.7</span><span class="hl-1">, </span><span class="hl-8">1.5e7</span><span class="hl-1">, </span><span class="hl-8">0.5</span><span class="hl-1">),</span><br/><span class="hl-1">});</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">setGraphicsRotate</span><span class="hl-1">({</span><br/><span class="hl-6">entity:</span><span class="hl-1"> </span><span class="hl-6">billboardGraphics</span><span class="hl-1">,</span><br/><span class="hl-6">cartesians:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-6">Cartesian3</span><span class="hl-1">.</span><span class="hl-0">fromDegrees</span><span class="hl-1">(</span><span class="hl-8">104.081701757991</span><span class="hl-1">, </span><span class="hl-8">30.627042558105988</span><span class="hl-1">, </span><span class="hl-8">200</span><span class="hl-1">),</span><br/><span class="hl-6">minHeiht :</span><span class="hl-1"> </span><span class="hl-8">5</span><span class="hl-1">,</span><br/><span class="hl-6">maxHeiht:</span><span class="hl-8">100</span><span class="hl-1">,</span><br/><span class="hl-6">speed:</span><span class="hl-8">0.06</span><span class="hl-1">,</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="setgraphicsrotate"><span>set<wbr/>Graphics<wbr/>Rotate</span><a href="#setgraphicsrotate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="setgraphicsrotate-1"><span class="tsd-kind-call-signature">setGraphicsRotate</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">SetGraphicsRotateOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#setgraphicsrotate-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>设置图形旋转</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">SetGraphicsRotateOptions</span></span>
+<div class="tsd-comment tsd-typography"><p><code>position</code>：wgs84坐标</p>
+<ul>
+<li><code>entity</code>（<code>Entity</code>）：实体对象</li>
+<li><code>rotateAmount</code>（<code>number</code>）：旋转比例</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see-9">See<a href="#see-9" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>transformWGS84ToCartesian</p>
+</div>
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-24">Example<a href="#example-24" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-6">Graphics</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;cesium_dev_kit&#39;</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">graphicObj</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Graphics</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-6">cesiumGlobal:</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-6">containerId:</span><span class="hl-1"> </span><span class="hl-2">&#39;cesiumContainer&#39;</span><br/><span class="hl-1">});</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">billboardGraphics</span><span class="hl-1"> =  </span><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">getBillboardGraphics</span><span class="hl-1">({</span><br/><span class="hl-6">b_img:</span><span class="hl-1"> </span><span class="hl-2">&quot;images/bill.png&quot;</span><span class="hl-1">,</span><br/><span class="hl-6">b_width:</span><span class="hl-1"> </span><span class="hl-8">35</span><span class="hl-1">,</span><br/><span class="hl-6">b_height :</span><span class="hl-1"> </span><span class="hl-8">35</span><span class="hl-1">,</span><br/><span class="hl-6">b_clampToGround :</span><span class="hl-1"> </span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-6">b_scale :</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-6">b_pixelOffset :</span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">Cartesian2</span><span class="hl-1">(</span><span class="hl-8">0</span><span class="hl-1">, -</span><span class="hl-8">20</span><span class="hl-1">),</span><br/><span class="hl-6">b_scaleByDistance :</span><span class="hl-1"> </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-6">Cesium</span><span class="hl-1">.</span><span class="hl-0">NearFarScalar</span><span class="hl-1">(</span><span class="hl-8">1.5e2</span><span class="hl-1">, </span><span class="hl-8">0.7</span><span class="hl-1">, </span><span class="hl-8">1.5e7</span><span class="hl-1">, </span><span class="hl-8">0.5</span><span class="hl-1">),</span><br/><span class="hl-1">});</span><br/><span class="hl-6">graphicObj</span><span class="hl-1">.</span><span class="hl-6">graphics</span><span class="hl-1">.</span><span class="hl-0">setGraphicsRotate</span><span class="hl-1">({</span><br/><span class="hl-6">entity:billboardGraphics</span><span class="hl-1"> ,</span><br/><span class="hl-6">position:</span><span class="hl-1"> { </span><span class="hl-6">lng:</span><span class="hl-1"> </span><span class="hl-8">104.081701757991</span><span class="hl-1">, </span><span class="hl-6">lat:</span><span class="hl-1"> </span><span class="hl-8">30.627042558105988</span><span class="hl-1">, </span><span class="hl-6">alt:</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1"> },</span><br/><span class="hl-6">rotateAmount:</span><span class="hl-1"> </span><span class="hl-8">4</span><span class="hl-1">,</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></div></li></ul></section></section></details></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details">
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
+<div><a href="#destroy"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>destroy</span></a><a href="#getdfst"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>get<wbr/>Df<wbr/>St</span></a><a href="#transformcartesianarraytowgs84array"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>Cartesian<wbr/>Array<wbr/>To<wbr/>WGS84<wbr/>Array</span></a><a href="#transformcartesiantowgs84"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>Cartesian<wbr/>To<wbr/>WGS84</span></a><a href="#transformwgs84arraytocartesianarray"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>WGS84<wbr/>Array<wbr/>To<wbr/>Cartesian<wbr/>Array</span></a><a href="#transformwgs84tocartesian"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>WGS84<wbr/>To<wbr/>Cartesian</span></a></div></details>
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
+<div><a href="#createboxgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Box<wbr/>Graphics</span></a><a href="#createcanvasgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Canvas<wbr/>Graphics</span></a><a href="#createcorridorgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Corridor<wbr/>Graphics</span></a><a href="#createcustomdefbillboardgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Custom<wbr/>Def<wbr/>Billboard<wbr/>Graphics</span></a><a href="#createdynamicblinkcirclegraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Dynamic<wbr/>Blink<wbr/>Circle<wbr/>Graphics</span></a><a href="#createdynamiccirclegraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Dynamic<wbr/>Circle<wbr/>Graphics</span></a><a href="#createdynamiccylindergraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Dynamic<wbr/>Cylinder<wbr/>Graphics</span></a><a href="#createdynamicpolylinegraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Dynamic<wbr/>Poly<wbr/>Line<wbr/>Graphics</span></a><a href="#createdynamicshadewallgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Dynamic<wbr/>Shade<wbr/>Wall<wbr/>Graphics</span></a><a href="#createfadecylindergraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Fade<wbr/>Cylinder<wbr/>Graphics</span></a><a href="#createfanshape"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Fan<wbr/>Shape</span></a><a href="#creategifbillboardgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Gif<wbr/>Billboard<wbr/>Graphics</span></a><a href="#creategraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Graphics</span></a><a href="#createlinegraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Line<wbr/>Graphics</span></a><a href="#createmodelgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Model<wbr/>Graphics</span></a><a href="#createpointsgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Points<wbr/>Graphics</span></a><a href="#createpolygongraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Polygon<wbr/>Graphics</span></a><a href="#createrotatecylindergraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Rotate<wbr/>Cylinder<wbr/>Graphics</span></a><a href="#createrotateplanegraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Rotate<wbr/>Plane<wbr/>Graphics</span></a><a href="#createvideoplanegraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Video<wbr/>Plane<wbr/>Graphics</span></a><a href="#getbillboardgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Billboard<wbr/>Graphics</span></a><a href="#getboxgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Box<wbr/>Graphics</span></a><a href="#getcylindergraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Cylinder<wbr/>Graphics</span></a><a href="#getellipsegraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Ellipse<wbr/>Graphics</span></a><a href="#getellipsoidgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Ellipsoid<wbr/>Graphics</span></a><a href="#getlabelgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Label<wbr/>Graphics</span></a><a href="#getlinegraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Line<wbr/>Graphics</span></a><a href="#getmodelgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Model<wbr/>Graphics</span></a><a href="#getpathgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Path<wbr/>Graphics</span></a><a href="#getplanegraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Plane<wbr/>Graphics</span></a><a href="#getpointgraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Point<wbr/>Graphics</span></a><a href="#getpolygongraphics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Polygon<wbr/>Graphics</span></a><a href="#setgraphicsfloat"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Graphics<wbr/>Float</span></a><a href="#setgraphicsrotate"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Graphics<wbr/>Rotate</span></a></div></details></div></details></div>
+<div class="site-menu">
+<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://github.com/dengxiaoning/cesium_dev_kit" class="tsd-nav-link">GitHub</a><a href="/cesium_dev_kit/demo/?auto=1" class="tsd-nav-link">在线 Demo</a></nav>
+<nav class="tsd-navigation"><a href="../modules.html">cesium_dev_kit - v1.2.1</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer>
+<p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
+<div class="overlay"></div></body></html>

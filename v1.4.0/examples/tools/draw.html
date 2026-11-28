@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三维标绘 - Cesium 示例与源码 | cesium_dev_kit</title>
+<meta name="description" content="三维标绘：三维标绘、量算、位置拾取、拖拽与模型位置调整。cesium_dev_kit 提供可直接运行的 三维标绘 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="keywords" content="三维标绘, 交互工具, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, Draw, Analysis">
+<meta name="author" content="dengxiaoning">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dengxiaoning.github.io/cesium_dev_kit/examples/tools/draw.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cesium_dev_kit">
+<meta property="og:title" content="三维标绘 - Cesium 示例 | cesium_dev_kit">
+<meta property="og:description" content="三维标绘：三维标绘、量算、位置拾取、拖拽与模型位置调整。cesium_dev_kit 提供可直接运行的 三维标绘 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta property="og:url" content="https://dengxiaoning.github.io/cesium_dev_kit/examples/tools/draw.html">
+<meta property="og:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="三维标绘 - Cesium 示例">
+<meta name="twitter:description" content="三维标绘：三维标绘、量算、位置拾取、拖拽与模型位置调整。cesium_dev_kit 提供可直接运行的 三维标绘 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="twitter:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<style>
+:root{--bg:#0b1220;--panel:#111b2e;--text:#e6edf7;--muted:#9fb0c9;--accent:#38bdf8;--border:#24324a}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b1220,#0e1626 40%,#0b1220);color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 72px}
+nav.crumb{font-size:13px;color:var(--muted);margin-bottom:18px}
+nav.crumb a{color:var(--muted);text-decoration:none}
+nav.crumb a:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.25;margin:0 0 12px}
+.lead{color:var(--muted);font-size:17px;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 32px}
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid var(--border)}
+.btn.primary{background:var(--accent);color:#062033;border-color:var(--accent)}
+.btn.ghost{color:var(--text);background:var(--panel)}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin:22px 0}
+h2{font-size:20px;margin:0 0 12px}
+pre.code{overflow:auto;background:#08101d;border:1px solid var(--border);border-radius:10px;padding:16px;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+ul.links{padding-left:20px;margin:0}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--border);margin-top:40px;padding-top:18px;color:var(--muted);font-size:14px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "三维标绘 - cesium_dev_kit Cesium 示例",
+  "description": "三维标绘：三维标绘、量算、位置拾取、拖拽与模型位置调整。cesium_dev_kit 提供可直接运行的 三维标绘 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。",
+  "url": "https://dengxiaoning.github.io/cesium_dev_kit/examples/tools/draw.html",
+  "image": "https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Person",
+    "name": "dengxiaoning"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "cesium_dev_kit"
+  },
+  "programmingLanguage": [
+    "TypeScript",
+    "JavaScript"
+  ],
+  "isPartOf": {
+    "@type": "SoftwareApplication",
+    "name": "cesium_dev_kit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "codeRepository": "https://github.com/dengxiaoning/cesium_dev_kit"
+  }
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "cesium_dev_kit",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "示例",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "交互工具",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/tools/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "三维标绘",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/tools/draw.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumb"><a href="../../index.html">API 文档</a> / <a href="../../examples/index.html">示例</a> / 交互工具 / 三维标绘</nav>
+  <h1>三维标绘</h1>
+  <p class="lead">三维标绘、量算、位置拾取、拖拽与模型位置调整。下面是该示例的核心 script 片段，供参考学习；完整可运行代码请进入在线 Demo 或查看仓库源码。</p>
+  <div class="cta">
+    <a class="btn primary" href="../../demo/?auto=1#/tools/draw">在线运行 Demo</a>
+    <a class="btn ghost" href="../../examples/index.html">全部示例</a>
+    <a class="btn ghost" href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/tools/draw/plot.vue">查看完整源码</a>
+  </div>
+  <section>
+    <h2>示例代码</h2>
+    <pre class="code"><code>import * as Cesium from &#39;cesium&#39;
+// import { initCesium } from &#39;@/utils/cesiumPluginsExtends/index&#39;
+import { Draw } from &#39;@/utils/cesiumPluginsExtends/singleImport&#39;
+
+export default {
+  data () {
+    return {
+      activeId: &#39;pos&#39;,
+      plotEntitiesId: [],
+      menuData: [
+        {
+          label: &#39;坐标点&#39;,
+          value: &#39;coordinates&#39;
+        },
+        {
+          label: &#39;线段&#39;,
+          value: &#39;line&#39;
+        },
+        {
+          label: &#39;多边形&#39;,
+          value: &#39;polygon&#39;
+        },
+        {
+          label: &#39;矩形&#39;,
+          value: &#39;rectangle&#39;
+        },
+        {
+          label: &#39;圆形&#39;,
+          value: &#39;circular&#39;
+        },
+        {
+          label: &#39;多边立方体&#39;,
+          value: &#39;polygonCable&#39;
+        },
+        {
+          label: &#39;四方体&#39;,
+          value: &#39;Tetragonal&#39;
+        },
+        {
+          label: &#39;圆柱体&#39;,
+          value: &#39;cylinder&#39;
+        },
+        {
+          label: &#39;围栏&#39;,
+          value: &#39;enclosure&#39;
+        },
+        {
+          label: &#39;球体&#39;,
+          value: &#39;spherome&#39;
+        },
+        {
+          label: &#39;圆锥&#39;,
+          value: &#39;circularCone&#39;
+        },
+        {
+          label: &#39;圆柱&#39;,
+          value: &#39;circularColumn&#39;
+        },
+        {
+          label: &#39;走廊&#39;,
+          value: &#39;corridor&#39;
+        },
+        {
+          label: &#39;管道&#39;,
+          value: &#39;pipeline&#39;
+        },
+        {
+          label: &#39;五角管道&#39;,
+          value: &#39;fivePoint&#39;
+        },
+        {
+          label: &#39;直线箭头&#39;,
+          value: &#39;StraightArrow&#39;
+        },
+        {
+          label: &#39;直线箭头-修改&#39;,
+          value: &#39;StraightArrowModify&#39;
+        },
+        {
+          label: &#39;攻击箭头&#39;,
+          value: &#39;AttackArrow&#39;
+        },
+        {
+          label: &#39;攻击箭头-修改&#39;,
+          value: &#39;AttackArrowModify&#39;
+        },
+        {
+          label: &#39;钳击箭头&#39;,
+          value: &#39;PincerArrow&#39;
+        },
+        {
+          label: &#39;钳击箭头-修改&#39;,
+          value: &#39;PincerArrowModify&#39;
+        },
+        {
+          label: &#39;清除&#39;,
+          value: &#39;clean&#39;
+        }
+      ]
+    }
+  },
+  mounted () {
+    this.initMap()
+  },
+  methods: {
+    // 添加地形数据
+    async addWorldTerrainAsync (viewer) {
+      try {
+        const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+        viewer.terrainProvider = terrainProvider;
+      } catch (error) {
+        console.log(`Failed to add world imagery: ${error}`);
+      }
+    },
+    initMap () {
+      // 自定义viewer
+      // var viewer = new Cesium.Viewer(&#39;cesiumContainer&#39;);
+      // 导入 cesium_dev_kit Draw 模块 
+      const drawObj = new Draw({
+        Cesium,
+        // viewer: viewer,
+        containerId: &#39;cesiumContainer&#39;,
+        viewerConfig: {
+          infoBox: false,
+          shouldAnimate: true,
+        },
+        extraConfig: {
+          depthTest: true,
+          // AccessToken: &#39;your token&#39;
+        },
+        MapImageryList: [
+          {
+            type: &#39;UrlTemplateImageryProvider&#39;,
+            option: {
+              url: &#39;https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}&#39;,
+              subdomains: [&#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;],
+              tilingScheme: new Cesium.WebMercatorTilingScheme()
+            }
+          }]
+      })
+
+      this.c_viewer = drawObj.viewer
+      this.draw = drawObj.draw
+      this.draw.setDefSceneConfig()
+      this.draw.setBloomLightScene()
+      this.load3dTiles(drawObj.viewer)
+      this.addWorldTerrainAsync(drawObj.viewer);
+      this.StraightArrowObj = drawObj.straightArrowObj
+      this.AttackArrowObj = drawObj.attackArrowObj
+      this.PincerArrowObj = drawObj.pincerArrowObj
+    },
+    async load3dTiles (viewer) {
+      viewer.scene.sun.show = false
+      viewer.scene.moon.show = false
+      viewer.scene.skyAtmosphere.show = false
+
+      let tiles = await Cesium.Cesium3DTileset.fromUrl(&#39;static/data/3DTiles/building/tileset.json&#39;);
+      let tileset = this.c_viewer.scene.primitives.add(tiles)
+
+      tileset.style = new Cesium.Cesium3DTileStyle({
+        color: {
+          conditions: [
+            [&#39;${height} &gt;= 300&#39;, &#39;rgba(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 200&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 100&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 50&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 25&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 10&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;${height} &gt;= 5&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;],
+            [&#39;true&#39;, &#39;rgb(0, 149, 251, 0.3)&#39;]
+          ]
+        }
+      })
+
+      // 将获取到的modelMatrix 设置到3dtiles 上面，
+      const modelMatrixOrg = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 540, 0, 1]
+      //可以注释下面这行，再看看效果
+      tileset.modelMatrix = Cesium.Matrix4.fromArray(modelMatrixOrg);
+      viewer.flyTo(tileset)
+    },
+    caldDistain (item) {
+      this.activeId = item.value
+      if (item.label !== &#39;钳击箭头-修改&#39; &amp;&amp; item.label !== &#39;钳击箭头&#39; &amp;&amp;
+        item.label !== &#39;攻击箭头-修改&#39; &amp;&amp; item.label !== &#39;攻击箭头&#39; &amp;&amp;
+        item.label !== &#39;直线箭头-修改&#39; &amp;&amp; item.label !== &#39;直线箭头&#39;) {
+        this.drawAgain();
+      }
+      switch (item.label) {
+        case &#39;坐标点&#39;:
+          this.draw.drawPointGraphics()
+          break
+        case &#39;线段&#39;:
+          this.draw.drawLineGraphics({ clampToGround: true })
+          break
+        case &#39;多边形&#39;:
+          this.draw.drawPolygonGraphics()
+          break
+        case &#39;矩形&#39;:
+          this.draw.drawRectangleGraphics()
+          break
+        case &#39;圆形&#39;:
+          this.draw.drawCircleGraphics()
+          break
+
+        case &#39;多边立方体&#39;:
+          this.draw.drawPolygonGraphics({ height: 600 })
+          break
+        case &#39;四方体&#39;:
+          this.draw.drawRectangleGraphics({ height: 600 })
+          break
+        case &#39;圆柱体&#39;:
+          this.draw.drawCircleGraphics({ height: 600 })
+          break
+        case &#39;围栏&#39;:
+          this.draw.drawWallGraphics({
+            style: {
+              material: Cesium.Color.GOLD.withAlpha(0.5),
+              maximumHeights: [600, 600],
+              minimumHeights: [0, 0],
+            }
+          })
+          break
+        case &#39;球体&#39;:
+          this.draw.drawEllipsoidGraphics()
+          break
+        case &#39;圆锥&#39;:
+          this.draw.drawCylinderGraphics({ topRadius: 1 })
+          break
+        case &#39;圆柱&#39;:
+          this.draw.drawCylinderGraphics()
+          break
+        case &#39;走廊&#39;:
+          this.draw.drawCorridorGraphics({ width: 50, height: 600, extrudedHeight: 20 })
+          break
+        case &#39;管道&#39;:
+          this.draw.drawPolylineVolumeGraphics()
+          break
+        case &#39;五角管道&#39;:
+          this.draw.drawPolylineVolumeGraphics({
+            color: Cesium.Color.fromCssColorString(&quot;#FFD700&quot;),
+            shape: &#39;fivePoint&#39;,
+            arms: 5,
+            rOuter: 25,
+            rInner: 50
+          })
+          break;
+        case &#39;直线箭头&#39;:
+          this.AttackArrowObj.disable()
+          this.PincerArrowObj.disable()
+          this.StraightArrowObj.startDraw(entiteId =&gt; {
+            this.plotEntitiesId.push(entiteId)
+          })
+          break
+        case &#39;直线箭头-修改&#39;:
+          this.StraightArrowObj.startModify();
+          break
+        case &#39;攻击箭头&#39;:
+          this.PincerArrowObj.disable()
+          this.StraightArrowObj.disable()
+          this.AttackArrowObj.startDraw(entiteId =&gt; {
+// ... 完整源码见 https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/tools/draw/plot.vue</code></pre>
+  </section>
+  <section>
+    <h2>相关 API</h2>
+    <ul class="links"><li><a href="../../classes/Draw.html">Draw API 文档</a></li><li><a href="../../classes/Analysis.html">Analysis API 文档</a></li></ul>
+    <p class="muted">安装：<code>npm install cesium_dev_kit cesium</code></p>
+  </section>
+  <footer>
+    <p>cesium_dev_kit v1.4.0 · <a href="../../index.html">API 文档</a> · <a href="../../demo/?auto=1">在线 Demo</a> · <a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a></p>
+    <p>关键词：三维标绘, 交互工具, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, Draw, Analysis</p>
+  </footer>
+</div>
+</body>
+</html>

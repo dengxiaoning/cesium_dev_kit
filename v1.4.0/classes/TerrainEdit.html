@@ -1,0 +1,525 @@
+<!DOCTYPE html><html class="default" lang="zh" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>TerrainEdit | cesium_dev_kit - v1.4.0</title><link rel="icon" href="../assets/favicon.ico"/><meta name="description" content="Documentation for cesium_dev_kit"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><link rel="stylesheet" href="../assets/custom.css"/><script defer src="../assets/main.js"></script><script defer src="../assets/custom.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">cesium_dev_kit - v1.4.0</a>
+<div id="tsd-toolbar-links"><a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a><a href="/cesium_dev_kit/examples/">示例</a><a href="/cesium_dev_kit/demo/?auto=1">在线 Demo</a><a href="/cesium_dev_kit/en/">English</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="搜索"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="搜索"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="搜索文档" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>正在准备搜索索引...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="菜单"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb" aria-label="Breadcrumb">
+<li><a href="" aria-current="page">TerrainEdit</a></li></ul>
+<h1>类 TerrainEdit</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>地形编辑：在 Cesium 地球上圈定范围，做塌陷 / 抬升 / 平整 / 平滑，并叠加水面与台阶。</p>
+<h2 id="实现思路" class="tsd-anchor-link">实现思路<a href="#实现思路" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Cesium 没有开放「写地形」的接口（<code>terrainProvider</code> 只读），所以这里采用
+<strong>采样真实地形 + Three.js 局部网格覆盖</strong> 的方式：</p>
+<ol>
+<li>绘制多边形后，在多边形包围盒内生成规则格网，用 <code>sampleTerrainMostDetailed</code>
+采样真实地形高度作为基准面；</li>
+<li>形变只在多边形内部按「到边界的距离」加权生效，边界处权重为 0，
+因此覆盖网格与原始地形在坑口处严丝合缝，不会有悬空或裂缝；</li>
+<li>用 Three.js 渲染这张带顶点色的网格，配合 <code>stepHeight</code> 生成台阶、
+水面与等高线，视觉上就是被挖开的矿坑 / 被堆起来的土方。</li>
+</ol>
+<p>如果后续要把形变写回 Cesium 地形，可以基于同一份 <code>TerrainGrid</code> 生成
+<code>CustomHeightmapTerrainProvider</code> 的高度图，形变算法不需要改。</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="参阅">参阅<a href="#参阅" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/utils/cesiumPluginsExtends/libs/TerrainEdit.ts">实现源码</a></p>
+</div></div></section>
+<section class="tsd-panel-group tsd-index-group">
+<section class="tsd-panel tsd-index-panel">
+<details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h5 class="tsd-index-heading uppercase">索引</h5></summary>
+<div class="tsd-accordion-details">
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading tsd-anchor-link" id="方法">方法<a href="#方法" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-index-list"><a href="#apply" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>apply</span></a>
+<a href="#begindraw" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>begin<wbr/>Draw</span></a>
+<a href="#beginstroke" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>begin<wbr/>Stroke</span></a>
+<a href="#canceldraw" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>cancel<wbr/>Draw</span></a>
+<a href="#clear" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>clear</span></a>
+<a href="#destroy" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>destroy</span></a>
+<a href="#dispose" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>dispose</span></a>
+<a href="#enablebrush" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>enable<wbr/>Brush</span></a>
+<a href="#endstroke" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>end<wbr/>Stroke</span></a>
+<a href="#exportdata" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>export<wbr/>Data</span></a>
+<a href="#finishdraw" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>finish<wbr/>Draw</span></a>
+<a href="#getbrush" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Brush</span></a>
+<a href="#getheightfield" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Height<wbr/>Field</span></a>
+<a href="#getpolygon" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Polygon</span></a>
+<a href="#getstats" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Stats</span></a>
+<a href="#importdata" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>import<wbr/>Data</span></a>
+<a href="#refreshtexture" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>refresh<wbr/>Texture</span></a>
+<a href="#setarea" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Area</span></a>
+<a href="#setbrush" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Brush</span></a>
+<a href="#setcontourvisible" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Contour<wbr/>Visible</span></a>
+<a href="#setcutsurfaceenabled" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Cut<wbr/>Surface<wbr/>Enabled</span></a>
+<a href="#setpolygon" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Polygon</span></a>
+<a href="#settextureenabled" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Texture<wbr/>Enabled</span></a>
+<a href="#setwaterlevel" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Water<wbr/>Level</span></a>
+<a href="#strokeat" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>stroke<wbr/>At</span></a>
+<a href="#undo" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>undo</span></a>
+</div></section></div></details></section></section>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-方法"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="方法-1">方法<a href="#方法-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
+<section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="apply"><span>apply</span><a href="#apply" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="apply-1"><span class="tsd-kind-call-signature">apply</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">TerrainEditApplyOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#apply-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>对当前范围执行一次形变。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">可选</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">TerrainEditApplyOptions</span></span>
+<div class="tsd-comment tsd-typography"><p>形变参数</p>
+<ul>
+<li><code>waterLevel</code>（<code>number | 'auto' | null</code>）：水面高度：</li>
+<li><code>rebuildWater</code>（<code>boolean</code>）：是否重建水面（默认 true）</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="示例">示例<a href="#示例" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-3">// 塌陷 60 米，台阶高 6 米，水面自动</span><br/><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">apply</span><span class="hl-1">({ </span><span class="hl-6">mode:</span><span class="hl-1"> </span><span class="hl-2">&#39;sink&#39;</span><span class="hl-1">, </span><span class="hl-6">depth:</span><span class="hl-1"> </span><span class="hl-8">60</span><span class="hl-1">, </span><span class="hl-6">stepHeight:</span><span class="hl-1"> </span><span class="hl-8">6</span><span class="hl-1">, </span><span class="hl-6">waterLevel:</span><span class="hl-1"> </span><span class="hl-2">&#39;auto&#39;</span><span class="hl-1"> })</span><br/><span class="hl-3">// 再往上堆 20 米</span><br/><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">apply</span><span class="hl-1">({ </span><span class="hl-6">mode:</span><span class="hl-1"> </span><span class="hl-2">&#39;raise&#39;</span><span class="hl-1">, </span><span class="hl-6">depth:</span><span class="hl-1"> </span><span class="hl-8">20</span><span class="hl-1"> })</span>
+</code><button type="button">复制</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="begindraw"><span>begin<wbr/>Draw</span><a href="#begindraw" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="begindraw-1"><span class="tsd-kind-call-signature">beginDraw</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">TerrainEditDrawOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#begindraw-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>开始在地形上绘制编辑范围。</p>
+<p>左键加点、移动鼠标实时预览、双击或右键结束；至少 3 个点才会生成地形块。
+绘制时依赖 <code>scene.pickPosition</code> / <code>globe.pick</code> 贴合真实地形，因此需要先设置
+<code>viewer.terrainProvider</code>（真实地形）并开启 <code>depthTestAgainstTerrain</code>。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">可选</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">TerrainEditDrawOptions</span></span>
+<div class="tsd-comment tsd-typography"><p>绘制样式与回调</p>
+<ul>
+<li><code>color</code>（<code>string</code>）：线条颜色，默认 <code>#7defff</code></li>
+<li><code>width</code>（<code>number</code>）：线宽（像素），默认 4</li>
+<li><code>callback</code>（<code>(polygon: TerrainLngLatHeight[]) =&gt; void</code>）：绘制完成后回调，参数为经纬度顶点（度）</li>
+<li><code>segments</code>（<code>number</code>）：网格分辨率（每边划分数），默认 64</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="示例-1">示例<a href="#示例-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-3">// 打开绘制：双击结束后会自动生成可编辑地形块</span><br/><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">beginDraw</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-6">color:</span><span class="hl-1"> </span><span class="hl-2">&#39;#7defff&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-0">callback</span><span class="hl-6">:</span><span class="hl-1"> (</span><span class="hl-6">polygon</span><span class="hl-1">) </span><span class="hl-5">=&gt;</span><span class="hl-1"> </span><span class="hl-6">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-2">&#39;绘制完成&#39;</span><span class="hl-1">, </span><span class="hl-6">polygon</span><span class="hl-1">)</span><br/><span class="hl-1">})</span>
+</code><button type="button">复制</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="beginstroke"><span>begin<wbr/>Stroke</span><a href="#beginstroke" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="beginstroke-1"><span class="tsd-kind-call-signature">beginStroke</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#beginstroke-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>开始一次涂抹（记录撤销快照）</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="canceldraw"><span>cancel<wbr/>Draw</span><a href="#canceldraw" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="canceldraw-1"><span class="tsd-kind-call-signature">cancelDraw</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#canceldraw-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>取消绘制并清除草稿线。</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="clear"><span>clear</span><a href="#clear" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="clear-1"><span class="tsd-kind-call-signature">clear</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#clear-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>清除地形块、水面与绘制状态。</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="destroy"><span>destroy</span><a href="#destroy" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="destroy-1"><span class="tsd-kind-call-signature">destroy</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#destroy-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>兼容 kit 的统一销毁入口</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">void</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="dispose"><span>dispose</span><a href="#dispose" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="dispose-1"><span class="tsd-kind-call-signature">dispose</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#dispose-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>释放全部资源（three 网格、绘制的实体、事件监听）。</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">void</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="enablebrush"><span>enable<wbr/>Brush</span><a href="#enablebrush" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="enablebrush-1"><span class="tsd-kind-call-signature">enableBrush</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">enabled</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#enablebrush-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>开启 / 关闭鼠标涂抹。</p>
+<p>开启后会接管左键拖动（Cesium 的旋转相机被临时关闭，滚轮缩放仍可用），
+并显示贴地的圆形笔刷光标；关闭后恢复相机操作。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">enabled</span>: <span class="tsd-signature-type">boolean</span></span>
+<div class="tsd-comment tsd-typography"><p>true 开启，false 关闭</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="endstroke"><span>end<wbr/>Stroke</span><a href="#endstroke" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="endstroke-1"><span class="tsd-kind-call-signature">endStroke</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#endstroke-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>结束一次涂抹（落定等高线与统计）</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="exportdata"><span>export<wbr/>Data</span><a href="#exportdata" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="exportdata-1"><span class="tsd-kind-call-signature">exportData</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditSnapshot</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><a href="#exportdata-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>导出当前编辑结果，得到一份可直接 <code>JSON.stringify</code> 的数据包。</p>
+<p><strong>为什么是「返回数据」而不是「保存文件」</strong>：这个模块跑在调用方的页面里，
+数据落到哪儿（后端接口、localStorage、对象存储、GIS 文件、剪贴板）属于业务决定，
+库不该替用户选。所以这里只产出<strong>完整、自包含、可序列化</strong>的快照，
+存哪儿、存多久、要不要加密压缩，交给调用方；示例页里的「保存数据」
+就是拿这个返回值自己做了个下载，而不是库内置了一套存储。</p>
+<p>快照不只包含高度：二次编辑需要「原始地形 + 几何参数」才能正确重算挖填方、
+重烘坡面明暗、继续用笔刷，所以 <code>grid.base</code> 与 <code>grid.current</code> 两份高度场都会带上
+（Float32 原样 base64，往返逐位无损），并附带多边形、区域参数、水面 / 等高线 /
+贴图状态以及笔刷设置。</p>
+<p>体量：<code>segments = 160</code> 时约 277KB（两份 161×161 的 Float32，base64 后），gzip 约 180KB。
+这份开销是「无损」换来的：需要更小的载荷就降低 <code>setArea({ segments })</code>，
+或者只用 <code>getHeightField()</code> 自己量化 / 转成 GeoTIFF 等格式。</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditSnapshot</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></h4><p>数据包；尚未圈定编辑范围时返回 null</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="示例-2">示例<a href="#示例-2" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-3">// 存到自己的后端</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">data</span><span class="hl-1"> = </span><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">exportData</span><span class="hl-1">()</span><br/><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-0">fetch</span><span class="hl-1">(</span><span class="hl-2">&#39;/api/terrain/1&#39;</span><span class="hl-1">, { </span><span class="hl-6">method:</span><span class="hl-1"> </span><span class="hl-2">&#39;POST&#39;</span><span class="hl-1">, </span><span class="hl-6">body:</span><span class="hl-1"> </span><span class="hl-7">JSON</span><span class="hl-1">.</span><span class="hl-0">stringify</span><span class="hl-1">(</span><span class="hl-6">data</span><span class="hl-1">) })</span><br/><br/><span class="hl-3">// 或者做成文件让用户下载（下载这一步属于业务侧，不在库里）</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">blob</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">Blob</span><span class="hl-1">([</span><span class="hl-7">JSON</span><span class="hl-1">.</span><span class="hl-0">stringify</span><span class="hl-1">(</span><span class="hl-6">data</span><span class="hl-1">)], { </span><span class="hl-6">type:</span><span class="hl-1"> </span><span class="hl-2">&#39;application/json&#39;</span><span class="hl-1"> })</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">a</span><span class="hl-1"> = </span><span class="hl-6">document</span><span class="hl-1">.</span><span class="hl-0">createElement</span><span class="hl-1">(</span><span class="hl-2">&#39;a&#39;</span><span class="hl-1">)</span><br/><span class="hl-6">a</span><span class="hl-1">.</span><span class="hl-6">href</span><span class="hl-1"> = </span><span class="hl-7">URL</span><span class="hl-1">.</span><span class="hl-0">createObjectURL</span><span class="hl-1">(</span><span class="hl-6">blob</span><span class="hl-1">)</span><br/><span class="hl-6">a</span><span class="hl-1">.</span><span class="hl-6">download</span><span class="hl-1"> = </span><span class="hl-2">&#39;terrain.json&#39;</span><br/><span class="hl-6">a</span><span class="hl-1">.</span><span class="hl-0">click</span><span class="hl-1">()</span>
+</code><button type="button">复制</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="finishdraw"><span>finish<wbr/>Draw</span><a href="#finishdraw" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="finishdraw-1"><span class="tsd-kind-call-signature">finishDraw</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#finishdraw-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>手动结束绘制（等价于双击 / 右键）。</p>
+<p>点数不足 3 个时会自动取消，并触发 <code>onError</code>。</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getbrush"><span>get<wbr/>Brush</span><a href="#getbrush" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getbrush-1"><span class="tsd-kind-call-signature">getBrush</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Required</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TerrainEditBrushOptions</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">&quot;targetHeight&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">targetHeight</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span><a href="#getbrush-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>读取当前笔刷参数</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">Required</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TerrainEditBrushOptions</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">&quot;targetHeight&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">targetHeight</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getheightfield"><span>get<wbr/>Height<wbr/>Field</span><a href="#getheightfield" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getheightfield-1"><span class="tsd-kind-call-signature">getHeightField</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainHeightField</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><a href="#getheightfield-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>取当前高度场（Float32Array 副本），用于在内存里做二次计算。</p>
+<p>不需要序列化、只要数值时用这个：不经过 base64，直接拿到 <code>base</code> / <code>current</code>，
+两者之差就是每个顶点的挖填量（负数挖、正数填），可以直接喂给等高线、
+坡度分析、导出成 GeoTIFF 或自己的格网格式。数组是副本，改它不影响场景。</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainHeightField</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></h4><p>高度场；尚未圈定编辑范围时返回 null</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="示例-3">示例<a href="#示例-3" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">field</span><span class="hl-1"> = </span><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">getHeightField</span><span class="hl-1">()</span><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">delta</span><span class="hl-1"> = </span><span class="hl-6">field</span><span class="hl-1">.</span><span class="hl-6">current</span><span class="hl-1">.</span><span class="hl-0">map</span><span class="hl-1">((</span><span class="hl-6">h</span><span class="hl-1">, </span><span class="hl-6">i</span><span class="hl-1">) </span><span class="hl-5">=&gt;</span><span class="hl-1"> </span><span class="hl-6">h</span><span class="hl-1"> - </span><span class="hl-6">field</span><span class="hl-1">.</span><span class="hl-6">base</span><span class="hl-1">[</span><span class="hl-6">i</span><span class="hl-1">])</span><br/><span class="hl-6">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-2">&#39;最大挖深&#39;</span><span class="hl-1">, </span><span class="hl-6">Math</span><span class="hl-1">.</span><span class="hl-0">min</span><span class="hl-1">(...</span><span class="hl-6">delta</span><span class="hl-1">))</span>
+</code><button type="button">复制</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getpolygon"><span>get<wbr/>Polygon</span><a href="#getpolygon" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getpolygon-1"><span class="tsd-kind-call-signature">getPolygon</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainLngLatHeight</span><span class="tsd-signature-symbol">[]</span><a href="#getpolygon-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取当前多边形（度）。</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainLngLatHeight</span><span class="tsd-signature-symbol">[]</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getstats"><span>get<wbr/>Stats</span><a href="#getstats" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getstats-1"><span class="tsd-kind-call-signature">getStats</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditStatsResult</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><a href="#getstats-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>读取当前范围的地形统计：面积、最高最低点、挖填方量、水面高程。</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditStatsResult</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></h4><p>统计结果；未设置范围时返回 null</p>
+</div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="importdata"><span>import<wbr/>Data</span><a href="#importdata" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="importdata-1"><span class="tsd-kind-call-signature">importData</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">snapshot</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">TerrainEditSnapshot</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#importdata-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>载入 <code>exportData()</code> 导出的数据，恢复到可继续编辑的状态。</p>
+<p>与 <code>setPolygon()</code> 的关键区别：<strong>不会再采样地形</strong>。高度直接从数据包里恢复，
+所以即使此刻没有配置地形服务、或者原地形数据已经变了，也能一模一样地复原；
+载入后笔刷、撤销、统计、水面、等高线照常工作，地表贴图按新范围在后台重新取。</p>
+<p>数据包结构不对（不是本模块导出的、版本不匹配、base64 损坏、长度对不上、
+范围与 polygon 不匹配）都会抛 <code>INVALID_ARGUMENT</code>，不会渲染出一块错位的地形。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">snapshot</span>: <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">TerrainEditSnapshot</span></span>
+<div class="tsd-comment tsd-typography"><p><code>exportData()</code> 的返回值，或它 <code>JSON.parse</code> 之后的对象；
+也可以直接给 JSON 字符串（例如 <code>localStorage.getItem()</code> 的返回值），内部会自己解析</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="示例-4">示例<a href="#示例-4" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-7">data</span><span class="hl-1"> = </span><span class="hl-4">await</span><span class="hl-1"> (</span><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-0">fetch</span><span class="hl-1">(</span><span class="hl-2">&#39;/api/terrain/1&#39;</span><span class="hl-1">)).</span><span class="hl-0">json</span><span class="hl-1">()</span><br/><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">importData</span><span class="hl-1">(</span><span class="hl-6">data</span><span class="hl-1">).</span><span class="hl-0">enableBrush</span><span class="hl-1">(</span><span class="hl-5">true</span><span class="hl-1">)</span><br/><br/><span class="hl-3">// 从 localStorage 读也一样</span><br/><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">importData</span><span class="hl-1">(</span><span class="hl-6">localStorage</span><span class="hl-1">.</span><span class="hl-0">getItem</span><span class="hl-1">(</span><span class="hl-2">&#39;terrain-1&#39;</span><span class="hl-1">) || </span><span class="hl-2">&#39;&#39;</span><span class="hl-1">)</span>
+</code><button type="button">复制</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="refreshtexture"><span>refresh<wbr/>Texture</span><a href="#refreshtexture" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="refreshtexture-1"><span class="tsd-kind-call-signature">refreshTexture</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TerrainEditInstance</span><span class="tsd-signature-symbol">&gt;</span><a href="#refreshtexture-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>重建地表贴图（例如切换了影像图层、或区域范围变了之后）。</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TerrainEditInstance</span><span class="tsd-signature-symbol">&gt;</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="setarea"><span>set<wbr/>Area</span><a href="#setarea" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="setarea-1"><span class="tsd-kind-call-signature">setArea</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">center</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">TerrainEditAreaOptions</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TerrainEditInstance</span><span class="tsd-signature-symbol">&gt;</span><a href="#setarea-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>就地开辟一块可连续涂抹的地形编辑区域（不需要先画多边形）。</p>
+<p>区域是一个边长 <code>size</code> 米的正方形，内部按 <code>segments</code> 划分成规则格网，
+边缘按 <code>feather</code> 米羽化，因此刷到边界时不会出现断崖。
+建好之后配合 <code>enableBrush()</code> + 鼠标拖动即可像地形笔刷一样连续涂抹。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">center</span>: <span class="tsd-signature-type">any</span></span>
+<div class="tsd-comment tsd-typography"><p>区域中心：<code>[lng, lat]</code> / <code>{lng, lat}</code> / <code>Cartesian3</code></p>
+</div></li>
+<li><span><code class="tsd-tag">可选</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">TerrainEditAreaOptions</span></span>
+<div class="tsd-comment tsd-typography"><p>区域尺寸与格网分辨率</p>
+<ul>
+<li><code>size</code>（<code>number</code>）：区域边长（米），默认 2000</li>
+<li><code>segments</code>（<code>number</code>）：每边划分数，默认 160</li>
+<li><code>feather</code>（<code>number</code>）：边缘过渡宽度（米），默认 80</li>
+<li><code>texture</code>（<code>boolean</code>）：是否取影像作为地表贴图，默认 true</li>
+<li><code>fillHoles</code>（<code>boolean</code>）：是否把区域内部被包住的空洞填平，默认 true（见 setPolygon）</li>
+<li><code>cutSurface</code>（<code>boolean</code>）：是否启用程序化岩土材质，默认 true。</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TerrainEditInstance</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="示例-5">示例<a href="#示例-5" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-3">// 以当前视野中心为原点，铺一块 2km、160x160 的可编辑器</span><br/><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">setArea</span><span class="hl-1">([</span><span class="hl-8">117.1</span><span class="hl-1">, </span><span class="hl-8">36.25</span><span class="hl-1">], { </span><span class="hl-6">size:</span><span class="hl-1"> </span><span class="hl-8">2000</span><span class="hl-1">, </span><span class="hl-6">segments:</span><span class="hl-1"> </span><span class="hl-8">160</span><span class="hl-1"> })</span><br/><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">setBrush</span><span class="hl-1">({ </span><span class="hl-6">mode:</span><span class="hl-1"> </span><span class="hl-2">&#39;lower&#39;</span><span class="hl-1">, </span><span class="hl-6">radius:</span><span class="hl-1"> </span><span class="hl-8">150</span><span class="hl-1">, </span><span class="hl-6">maxDelta:</span><span class="hl-1"> </span><span class="hl-8">3</span><span class="hl-1"> }).</span><span class="hl-0">enableBrush</span><span class="hl-1">(</span><span class="hl-5">true</span><span class="hl-1">)</span>
+</code><button type="button">复制</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="setbrush"><span>set<wbr/>Brush</span><a href="#setbrush" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="setbrush-1"><span class="tsd-kind-call-signature">setBrush</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">TerrainEditBrushOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#setbrush-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>设置笔刷参数（不影响已刷出的地形）。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">可选</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">TerrainEditBrushOptions</span></span>
+<div class="tsd-comment tsd-typography"><p>模式、半径、台阶落差、目标高度</p>
+<ul>
+<li><code>mode</code>（<code>TerrainBrushMode</code>）：笔刷模式，默认 <code>lower</code>（下沉）</li>
+<li><code>radius</code>（<code>number</code>）：笔刷半径（米），默认 110</li>
+<li><code>strength</code>（<code>number</code>）：向目标标高推进的比例 0~1，默认 1（一步压到绝对平）。</li>
+<li><code>hardness</code>（<code>number</code>）：平整核心占半径的比例 0~1，默认 0.9：平台几乎铺满笔刷，边缘只留一圈窄立面</li>
+<li><code>roughness</code>（<code>number</code>）：坑口不规则度 0~1，默认 0.28。</li>
+<li><code>maxDelta</code>（<code>number</code>）：一级台阶的落差（米），默认 3。</li>
+<li><code>strokeLimit</code>（<code>number</code>）：一笔之内的累计上限系数（<code>maxDelta × strokeLimit</code>）。</li>
+<li><code>targetHeight</code>（<code>number | null</code>）：<code>level</code> 模式的目标高程（米），缺省取落笔处原地形高度</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="示例-6">示例<a href="#示例-6" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">setBrush</span><span class="hl-1">({ </span><span class="hl-6">mode:</span><span class="hl-1"> </span><span class="hl-2">&#39;level&#39;</span><span class="hl-1">, </span><span class="hl-6">radius:</span><span class="hl-1"> </span><span class="hl-8">200</span><span class="hl-1">, </span><span class="hl-6">targetHeight:</span><span class="hl-1"> </span><span class="hl-8">900</span><span class="hl-1"> })</span>
+</code><button type="button">复制</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="setcontourvisible"><span>set<wbr/>Contour<wbr/>Visible</span><a href="#setcontourvisible" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="setcontourvisible-1"><span class="tsd-kind-call-signature">setContourVisible</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">visible</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#setcontourvisible-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>显示 / 隐藏台阶等高线（青色网格线）。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">visible</span>: <span class="tsd-signature-type">boolean</span></span>
+<div class="tsd-comment tsd-typography"><p>true 显示，false 隐藏</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="setcutsurfaceenabled"><span>set<wbr/>Cut<wbr/>Surface<wbr/>Enabled</span><a href="#setcutsurfaceenabled" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="setcutsurfaceenabled-1"><span class="tsd-kind-call-signature">setCutSurfaceEnabled</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">enabled</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#setcutsurfaceenabled-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>挖/填出来的坡面是否叠加程序化岩土材质（默认 true）。</p>
+<p>陡壁上的卫星影像是平面俯视图，近垂直面会发虚；打开后按「坡度 + 挖填深度」
+在影像之上叠一层 3D 噪声岩土，更像真实的开挖断面。缓坡仍保留影像。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">enabled</span>: <span class="tsd-signature-type">boolean</span></span></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="示例-7">示例<a href="#示例-7" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">setCutSurfaceEnabled</span><span class="hl-1">(</span><span class="hl-5">false</span><span class="hl-1">)</span>
+</code><button type="button">复制</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="setpolygon"><span>set<wbr/>Polygon</span><a href="#setpolygon" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="setpolygon-1"><span class="tsd-kind-call-signature">setPolygon</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">positions</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">fillHoles</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">segments</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">slopeWidth</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TerrainEditInstance</span><span class="tsd-signature-symbol">&gt;</span><a href="#setpolygon-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>直接指定多边形范围（不经过鼠标绘制）。</p>
+<p>生成过程会按格网采样真实地形高度，因此返回 Promise；
+采样失败（例如没有配置地形）时自动退化为 0 高程平面。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">positions</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span>
+<div class="tsd-comment tsd-typography"><p>多边形顶点，支持 <code>[lng, lat]</code> / <code>{lng, lat}</code> / Cartesian3</p>
+</div></li>
+<li><span><code class="tsd-tag">可选</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">fillHoles</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">segments</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">slopeWidth</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span></span>
+<div class="tsd-comment tsd-typography"><p>网格分辨率等参数</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TerrainEditInstance</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="示例-8">示例<a href="#示例-8" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-6">terrainEdit</span><span class="hl-1">.</span><span class="hl-0">setPolygon</span><span class="hl-1">([</span><br/><span class="hl-1">  [</span><span class="hl-8">117.095</span><span class="hl-1">, </span><span class="hl-8">36.245</span><span class="hl-1">],</span><br/><span class="hl-1">  [</span><span class="hl-8">117.105</span><span class="hl-1">, </span><span class="hl-8">36.245</span><span class="hl-1">],</span><br/><span class="hl-1">  [</span><span class="hl-8">117.105</span><span class="hl-1">, </span><span class="hl-8">36.255</span><span class="hl-1">],</span><br/><span class="hl-1">  [</span><span class="hl-8">117.095</span><span class="hl-1">, </span><span class="hl-8">36.255</span><span class="hl-1">]</span><br/><span class="hl-1">])</span>
+</code><button type="button">复制</button></pre>
+
+</div></div></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="settextureenabled"><span>set<wbr/>Texture<wbr/>Enabled</span><a href="#settextureenabled" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="settextureenabled-1"><span class="tsd-kind-call-signature">setTextureEnabled</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">enabled</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#settextureenabled-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>是否用影像贴图显示编辑区（默认 true）。</p>
+<p>开启后会向当前影像图层要瓦片，把地表纹理贴到编辑区，
+挖开的地表仍是它本来的颜色，而不是一块纯色网格。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">enabled</span>: <span class="tsd-signature-type">boolean</span></span></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="setwaterlevel"><span>set<wbr/>Water<wbr/>Level</span><a href="#setwaterlevel" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="setwaterlevel-1"><span class="tsd-kind-call-signature">setWaterLevel</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">level</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;auto&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#setwaterlevel-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>设置水面高度并立即重绘。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">level</span>: <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;auto&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></span>
+<div class="tsd-comment tsd-typography"><p>相对水位（0~1）/ 绝对高程（米）/ 'auto' / null</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="strokeat"><span>stroke<wbr/>At</span><a href="#strokeat" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="strokeat-1"><span class="tsd-kind-call-signature">strokeAt</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">lng</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">lat</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#strokeat-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>手动落笔：在一次涂抹中连续调用即可画出连续轨迹（等价于按住拖动）。</p>
+<p>只在 <code>beginStroke()</code> 与 <code>endStroke()</code> 之间调用才会被合并成一步撤销。</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">参数</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">lng</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>经度</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">lat</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>纬度</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="undo"><span>undo</span><a href="#undo" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="undo-1"><span class="tsd-kind-call-signature">undo</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TerrainEditInstance</span><a href="#undo-1" aria-label="永久链接" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>撤销上一次形变（最多保留 20 步）。</p>
+</div>
+<h4 class="tsd-returns-title">返回 <span class="tsd-signature-type">TerrainEditInstance</span></h4></div></li></ul></section></section></details></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>显示设置</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">成员可见性</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>受保护</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>继承</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">配色</label><select id="tsd-theme"><option value="os">自动</option><option value="light">浅色</option><option value="dark">深色</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>目录</h3></summary>
+<div class="tsd-accordion-details"><a href="#实现思路"><span>实现思路</span></a>
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-方法"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>方法</summary>
+<div><a href="#apply"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>apply</span></a><a href="#begindraw"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>begin<wbr/>Draw</span></a><a href="#beginstroke"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>begin<wbr/>Stroke</span></a><a href="#canceldraw"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>cancel<wbr/>Draw</span></a><a href="#clear"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>clear</span></a><a href="#destroy"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>destroy</span></a><a href="#dispose"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>dispose</span></a><a href="#enablebrush"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>enable<wbr/>Brush</span></a><a href="#endstroke"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>end<wbr/>Stroke</span></a><a href="#exportdata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>export<wbr/>Data</span></a><a href="#finishdraw"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>finish<wbr/>Draw</span></a><a href="#getbrush"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Brush</span></a><a href="#getheightfield"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Height<wbr/>Field</span></a><a href="#getpolygon"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Polygon</span></a><a href="#getstats"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Stats</span></a><a href="#importdata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>import<wbr/>Data</span></a><a href="#refreshtexture"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>refresh<wbr/>Texture</span></a><a href="#setarea"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Area</span></a><a href="#setbrush"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Brush</span></a><a href="#setcontourvisible"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Contour<wbr/>Visible</span></a><a href="#setcutsurfaceenabled"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Cut<wbr/>Surface<wbr/>Enabled</span></a><a href="#setpolygon"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Polygon</span></a><a href="#settextureenabled"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Texture<wbr/>Enabled</span></a><a href="#setwaterlevel"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Water<wbr/>Level</span></a><a href="#strokeat"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>stroke<wbr/>At</span></a><a href="#undo"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="方法"><use href="../assets/icons.svg#icon-2048"></use></svg><span>undo</span></a></div></details></div></details></div>
+<div class="site-menu">
+<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://github.com/dengxiaoning/cesium_dev_kit" class="tsd-nav-link">GitHub</a><a href="/cesium_dev_kit/examples/" class="tsd-nav-link">示例</a><a href="/cesium_dev_kit/demo/?auto=1" class="tsd-nav-link">在线 Demo</a><a href="/cesium_dev_kit/en/" class="tsd-nav-link">English</a></nav>
+<nav class="tsd-navigation"><a href="../modules.html">cesium_dev_kit - v1.4.0</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>加载中……</li></ul></nav></div></div></div><footer>
+<p class="tsd-generator">使用 <a href="https://typedoc.org/" target="_blank">TypeDoc</a> 生成</p></footer>
+<div class="overlay"></div></body></html>

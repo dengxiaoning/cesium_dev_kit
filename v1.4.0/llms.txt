@@ -1,0 +1,59 @@
+# cesium_dev_kit
+
+> Cesium 开发工具包：标绘、量算、空间分析、自定义材质 / 图元、传感器、热力图、后处理特效、地形编辑，以及与 Three.js 的单上下文深度融合。按需引入，不绑定任何前端框架。
+
+- 版本：1.4.0
+- 文档：https://dengxiaoning.github.io/cesium_dev_kit/
+- 在线 Demo：https://dengxiaoning.github.io/cesium_dev_kit/demo/?auto=1
+- 示例索引：https://dengxiaoning.github.io/cesium_dev_kit/examples/
+- 机器可读 API 索引：https://dengxiaoning.github.io/cesium_dev_kit/api-index.json
+- GitHub：https://github.com/dengxiaoning/cesium_dev_kit
+- English README：https://github.com/dengxiaoning/cesium_dev_kit/blob/main/README.en.US.md
+
+## 快速开始
+
+```bash
+npm install cesium_dev_kit cesium
+```
+
+```ts
+import * as Cesium from 'cesium'
+import { createKit } from 'cesium_dev_kit'
+
+const kit = createKit({ Cesium, containerId: 'cesiumContainer' })
+kit.graphics.createPolygonGraphics({
+  positions: Cesium.Cartesian3.fromDegreesArray([104.09, 30.65, 104.11, 30.65, 104.10, 30.63]),
+  material: Cesium.Color.RED.withAlpha(0.3),
+  clampToGround: true
+})
+kit.dispose()
+```
+
+## 按类 API
+
+- [Analysis](https://dengxiaoning.github.io/cesium_dev_kit/llms/Analysis.md)：分析模块
+- [AttackArrow](https://dengxiaoning.github.io/cesium_dev_kit/llms/AttackArrow.md)：标绘（攻击箭头）模块
+- [Base](https://dengxiaoning.github.io/cesium_dev_kit/llms/Base.md)：基本构造方法base
+- [BasePlot](https://dengxiaoning.github.io/cesium_dev_kit/llms/BasePlot.md)：BasePlot API
+- [Control](https://dengxiaoning.github.io/cesium_dev_kit/llms/Control.md)：控件模块
+- [CustomCesiumPlugin](https://dengxiaoning.github.io/cesium_dev_kit/llms/CustomCesiumPlugin.md)：自定义插件(传感器)
+- [DomUtil](https://dengxiaoning.github.io/cesium_dev_kit/llms/DomUtil.md)：DomUtil API
+- [Draw](https://dengxiaoning.github.io/cesium_dev_kit/llms/Draw.md)：画笔模块
+- [Graphics](https://dengxiaoning.github.io/cesium_dev_kit/llms/Graphics.md)：图形模块 用于向地图加载各种实体对象
+- [Material](https://dengxiaoning.github.io/cesium_dev_kit/llms/Material.md)：Material API
+- [Math2d](https://dengxiaoning.github.io/cesium_dev_kit/llms/Math2d.md)：数学2d计算模块
+- [Math3d](https://dengxiaoning.github.io/cesium_dev_kit/llms/Math3d.md)：数学3d计算模块
+- [PassEffect](https://dengxiaoning.github.io/cesium_dev_kit/llms/PassEffect.md)：后期效果模块
+- [PincerArrow](https://dengxiaoning.github.io/cesium_dev_kit/llms/PincerArrow.md)：标绘（钳击箭头）模块
+- [Plugin](https://dengxiaoning.github.io/cesium_dev_kit/llms/Plugin.md)：外部插件模块
+- [Primitive](https://dengxiaoning.github.io/cesium_dev_kit/llms/Primitive.md)：图元拓展模块
+- [StraightArrow](https://dengxiaoning.github.io/cesium_dev_kit/llms/StraightArrow.md)：标绘（直线箭头）模块
+- [TerrainEdit](https://dengxiaoning.github.io/cesium_dev_kit/llms/TerrainEdit.md)：地形编辑：在 Cesium 地球上圈定范围，做塌陷 / 抬升 / 平整 / 平滑，并叠加水面与台阶
+- [ThreeJs](https://dengxiaoning.github.io/cesium_dev_kit/llms/ThreeJs.md)：接入three的融合模块 【注意】cesium 需要关闭自带的循环渲染（useDefaultRenderLoop: false）
+- [TooltipUtil](https://dengxiaoning.github.io/cesium_dev_kit/llms/TooltipUtil.md)：TooltipUtil API
+
+## 说明
+
+- 所有示例都可直接运行：https://dengxiaoning.github.io/cesium_dev_kit/examples/
+- 每个类的方法签名、参数、返回值和 `@example` 均来自源码 JSDoc。
+- 完整 TypeDoc HTML：https://dengxiaoning.github.io/cesium_dev_kit/modules.html

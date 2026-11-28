@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>构造信息框 - Cesium 示例与源码 | cesium_dev_kit</title>
+<meta name="description" content="构造信息框：实体信息框、构造信息框与自定义广告牌。cesium_dev_kit 提供可直接运行的 构造信息框 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="keywords" content="构造信息框, 信息框与气泡, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, TooltipUtil, DomUtil">
+<meta name="author" content="dengxiaoning">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dengxiaoning.github.io/cesium_dev_kit/examples/infoBox/constructBox.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cesium_dev_kit">
+<meta property="og:title" content="构造信息框 - Cesium 示例 | cesium_dev_kit">
+<meta property="og:description" content="构造信息框：实体信息框、构造信息框与自定义广告牌。cesium_dev_kit 提供可直接运行的 构造信息框 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta property="og:url" content="https://dengxiaoning.github.io/cesium_dev_kit/examples/infoBox/constructBox.html">
+<meta property="og:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="构造信息框 - Cesium 示例">
+<meta name="twitter:description" content="构造信息框：实体信息框、构造信息框与自定义广告牌。cesium_dev_kit 提供可直接运行的 构造信息框 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="twitter:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<style>
+:root{--bg:#0b1220;--panel:#111b2e;--text:#e6edf7;--muted:#9fb0c9;--accent:#38bdf8;--border:#24324a}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b1220,#0e1626 40%,#0b1220);color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 72px}
+nav.crumb{font-size:13px;color:var(--muted);margin-bottom:18px}
+nav.crumb a{color:var(--muted);text-decoration:none}
+nav.crumb a:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.25;margin:0 0 12px}
+.lead{color:var(--muted);font-size:17px;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 32px}
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid var(--border)}
+.btn.primary{background:var(--accent);color:#062033;border-color:var(--accent)}
+.btn.ghost{color:var(--text);background:var(--panel)}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin:22px 0}
+h2{font-size:20px;margin:0 0 12px}
+pre.code{overflow:auto;background:#08101d;border:1px solid var(--border);border-radius:10px;padding:16px;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+ul.links{padding-left:20px;margin:0}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--border);margin-top:40px;padding-top:18px;color:var(--muted);font-size:14px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "构造信息框 - cesium_dev_kit Cesium 示例",
+  "description": "构造信息框：实体信息框、构造信息框与自定义广告牌。cesium_dev_kit 提供可直接运行的 构造信息框 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。",
+  "url": "https://dengxiaoning.github.io/cesium_dev_kit/examples/infoBox/constructBox.html",
+  "image": "https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Person",
+    "name": "dengxiaoning"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "cesium_dev_kit"
+  },
+  "programmingLanguage": [
+    "TypeScript",
+    "JavaScript"
+  ],
+  "isPartOf": {
+    "@type": "SoftwareApplication",
+    "name": "cesium_dev_kit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "codeRepository": "https://github.com/dengxiaoning/cesium_dev_kit"
+  }
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "cesium_dev_kit",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "示例",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "信息框与气泡",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/infoBox/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "构造信息框",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/infoBox/constructBox.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumb"><a href="../../index.html">API 文档</a> / <a href="../../examples/index.html">示例</a> / 信息框与气泡 / 构造信息框</nav>
+  <h1>构造信息框</h1>
+  <p class="lead">实体信息框、构造信息框与自定义广告牌。下面是该示例的核心 script 片段，供参考学习；完整可运行代码请进入在线 Demo 或查看仓库源码。</p>
+  <div class="cta">
+    <a class="btn primary" href="../../demo/?auto=1#/infoBox/constructBox">在线运行 Demo</a>
+    <a class="btn ghost" href="../../examples/index.html">全部示例</a>
+    <a class="btn ghost" href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/infoBox/constructBox.vue">查看完整源码</a>
+  </div>
+  <section>
+    <h2>示例代码</h2>
+    <pre class="code"><code>import * as Cesium from &#39;cesium&#39;
+import { initCesium } from &#39;@/utils/cesiumPluginsExtends/index&#39;
+import &#39;./css/utils.css&#39;;
+const viewerData = {
+  viewer: null,
+  css3Entity: null,
+};
+export default {
+  mounted () {
+    this.initMap()
+  },
+  methods: {
+    // 添加地形数据
+    async addWorldTerrainAsync (viewer) {
+      try {
+        const terrainProvider = await Cesium.CesiumTerrainProvider.fromIonAssetId(1);
+        viewer.terrainProvider = terrainProvider;
+      } catch (error) {
+        console.log(`Failed to add world imagery: ${error}`);
+      }
+    },
+    initMap () {
+      const { viewer,
+        material,
+        base
+      } = new initCesium(
+        {
+          cesiumGlobal: Cesium,
+          containerId: &#39;cesiumContainer&#39;,
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {
+            depthTest: true,
+            AccessToken: &#39;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE&#39;
+          },
+          MapImageryList: []
+        })
+
+
+      this.c_viewer = viewer;
+      this.material = material;
+      this.b_base = base;
+      this.material.setDefSceneConfig()
+      this.material.setBloomLightScene()
+      this.load3dTiles(viewer);
+    },
+    async load3dTiles (viewer) {
+      var _self = this;
+
+      // let tiles = await Cesium.Cesium3DTileset.fromUrl(&#39;static/data/3DTiles/building/tileset.json&#39;);
+      // let tileset = this.c_viewer.scene.primitives.add(tiles)
+      // tileset.style = new Cesium.Cesium3DTileStyle({
+      //   color: {
+      //     conditions: [
+      //       [&quot;${height} &gt;= 300&quot;, &quot;rgba(0, 149, 251, 0.3)&quot;],
+      //       [&quot;${height} &gt;= 200&quot;, &quot;rgb(0, 149, 251, 0.3)&quot;],
+      //       [&quot;${height} &gt;= 100&quot;, &quot;rgb(0, 149, 251, 0.3)&quot;],
+      //       [&quot;${height} &gt;= 50&quot;, &quot;rgb(0, 149, 251, 0.3)&quot;],
+      //       [&quot;${height} &gt;= 25&quot;, &quot;rgb(0, 149, 251, 0.3)&quot;],
+      //       [&quot;${height} &gt;= 10&quot;, &quot;rgb(0, 149, 251, 0.3)&quot;],
+      //       [&quot;${height} &gt;= 5&quot;, &quot;rgb(0, 149, 251, 0.3)&quot;],
+      //       [&quot;true&quot;, &quot;rgb(0, 149, 251, 0.3)&quot;]
+      //     ]
+      //   }
+      // });
+      _self.addWorldTerrainAsync(viewer);
+      // viewer.flyTo(tileset)
+      _self.addEntityToScene(viewer);
+      _self.addListent()
+      _self.flyto();
+    },
+    flyto () {
+      this.b_base.flyTo({
+        position: {
+          &quot;x&quot;: -1253559.409990999,
+          &quot;y&quot;: 5419352.975314859,
+          &quot;z&quot;: 3115333.259974615
+        },
+        orientation: {
+          &quot;heading&quot;: 0.4188750281039546,
+          &quot;pitch&quot;: -0.13308133526157673,
+          &quot;roll&quot;: 0.000015282200091171205
+        }
+      })
+    },
+    addEntityToScene (viewer) {
+      viewerData.css3Entity = new Cesium.Scene.Css3Renderer([{
+        id: &#39;box4&#39;,
+        parentEleId: &#39;info-warp&#39;,
+        position: [103.0249541939527, 29.419159397588423, 2435.85581824738],
+        element: `&lt;div class=&quot;ysc-dynamic-layer ex-box&quot; id=&quot;box4&quot;&gt;&lt;div class=&quot;close__box__btn&quot;&gt;X&lt;/div&gt;
+        &lt;div class=&quot;line&quot;  style=&quot;width:300px;height:200px;&quot;&gt;xxx 信息点&lt;/div&gt;&lt;/div&gt;`,
+        offset: [10, -180]
+      }], true);
+
+    },
+    addListent () {
+      const _self = this;
+      this.b_base.bindHandelEvent({
+        leftClick: function click (event, _handlers) {
+          if (Cesium.defined(viewerData.css3Entity)) { viewerData.css3Entity.close(); }// 先关闭其它的
+          const pickPosition = _self.c_viewer.scene.pickPosition(event.position)
+          const cartiesian3 = _self.b_base.pickUpPosition(event);
+          const { lng, lat, alt } = _self.b_base.transformCartesianToWGS84(cartiesian3)
+
+          if (Cesium.defined(pickPosition)) {
+            viewerData.css3Entity = new Cesium.Scene.Css3Renderer([{
+              id: &#39;box4&#39;,
+              parentEleId: &#39;info-warp&#39;,
+              position: cartiesian3,
+              element: `&lt;div class=&quot;ysc-dynamic-layer ex-box&quot; id=&quot;box4&quot;&gt;&lt;div class=&quot;close__box__btn&quot;&gt;X&lt;/div&gt; 
+              &lt;div class=&quot;line&quot;  style=&quot;width:300px;height:200px;&quot;&gt;
+                信息点&lt;br/&gt;经度： ${lng}&lt;br/&gt;纬度：${lat}&lt;br/&gt;高层：${alt}
+                &lt;/div&gt;
+              &lt;/div&gt;`,
+              offset: [20, 50]
+            }], true);
+
+          }
+        }
+      });
+    }
+  },
+  beforeUnmount () {
+    this.c_viewer = null;
+    this.material = null;
+    this.graphics = null;
+    this.b_base.removeHandlerByName([&#39;LEFT_CLICK&#39;]);
+    this.b_base = null;
+  }
+}</code></pre>
+  </section>
+  <section>
+    <h2>相关 API</h2>
+    <ul class="links"><li><a href="../../classes/TooltipUtil.html">TooltipUtil API 文档</a></li><li><a href="../../classes/DomUtil.html">DomUtil API 文档</a></li></ul>
+    <p class="muted">安装：<code>npm install cesium_dev_kit cesium</code></p>
+  </section>
+  <footer>
+    <p>cesium_dev_kit v1.4.0 · <a href="../../index.html">API 文档</a> · <a href="../../demo/?auto=1">在线 Demo</a> · <a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a></p>
+    <p>关键词：构造信息框, 信息框与气泡, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, TooltipUtil, DomUtil</p>
+  </footer>
+</div>
+</body>
+</html>

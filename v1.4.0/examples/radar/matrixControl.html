@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>矩阵平移旋转 - Cesium 示例与源码 | cesium_dev_kit</title>
+<meta name="description" content="矩阵平移旋转：雷达扫描、卫星扫描、圆形/扇形/锥形扫描与矩阵控制。cesium_dev_kit 提供可直接运行的 矩阵平移旋转 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="keywords" content="矩阵平移旋转, 雷达与扫描特效, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, PassEffect">
+<meta name="author" content="dengxiaoning">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dengxiaoning.github.io/cesium_dev_kit/examples/radar/matrixControl.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cesium_dev_kit">
+<meta property="og:title" content="矩阵平移旋转 - Cesium 示例 | cesium_dev_kit">
+<meta property="og:description" content="矩阵平移旋转：雷达扫描、卫星扫描、圆形/扇形/锥形扫描与矩阵控制。cesium_dev_kit 提供可直接运行的 矩阵平移旋转 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta property="og:url" content="https://dengxiaoning.github.io/cesium_dev_kit/examples/radar/matrixControl.html">
+<meta property="og:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="矩阵平移旋转 - Cesium 示例">
+<meta name="twitter:description" content="矩阵平移旋转：雷达扫描、卫星扫描、圆形/扇形/锥形扫描与矩阵控制。cesium_dev_kit 提供可直接运行的 矩阵平移旋转 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="twitter:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<style>
+:root{--bg:#0b1220;--panel:#111b2e;--text:#e6edf7;--muted:#9fb0c9;--accent:#38bdf8;--border:#24324a}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b1220,#0e1626 40%,#0b1220);color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 72px}
+nav.crumb{font-size:13px;color:var(--muted);margin-bottom:18px}
+nav.crumb a{color:var(--muted);text-decoration:none}
+nav.crumb a:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.25;margin:0 0 12px}
+.lead{color:var(--muted);font-size:17px;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 32px}
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid var(--border)}
+.btn.primary{background:var(--accent);color:#062033;border-color:var(--accent)}
+.btn.ghost{color:var(--text);background:var(--panel)}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin:22px 0}
+h2{font-size:20px;margin:0 0 12px}
+pre.code{overflow:auto;background:#08101d;border:1px solid var(--border);border-radius:10px;padding:16px;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+ul.links{padding-left:20px;margin:0}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--border);margin-top:40px;padding-top:18px;color:var(--muted);font-size:14px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "矩阵平移旋转 - cesium_dev_kit Cesium 示例",
+  "description": "矩阵平移旋转：雷达扫描、卫星扫描、圆形/扇形/锥形扫描与矩阵控制。cesium_dev_kit 提供可直接运行的 矩阵平移旋转 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。",
+  "url": "https://dengxiaoning.github.io/cesium_dev_kit/examples/radar/matrixControl.html",
+  "image": "https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Person",
+    "name": "dengxiaoning"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "cesium_dev_kit"
+  },
+  "programmingLanguage": [
+    "TypeScript",
+    "JavaScript"
+  ],
+  "isPartOf": {
+    "@type": "SoftwareApplication",
+    "name": "cesium_dev_kit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "codeRepository": "https://github.com/dengxiaoning/cesium_dev_kit"
+  }
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "cesium_dev_kit",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "示例",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "雷达与扫描特效",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/radar/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "矩阵平移旋转",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/radar/matrixControl.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumb"><a href="../../index.html">API 文档</a> / <a href="../../examples/index.html">示例</a> / 雷达与扫描特效 / 矩阵平移旋转</nav>
+  <h1>矩阵平移旋转</h1>
+  <p class="lead">雷达扫描、卫星扫描、圆形/扇形/锥形扫描与矩阵控制。下面是该示例的核心 script 片段，供参考学习；完整可运行代码请进入在线 Demo 或查看仓库源码。</p>
+  <div class="cta">
+    <a class="btn primary" href="../../demo/?auto=1#/radar/matrixControl">在线运行 Demo</a>
+    <a class="btn ghost" href="../../examples/index.html">全部示例</a>
+    <a class="btn ghost" href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/radar/matrixControl.vue">查看完整源码</a>
+  </div>
+  <section>
+    <h2>示例代码</h2>
+    <pre class="code"><code>import * as Cesium from &#39;cesium&#39;
+import { initCesium } from &#39;@/utils/cesiumPluginsExtends/index&#39;
+
+export default {
+  data() {
+    return {
+      currPosition: Cesium.Cartesian3.fromDegrees(117.224, 31.819, 128),
+      roll: 0,
+      pitch: 40,
+      heading: 0,
+      menuList: [
+        {
+          label: &#39;X轴平移【+】&#39;,
+          flag: &#39;X-Translation-Plus&#39;,
+          bindVal: {
+            max: 1000
+            , min: 0
+            , value: 0
+          }
+        },
+        {
+          label: &#39;Y轴平移【+】&#39;,
+          flag: &#39;Y-Translation-Plus&#39;,
+          bindVal: {
+            max: 1000
+            , min: 0
+            , value: 0
+          }
+        },
+        {
+          label: &#39;Z轴平移【+】&#39;,
+          flag: &#39;Z-Translation-Plus&#39;,
+          bindVal: {
+            max: 0
+            , min: -1000
+            , value: -1000
+          }
+        },
+        {
+          label: &#39;X轴平移【-】&#39;,
+          flag: &#39;X-Translation-Minus&#39;,
+          bindVal: {
+            max: 0
+            , min: -1000
+            , value: -1000
+          }
+        },
+        {
+          label: &#39;Y轴平移【-】&#39;,
+          flag: &#39;Y-Translation-Minus&#39;,
+          bindVal: {
+            max: 0
+            , min: -1000
+            , value: -1000
+          }
+        },
+        {
+          label: &#39;Z轴平移【-】&#39;,
+          flag: &#39;Z-Translation-Minus&#39;,
+          bindVal: {
+            max: 3.0
+            , min: 1.0
+            , value: 1.0
+          }
+        },
+        {
+          label: &#39;X旋转【+】&#39;,
+          flag: &#39;X-Rotate-plus&#39;,
+          bindVal: {
+            max: 3.0
+            , min: 1.0
+            , value: 1.0
+          }
+        },
+        {
+          label: &#39;Y旋转【+】&#39;,
+          flag: &#39;Y-Rotate-plus&#39;,
+          bindVal: {
+            max: 3.0
+            , min: 1.0
+            , value: 1.0
+          }
+        },
+        {
+          label: &#39;Z旋转【+】&#39;,
+          flag: &#39;Z-Rotate-Plus&#39;,
+          bindVal: {
+            max: -1.0
+            , min: -3.0
+            , value: -3.0
+          }
+        },
+        {
+          label: &#39;X旋转【-】&#39;,
+          flag: &#39;X-Rotate-Minus&#39;,
+          bindVal: {
+            max: -1.0
+            , min: -3.0
+            , value: -3.0
+          }
+        },
+        {
+          label: &#39;Y旋转【-】&#39;,
+          flag: &#39;Y-Rotate-Minus&#39;,
+          bindVal: {
+            max: -1.0
+            , min: -3.0
+            , value: -3.0
+          }
+        },
+        {
+          label: &#39;Z旋转【-】&#39;,
+          flag: &#39;Z-Rotate-Minus&#39;,
+          bindVal: {
+            max: -1.0
+            , min: -3.0
+            , value: -3.0
+          }
+        }
+      ]
+    }
+  },
+  mounted() {
+    this.initMap()
+  },
+  methods: {
+    initMap() {
+      const { viewer, primitive } = new initCesium(
+        {
+          cesiumGlobal: Cesium,
+          containerId: &#39;cesiumContainer&#39;,
+          viewerConfig: {
+            infoBox: false,
+            shouldAnimate: true,
+          },
+          extraConfig: {},
+          MapImageryList: []
+        })
+
+      this.c_viewer = viewer
+      this.primitive = primitive;
+      this.flyToPos()
+      this.initPhaseControl()
+    },
+    flyToPos() {
+      this.primitive.flyTo({
+        position: {
+          x: -1577100.7186109242,
+          y: 5851821.270502206,
+          z: 3447255.476239793
+        },
+        orientation: {
+          heading: Cesium.Math.toRadians(78.17580384898336),
+          pitch: Cesium.Math.toRadians(-29.981992162453782),
+          roll: Cesium.Math.toRadians(0.005676460617140785)
+        }
+      })
+    },
+    initPhaseControl() {
+      const _this = this
+      this.Probing = new Cesium.Scene.ProbingPrimitive({
+        center: _this.currPosition,
+        thickness: 0.8,
+        repeat: 20
+      })
+    },
+    sliderChanger(flag, e) {
+      const Probing = this.Probing;
+      let translation = null, angel = null, rotation = null;
+      switch (flag) {
+        case &#39;X-Translation-Plus&#39;:
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(e.target.value, 0, 0))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+          break;
+        case &#39;Y-Translation-Plus&#39;:
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, e.target.value, 0))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+          break;
+        case &#39;Z-Translation-Plus&#39;:
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, e.target.value))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+          break;
+        case &#39;X-Translation-Minus&#39;:
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(e.target.value, 0, 0))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+          break;
+        case &#39;Y-Translation-Minus&#39;:
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, e.target.value, 0))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+          break;
+        case &#39;Z-Translation-Minus&#39;:
+          translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, e.target.value))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+          break;
+        case &#39;X-Rotate-Plus&#39;:
+          angel = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(e.target.value))
+          rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+          break;
+        case &#39;Y-Rotate-Plus&#39;:
+          angel = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(e.target.value))
+          rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+          break;
+        case &#39;Z-Rotate-Plus&#39;:
+          angel = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(e.target.value))
+          rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+          break;
+        case &#39;X-Rotate-Minus&#39;:
+          angel = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(e.target.value))
+          rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+          break;
+        case &#39;Y-Rotate-Minus&#39;:
+          angel = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(e.target.value))
+          rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+          break;
+        case &#39;Z-Rotate-Minus&#39;:
+          angel = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(e.target.value))
+          rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+          break;
+
+      }
+    },
+
+  },
+  beforeUnmount() {
+    this.c_viewer = null
+    this.customCesiumPlugin = null
+  }
+}</code></pre>
+  </section>
+  <section>
+    <h2>相关 API</h2>
+    <ul class="links"><li><a href="../../classes/PassEffect.html">PassEffect API 文档</a></li></ul>
+    <p class="muted">安装：<code>npm install cesium_dev_kit cesium</code></p>
+  </section>
+  <footer>
+    <p>cesium_dev_kit v1.4.0 · <a href="../../index.html">API 文档</a> · <a href="../../demo/?auto=1">在线 Demo</a> · <a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a></p>
+    <p>关键词：矩阵平移旋转, 雷达与扫描特效, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, PassEffect</p>
+  </footer>
+</div>
+</body>
+</html>

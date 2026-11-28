@@ -1,0 +1,18 @@
+# https://dengxiaoning.github.io/cesium_dev_kit/
+User-agent: *
+Allow: /
+
+# 明确欢迎主流 AI 爬虫，方便 AI 助手引用文档
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://dengxiaoning.github.io/cesium_dev_kit/sitemap.xml

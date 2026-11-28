@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cesium 示例大全（71 个） | cesium_dev_kit</title>
+<meta name="description" content="cesium_dev_kit 全部 71 个在线示例：标绘、量算、空间分析、材质、传感器、雷达扫描、地形编辑与 Cesium + Three.js 融合，每个示例都提供完整源码与在线 Demo。">
+<meta name="keywords" content="Cesium 示例, CesiumJS 示例, 三维GIS, 标绘, 量算, 空间分析, 地形编辑, Three.js, cesium_dev_kit">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dengxiaoning.github.io/cesium_dev_kit/examples/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cesium 示例大全 | cesium_dev_kit">
+<meta property="og:description" content="cesium_dev_kit 全部 71 个在线示例：标绘、量算、空间分析、材质、传感器、雷达扫描、地形编辑与 Cesium + Three.js 融合，每个示例都提供完整源码与在线 Demo。">
+<meta property="og:url" content="https://dengxiaoning.github.io/cesium_dev_kit/examples/">
+<meta property="og:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<style>
+:root{--bg:#0b1220;--panel:#111b2e;--text:#e6edf7;--muted:#9fb0c9;--accent:#38bdf8;--border:#24324a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 72px}
+h1{font-size:34px;margin:0 0 10px}
+.lead{color:var(--muted);margin:0 0 28px}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin:18px 0}
+h2{font-size:20px;margin:0 0 6px}
+ul.cards{list-style:none;padding:0;margin:12px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+ul.cards li{border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+ul.cards li span{color:var(--muted);font-size:12px}
+footer{border-top:1px solid var(--border);margin-top:36px;padding-top:18px;color:var(--muted);font-size:14px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "cesium_dev_kit Cesium 示例大全",
+  "description": "cesium_dev_kit 全部 71 个在线示例：标绘、量算、空间分析、材质、传感器、雷达扫描、地形编辑与 Cesium + Three.js 融合，每个示例都提供完整源码与在线 Demo。",
+  "url": "https://dengxiaoning.github.io/cesium_dev_kit/examples/",
+  "inLanguage": "zh-CN",
+  "isPartOf": {
+    "@type": "SoftwareApplication",
+    "name": "cesium_dev_kit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "codeRepository": "https://github.com/dengxiaoning/cesium_dev_kit"
+  }
+}</script>
+</head>
+<body>
+<div class="wrap">
+  <nav><a href="../index.html">API 文档</a> · <a href="../demo/?auto=1">在线 Demo</a> · <a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a></nav>
+  <h1>Cesium 示例大全</h1>
+  <p class="lead">cesium_dev_kit 全部 71 个在线示例：标绘、量算、空间分析、材质、传感器、雷达扫描、地形编辑与 Cesium + Three.js 融合，每个示例都提供完整源码与在线 Demo。</p>
+  <section><h2>实体图形</h2><p class="muted">点、线、面、模型、圆、墙、视频面、GIF 标牌等 Cesium 实体图形</p><ul class="cards"><li><a href="./graphics/floatingCone.html">浮动锥体glb</a><span>floatingCone</span></li>
+<li><a href="./graphics/flickerCircle.html">闪烁的圆</a><span>flickerCircle</span></li>
+<li><a href="./graphics/rotatingDisk.html">旋转的圆盘</a><span>rotatingDisk</span></li>
+<li><a href="./graphics/rotatingPanel.html">旋转的平面</a><span>rotatingPanel</span></li>
+<li><a href="./graphics/dynamicGradientWall.html">动态渐变墙</a><span>dynamicGradientWall</span></li>
+<li><a href="./graphics/videoPlacement.html">视频投放</a><span>videoPlacement</span></li>
+<li><a href="./graphics/graphicsSeven.html">gif图片投影</a><span>graphicsSeven</span></li>
+<li><a href="./graphics/rotatingCone.html">旋转锥体</a><span>rotatingCone</span></li>
+<li><a href="./graphics/billboard.html">广告牌</a><span>billboard</span></li></ul></section>
+<section><h2>自定义材质</h2><p class="muted">流光、预警、城市道路、波纹圆、动态墙等自定义材质</p><ul class="cards"><li><a href="./material/material_cylinder.html">淡入淡出探照灯</a><span>material_cylinder</span></li>
+<li><a href="./material/polylineCityLink.html">动态泛光线</a><span>polylineCityLink</span></li>
+<li><a href="./material/linkPoint.html">动态线(图片材质)</a><span>linkPoint</span></li>
+<li><a href="./material/areaPolylineCityLink.html">动态泛光线</a><span>areaPolylineCityLink</span></li>
+<li><a href="./material/linkPointFlow.html">流动线</a><span>linkPointFlow</span></li>
+<li><a href="./material/dynamicWall.html">动态墙材质</a><span>dynamicWall</span></li>
+<li><a href="./material/polygonMaterial.html">多边形面材质</a><span>polygonMaterial</span></li>
+<li><a href="./material/sphereMaterial.html">球体材质</a><span>sphereMaterial</span></li>
+<li><a href="./material/haloWall.html">光晕墙</a><span>haloWall</span></li></ul></section>
+<section><h2>图元与三维可视化</h2><p class="muted">自定义几何图元、光锥、三维热力图、路径漫游与路线规划</p><ul class="cards"><li><a href="./primitive/lightCentrum.html">光锥图元</a><span>lightCentrum</span></li>
+<li><a href="./primitive/pathRoaming.html">第一人称漫游</a><span>pathRoaming</span></li>
+<li><a href="./primitive/pathPlan.html">路线规划</a><span>pathPlan</span></li>
+<li><a href="./primitive/waterPath.html">河流</a><span>waterPath</span></li>
+<li><a href="./primitive/custPrimitive.html">自定义图元</a><span>custPrimitive</span></li>
+<li><a href="./primitive/heatmap3d.html">三维热力图</a><span>heatmap3d</span></li></ul></section>
+<section><h2>场景与天气特效</h2><p class="muted">天空盒、雨雪雾、夜景、后处理、火焰粒子等场景效果</p><ul class="cards"><li><a href="./scene/groundSkyBox.html">天空盒子</a><span>groundSkyBox</span></li>
+<li><a href="./scene/rain.html">雨天</a><span>rain</span></li>
+<li><a href="./scene/fog.html">雾天</a><span>fog</span></li>
+<li><a href="./scene/nightView.html">夜景</a><span>nightView</span></li>
+<li><a href="./scene/blueLightScene.html">蓝光场景</a><span>blueLightScene</span></li>
+<li><a href="./scene/sceneParam.html">场景光效控制</a><span>sceneParam</span></li>
+<li><a href="./scene/postProcessStages.html">后置场景控制</a><span>postProcessStages</span></li>
+<li><a href="./scene/snow.html">雪天</a><span>snow</span></li>
+<li><a href="./scene/param.html">参数面板控制场景</a><span>param</span></li>
+<li><a href="./scene/fire.html">火焰粒子系统</a><span>fire</span></li></ul></section>
+<section><h2>CZML 数据加载</h2><p class="muted">用 CZML 驱动时间轴动画与动态对象</p><ul class="cards"><li><a href="./czm/rockets.html">czm</a><span>rockets</span></li></ul></section>
+<section><h2>图层叠加</h2><p class="muted">百度、腾讯、天地图、ArcGIS、聚合、3D 柱与卷帘对比</p><ul class="cards"><li><a href="./layer/baidu.html">百度地图</a><span>baidu</span></li>
+<li><a href="./layer/arcgis.html">arcgis地图</a><span>arcgis</span></li>
+<li><a href="./layer/tencent.html">腾讯地图</a><span>tencent</span></li>
+<li><a href="./layer/tianditu.html">天地图</a><span>tianditu</span></li>
+<li><a href="./layer/clusterLayer.html">聚合图层</a><span>clusterLayer</span></li>
+<li><a href="./layer/bar3D.html">柱状3d图层</a><span>bar3D</span></li>
+<li><a href="./layer/splitLayer.html">卷帘</a><span>splitLayer</span></li></ul></section>
+<section><h2>信息框与气泡</h2><p class="muted">实体信息框、构造信息框与自定义广告牌</p><ul class="cards"><li><a href="./infoBox/entityLayerBox.html">实体layer信息框</a><span>entityLayerBox</span></li>
+<li><a href="./infoBox/constructBox.html">构造信息框</a><span>constructBox</span></li>
+<li><a href="./infoBox/createCustomDefBillboard.html">自定义广告牌</a><span>createCustomDefBillboard</span></li></ul></section>
+<section><h2>相机控制</h2><p class="muted">绕点旋转、相机位置与视角控制</p><ul class="cards"><li><a href="./camera/pointRotate.html">绕点旋转</a><span>pointRotate</span></li>
+<li><a href="./camera/cameraPosition.html">相机位置</a><span>cameraPosition</span></li></ul></section>
+<section><h2>交互工具</h2><p class="muted">三维标绘、量算、位置拾取、拖拽与模型位置调整</p><ul class="cards"><li><a href="./tools/draw.html">三维标绘</a><span>draw</span></li>
+<li><a href="./tools/measure.html">测量</a><span>measure</span></li>
+<li><a href="./tools/pickPos.html">位置拾取</a><span>pickPos</span></li>
+<li><a href="./tools/dimensionAnalysis.html">三维分析</a><span>dimensionAnalysis</span></li>
+<li><a href="./tools/annotation.html">标注与撤销</a><span>annotation</span></li>
+<li><a href="./tools/kitFeatures.html">套件能力演示</a><span>kitFeatures</span></li>
+<li><a href="./tools/drag.html">物体拖拽</a><span>drag</span></li>
+<li><a href="./tools/adjustEntityPos.html">实体位置调整</a><span>adjustEntityPos</span></li>
+<li><a href="./tools/adjustPimitivePos.html">3dTiles位置调整</a><span>adjustPimitivePos</span></li></ul></section>
+<section><h2>传感器可视化</h2><p class="muted">伞形、半圆、棱形、锥形传感器</p><ul class="cards"><li><a href="./sensor/umbrellaShapeSensor.html">伞形传感器</a><span>umbrellaShapeSensor</span></li>
+<li><a href="./sensor/semicircleSensor.html">半圆传感器</a><span>semicircleSensor</span></li>
+<li><a href="./sensor/coneSensor.html">锥形传感器</a><span>coneSensor</span></li></ul></section>
+<section><h2>雷达与扫描特效</h2><p class="muted">雷达扫描、卫星扫描、圆形/扇形/锥形扫描与矩阵控制</p><ul class="cards"><li><a href="./radar/radarScan.html">雷达扫描</a><span>radarScan</span></li>
+<li><a href="./radar/satelliteScan.html">卫星扫描</a><span>satelliteScan</span></li>
+<li><a href="./radar/circleScan.html">圆形扫描</a><span>circleScan</span></li>
+<li><a href="./radar/fanShapeScan.html">扇形扫描</a><span>fanShapeScan</span></li>
+<li><a href="./radar/lightCentrumScan.html">锥形扫描</a><span>lightCentrumScan</span></li>
+<li><a href="./radar/matrixControl.html">矩阵平移旋转</a><span>matrixControl</span></li></ul></section>
+<section><h2>Cesium + Three.js 融合</h2><p class="muted">光线投射、图形挤压、烟花与骨骼动画，支持单上下文深度融合</p><ul class="cards"><li><a href="./cesiumThreejs/rayCast.html">光线投射</a><span>rayCast</span></li>
+<li><a href="./cesiumThreejs/extrude.html">图形挤压</a><span>extrude</span></li>
+<li><a href="./cesiumThreejs/fireworksEffect.html">烟花效果</a><span>fireworksEffect</span></li>
+<li><a href="./cesiumThreejs/aniSoldier.html">奔跑的士兵</a><span>aniSoldier</span></li></ul></section>
+<section><h2>地形编辑</h2><p class="muted">地形开挖、堆高、整平、台阶、水面与土方统计</p><ul class="cards"><li><a href="./terrain/terrainEdit.html">地形重建</a><span>terrainEdit</span></li></ul></section>
+<section><h2>vue</h2><p class="muted"></p><ul class="cards"><li><a href="./vue/useCesiumKit.html">Vue 组合式 API</a><span>useCesiumKit</span></li></ul></section>
+  <footer>cesium_dev_kit v1.4.0 · 共 71 个示例 · 更新于 2026-11-28</footer>
+</div>
+</body>
+</html>

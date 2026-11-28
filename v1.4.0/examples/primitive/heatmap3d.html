@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三维热力图 - Cesium 示例与源码 | cesium_dev_kit</title>
+<meta name="description" content="三维热力图：自定义几何图元、光锥、三维热力图、路径漫游与路线规划。cesium_dev_kit 提供可直接运行的 三维热力图 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="keywords" content="三维热力图, 图元与三维可视化, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, Primitive, Plugin">
+<meta name="author" content="dengxiaoning">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dengxiaoning.github.io/cesium_dev_kit/examples/primitive/heatmap3d.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cesium_dev_kit">
+<meta property="og:title" content="三维热力图 - Cesium 示例 | cesium_dev_kit">
+<meta property="og:description" content="三维热力图：自定义几何图元、光锥、三维热力图、路径漫游与路线规划。cesium_dev_kit 提供可直接运行的 三维热力图 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta property="og:url" content="https://dengxiaoning.github.io/cesium_dev_kit/examples/primitive/heatmap3d.html">
+<meta property="og:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="三维热力图 - Cesium 示例">
+<meta name="twitter:description" content="三维热力图：自定义几何图元、光锥、三维热力图、路径漫游与路线规划。cesium_dev_kit 提供可直接运行的 三维热力图 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="twitter:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<style>
+:root{--bg:#0b1220;--panel:#111b2e;--text:#e6edf7;--muted:#9fb0c9;--accent:#38bdf8;--border:#24324a}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b1220,#0e1626 40%,#0b1220);color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 72px}
+nav.crumb{font-size:13px;color:var(--muted);margin-bottom:18px}
+nav.crumb a{color:var(--muted);text-decoration:none}
+nav.crumb a:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.25;margin:0 0 12px}
+.lead{color:var(--muted);font-size:17px;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 32px}
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid var(--border)}
+.btn.primary{background:var(--accent);color:#062033;border-color:var(--accent)}
+.btn.ghost{color:var(--text);background:var(--panel)}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin:22px 0}
+h2{font-size:20px;margin:0 0 12px}
+pre.code{overflow:auto;background:#08101d;border:1px solid var(--border);border-radius:10px;padding:16px;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+ul.links{padding-left:20px;margin:0}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--border);margin-top:40px;padding-top:18px;color:var(--muted);font-size:14px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "三维热力图 - cesium_dev_kit Cesium 示例",
+  "description": "三维热力图：自定义几何图元、光锥、三维热力图、路径漫游与路线规划。cesium_dev_kit 提供可直接运行的 三维热力图 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。",
+  "url": "https://dengxiaoning.github.io/cesium_dev_kit/examples/primitive/heatmap3d.html",
+  "image": "https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Person",
+    "name": "dengxiaoning"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "cesium_dev_kit"
+  },
+  "programmingLanguage": [
+    "TypeScript",
+    "JavaScript"
+  ],
+  "isPartOf": {
+    "@type": "SoftwareApplication",
+    "name": "cesium_dev_kit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "codeRepository": "https://github.com/dengxiaoning/cesium_dev_kit"
+  }
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "cesium_dev_kit",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "示例",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "图元与三维可视化",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/primitive/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "三维热力图",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/primitive/heatmap3d.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumb"><a href="../../index.html">API 文档</a> / <a href="../../examples/index.html">示例</a> / 图元与三维可视化 / 三维热力图</nav>
+  <h1>三维热力图</h1>
+  <p class="lead">自定义几何图元、光锥、三维热力图、路径漫游与路线规划。下面是该示例的核心 script 片段，供参考学习；完整可运行代码请进入在线 Demo 或查看仓库源码。</p>
+  <div class="cta">
+    <a class="btn primary" href="../../demo/?auto=1#/primitive/heatmap3d">在线运行 Demo</a>
+    <a class="btn ghost" href="../../examples/index.html">全部示例</a>
+    <a class="btn ghost" href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/primitive/heatmap3d.vue">查看完整源码</a>
+  </div>
+  <section>
+    <h2>示例代码</h2>
+    <pre class="code"><code>import * as Cesium from &#39;cesium&#39;
+import * as THREE from &#39;three&#39;;
+import { GLTFLoader } from &quot;three/examples/jsm/loaders/GLTFLoader&quot;;
+import { clone as cloneSkeleton } from &quot;three/examples/jsm/utils/SkeletonUtils&quot;;
+import { initCesium } from &#39;@/utils/cesiumPluginsExtends/index&#39;
+let dirLight;
+let threeJsCenter = [104.04624300169505, 30.677913135946746];
+// 士兵模型加载后显示的坐标 [经度, 纬度, 高度] 经纬度:度,高度:米
+let soldierPositions = [
+  [104.04624300169505, 30.677913135946746, 0],
+  [103.96684658213363, 30.707563699142355, 0],
+  [103.99124182762363, 30.66216843784849, 0],
+  [104.08199465161863, 30.755986264107932, 0],
+  [104.0674514054723, 30.669275369671197],
+  [104.01647054378103, 30.681205672372133]
+];
+const colors_pre = [
+  new Cesium.Color(77 / 255, 201 / 255, 255 / 255, 1),
+  new Cesium.Color(255 / 255, 201 / 255, 38 / 255, 1),
+  new Cesium.Color(221 / 255, 221 / 255, 221 / 255, 1)
+];
+const HEAT_DATA = [{ lng: 104.009628, lat: 30.736313, num: 857 },
+{ lng: 104.042587, lat: 30.682755, num: 2043 },
+{ lng: 104.038467, lat: 30.693741, num: 2021 },
+{ lng: 104.04808, lat: 30.700607, num: 616 },
+{ lng: 104.013748, lat: 30.732193, num: 213 },
+{ lng: 104.005508, lat: 30.751419, num: 78 },
+{ lng: 104.063187, lat: 30.71022, num: 86 },
+{ lng: 104.042587, lat: 30.748672, num: 1346 },
+{ lng: 104.017868, lat: 30.692368, num: 6000 },
+{ lng: 104.061813, lat: 30.700607, num: 53 },
+{ lng: 103.962936, lat: 30.717087, num: 513 },
+{ lng: 104.100266, lat: 30.766525, num: 129 },
+{ lng: 104.045334, lat: 30.741806, num: 327 },
+{ lng: 104.039841, lat: 30.719833, num: 516 },
+{ lng: 104.028854, lat: 30.71434, num: 1268 },
+{ lng: 104.030228, lat: 30.708847, num: 243 },
+{ lng: 104.030228, lat: 30.725327, num: 477 },
+{ lng: 104.015121, lat: 30.719833, num: 15 },
+{ lng: 104.005508, lat: 30.690994, num: 339 },
+{ lng: 104.053574, lat: 30.733566, num: 739 },
+{ lng: 104.002762, lat: 30.725327, num: 1201 },
+{ lng: 104.135971, lat: 30.758286, num: 1384 },
+{ lng: 104.043961, lat: 30.696487, num: 998 },
+{ lng: 104.039841, lat: 30.725327, num: 300 },
+{ lng: 104.085159, lat: 30.793991, num: 4 },
+{ lng: 104.043961, lat: 30.697861, num: 154 },
+{ lng: 104.021988, lat: 30.736313, num: 383 },
+{ lng: 104.071426, lat: 30.682755, num: 245 },
+{ lng: 104.075546, lat: 30.682755, num: 1832 },
+{ lng: 104.074173, lat: 30.695114, num: 5941 },
+{ lng: 104.0522, lat: 30.689621, num: 676 },
+{ lng: 104.096146, lat: 30.7267, num: 148 },
+{ lng: 104.127731, lat: 30.750046, num: 467 },
+{ lng: 104.021988, lat: 30.699234, num: 1118 }];
+export default {
+  mounted () {
+    this.initMap()
+  },
+  methods: {
+    async initMap () {
+      const { viewer,
+        threeJs,
+        material,
+        primitive,
+        passEffect,
+        graphics,
+        math3d } = new initCesium(
+          {
+            cesiumGlobal: Cesium,
+            threeGlobal: THREE,
+            containerId: &#39;cesiumContainer&#39;,
+            threeContainerId: &#39;threeContainer&#39;,
+            viewerConfig: {
+              useDefaultRenderLoop: false,
+              infoBox: false,
+              shouldAnimate: true,
+              sceneMode: Cesium.SceneMode.COLUMBUS_VIEW,
+              contextOptions: {
+                requestWebgl2: true,
+              }
+            },
+            extraConfig: {},
+            MapImageryList: []
+          })
+
+
+      this.c_viewer = viewer;
+      this.graphics = graphics;
+      this.material = material;
+      this.passEffect = passEffect;
+      this.math3d = math3d;
+      this.primitiveObj = primitive;
+      this.threeJs = threeJs;
+      this.passEffect.setDefSceneConfig()
+      this.passEffect.setBloomLightScene()
+      viewer.imageryLayers.addImageryProvider(
+        new Cesium.Scene.TdtImageryProvider({
+          key: &#39;7eb11c0c503429878691ac917238f87f&#39;,
+          style: &#39;cia&#39;,
+        }),
+      );
+      this.createHeatmap();
+      let custPrim = this.primitiveObj.customPrimivive({
+        center: [104.04955351965756, 30.71658149756256],
+        height1: 0,
+        height2: 280,
+        scale: 0.006,
+        img: &#39;static/data/images/Textures/beautiful.jpg&#39;
+      })
+      this.c_viewer.scene.primitives.add(custPrim)
+
+      this.createModel(new Cesium.Cartesian3(-1332295.414560024, 5323929.62021439, 3238927.391234091),
+        new Cesium.Cartesian3(-1324363.3465625115, 5326325.315307873, 3239187.462619164));
+      this.createModel(new Cesium.Cartesian3(-1332295.414560024, 5323929.62021439, 3238927.391234091),
+        new Cesium.Cartesian3(-1336434.2124124765, 5320440.64573102, 3243773.3418101203));
+      this.createModel(new Cesium.Cartesian3(-1332295.414560024, 5323929.62021439, 3238927.391234091),
+        new Cesium.Cartesian3(-1331220.7799512758, 5322770.7604429675, 3242087.6668156767));
+      this.createModel(new Cesium.Cartesian3(-1332295.414560024, 5323929.62021439, 3238927.391234091),
+        new Cesium.Cartesian3(-1335328.7458149802, 5325582.975396149, 3235656.4490397833));
+      this.createModel(new Cesium.Cartesian3(-1332295.414560024, 5323929.62021439, 3238927.391234091),
+        new Cesium.Cartesian3(-1329652.4119767922, 5323869.79833273, 3240808.659022114));
+      this.createModel(new Cesium.Cartesian3(-1332295.414560024, 5323929.62021439, 3238927.391234091),
+        new Cesium.Cartesian3(-1329843.6405181033, 5326386.837841139, 3236605.1972402423));
+      this.createModel(new Cesium.Cartesian3(-1332295.414560024, 5323929.62021439, 3238927.391234091),
+        new Cesium.Cartesian3(-1332204.3581683815, 5326367.313051588, 3235961.382028184));
+
+
+      this.createRadarScan();
+      this.createCircleScan();
+      this.getClickPosition();
+      // this.flyto();
+      this.createSatelliteScan();
+      this.initThree(this.threeJs);
+    },
+    flyto () {
+      // 初始视角:热力图中心正上方偏南约 9km,朝北俯视 -27°,
+      // 保证热力图、模型和扫描效果都在画面内,而不是飞到其它区域
+      // 【注意】Cesium.Cartesian3.fromDegrees 生成 ECEF 坐标,
+      // 哥伦布视图下 flyTo 会自动投影转换,3D 模式下语义一致,无需按模式区分
+      this.material.flyTo({
+        position: Cesium.Cartesian3.fromDegrees(104.046, 30.6, 9000),
+        orientation: {
+          heading: Cesium.Math.toRadians(354.3),
+          pitch: Cesium.Math.toRadians(-27.3),
+          roll: 0
+        }
+      })
+    },
+    createHeatmap () {
+      const headMapObjectPivmitive = this.primitiveObj.createHeatmap3d({
+        heatData: HEAT_DATA,
+        boundsArr: [103.8258, 30.58595, 104.252263, 30.87]
+      });
+      let primitiveObj = this.c_viewer.scene.primitives.add(headMapObjectPivmitive);
+      primitiveObj.show = true;
+    },
+    createModel (startPoint, endPoint) {
+      const _self = this;
+      var positions = this.math3d.getLinkedPointList(startPoint, endPoint, 46600, 50);
+      this.c_viewer.entities.add({
+        polyline: {
+          positions: positions,
+          width: 5,
+          material: _self.getCustomMaterialLine(colors_pre[Math.floor((Math.random() * 3)) % 3]),
+        }
+      });
+    },
+    getCustomMaterialLine (colors) {
+      return new Cesium.Scene.PolylineFlowMaterialProperty({
+        color: colors,
+        duration: 200
+      })
+    },
+    createRadarScan () {
+      this.passEffect.setRadarScanEffect({
+        id: &#39;radarScanA&#39;,
+        position: {
+          &quot;x&quot;: -1332289.9286735181,
+          &quot;y&quot;: 5323940.662468833,
+          &quot;z&quot;: 3238914.5052353037
+        },
+        color: Cesium.Color.LIGHTGREEN.withAlpha(0.8),
+        duration: 2000,
+        radius: 9800,
+        border: -1,
+        width: 5.0
+      })
+    },
+    createCircleScan () {
+      this.passEffect.setCircleScanEffect({
+        id: &#39;CircleScan&#39;,
+        position: {
+          &quot;x&quot;: -1332289.9286735181,
+          &quot;y&quot;: 5323940.662468833,
+          &quot;z&quot;: 3238914.5052353037
+        },
+        color: Cesium.Color.MEDIUMTURQUOISE.withAlpha(0.5),
+        duration: 5000,
+        border: 10,
+        radius: 10000
+      })
+    },
+    createSatelliteScan () {
+      this.graphics.createPointsGraphics({
+        positions: [Cesium.Cartesian3.fromDegrees(104.13792311260194, 30.770184996113095, 4000.0)],
+        billboard: {
+          b_img: &#39;static/data/images/file/satellite.svg&#39;,
+          b_width: 50,
+          b_height: 40,
+          b_scale: 1,
+          b_pixelOffset: new Cesium.Cartesian2(20, -10)
+        }
+      })
+      this.passEffect.satelliteScan({
+        position: [104.13792311260194, 30.770184996113095],
+        length: 4000.0,
+        color: Cesium.Color.LIGHTGREEN,
+        repeat: 40,
+        thickness: 0.1
+      })
+    },
+    initThree (ThreeJs) {
+      const { scene, renderer } = ThreeJs.initThree({ center: threeJsCenter, threeHabit: false, axesHelper: false });
+      // 每个组件实例持有自己的 mixers/clock/渲染循环,避免路由切换后旧循环继续驱动新场景
+      this.mixers = [];
+      this.clock = new THREE.Clock();
+      this.initLight(scene)
+
+      // 单一渲染循环:场景更新 + 驱动所有模型的动画
+      const renderLoop = () =&gt; {
+        this._threeRaf = requestAnimationFrame(renderLoop);
+        scene.update();
+        const delta = this.clock.getDelta();
+        this.mixers.forEach((m) =&gt; m.update(delta));
+      };
+      renderLoop();
+
+      // 13MB 的模型只加载一次,再按位置克隆多个实例
+      this.initMeshes(&quot;static/data/model/Soldier.glb&quot;, scene, soldierPositions);
+
+      this.enableShadow(renderer)
+      this.flyto(scene);
+    },
+    /**
+     * 加载 glb 后按传入的位置克隆出多个实例
+     * @param {string} url 模型地址
+     * @param {object} scene three 场景
+     * @param {Array[]} positions 每个元素为 [经度, 纬度, 高度]
+     */
+    initMeshes (url, scene, positions) {
+      const loader = new GLTFLoader();
+
+      loader.load(url, (gltf) =&gt; {
+        const clips = gltf.animations ?? [];
+        if (clips.length === 0) {
+          console.warn(`${url} 没有动画`);
+        }
+
+        // 不同模型原始尺寸差异巨大(car_mine.glb 最大边约 842 单位,Soldier.glb 约 1.8 单位),
+// ... 完整源码见 https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/primitive/heatmap3d.vue</code></pre>
+  </section>
+  <section>
+    <h2>相关 API</h2>
+    <ul class="links"><li><a href="../../classes/Primitive.html">Primitive API 文档</a></li><li><a href="../../classes/Plugin.html">Plugin API 文档</a></li></ul>
+    <p class="muted">安装：<code>npm install cesium_dev_kit cesium</code></p>
+  </section>
+  <footer>
+    <p>cesium_dev_kit v1.4.0 · <a href="../../index.html">API 文档</a> · <a href="../../demo/?auto=1">在线 Demo</a> · <a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a></p>
+    <p>关键词：三维热力图, 图元与三维可视化, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, Primitive, Plugin</p>
+  </footer>
+</div>
+</body>
+</html>

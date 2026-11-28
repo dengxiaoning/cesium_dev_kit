@@ -1,0 +1,470 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Math3d | cesium_dev_kit - v1.3.0</title><link rel="icon" href="../assets/favicon.ico"/><meta name="description" content="Documentation for cesium_dev_kit"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><link rel="stylesheet" href="../assets/custom.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">cesium_dev_kit - v1.3.0</a>
+<div id="tsd-toolbar-links"><a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a><a href="/cesium_dev_kit/demo/?auto=1">在线 Demo</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb" aria-label="Breadcrumb">
+<li><a href="" aria-current="page">Math3d</a></li></ul>
+<h1>Class Math3d</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>数学3d计算模块</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see">See<a href="#see" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p><a href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/utils/cesiumPluginsExtends/libs/Math3d.ts">实现源码</a></p>
+</div></div></section>
+<section class="tsd-panel-group tsd-index-group">
+<section class="tsd-panel tsd-index-panel">
+<details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h5 class="tsd-index-heading uppercase">Index</h5></summary>
+<div class="tsd-accordion-details">
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading tsd-anchor-link" id="properties">Properties<a href="#properties" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-index-list"><a href="#transformwgs84tocartesian" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>WGS84<wbr/>To<wbr/>Cartesian</span></a>
+<a href="#transformwgs84tocartographic" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>WGS84<wbr/>To<wbr/>Cartographic</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading tsd-anchor-link" id="methods">Methods<a href="#methods" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-index-list"><a href="#computecartographicpointsterraindata" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Cartographic<wbr/>Points<wbr/>Terrain<wbr/>Data</span></a>
+<a href="#computeellipseedgepositions" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Ellipse<wbr/>Edge<wbr/>Positions</span></a>
+<a href="#computeinterpolate2indexlineheightcartographic" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Interpolate2<wbr/>Index<wbr/>Line<wbr/>Height<wbr/>Cartographic</span></a>
+<a href="#computeinterpolateindexlineheightcartographic" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Interpolate<wbr/>Index<wbr/>Line<wbr/>Height<wbr/>Cartographic</span></a>
+<a href="#computeinterpolatelinecartographic" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Interpolate<wbr/>Line<wbr/>Cartographic</span></a>
+<a href="#computeinterpolatelineheightcartographic" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Interpolate<wbr/>Line<wbr/>Height<wbr/>Cartographic</span></a>
+<a href="#computeinterpolatelinelonlat" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Interpolate<wbr/>Line<wbr/>Lonlat</span></a>
+<a href="#computelonlatpointsterraindata" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Lonlat<wbr/>Points<wbr/>Terrain<wbr/>Data</span></a>
+<a href="#computesectoredgepositions" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Sector<wbr/>Edge<wbr/>Positions</span></a>
+<a href="#getintersectobj" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Intersect<wbr/>Obj</span></a>
+<a href="#getlinkedpointlist" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Linked<wbr/>Point<wbr/>List</span></a>
+<a href="#getpointdistance" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Point<wbr/>Distance</span></a>
+<a href="#getpointonellipsoid" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Point<wbr/>On<wbr/>Ellipsoid</span></a>
+<a href="#getpolygonarea" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Polygon<wbr/>Area</span></a>
+<a href="#getpositiondistance" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Position<wbr/>Distance</span></a>
+<a href="#getpositionsangle" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Positions<wbr/>Angle</span></a>
+<a href="#getpositionsarea" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Positions<wbr/>Area</span></a>
+<a href="#raisepositionstoheight" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>raise<wbr/>Positions<wbr/>To<wbr/>Height</span></a>
+<a href="#splitcartesians3" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>split<wbr/>Cartesians3</span></a>
+</div></section></div></details></section></section>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
+<section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="transformwgs84tocartesian"><span>transform<wbr/>WGS84<wbr/>To<wbr/>Cartesian</span><a href="#transformwgs84tocartesian" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">transformWGS84ToCartesian</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">WGS84Type</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">alt</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">any</span></div>
+<div class="tsd-comment tsd-typography"><p>WGS84 转笛卡尔（由 Base 混入）</p>
+</div></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="transformwgs84tocartographic"><span>transform<wbr/>WGS84<wbr/>To<wbr/>Cartographic</span><a href="#transformwgs84tocartographic" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">transformWGS84ToCartographic</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">WGS84Type</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">any</span></div>
+<div class="tsd-comment tsd-typography"><p>WGS84 转地理坐标（由 Base 混入）</p>
+</div></section></section></details>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
+<section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="computecartographicpointsterraindata"><span>compute<wbr/>Cartographic<wbr/>Points<wbr/>Terrain<wbr/>Data</span><a href="#computecartographicpointsterraindata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="computecartographicpointsterraindata-1"><span class="tsd-kind-call-signature">computeCartographicPointsTerrainData</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">Cartographics</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartographic</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">callback</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">result</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartographic</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#computecartographicpointsterraindata-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>传入Cartographic类型数组（弧度制经纬度），计算位于地形中的高度</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">Cartographics</span>: <span class="tsd-signature-type">Cartographic</span><span class="tsd-signature-symbol">[]</span></span>
+<div class="tsd-comment tsd-typography"><p>地理坐标数组</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">callback</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">result</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartographic</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span></span>
+<div class="tsd-comment tsd-typography"><p>回调</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="computeellipseedgepositions"><span>compute<wbr/>Ellipse<wbr/>Edge<wbr/>Positions</span><a href="#computeellipseedgepositions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="computeellipseedgepositions-1"><span class="tsd-kind-call-signature">computeEllipseEdgePositions</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EllipseEdgeOptions</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EllipseEdgeResult</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#computeellipseedgepositions-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>计算范围当前椭圆位置的数组</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">EllipseEdgeOptions</span></span>
+<div class="tsd-comment tsd-typography"><p>参数</p>
+<ul>
+<li><code>semiMinorAxis</code>（<code>number</code>）：短半轴</li>
+<li><code>semiMajorAxis</code>（<code>number</code>）：长半轴</li>
+<li><code>rotation</code>（<code>number</code>）：旋转角度（弧度）</li>
+<li><code>center</code>：中心点（笛卡尔坐标）</li>
+<li><code>granularity</code>（<code>number</code>）：粒度（弧度）</li>
+<li><code>angle</code>（<code>number</code>）：角度（弧度，仅 computeSectorEdgePositions 使用）</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">EllipseEdgeResult</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="computeinterpolate2indexlineheightcartographic"><span>compute<wbr/>Interpolate2<wbr/>Index<wbr/>Line<wbr/>Height<wbr/>Cartographic</span><a href="#computeinterpolate2indexlineheightcartographic" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="computeinterpolate2indexlineheightcartographic-1"><span class="tsd-kind-call-signature">computeInterpolate2IndexLineHeightCartographic</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">start</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CartographicLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">end</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CartographicLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">num</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">curIndex</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><a href="#computeinterpolate2indexlineheightcartographic-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>线段插值/经纬度高程插值</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">start</span>: <span class="tsd-signature-type">CartographicLike</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">end</span>: <span class="tsd-signature-type">CartographicLike</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">num</span>: <span class="tsd-signature-type">number</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">curIndex</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="computeinterpolateindexlineheightcartographic"><span>compute<wbr/>Interpolate<wbr/>Index<wbr/>Line<wbr/>Height<wbr/>Cartographic</span><a href="#computeinterpolateindexlineheightcartographic" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="computeinterpolateindexlineheightcartographic-1"><span class="tsd-kind-call-signature">computeInterpolateIndexLineHeightCartographic</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">start</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CartographicLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">end</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CartographicLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">num</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">index</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#computeinterpolateindexlineheightcartographic-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>经纬度高程插值，指定插值位置 index</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">start</span>: <span class="tsd-signature-type">CartographicLike</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">end</span>: <span class="tsd-signature-type">CartographicLike</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">num</span>: <span class="tsd-signature-type">number</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">index</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="computeinterpolatelinecartographic"><span>compute<wbr/>Interpolate<wbr/>Line<wbr/>Cartographic</span><a href="#computeinterpolatelinecartographic" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="computeinterpolatelinecartographic-1"><span class="tsd-kind-call-signature">computeInterpolateLineCartographic</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">start</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CartographicLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">end</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CartographicLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">_Delta</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><a href="#computeinterpolatelinecartographic-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>线段插值（Cartographic 弧度制）</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">start</span>: <span class="tsd-signature-type">CartographicLike</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">end</span>: <span class="tsd-signature-type">CartographicLike</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">_Delta</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="computeinterpolatelineheightcartographic"><span>compute<wbr/>Interpolate<wbr/>Line<wbr/>Height<wbr/>Cartographic</span><a href="#computeinterpolatelineheightcartographic" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="computeinterpolatelineheightcartographic-1"><span class="tsd-kind-call-signature">computeInterpolateLineHeightCartographic</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">start</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CartographicLike</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">end</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">CartographicLike</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><a href="#computeinterpolatelineheightcartographic-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>线段插值（经纬度高程插值）</p>
+<ul>
+<li><code>longitude</code>（<code>number</code>）：经度（弧度）</li>
+<li><code>latitude</code>（<code>number</code>）：纬度（弧度）</li>
+<li><code>height</code>（<code>number</code>）：高度</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">start</span>: <span class="tsd-signature-type">CartographicLike</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">end</span>: <span class="tsd-signature-type">CartographicLike</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="computeinterpolatelinelonlat"><span>compute<wbr/>Interpolate<wbr/>Line<wbr/>Lonlat</span><a href="#computeinterpolatelinelonlat" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="computeinterpolatelinelonlat-1"><span class="tsd-kind-call-signature">computeInterpolateLineLonlat</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">start</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">LonLatType</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">end</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">LonLatType</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><a href="#computeinterpolatelinelonlat-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>线段插值（经纬度坐标插值，角度制）</p>
+<ul>
+<li><code>lon</code>（<code>number</code>）：经度（角度制）</li>
+<li><code>lat</code>（<code>number</code>）：纬度（角度制）</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">start</span>: <span class="tsd-signature-type">LonLatType</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">end</span>: <span class="tsd-signature-type">LonLatType</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="computelonlatpointsterraindata"><span>compute<wbr/>Lonlat<wbr/>Points<wbr/>Terrain<wbr/>Data</span><a href="#computelonlatpointsterraindata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="computelonlatpointsterraindata-1"><span class="tsd-kind-call-signature">computeLonlatPointsTerrainData</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">lonlats</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">lonlatType</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">callback</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#computelonlatpointsterraindata-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取3DTiles高度（传入角度制 lon lat 数组）</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">lonlats</span>: <span class="tsd-signature-type">lonlatType</span></span>
+<div class="tsd-comment tsd-typography"><p>坐标数组</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">callback</span>: <span class="tsd-signature-type">Function</span></span>
+<div class="tsd-comment tsd-typography"><p>回调</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="computesectoredgepositions"><span>compute<wbr/>Sector<wbr/>Edge<wbr/>Positions</span><a href="#computesectoredgepositions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="computesectoredgepositions-1"><span class="tsd-kind-call-signature">computeSectorEdgePositions</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">EllipseEdgeOptions</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EllipseEdgeResult</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#computesectoredgepositions-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>计算某角度下椭圆位置坐标</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">EllipseEdgeOptions</span></span>
+<div class="tsd-comment tsd-typography"><p>参数</p>
+<ul>
+<li><code>semiMinorAxis</code>（<code>number</code>）：短半轴</li>
+<li><code>semiMajorAxis</code>（<code>number</code>）：长半轴</li>
+<li><code>rotation</code>（<code>number</code>）：旋转角度（弧度）</li>
+<li><code>center</code>：中心点（笛卡尔坐标）</li>
+<li><code>granularity</code>（<code>number</code>）：粒度（弧度）</li>
+<li><code>angle</code>（<code>number</code>）：角度（弧度，仅 computeSectorEdgePositions 使用）</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">EllipseEdgeResult</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getintersectobj"><span>get<wbr/>Intersect<wbr/>Obj</span><a href="#getintersectobj" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getintersectobj-1"><span class="tsd-kind-call-signature">getIntersectObj</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">startPos</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartesian3</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">endPos</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartesian3</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">excludeArr</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">bDrillPick</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getintersectobj-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取相交对象</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">startPos</span>: <span class="tsd-signature-type">Cartesian3</span></span>
+<div class="tsd-comment tsd-typography"><p>起始点坐标</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">endPos</span>: <span class="tsd-signature-type">Cartesian3</span></span>
+<div class="tsd-comment tsd-typography"><p>终点坐标</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">excludeArr</span>: <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></span>
+<div class="tsd-comment tsd-typography"><p>排除对象数组</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">bDrillPick</span>: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></span>
+<div class="tsd-comment tsd-typography"><p>只pick首个物体</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getlinkedpointlist"><span>get<wbr/>Linked<wbr/>Point<wbr/>List</span><a href="#getlinkedpointlist" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getlinkedpointlist-1"><span class="tsd-kind-call-signature">getLinkedPointList</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">startPoint</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartesian3</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">endPoint</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartesian3</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">angularityFactor</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">numOfSingleLine</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getlinkedpointlist-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>计算两点的点集</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">startPoint</span>: <span class="tsd-signature-type">Cartesian3</span></span>
+<div class="tsd-comment tsd-typography"><p>开始节点</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">endPoint</span>: <span class="tsd-signature-type">Cartesian3</span></span>
+<div class="tsd-comment tsd-typography"><p>结束节点</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">angularityFactor</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>曲率</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">numOfSingleLine</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>点集数量</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getpointdistance"><span>get<wbr/>Point<wbr/>Distance</span><a href="#getpointdistance" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getpointdistance-1"><span class="tsd-kind-call-signature">getPointDistance</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">point1</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartesian3</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">point2</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartesian3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getpointdistance-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取两点距离</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">point1</span>: <span class="tsd-signature-type">Cartesian3</span></span>
+<div class="tsd-comment tsd-typography"><p>坐标1</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">point2</span>: <span class="tsd-signature-type">Cartesian3</span></span>
+<div class="tsd-comment tsd-typography"><p>坐标2</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getpointonellipsoid"><span>get<wbr/>Point<wbr/>On<wbr/>Ellipsoid</span><a href="#getpointonellipsoid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getpointonellipsoid-1"><span class="tsd-kind-call-signature">getPointOnEllipsoid</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">theta</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">rotation</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">northVec</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartesian3</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">eastVec</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartesian3</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">aSqr</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">ab</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">bSqr</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">mag</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">unitPos</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartesian3</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">result</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Cartesian3</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><a href="#getpointonellipsoid-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>椭圆计算</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">theta</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>角度θ</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">rotation</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>旋转角度</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">northVec</span>: <span class="tsd-signature-type">Cartesian3</span></span>
+<div class="tsd-comment tsd-typography"><p>东北角</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">eastVec</span>: <span class="tsd-signature-type">Cartesian3</span></span>
+<div class="tsd-comment tsd-typography"><p>西南角</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">aSqr</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>短半轴平方根</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">ab</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>长半轴与短半轴乘积</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">bSqr</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>长半轴平方根</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">mag</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>中心坐标最大长度</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">unitPos</span>: <span class="tsd-signature-type">Cartesian3</span></span>
+<div class="tsd-comment tsd-typography"><p>中心坐标归一化</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">result</span>: <span class="tsd-signature-type">Cartesian3</span></span>
+<div class="tsd-comment tsd-typography"><p>椭圆坐标</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getpolygonarea"><span>get<wbr/>Polygon<wbr/>Area</span><a href="#getpolygonarea" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getpolygonarea-1"><span class="tsd-kind-call-signature">getPolygonArea</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">positions</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">WGS84Type</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getpolygonarea-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>计算多边形的面积</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">positions</span>: <span class="tsd-signature-type">WGS84Type</span><span class="tsd-signature-symbol">[]</span></span>
+<div class="tsd-comment tsd-typography"><p>多边形数组</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getpositiondistance"><span>get<wbr/>Position<wbr/>Distance</span><a href="#getpositiondistance" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getpositiondistance-1"><span class="tsd-kind-call-signature">getPositionDistance</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">positions</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">WGS84Type</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><a href="#getpositiondistance-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>获取84坐标的距离</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">positions</span>: <span class="tsd-signature-type">WGS84Type</span><span class="tsd-signature-symbol">[]</span></span>
+<div class="tsd-comment tsd-typography"><p>84坐标数组</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getpositionsangle"><span>get<wbr/>Positions<wbr/>Angle</span><a href="#getpositionsangle" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getpositionsangle-1"><span class="tsd-kind-call-signature">getPositionsAngle</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">option</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">PositionsAngleOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#getpositionsangle-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>计算两点的角度</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">option</span>: <span class="tsd-signature-type">PositionsAngleOptions</span></span>
+<div class="tsd-comment tsd-typography"><p>参数</p>
+<ul>
+<li><code>position1</code>：第一个点坐标</li>
+<li><code>position2</code>：第二个点坐标</li>
+<li><code>type</code>（<code>'pitch' | 'heading'</code>）：角度类型：pitch 俯仰角 / heading 偏航角</li>
+</ul>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><p>角度</p>
+</div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="getpositionsarea"><span>get<wbr/>Positions<wbr/>Area</span><a href="#getpositionsarea" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="getpositionsarea-1"><span class="tsd-kind-call-signature">getPositionsArea</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">positions</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">WGS84Type</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">number</span><a href="#getpositionsarea-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>计算一组坐标组成的面的面积</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">positions</span>: <span class="tsd-signature-type">WGS84Type</span><span class="tsd-signature-symbol">[]</span></span>
+<div class="tsd-comment tsd-typography"><p>需要计算的84数组</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">number</span></h4></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="raisepositionstoheight"><span>raise<wbr/>Positions<wbr/>To<wbr/>Height</span><a href="#raisepositionstoheight" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="raisepositionstoheight-1"><span class="tsd-kind-call-signature">raisePositionsToHeight</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">positions</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">RaisePositionsToHeightOptions</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">extrude</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Float64Array</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><a href="#raisepositionstoheight-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>计算坐标数组插值高度</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">positions</span>: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></span>
+<div class="tsd-comment tsd-typography"><p>插值数组[x,y,z,x,y,z,...]</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">RaisePositionsToHeightOptions</span></span>
+<div class="tsd-comment tsd-typography"><p>参数</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">extrude</span>: <span class="tsd-signature-type">boolean</span></span>
+<div class="tsd-comment tsd-typography"><p>是否拉伸</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Float64Array</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span></h4><p>Returns the positions raised to the given heights</p>
+</div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="splitcartesians3"><span>split<wbr/>Cartesians3</span><a href="#splitcartesians3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="splitcartesians3-1"><span class="tsd-kind-call-signature">splitCartesians3</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">cartesianArr</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><a href="#splitcartesians3-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>拆分组合坐标数组</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">cartesianArr</span>: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></span>
+<div class="tsd-comment tsd-typography"><p>坐标数组</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h4><p>Cartesian3 类型的数组</p>
+</div></li></ul></section></section></details></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details">
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
+<div><a href="#transformwgs84tocartesian"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>WGS84<wbr/>To<wbr/>Cartesian</span></a><a href="#transformwgs84tocartographic"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>WGS84<wbr/>To<wbr/>Cartographic</span></a></div></details>
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
+<div><a href="#computecartographicpointsterraindata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Cartographic<wbr/>Points<wbr/>Terrain<wbr/>Data</span></a><a href="#computeellipseedgepositions"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Ellipse<wbr/>Edge<wbr/>Positions</span></a><a href="#computeinterpolate2indexlineheightcartographic"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Interpolate2<wbr/>Index<wbr/>Line<wbr/>Height<wbr/>Cartographic</span></a><a href="#computeinterpolateindexlineheightcartographic"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Interpolate<wbr/>Index<wbr/>Line<wbr/>Height<wbr/>Cartographic</span></a><a href="#computeinterpolatelinecartographic"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Interpolate<wbr/>Line<wbr/>Cartographic</span></a><a href="#computeinterpolatelineheightcartographic"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Interpolate<wbr/>Line<wbr/>Height<wbr/>Cartographic</span></a><a href="#computeinterpolatelinelonlat"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Interpolate<wbr/>Line<wbr/>Lonlat</span></a><a href="#computelonlatpointsterraindata"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Lonlat<wbr/>Points<wbr/>Terrain<wbr/>Data</span></a><a href="#computesectoredgepositions"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>compute<wbr/>Sector<wbr/>Edge<wbr/>Positions</span></a><a href="#getintersectobj"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Intersect<wbr/>Obj</span></a><a href="#getlinkedpointlist"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Linked<wbr/>Point<wbr/>List</span></a><a href="#getpointdistance"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Point<wbr/>Distance</span></a><a href="#getpointonellipsoid"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Point<wbr/>On<wbr/>Ellipsoid</span></a><a href="#getpolygonarea"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Polygon<wbr/>Area</span></a><a href="#getpositiondistance"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Position<wbr/>Distance</span></a><a href="#getpositionsangle"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Positions<wbr/>Angle</span></a><a href="#getpositionsarea"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Positions<wbr/>Area</span></a><a href="#raisepositionstoheight"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>raise<wbr/>Positions<wbr/>To<wbr/>Height</span></a><a href="#splitcartesians3"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>split<wbr/>Cartesians3</span></a></div></details></div></details></div>
+<div class="site-menu">
+<nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://github.com/dengxiaoning/cesium_dev_kit" class="tsd-nav-link">GitHub</a><a href="/cesium_dev_kit/demo/?auto=1" class="tsd-nav-link">在线 Demo</a></nav>
+<nav class="tsd-navigation"><a href="../modules.html">cesium_dev_kit - v1.3.0</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer>
+<p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
+<div class="overlay"></div></body></html>

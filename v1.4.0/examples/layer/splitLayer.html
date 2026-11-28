@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卷帘 - Cesium 示例与源码 | cesium_dev_kit</title>
+<meta name="description" content="卷帘：百度、腾讯、天地图、ArcGIS、聚合、3D 柱与卷帘对比。cesium_dev_kit 提供可直接运行的 卷帘 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="keywords" content="卷帘, 图层叠加, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, Control">
+<meta name="author" content="dengxiaoning">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://dengxiaoning.github.io/cesium_dev_kit/examples/layer/splitLayer.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="cesium_dev_kit">
+<meta property="og:title" content="卷帘 - Cesium 示例 | cesium_dev_kit">
+<meta property="og:description" content="卷帘：百度、腾讯、天地图、ArcGIS、聚合、3D 柱与卷帘对比。cesium_dev_kit 提供可直接运行的 卷帘 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta property="og:url" content="https://dengxiaoning.github.io/cesium_dev_kit/examples/layer/splitLayer.html">
+<meta property="og:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="卷帘 - Cesium 示例">
+<meta name="twitter:description" content="卷帘：百度、腾讯、天地图、ArcGIS、聚合、3D 柱与卷帘对比。cesium_dev_kit 提供可直接运行的 卷帘 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。">
+<meta name="twitter:image" content="https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg">
+<style>
+:root{--bg:#0b1220;--panel:#111b2e;--text:#e6edf7;--muted:#9fb0c9;--accent:#38bdf8;--border:#24324a}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0b1220,#0e1626 40%,#0b1220);color:var(--text);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 72px}
+nav.crumb{font-size:13px;color:var(--muted);margin-bottom:18px}
+nav.crumb a{color:var(--muted);text-decoration:none}
+nav.crumb a:hover{color:var(--accent)}
+h1{font-size:34px;line-height:1.25;margin:0 0 12px}
+.lead{color:var(--muted);font-size:17px;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 32px}
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;border:1px solid var(--border)}
+.btn.primary{background:var(--accent);color:#062033;border-color:var(--accent)}
+.btn.ghost{color:var(--text);background:var(--panel)}
+section{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin:22px 0}
+h2{font-size:20px;margin:0 0 12px}
+pre.code{overflow:auto;background:#08101d;border:1px solid var(--border);border-radius:10px;padding:16px;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+ul.links{padding-left:20px;margin:0}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--border);margin-top:40px;padding-top:18px;color:var(--muted);font-size:14px}
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "卷帘 - cesium_dev_kit Cesium 示例",
+  "description": "卷帘：百度、腾讯、天地图、ArcGIS、聚合、3D 柱与卷帘对比。cesium_dev_kit 提供可直接运行的 卷帘 示例，包含完整 TypeScript/JavaScript 源码、在线 Demo 与 TypeDoc API 文档，适用于 Cesium、三维 GIS 与数字孪生项目。",
+  "url": "https://dengxiaoning.github.io/cesium_dev_kit/examples/layer/splitLayer.html",
+  "image": "https://dengxiaoning.github.io/cesium_dev_kit/demo/home_banner.jpg",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Person",
+    "name": "dengxiaoning"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "cesium_dev_kit"
+  },
+  "programmingLanguage": [
+    "TypeScript",
+    "JavaScript"
+  ],
+  "isPartOf": {
+    "@type": "SoftwareApplication",
+    "name": "cesium_dev_kit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "codeRepository": "https://github.com/dengxiaoning/cesium_dev_kit"
+  }
+}</script>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "cesium_dev_kit",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "示例",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "图层叠加",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/layer/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "卷帘",
+      "item": "https://dengxiaoning.github.io/cesium_dev_kit/examples/layer/splitLayer.html"
+    }
+  ]
+}</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="crumb"><a href="../../index.html">API 文档</a> / <a href="../../examples/index.html">示例</a> / 图层叠加 / 卷帘</nav>
+  <h1>卷帘</h1>
+  <p class="lead">百度、腾讯、天地图、ArcGIS、聚合、3D 柱与卷帘对比。下面是该示例的核心 script 片段，供参考学习；完整可运行代码请进入在线 Demo 或查看仓库源码。</p>
+  <div class="cta">
+    <a class="btn primary" href="../../demo/?auto=1#/layer/splitLayer">在线运行 Demo</a>
+    <a class="btn ghost" href="../../examples/index.html">全部示例</a>
+    <a class="btn ghost" href="https://github.com/dengxiaoning/cesium_dev_kit/blob/main/src/views/example/layer/layers_split.vue">查看完整源码</a>
+  </div>
+  <section>
+    <h2>示例代码</h2>
+    <pre class="code"><code>import { onMounted, ref } from &#39;vue&#39;;
+import * as Cesium from &#39;cesium&#39;;
+import { initCesium } from &#39;@/utils/cesiumPluginsExtends/index&#39;
+
+let viewerObj, imgLayerObj, imageryLayer, baseLayerObj, baseLayer, baseComponent;
+const refmap = ref();
+const leftTimeVal = ref(&#39;midnight&#39;);
+const rightTimeVal = ref(&#39;dark&#39;);
+
+const leftTime = [
+  {
+    label: &#39;midnight&#39;,
+    value: &#39;midnight&#39;,
+  },
+  {
+    label: &#39;dark&#39;,
+    value: &#39;dark&#39;,
+  },
+  {
+    label: &#39;googlelite&#39;,
+    value: &#39;googlelite&#39;,
+  },
+  {
+    label: &#39;redalert&#39;,
+    value: &#39;redalert&#39;,
+  }];
+
+const tileLables = Object.keys(new Array(20).fill(0)).map(
+  (v) =&gt; parseInt(v) + 1,
+);
+const leftSelectChange = function (val) {
+  const commonOption = { url: &#39;https://api.map.baidu.com/customimage/tile?udt=20181205&amp;scale=1&amp;ak=1XjLLEhZhQNUzd93EjU5nOGQ&#39; };
+  viewerObj.imageryLayers.remove(imageryLayer);
+  imageryLayer = new Cesium.Scene.BaiduImageryProvider({
+    ...commonOption,
+    style: val
+  })
+
+  imageryLayer.alpha = 1.0; // 设置透明度为完全不透明
+  imgLayerObj = viewerObj.imageryLayers.addImageryProvider(imageryLayer);
+  imgLayerObj.splitDirection = Cesium.SplitDirection.LEFT;
+};
+const rightSelectChange = function (val) {
+  const commonOption = { url: &#39;https://api.map.baidu.com/customimage/tile?udt=20181205&amp;scale=1&amp;ak=1XjLLEhZhQNUzd93EjU5nOGQ&#39; };
+  viewerObj.imageryLayers.remove(baseLayer);
+  baseLayer = new Cesium.Scene.BaiduImageryProvider({
+    ...commonOption,
+    style: val
+  })
+
+  // 设置基础图层透明度
+  baseLayer.alpha = 0.9; // 稍微有些透明，便于观察分割效果
+  baseLayerObj = viewerObj.imageryLayers.addImageryProvider(baseLayer);
+  baseLayerObj.splitDirection = Cesium.SplitDirection.RIGHT;
+};
+const initMap = () =&gt; {
+  const { viewer, control, base, graphics } = new initCesium({
+    cesiumGlobal: Cesium,
+    containerId: refmap.value,
+    viewerConfig: {
+      infoBox: false,
+      shouldAnimate: true,
+    },
+    extraConfig: {
+      depthTest: true,
+      AccessToken:
+        &#39;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYzkwZWEwYy1mMmIwLTQwYjctOWJlOC00OWU4ZWU1YTZhOTkiLCJpZCI6MTIxODIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjA0OTUyNDN9.wagvw7GxUjxvHXO6m2jjX5Jh9lN0UyTJhNGEcSm2pgE&#39;,
+    },
+    MapImageryList: [],
+  });
+  baseComponent = base;
+  // 创建查看器
+  viewerObj = viewer;
+  // 加载左侧视图
+  leftSelectChange(&#39;midnight&#39;);
+  console.log(&#39;loading left image.&#39;);
+
+  // 加载右侧视图
+  rightSelectChange(&#39;dark&#39;);
+  console.log(&#39;loading right image.&#39;);
+
+  registerLeftEvent();
+
+  // 初始化滑块位置
+  const slider = document.getElementById(&#39;splitSlider&#39;);
+  // 从滑块当前位置设置场景分割位置
+  viewer.scene.splitPosition =
+    slider.offsetLeft / slider.parentElement.offsetWidth;
+  slider.style.left = &#39;50%&#39;;
+
+  // 创建事件处理器来处理滑块拖动
+  const handler = new Cesium.ScreenSpaceEventHandler(slider);
+  let moveActive = false;
+
+  // 处理移动事件
+  function move (movement) {
+    if (!moveActive) {
+      return;
+    }
+
+    // 计算相对偏移
+    const relativeOffset = movement.endPosition.x;
+    // 计算新的分割位置
+    const splitPosition = Math.max(
+      0,
+      Math.min(
+        1,
+        (slider.offsetLeft + relativeOffset) / slider.parentElement.offsetWidth,
+      ),
+    );
+
+    // 更新滑块位置和场景分割位置
+    slider.style.left = `${100.0 * splitPosition}%`;
+    viewer.scene.splitPosition = splitPosition;
+  }
+
+  // 鼠标按下开始拖动
+  handler.setInputAction(function () {
+    moveActive = true;
+  }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+
+  // 触摸开始拖动
+  handler.setInputAction(function () {
+    moveActive = true;
+  }, Cesium.ScreenSpaceEventType.PINCH_START);
+
+  // 鼠标移动
+  handler.setInputAction(move, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+  // 触摸移动
+  handler.setInputAction(move, Cesium.ScreenSpaceEventType.PINCH_MOVE);
+
+  // 鼠标释放结束拖动
+  handler.setInputAction(function () {
+    moveActive = false;
+  }, Cesium.ScreenSpaceEventType.LEFT_UP);
+
+  // 触摸释放结束拖动
+  handler.setInputAction(function () {
+    moveActive = false;
+  }, Cesium.ScreenSpaceEventType.PINCH_END);
+
+  viewerObj.camera.flyTo({
+    destination: {
+      &quot;x&quot;: -1339806.522417923,
+      &quot;y&quot;: 5342127.704209544,
+      &quot;z&quot;: 3238244.511395003
+    },
+    duration: 5, // 飞行持续时间(秒)
+    orientation: {
+      &quot;heading&quot;: 0.04046959012132323,
+      &quot;pitch&quot;: -1.420234741628971,
+      &quot;roll&quot;: 0.000031773228459819336
+    },
+  });
+};
+
+// 注册一个右键点击事件，获取点击的位置信息
+const registerLeftEvent = () =&gt; {
+  baseComponent.bindHandelEvent({
+    leftClick: function click (event, _handlers) {
+      const { wgs84Coor, graphicCoor, cameraPosition } = baseComponent.getHandlerClickPosition(event);
+      console.log(wgs84Coor, graphicCoor, cameraPosition);
+    }
+  })
+}
+onMounted(() =&gt; {
+  initMap();
+});</code></pre>
+  </section>
+  <section>
+    <h2>相关 API</h2>
+    <ul class="links"><li><a href="../../classes/Control.html">Control API 文档</a></li></ul>
+    <p class="muted">安装：<code>npm install cesium_dev_kit cesium</code></p>
+  </section>
+  <footer>
+    <p>cesium_dev_kit v1.4.0 · <a href="../../index.html">API 文档</a> · <a href="../../demo/?auto=1">在线 Demo</a> · <a href="https://github.com/dengxiaoning/cesium_dev_kit">GitHub</a></p>
+    <p>关键词：卷帘, 图层叠加, Cesium, CesiumJS, 三维GIS, WebGL, 示例, 源码, Control</p>
+  </footer>
+</div>
+</body>
+</html>

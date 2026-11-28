@@ -1,0 +1,109 @@
+/* 文档站点的轻量美化（TypeDoc 0.28）
+ * 目标：类页更宽、方法之间更好分辨、示例代码更好读。
+ * 只做覆盖式微调，不动 TypeDoc 的布局逻辑。
+ */
+
+/* 1. 宽屏下让正文更宽，避免参数表和示例代码被挤成两行 */
+@media (min-width: 1200px) {
+  .container-main {
+    max-width: 1400px;
+  }
+}
+
+/* 2. 类页标题与类说明 */
+.tsd-page-title h1 {
+  font-size: 2rem;
+  letter-spacing: 0.02em;
+}
+
+.tsd-page-title + .tsd-panel > .tsd-comment {
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+/* 3. 每个成员之间加一条分隔，长列表不至于糊成一片 */
+.tsd-member {
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-accent-light, rgba(128, 128, 128, 0.15));
+}
+
+.tsd-member:last-child {
+  border-bottom: none;
+}
+
+.tsd-member .tsd-anchor + h3 {
+  margin-top: 1.25rem;
+}
+
+/* 4. 方法签名：等宽字体、稍微放大，参数一眼能看清 */
+.tsd-signature {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background: var(--color-background-secondary);
+  overflow-x: auto;
+}
+
+.tsd-signature-type,
+.tsd-signature-symbol {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* 5. 示例代码块 */
+.tsd-comment pre,
+.tsd-comment-code {
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+/* 6. 参数表 / 字段列表更紧凑 */
+.tsd-parameters .tsd-parameter {
+  margin-bottom: 0.5rem;
+}
+
+.tsd-comment ul li {
+  margin: 0.15rem 0;
+}
+
+/* 7. 首页索引表：斑马纹 + 悬停高亮，15 个类扫一眼能找到 */
+.col-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.col-content table th {
+  text-align: left;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.col-content table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.18);
+  vertical-align: top;
+}
+
+.col-content table tbody tr:nth-child(even) {
+  background: var(--color-background-secondary);
+}
+
+.col-content table tbody tr:hover {
+  background: var(--color-background-active);
+}
+
+/* 8. 左侧目录：当前项加粗，便于定位 */
+.tsd-navigation a.current {
+  font-weight: 600;
+}
+
+/* 9. 类说明里的「已弃用别名」提示弱化处理 */
+.tsd-comment blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 0.75rem;
+  opacity: 0.9;
+}
